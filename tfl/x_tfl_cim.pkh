@@ -1,0 +1,75 @@
+create or replace package x_tfl_cim
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkh-arc   2.0   Jun 14 2007 10:16:24   smarshall  $
+--       Module Name      : $Workfile:   x_tfl_cim.pkh  $
+--       Date into SCCS   : $Date:   Jun 14 2007 10:16:24  $
+--       Date fetched Out : $Modtime:   Jun 14 2007 10:16:02  $
+--       SCCS Version     : $Revision:   2.0  $
+--
+--
+--   Author : Ian Turnbull
+--
+--    x_tfl_cim
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '"%W% %G%"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+
+procedure process_all_files;
+
+procedure process_output_files;
+
+procedure process_input_files;
+
+procedure process_out_queue;
+
+procedure process_in_queue;
+
+
+procedure show_cim_log;
+procedure show_ftp_queue;
+procedure show_ftp_settings;
+procedure show_menu;
+
+PROCEDURE submit_do_all_processes_job (p_every_n_minutes number DEFAULT 15) ;
+
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end x_tfl_cim;
+/
