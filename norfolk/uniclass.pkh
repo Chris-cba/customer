@@ -1,0 +1,87 @@
+CREATE OR REPLACE PACKAGE UNICLASS AS
+--
+/* ==========================================================================
+   Exor Corporation Limited(c)2004
+   Uniclass Interface
+   ==========================================================================
+   --
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)uniclass.pkh	1.1 07/20/04
+--       Module Name      : uniclass.pkh
+--       Date into SCCS   : 04/07/20 12:54:19
+--       Date fetched Out : 07/06/06 14:38:57
+--       SCCS Version     : 1.1
+--
+--
+--
+-----------------------------------------------------------------------------
+   Note: This package makes use of advanced pl/sql techniques and
+         packages which were made available in v2.3 . The file
+         directories make use of the Oracle parameter UTL_FILE_DIR
+         which MUST be set in the init.ora file.
+         Multiple values may be assigned to the parameter. Oracle
+         reccomend that the parameter be repeated and new values
+         added, Oracle will actually concatenate these values and
+         introduce a comma separator between each value. No end
+         'slash' should be placed on any of the directory values.
+         eg: UTL_FILE_DIR=c:\exor\output
+             UTL_FILE_DIR=c:\exor\reports
+             UTL_FILE_DIR=d:\temp
+         With the above parameters set the user may elect to use
+         any of the three directories ( providing that they exist
+         on the machine ).
+         Note : It is important that the Oracle directory structure
+                entered into the Oracle parameter file (init.ora) is maintained
+                in the same CASE as the directory structure entered as a program
+                parameter. I have found the download process to be unreliable,
+                resulting in an error to the effect that the output file
+                cannot be created.
+         If run independently of Highways, the procedure should be supplied with
+         the following parameters:
+
+         Contractor Id   Contractor of interest
+         Output Location Directory in which output files are to be stored
+         Job ID          GRI job number if called through Highways
+
+         If the interface is run as a one-off from within Highways, only the job_id
+         will be passed, then the above parameters will be picked up from
+         gri_run_parameters.
+
+         Generated Output
+         ----------------
+         The output files will contain information from exor's Works Order System in a
+         fixed format to be loaded into Norfolk's Uniclass system.  The files
+         will be saved as follows:
+                     INCOMEYYYYMMDDHHMM.TXT
+         where INCOME  = Fixed value 'INCOME'
+               YYYY = Year
+               MM   = Month
+               DD   = Date
+               HH   = Hour (24 hour clock)
+               MM   = Minutes
+               .TXT = Fixed value '.TXT'
+
+
+   ======================================================================================
+ */
+  PROCEDURE Create_File(loc_in  VARCHAR2
+                       ,file_in VARCHAR2);
+  --
+  FUNCTION FileExists(loc_in  VARCHAR2
+                     ,file_in VARCHAR2) RETURN BOOLEAN;
+  --
+  FUNCTION Is_Open(File_In utl_file.file_type ) RETURN BOOLEAN;
+  --
+  FUNCTION Close_File(file_in IN utl_file.file_type) RETURN BOOLEAN;
+  --
+  FUNCTION Writeln(File_Handle IN utl_file.file_type,line_in VARCHAR2) RETURN BOOLEAN;
+  --
+  PROCEDURE fetch_params(p_job_id IN NUMBER);
+  --
+  FUNCTION ProcessUniclass RETURN BOOLEAN;
+  --
+  PROCEDURE Main(p_job_id IN NUMBER);
+  --
+END UNICLASS;
+/
