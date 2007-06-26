@@ -1,0 +1,67 @@
+create or replace package xdump_acc_xav_rules as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xdump_acc_xav_rules.pkh	1.1 03/15/05
+--       Module Name      : xdump_acc_xav_rules.pkh
+--       Date into SCCS   : 05/03/15 00:45:15
+--       Date fetched Out : 07/06/06 14:38:04
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   extract accidents cross attribute validation rules package
+--
+-----------------------------------------------------------------------------
+--
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xdump_acc_xav_rules.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   c_default_output_dir CONSTANT hig_options.hop_value%TYPE := hig.get_sysopt('UTLFILEDIR');
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="dump_single_rule">
+PROCEDURE dump_single_rule (p_ait_id         acc_item_types.ait_id%TYPE
+                           ,p_aat_id         acc_attr_types.aat_id%TYPE
+                           ,p_output_dir     VARCHAR2 DEFAULT c_default_output_dir
+                           );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="dump_all_rules">
+PROCEDURE dump_all_rules (p_output_dir     VARCHAR2 DEFAULT c_default_output_dir);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xdump_acc_xav_rules;
+/
