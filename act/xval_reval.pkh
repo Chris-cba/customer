@@ -1,0 +1,346 @@
+create or replace package xval_reval as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xval_reval.pkh	1.1 03/14/05
+--       Module Name      : xval_reval.pkh
+--       Date into SCCS   : 05/03/14 23:11:30
+--       Date fetched Out : 07/06/06 14:33:59
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   Valuations Revaluation package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xval_reval.pkh	1.1 03/14/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   c_xval                         CONSTANT hig_products.hpr_product%TYPE := 'XVAL';
+--
+   c_adhoc_reval_single_module    CONSTANT hig_modules.hmo_module%TYPE := 'XVALWEB0020';
+   c_adhoc_reval_single_mod_title CONSTANT hig_modules.hmo_title%TYPE  := hig.get_module_title(c_adhoc_reval_single_module);
+--
+   c_adhoc_reval_multi_module     CONSTANT hig_modules.hmo_module%TYPE := 'XVALWEB0030';
+   c_adhoc_reval_multi_mod_title  CONSTANT hig_modules.hmo_title%TYPE  := hig.get_module_title(c_adhoc_reval_multi_module);
+--
+   c_year_end_dep_module          CONSTANT hig_modules.hmo_module%TYPE := 'XVALWEB0040';
+   c_year_end_dep_module_title    CONSTANT hig_modules.hmo_title%TYPE  := hig.get_module_title(c_year_end_dep_module);
+--
+   c_year_end_reval_module        CONSTANT hig_modules.hmo_module%TYPE := 'XVALWEB0050';
+   c_year_end_reval_mod_title     CONSTANT hig_modules.hmo_title%TYPE  := hig.get_module_title(c_year_end_reval_module);
+--
+   c_xvc_process_ad_hoc           CONSTANT VARCHAR2(30)                := 'XVC_PROCESS_AD_HOC';
+   c_xvc_prompt_ad_hoc            CONSTANT VARCHAR2(30)                := 'XVC_PROMPT_AD_HOC';
+   --
+   c_procedure_process_adhoc_many CONSTANT VARCHAR2(30)                := 'ADHOC_PROCESS';
+   c_xvc_process_ad_hoc_many      CONSTANT VARCHAR2(30)                := 'XVC_PROCESS_AD_HOC_MANY';
+   c_xvc_prompt_ad_hoc_many       CONSTANT VARCHAR2(30)                := 'XVC_PROMPT_AD_HOC_MANY';
+--
+   c_proc_process_year_end_dep    CONSTANT VARCHAR2(30)                := 'YEAR_END_DEP_PROCESS';
+   c_xvc_process_year_end_dep     CONSTANT VARCHAR2(30)                := 'XVC_PROCESS_YEAR_END_DEP';
+   c_xvc_prompt_year_end_dep_dep  CONSTANT VARCHAR2(30)                := 'XVC_PROMPT_YEAR_END_DEP';
+--
+   c_proc_process_year_end_reval  CONSTANT VARCHAR2(30)                := 'YEAR_END_REVAL_PROCESS';
+   c_xvc_process_year_end_val     CONSTANT VARCHAR2(30)                := 'XVC_PROCESS_YEAR_END_VAL';
+   c_xvc_prompt_year_end_dep_val  CONSTANT VARCHAR2(30)                := 'XVC_PROMPT_YEAR_END_VAL';
+--
+   c_xvc_xf_id_ad_hoc             CONSTANT VARCHAR2(30)                := 'XVC_XF_ID_AD_HOC';
+   c_xvc_xf_id_year_end_dep       CONSTANT VARCHAR2(30)                := 'XVC_XF_ID_YEAR_END_DEP';
+   c_xvc_xf_id_year_end_val       CONSTANT VARCHAR2(30)                := 'XVC_XF_ID_YEAR_END_VAL';
+--
+   c_dry_run                      CONSTANT nm_errors.ner_descr%TYPE    := hig.get_ner(c_xval,3).ner_descr;
+   c_revaluation                  CONSTANT nm_errors.ner_descr%TYPE    := hig.get_ner(c_xval,4).ner_descr;
+   c_depreciation                 CONSTANT nm_errors.ner_descr%TYPE    := hig.get_ner(c_xval,5).ner_descr;
+   c_record_created               CONSTANT nm_errors.ner_descr%TYPE    := hig.get_ner(c_xval,6).ner_descr;
+   c_records_created              CONSTANT nm_errors.ner_descr%TYPE    := hig.get_ner(c_xval,7).ner_descr;
+--
+   g_rec_iit_val                           nm_inv_items%ROWTYPE;
+   g_rec_iit_val_old                       nm_inv_items%ROWTYPE;
+   g_rec_iit_parent                        nm_inv_items%ROWTYPE;
+   g_data_string                           nm3type.tab_varchar32767;
+--
+   g_value                                 nm3type.max_varchar2;
+   g_col_name                              VARCHAR2(30);
+--
+   g_tab_translated_formula                nm3type.tab_varchar32767;
+   g_tab_xf_formula                        nm3type.tab_varchar32767;
+   g_tab_ita_attrib_name                   nm3type.tab_varchar30;
+   g_tab_ita_view_col_name                 nm3type.tab_varchar30;
+   g_tab_xvc_process_seq_no                nm3type.tab_number;
+   g_tab_xvc_sum_for_report                nm3type.tab_varchar4;
+   g_tab_ita_scrn_text                     nm3type.tab_varchar30;
+   g_tab_is_ita                            nm3type.tab_varchar4;
+--
+   g_tab_report_array                      nm3type.tab_number;
+   g_tab_report_columns                    nm3type.tab_varchar30;
+--
+   g_last_iit_inv_type                     nm_inv_types.nit_inv_type%TYPE := SUBSTR(nm3type.c_nvl,1,4);
+   g_last_process_type_col                 VARCHAR2(30)                   := nm3type.c_nvl;
+   g_last_ngqi_job_id                      nm_gaz_query_item_list.ngqi_job_id%TYPE;
+--
+   c_small_yes                   CONSTANT  VARCHAR2(30) := htf.small(INITCAP(nm3type.c_yes));
+   c_small_no                    CONSTANT  VARCHAR2(30) := htf.small(INITCAP(nm3type.c_no));
+--
+   TYPE rec_xvc_dets IS RECORD
+         (ita_view_col_name     nm_inv_type_attribs.ita_view_col_name%TYPE
+         ,ita_scrn_text         nm_inv_type_attribs.ita_scrn_text%TYPE
+         ,ita_attrib_name       nm_inv_type_attribs.ita_attrib_name%TYPE
+         ,ita_disp_seq_no       NUMBER
+         ,ita_mandatory_yn      nm_inv_type_attribs.ita_mandatory_yn%TYPE
+         ,ita_fld_length        nm_inv_type_attribs.ita_fld_length%TYPE
+         ,ita_format            nm_inv_type_attribs.ita_format%TYPE
+         ,is_ita                VARCHAR2(5)
+         );
+   TYPE tab_rec_xvc_dets IS TABLE OF rec_xvc_dets INDEX BY BINARY_INTEGER;
+   g_rec_xvc_dets               rec_xvc_dets;
+   g_tab_rec_xvc_dets           tab_rec_xvc_dets;
+--
+   TYPE tab_xvc IS TABLE OF xval_valuation_columns%ROWTYPE INDEX BY BINARY_INTEGER;
+   g_tab_xvc                    tab_xvc;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="find_adhoc_single">
+PROCEDURE find_adhoc_single;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="find_year_end_dep">
+PROCEDURE find_year_end_dep;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+----<PROC NAME="find_year_end_dep_dry">
+--PROCEDURE find_year_end_dep_dry;
+----</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="find_year_end_reval">
+PROCEDURE find_year_end_reval;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_adhoc_single">
+PROCEDURE prompt_adhoc_single (pi_iit_ne_id nm_inv_items.iit_ne_id%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="adhoc_process">
+PROCEDURE adhoc_process (pi_iit_ne_id        nm3type.tab_varchar30
+                        ,pi_data_col         nm3type.tab_varchar32767
+                        ,pi_data_string      nm3type.tab_varchar32767
+                        ,pi_module           VARCHAR2
+                        ,pi_module_title     VARCHAR2
+                        ,pi_process_type_col VARCHAR2
+                        );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="find_adhoc_many">
+PROCEDURE find_adhoc_many;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_adhoc_many">
+PROCEDURE prompt_adhoc_many (pi_iit_ne_id nm3type.tab_varchar30);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_year_end_dep">
+PROCEDURE prompt_year_end_dep (pi_iit_ne_id nm3type.tab_varchar30);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_year_end_rev">
+PROCEDURE prompt_year_end_rev (pi_iit_ne_id nm3type.tab_varchar30);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="year_end_reval_process">
+PROCEDURE year_end_reval_process (pi_iit_ne_id        IN nm3type.tab_varchar30
+                                 ,pi_data_col         IN nm3type.tab_varchar32767
+                                 ,pi_data_string      IN nm3type.tab_varchar32767
+                                 ,pi_dry_run          IN VARCHAR2 DEFAULT nm3type.c_true
+                                 ,pi_process_type_col IN VARCHAR2 DEFAULT c_xvc_process_year_end_val
+                                 ,pi_module           IN VARCHAR2 DEFAULT c_year_end_reval_module
+                                 ,pi_module_title     IN VARCHAR2 DEFAULT c_year_end_reval_mod_title
+                                 );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="put_tab_iit_ne_id_into_ngqi">
+FUNCTION put_tab_iit_ne_id_into_ngqi (p_tab_iit_ne_id nm3type.tab_varchar30) RETURN nm_gaz_query_item_list.ngqi_job_id%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="perform_adhoc_reval">
+--
+PROCEDURE perform_adhoc_reval (pi_iit_ne_id        IN nm_inv_items.iit_ne_id%TYPE
+                              ,pi_data_col         IN nm3type.tab_varchar32767
+                              ,pi_data_string      IN nm3type.tab_varchar32767
+                              ,pi_process_type_col IN VARCHAR2 DEFAULT c_xvc_process_ad_hoc
+                              );
+--
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="perform_year_end_dep">
+--
+PROCEDURE perform_year_end_dep (pi_iit_ne_id        IN nm3type.tab_varchar30
+                               ,pi_data_col         IN nm3type.tab_varchar32767
+                               ,pi_data_string      IN nm3type.tab_varchar32767
+                               ,pi_dry_run          IN BOOLEAN DEFAULT FALSE
+                               );
+--
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="perform_year_end_reval">
+--
+PROCEDURE perform_year_end_reval (pi_iit_ne_id        IN nm3type.tab_varchar30
+                                 ,pi_data_col         IN nm3type.tab_varchar32767
+                                 ,pi_data_string      IN nm3type.tab_varchar32767
+                                 ,pi_dry_run          IN BOOLEAN DEFAULT FALSE
+                                 );
+--
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_valuation_record">
+FUNCTION get_valuation_record (pi_iit_ne_id_parent nm_inv_items.iit_ne_id%TYPE) RETURN nm_inv_items%ROWTYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="translate_formula_string">
+FUNCTION translate_formula_string (p_xf_formula xval_formulae.xf_formula%TYPE
+                                  ,p_inv_type   VARCHAR2 DEFAULT xval_find_inv.get_val_inv_type
+                                  ) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="triple_translate_formula_str">
+FUNCTION triple_translate_formula_str (p_xf_formula      xval_formulae.xf_formula%TYPE
+                                      ,p_inv_type_parent VARCHAR2
+                                      ) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="is_column_in_table">
+--
+PROCEDURE is_column_in_table (p_table_name  VARCHAR2
+                             ,p_column_name VARCHAR2
+                             ,p_table_owner VARCHAR2 DEFAULT hig.get_application_owner
+                             );
+--
+FUNCTION is_column_in_table (p_table_name  VARCHAR2
+                            ,p_column_name VARCHAR2
+                            ,p_table_owner VARCHAR2 DEFAULT hig.get_application_owner
+                            ) RETURN BOOLEAN;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="check_xvc_ita_view_col_name">
+--
+PROCEDURE check_xvc_ita_view_col_name (p_xvc_ita_view_col_name xval_valuation_columns.xvc_ita_view_col_name%TYPE
+                                      ,p_xvc_sum_for_report    xval_valuation_columns.xvc_sum_for_report%TYPE
+                                      );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_xvc_ita_view_col_name_lov">
+--
+FUNCTION get_xvc_ita_view_col_name_lov RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="translate_iit_col_into_descr">
+--
+FUNCTION translate_iit_col_into_descr (pi_column_name VARCHAR2) RETURN nm_inv_type_attribs.ita_scrn_text%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="year_end_dep_process">
+--
+PROCEDURE year_end_dep_process (pi_iit_ne_id        IN nm3type.tab_varchar30
+                               ,pi_data_col         IN nm3type.tab_varchar32767
+                               ,pi_data_string      IN nm3type.tab_varchar32767
+                               ,pi_dry_run          IN VARCHAR2 DEFAULT nm3type.c_true
+                               ,pi_process_type_col IN VARCHAR2 DEFAULT c_xvc_process_year_end_dep
+                               ,pi_module           IN VARCHAR2 DEFAULT c_year_end_dep_module
+                               ,pi_module_title     IN VARCHAR2 DEFAULT c_year_end_dep_module_title
+                               );
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_to_report_arrays">
+--
+PROCEDURE add_to_report_arrays (pi_value     NUMBER
+                               ,pi_array_pos PLS_INTEGER
+                               ,pi_scrn_text VARCHAR2
+                               );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="html_dump_report_array">
+--
+PROCEDURE html_dump_report_array (p_window_title      VARCHAR2 DEFAULT NULL
+                                 ,p_calling_pack_proc VARCHAR2 DEFAULT NULL
+                                 );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xval_reval;
+/

@@ -1,0 +1,236 @@
+CREATE OR REPLACE PACKAGE xval_create_inv IS
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xval_create_inv.pkh	1.1 03/14/05
+--       Module Name      : xval_create_inv.pkh
+--       Date into SCCS   : 05/03/14 23:11:27
+--       Date fetched Out : 07/06/06 14:33:56
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   valuations asset creation package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xval_create_inv.pkh	1.1 03/14/05"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE enter_data (p_inv_type           IN VARCHAR2
+                     ,p_module             IN VARCHAR2 DEFAULT NULL
+                     ,p_module_title       IN VARCHAR2 DEFAULT NULL
+                     ,p_iit_foreign_key    IN VARCHAR2 DEFAULT NULL
+                     ,p_parent_ngqi_job_id IN NUMBER   DEFAULT NULL
+                     );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE inv_types;
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE insert_data
+      (iit_inv_type                   IN VARCHAR2 DEFAULT Null
+      ,iit_primary_key                IN VARCHAR2 DEFAULT Null
+      ,iit_start_date                 IN VARCHAR2 DEFAULT Null
+      ,iit_admin_unit                 IN VARCHAR2 DEFAULT Null
+      ,iit_descr                      IN VARCHAR2 DEFAULT Null
+      ,iit_end_date                   IN VARCHAR2 DEFAULT Null
+      ,iit_foreign_key                IN VARCHAR2 DEFAULT Null
+      ,iit_located_by                 IN VARCHAR2 DEFAULT Null
+      ,iit_position                   IN VARCHAR2 DEFAULT Null
+      ,iit_x_coord                    IN VARCHAR2 DEFAULT Null
+      ,iit_y_coord                    IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib16               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib17               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib18               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib19               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib20               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib21               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib22               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib23               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib24               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib25               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib26               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib27               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib28               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib29               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib30               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib31               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib32               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib33               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib34               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib35               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib36               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib37               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib38               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib39               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib40               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib41               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib42               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib43               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib44               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib45               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib46               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib47               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib48               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib49               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib50               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib51               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib52               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib53               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib54               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib55               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib56               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib57               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib58               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib59               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib60               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib61               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib62               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib63               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib64               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib65               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib66               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib67               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib68               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib69               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib70               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib71               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib72               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib73               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib74               IN VARCHAR2 DEFAULT Null
+      ,iit_chr_attrib75               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib76               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib77               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib78               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib79               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib80               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib81               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib82               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib83               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib84               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib85               IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib86              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib87              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib88              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib89              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib90              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib91              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib92              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib93              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib94              IN VARCHAR2 DEFAULT Null
+      ,iit_date_attrib95              IN VARCHAR2 DEFAULT Null
+      ,iit_angle                      IN VARCHAR2 DEFAULT Null
+      ,iit_angle_txt                  IN VARCHAR2 DEFAULT Null
+      ,iit_class                      IN VARCHAR2 DEFAULT Null
+      ,iit_class_txt                  IN VARCHAR2 DEFAULT Null
+      ,iit_colour                     IN VARCHAR2 DEFAULT Null
+      ,iit_colour_txt                 IN VARCHAR2 DEFAULT Null
+      ,iit_coord_flag                 IN VARCHAR2 DEFAULT Null
+      ,iit_description                IN VARCHAR2 DEFAULT Null
+      ,iit_diagram                    IN VARCHAR2 DEFAULT Null
+      ,iit_distance                   IN VARCHAR2 DEFAULT Null
+      ,iit_end_chain                  IN VARCHAR2 DEFAULT Null
+      ,iit_gap                        IN VARCHAR2 DEFAULT Null
+      ,iit_height                     IN VARCHAR2 DEFAULT Null
+      ,iit_height_2                   IN VARCHAR2 DEFAULT Null
+      ,iit_id_code                    IN VARCHAR2 DEFAULT Null
+      ,iit_instal_date                IN VARCHAR2 DEFAULT Null
+      ,iit_invent_date                IN VARCHAR2 DEFAULT Null
+      ,iit_inv_ownership              IN VARCHAR2 DEFAULT Null
+      ,iit_itemcode                   IN VARCHAR2 DEFAULT Null
+      ,iit_lco_lamp_config_id         IN VARCHAR2 DEFAULT Null
+      ,iit_length                     IN VARCHAR2 DEFAULT Null
+      ,iit_material                   IN VARCHAR2 DEFAULT Null
+      ,iit_material_txt               IN VARCHAR2 DEFAULT Null
+      ,iit_method                     IN VARCHAR2 DEFAULT Null
+      ,iit_method_txt                 IN VARCHAR2 DEFAULT Null
+      ,iit_note                       IN VARCHAR2 DEFAULT Null
+      ,iit_no_of_units                IN VARCHAR2 DEFAULT Null
+      ,iit_options                    IN VARCHAR2 DEFAULT Null
+      ,iit_options_txt                IN VARCHAR2 DEFAULT Null
+      ,iit_oun_org_id_elec_board      IN VARCHAR2 DEFAULT Null
+      ,iit_owner                      IN VARCHAR2 DEFAULT Null
+      ,iit_owner_txt                  IN VARCHAR2 DEFAULT Null
+      ,iit_peo_invent_by_id           IN VARCHAR2 DEFAULT Null
+      ,iit_photo                      IN VARCHAR2 DEFAULT Null
+      ,iit_power                      IN VARCHAR2 DEFAULT Null
+      ,iit_prov_flag                  IN VARCHAR2 DEFAULT Null
+      ,iit_rev_by                     IN VARCHAR2 DEFAULT Null
+      ,iit_rev_date                   IN VARCHAR2 DEFAULT Null
+      ,iit_type                       IN VARCHAR2 DEFAULT Null
+      ,iit_type_txt                   IN VARCHAR2 DEFAULT Null
+      ,iit_width                      IN VARCHAR2 DEFAULT Null
+      ,iit_xtra_char_1                IN VARCHAR2 DEFAULT Null
+      ,iit_xtra_date_1                IN VARCHAR2 DEFAULT Null
+      ,iit_xtra_domain_1              IN VARCHAR2 DEFAULT Null
+      ,iit_xtra_domain_txt_1          IN VARCHAR2 DEFAULT Null
+      ,iit_xtra_number_1              IN VARCHAR2 DEFAULT Null
+      ,iit_x_sect                     IN VARCHAR2 DEFAULT Null
+      ,iit_det_xsp                    IN VARCHAR2 DEFAULT Null
+      ,iit_offset                     IN VARCHAR2 DEFAULT Null
+      ,iit_x                          IN VARCHAR2 DEFAULT Null
+      ,iit_y                          IN VARCHAR2 DEFAULT Null
+      ,iit_z                          IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib96               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib97               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib98               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib99               IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib100              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib101              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib102              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib103              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib104              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib105              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib106              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib107              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib108              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib109              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib110              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib111              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib112              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib113              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib114              IN VARCHAR2 DEFAULT Null
+      ,iit_num_attrib115              IN VARCHAR2 DEFAULT Null
+--
+      ,p_module                       IN VARCHAR2 DEFAULT NULL
+      ,p_module_title                 IN VARCHAR2 DEFAULT NULL
+      ,p_parent_ngqi_job_id           IN nm_gaz_query_item_list.ngqi_job_id%TYPE DEFAULT NULL
+--
+      );
+--
+------------------------------------------------------------------------------
+--
+FUNCTION harsh_date_check (p_char_date VARCHAR2) RETURN DATE;
+--
+------------------------------------------------------------------------------
+--
+FUNCTION harsh_number_check (p_char_number VARCHAR2) RETURN NUMBER;
+--
+----------------------------------------------------------------------------------------
+--
+END xval_create_inv;
+/

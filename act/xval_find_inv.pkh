@@ -1,0 +1,246 @@
+create or replace package xval_find_inv as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xval_find_inv.pkh	1.1 03/14/05
+--       Module Name      : xval_find_inv.pkh
+--       Date into SCCS   : 05/03/14 23:11:28
+--       Date fetched Out : 07/06/06 14:33:57
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   Valuations Find Inventory package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid          CONSTANT VARCHAR2(2000) := '"@(#)xval_find_inv.pkh	1.1 03/14/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   c_continue          CONSTANT nm_errors.ner_descr%TYPE := hig.get_ner(nm3type.c_hig,165).ner_descr;
+   c_detail            CONSTANT nm_errors.ner_descr%TYPE := hig.get_ner(nm3type.c_hig,231).ner_descr;
+   c_close             CONSTANT nm_errors.ner_descr%TYPE := hig.get_ner(nm3type.c_hig,216).ner_descr;
+   c_select_all        CONSTANT nm_errors.ner_descr%TYPE := hig.get_ner(nm3type.c_hig,217).ner_descr;
+   c_inverse_selection CONSTANT nm_errors.ner_descr%TYPE := hig.get_ner(nm3type.c_hig,218).ner_descr;
+   c_refresh           CONSTANT nm_errors.ner_descr%TYPE := hig.get_ner(nm3type.c_hig,219).ner_descr;
+--
+   c_iit_admin_unit               CONSTANT VARCHAR2(30)                := 'IIT_ADMIN_UNIT';
+   c_iit_admin_unit_text          CONSTANT VARCHAR2(30)                := 'Admin Unit';
+   c_iit_descr                    CONSTANT VARCHAR2(30)                := 'IIT_DESCR';
+   c_iit_descr_text               CONSTANT VARCHAR2(30)                := 'Description';
+   c_iit_start_date               CONSTANT VARCHAR2(30)                := 'IIT_START_DATE';
+   c_iit_start_date_text          CONSTANT VARCHAR2(30)                := 'Start Date';
+   c_iit_note                     CONSTANT VARCHAR2(30)                := 'IIT_NOTE';
+   c_iit_note_text                CONSTANT VARCHAR2(30)                := 'Note';
+   c_iit_peo_invent_by_id         CONSTANT VARCHAR2(30)                := 'IIT_PEO_INVENT_BY_ID';
+   c_iit_peo_invent_by_id_text    CONSTANT VARCHAR2(30)                := 'Inspected By';
+--
+   g_tab_data                   nm3type.tab_varchar32767;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_version">
+-- This function returns the current SCCS version
+--
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_body_version">
+-- This function returns the current SCCS version of the package body
+--
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+----------------------------------------------------------------------------------------
+--
+--<PROC NAME ="get_val_inv_type">
+--
+FUNCTION get_val_inv_type RETURN nm_inv_types.nit_inv_type%TYPE;
+--
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="find_val_rec_cr8">
+--
+PROCEDURE find_val_rec_cr8;
+--
+----------------------------------------------------------------------------------------
+--
+--<PROC NAME="val_rec_cr8_mult">
+--
+PROCEDURE val_rec_cr8_mult;
+--
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="find_anything">
+--
+PROCEDURE find_anything;
+--
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="main">
+--
+PROCEDURE main (p_restrict_to_val_parents_only BOOLEAN  DEFAULT TRUE
+               ,p_module                       VARCHAR2 DEFAULT NULL
+               ,p_module_title                 VARCHAR2 DEFAULT NULL
+               );
+--
+--</PROC>
+--
+----------------------------------------------------------------------------------------
+--
+--<PROC NAME="main_find_window">
+--
+PROCEDURE main_find_window (p_inv_type     VARCHAR2
+                           ,p_module       VARCHAR2
+                           ,p_module_title VARCHAR2
+                           ,p_all_fields   VARCHAR2 DEFAULT 'N'
+                           );
+--
+--</PROC>
+--
+----------------------------------------------------------------------------------------
+--
+--<PROC NAME ="perform_search">
+--
+PROCEDURE perform_search (p_inv_type      VARCHAR2
+                         ,p_module        VARCHAR2
+                         ,p_module_title  VARCHAR2
+                         ,ita_query       nm3type.tab_varchar32767
+                         ,ita_attrib_name nm3type.tab_varchar32767
+                         ,ita_value       owa_util.vc_arr
+                         ,ita_format      nm3type.tab_varchar32767
+                         ,ita_condition   nm3type.tab_varchar32767
+                         ,ita_counter     nm3type.tab_varchar32767
+                         );
+--
+----------------------------------------------------------------------------------------
+--
+FUNCTION get_detail_url (pi_iit_ne_id      NUMBER
+                        ,pi_update_allowed BOOLEAN DEFAULT FALSE
+                        ,pi_iit_inv_type   VARCHAR2 DEFAULT NULL
+                        ) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE show_detail (pi_iit_ne_id           NUMBER   DEFAULT NULL
+                      ,pi_update_allowed      BOOLEAN  DEFAULT FALSE
+                      ,pi_update_allowed_char VARCHAR2 DEFAULT nm3type.c_false
+                      ,pi_close_button        BOOLEAN  DEFAULT TRUE
+                      ,pi_iit_inv_type        VARCHAR2 DEFAULT NULL
+                      );
+--
+----------------------------------------------------------------------------------------
+--
+FUNCTION get_map_url (pi_iit_ne_id      NUMBER
+                     ,pi_iit_inv_type   VARCHAR2
+                     ) RETURN VARCHAR2;
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE show_on_map (pi_iit_ne_id    NUMBER
+                      ,pi_nth_theme_id NUMBER
+                      ,pi_iit_inv_type VARCHAR2
+                      );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE select_theme (pi_iit_ne_id    NUMBER
+                       ,pi_iit_inv_type VARCHAR2
+                       );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE no_theme_available (pi_iit_inv_type VARCHAR2);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE create_val (pi_iit_ne_id NUMBER);
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE create_val_multi (pi_iit_ne_id nm3type.tab_varchar30);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE js_ner_and_back (pi_appl               VARCHAR2
+                          ,pi_id                 NUMBER
+                          ,pi_supplementary_info VARCHAR2 DEFAULT Null
+                          );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE js_ner (pi_appl               VARCHAR2
+                 ,pi_id                 NUMBER
+                 ,pi_supplementary_info VARCHAR2 DEFAULT Null
+                 );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE show_results (p_module             hig_modules.hmo_module%TYPE
+                       ,p_ngqi_job_id        nm_gaz_query_item_list.ngqi_job_id%TYPE
+                       ,p_fail_on_no_results BOOLEAN DEFAULT TRUE
+                       ,p_display_inv_type   BOOLEAN DEFAULT FALSE
+                       );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE instantiate_for_inv_type (pi_nit_inv_type nm_inv_types.nit_inv_type%TYPE);
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE create_js_funcs (p_script_open  BOOLEAN DEFAULT TRUE
+                          ,p_script_close BOOLEAN DEFAULT TRUE
+                          );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE val_rec_err_fix;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE do_au_listbox (pi_admin_type       nm_admin_units.nau_admin_type%TYPE
+                        ,pi_parameter_name   VARCHAR2
+                        ,pi_normal_mode_only BOOLEAN DEFAULT FALSE
+                        );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE update_item (ita_attrib_name    nm3type.tab_varchar32767
+                      ,iit_value_orig     owa_util.vc_arr
+                      ,iit_value          owa_util.vc_arr
+                      ,iit_ne_id          nm3type.tab_varchar32767
+                      ,nit_update_allowed nm3type.tab_varchar32767
+                      ,ita_format         nm3type.tab_varchar32767
+                      ,ita_format_mask    nm3type.tab_varchar32767
+                      ,iit_inv_type       nm3type.tab_varchar32767
+                      ,iit_start_date     nm3type.tab_varchar32767
+                      ,iit_date_modified  nm3type.tab_varchar32767
+                      ,iit_admin_unit     nm3type.tab_varchar32767
+                      ,pi_close_button    VARCHAR2 DEFAULT nm3type.c_false
+                      );
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, WNPS, WNDS, TRUST);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, WNPS, WNDS, TRUST);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xval_find_inv;
+/
