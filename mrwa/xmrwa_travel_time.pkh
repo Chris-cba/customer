@@ -1,0 +1,102 @@
+create or replace package xmrwa_travel_time as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xmrwa_travel_time.pkh	1.1 03/15/05
+--       Module Name      : xmrwa_travel_time.pkh
+--       Date into SCCS   : 05/03/15 00:46:08
+--       Date fetched Out : 07/06/06 14:38:35
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   MRWA Travel Time package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xmrwa_travel_time.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   g_rec_iit_new   nm_inv_items%ROWTYPE;
+   g_rec_iit_old   nm_inv_items%ROWTYPE;
+--
+   g_rec_ne_old    nm_elements%ROWTYPE;
+   g_rec_ne_new    nm_elements%ROWTYPE;
+--
+   g_rec_nm_old    nm_members%ROWTYPE;
+   g_rec_nm_new    nm_members%ROWTYPE;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="append_value_pair">
+PROCEDURE append_value_pair (p_boilertext VARCHAR2
+                            ,p_value      VARCHAR2
+                            );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE append_value_triplet (p_boilertext VARCHAR2
+                               ,p_value      VARCHAR2
+                               ,p_value2     VARCHAR2
+                               );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="fire_inv_change_email">
+PROCEDURE fire_inv_change_email;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="fire_group_change_email">
+PROCEDURE fire_group_change_email (p_subject_prefix VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="fire_nw_op_email">
+PROCEDURE fire_nw_op_email (p_ne_id_old NUMBER
+                           ,p_ne_id_new NUMBER
+                           ,p_operation VARCHAR2
+                           ,p_eff_date  DATE
+                           );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="fire_mem_change_email">
+PROCEDURE fire_mem_change_email (p_prefix VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xmrwa_travel_time;
+/

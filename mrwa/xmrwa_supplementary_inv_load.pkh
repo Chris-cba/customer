@@ -1,0 +1,87 @@
+create or replace package xmrwa_supplementary_inv_load as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xmrwa_supplementary_inv_load.pkh	1.1 03/15/05
+--       Module Name      : xmrwa_supplementary_inv_load.pkh
+--       Date into SCCS   : 05/03/15 00:46:07
+--       Date fetched Out : 07/06/06 14:38:31
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   MRWA supplementary inventory loader package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xmrwa_supplementary_inv_load.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+   g_rec_iit  nm_inv_items%ROWTYPE;
+   g_rowid    ROWID;
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="end_date_item">
+PROCEDURE end_date_item (p_rec xmrwa_end_date_inv_item%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="end_date_item_validate">
+PROCEDURE end_date_item_validate (p_rec xmrwa_end_date_inv_item%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="relocate_item">
+PROCEDURE relocate_item (p_rec xmrwa_modify_inv_item_location%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="relocate_item_validate">
+PROCEDURE relocate_item_validate (p_rec xmrwa_modify_inv_item_location%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="update_item_attr">
+PROCEDURE update_item_attr (p_rec xmrwa_modify_item_attr%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="update_item_attr_validate">
+PROCEDURE update_item_attr_validate (p_rec xmrwa_modify_item_attr%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xmrwa_supplementary_inv_load;
+/
