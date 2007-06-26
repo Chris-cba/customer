@@ -1,0 +1,73 @@
+create or replace package xtnzweb_fav as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xtnzweb_fav.pkh	1.1 06/24/02
+--       Module Name      : xtnzweb_fav.pkh
+--       Date into SCCS   : 02/06/24 13:29:46
+--       Date fetched Out : 03/04/25 14:00:39
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   nm3 web favourites package
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2002
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+  g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xtnzweb_fav.pkh	1.1 06/24/02"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="show_favourites">
+PROCEDURE show_favourites;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION allowable_web_form (p_type   VARCHAR2
+                            ,p_module VARCHAR2
+                            ) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE left_frame;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE define_tree_favourites;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE run (pi_module VARCHAR2);
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xtnzweb_fav;
+/

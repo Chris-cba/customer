@@ -1,0 +1,160 @@
+create or replace package xtnz_trid as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xtnz_trid.pkh	1.2 03/16/05
+--       Module Name      : xtnz_trid.pkh
+--       Date into SCCS   : 05/03/16 01:19:41
+--       Date fetched Out : 07/06/06 14:40:33
+--       SCCS Version     : 1.2
+--
+--
+--   Author : Jonathan Mills
+--
+--   TNZ TRID package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xtnz_trid.pkh	1.2 03/16/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   g_rec_iit     nm_inv_items_all%ROWTYPE;
+   g_rec_iit_old nm_inv_items_all%ROWTYPE;
+   g_rec_doc     docs%ROWTYPE;
+   g_rec_das     doc_assocs%ROWTYPE;
+   g_rec_hct     hig_contacts%ROWTYPE;
+   g_rec_had     hig_address%ROWTYPE;
+   g_rec_hca     hig_contact_address%ROWTYPE;
+   g_rec_dec     doc_enquiry_contacts%ROWTYPE;
+   g_prior_nit   VARCHAR2(4) := '####';
+--
+   g_tab_iit_ne_id nm3type.tab_number;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_pem">
+PROCEDURE create_pem;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="send_doc_mails">
+PROCEDURE send_doc_mails;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="send_event_mails">
+PROCEDURE send_event_mails;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="append_if_present">
+PROCEDURE append_if_present (p_boilertext VARCHAR2
+                            ,p_value      VARCHAR2
+                            );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="submit_dbms_job">
+PROCEDURE submit_dbms_job (p_every_n_minutes PLS_INTEGER DEFAULT 10);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_nmc">
+FUNCTION get_nmc (p_of NUMBER, p_mp NUMBER) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_nmc_for_item">
+FUNCTION get_nmc_for_item (p_iit_ne_id NUMBER) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_trid_route_for_item">
+FUNCTION get_trid_route_for_item (p_iit_ne_id NUMBER) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_map_item_url">
+FUNCTION get_map_item_url (pi_iit_ne_id    VARCHAR2
+                          ,pi_iit_inv_type nm_inv_items.iit_inv_type%TYPE
+                          ) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_to_list_if_changed">
+PROCEDURE add_to_list_if_changed;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_update_mail_list">
+PROCEDURE process_update_mail_list;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="clear_update_mail_list">
+PROCEDURE clear_update_mail_list;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_map_item_url_url_only">
+FUNCTION get_map_item_url_url_only
+                          (pi_iit_ne_id    VARCHAR2
+                          ,pi_iit_inv_type nm_inv_items.iit_inv_type%TYPE
+                          ) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="this_is_a_trid_item">
+FUNCTION this_is_a_trid_item (pi_nit_elec_drain_carr VARCHAR2) RETURN BOOLEAN;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION user_has_normal_module_access (pi_module VARCHAR2
+                                       ) RETURN BOOLEAN;
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_map_item_url, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_map_item_url_url_only, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xtnz_trid;
+/
