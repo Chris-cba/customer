@@ -1,0 +1,88 @@
+create or replace package xtnz_load_inv as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xtnz_load_inv.pkh	1.1 03/15/05
+--       Module Name      : xtnz_load_inv.pkh
+--       Date into SCCS   : 05/03/15 03:46:10
+--       Date fetched Out : 07/06/06 14:40:31
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   Transit NZ Inventory Load package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xtnz_load_inv.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_rs_au">
+FUNCTION get_rs_au (p_state_hwy VARCHAR2
+                   ,p_rs        VARCHAR2
+                   ) RETURN nm_admin_units.nau_admin_unit%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_la_au">
+FUNCTION get_la_au (p_la_section_number VARCHAR2
+                   ) RETURN nm_admin_units.nau_admin_unit%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="load_inv_on_route">
+PROCEDURE load_inv_on_route(p_rec xtnz_load_inv_on_route%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="validate_inv_on_route">
+PROCEDURE validate_inv_on_route(p_rec xtnz_load_inv_on_route%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="remove_excess_spaces">
+FUNCTION remove_excess_spaces(p_string VARCHAR2) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="check_for_hig_contact">
+FUNCTION check_for_hig_contact(p_string VARCHAR2) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xtnz_load_inv;
+/

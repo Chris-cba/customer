@@ -1,0 +1,246 @@
+CREATE OR REPLACE PACKAGE xtnz_lar_create_inv IS
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xtnz_lar_create_inv.pkh	1.2 03/16/05
+--       Module Name      : xtnz_lar_create_inv.pkh
+--       Date into SCCS   : 05/03/16 01:19:37
+--       Date fetched Out : 07/06/06 14:40:25
+--       SCCS Version     : 1.2
+--
+--
+--   Author : Jonathan Mills
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xtnz_lar_create_inv.pkh	1.2 03/16/05"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE enter_data (p_inv_type        IN VARCHAR2
+                     ,p_module          IN VARCHAR2 DEFAULT NULL
+                     ,p_module_title    IN VARCHAR2 DEFAULT NULL
+                     ,p_iit_foreign_key IN VARCHAR2 DEFAULT NULL
+                     );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE create_la;
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE create_cp;
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE inv_types;
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE insert_data
+      (IIT_INV_TYPE                   IN VARCHAR2 DEFAULT Null
+      ,IIT_PRIMARY_KEY                IN VARCHAR2 DEFAULT Null
+      ,IIT_START_DATE                 IN VARCHAR2 DEFAULT TO_CHAR(nm3user.get_effective_date,'DD-MON-YYYY')
+      ,IIT_DATE_CREATED               IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_MODIFIED              IN VARCHAR2 DEFAULT Null
+      ,IIT_CREATED_BY                 IN VARCHAR2 DEFAULT Null
+      ,IIT_MODIFIED_BY                IN VARCHAR2 DEFAULT Null
+      ,IIT_ADMIN_UNIT                 IN VARCHAR2 DEFAULT Null
+      ,IIT_DESCR                      IN VARCHAR2 DEFAULT Null
+      ,IIT_END_DATE                   IN VARCHAR2 DEFAULT Null
+      ,IIT_FOREIGN_KEY                IN VARCHAR2 DEFAULT Null
+      ,IIT_LOCATED_BY                 IN NUMBER   DEFAULT Null
+      ,IIT_POSITION                   IN NUMBER   DEFAULT Null
+      ,IIT_X_COORD                    IN NUMBER   DEFAULT Null
+      ,IIT_Y_COORD                    IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB16               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB17               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB18               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB19               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB20               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB21               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB22               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB23               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB24               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB25               IN NUMBER   DEFAULT Null
+      ,IIT_CHR_ATTRIB26               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB27               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB28               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB29               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB30               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB31               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB32               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB33               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB34               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB35               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB36               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB37               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB38               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB39               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB40               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB41               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB42               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB43               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB44               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB45               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB46               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB47               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB48               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB49               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB50               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB51               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB52               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB53               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB54               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB55               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB56               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB57               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB58               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB59               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB60               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB61               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB62               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB63               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB64               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB65               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB66               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB67               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB68               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB69               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB70               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB71               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB72               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB73               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB74               IN VARCHAR2 DEFAULT Null
+      ,IIT_CHR_ATTRIB75               IN VARCHAR2 DEFAULT Null
+      ,IIT_NUM_ATTRIB76               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB77               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB78               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB79               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB80               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB81               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB82               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB83               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB84               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB85               IN NUMBER   DEFAULT Null
+      ,IIT_DATE_ATTRIB86              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB87              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB88              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB89              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB90              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB91              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB92              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB93              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB94              IN VARCHAR2 DEFAULT Null
+      ,IIT_DATE_ATTRIB95              IN VARCHAR2 DEFAULT Null
+      ,IIT_ANGLE                      IN NUMBER   DEFAULT Null
+      ,IIT_ANGLE_TXT                  IN VARCHAR2 DEFAULT Null
+      ,IIT_CLASS                      IN VARCHAR2 DEFAULT Null
+      ,IIT_CLASS_TXT                  IN VARCHAR2 DEFAULT Null
+      ,IIT_COLOUR                     IN VARCHAR2 DEFAULT Null
+      ,IIT_COLOUR_TXT                 IN VARCHAR2 DEFAULT Null
+      ,IIT_COORD_FLAG                 IN VARCHAR2 DEFAULT Null
+      ,IIT_DESCRIPTION                IN VARCHAR2 DEFAULT Null
+      ,IIT_DIAGRAM                    IN VARCHAR2 DEFAULT Null
+      ,IIT_DISTANCE                   IN NUMBER   DEFAULT Null
+      ,IIT_END_CHAIN                  IN NUMBER   DEFAULT Null
+      ,IIT_GAP                        IN NUMBER   DEFAULT Null
+      ,IIT_HEIGHT                     IN NUMBER   DEFAULT Null
+      ,IIT_HEIGHT_2                   IN NUMBER   DEFAULT Null
+      ,IIT_ID_CODE                    IN VARCHAR2 DEFAULT Null
+      ,IIT_INSTAL_DATE                IN VARCHAR2 DEFAULT Null
+      ,IIT_INVENT_DATE                IN VARCHAR2 DEFAULT Null
+      ,IIT_INV_OWNERSHIP              IN VARCHAR2 DEFAULT Null
+      ,IIT_ITEMCODE                   IN VARCHAR2 DEFAULT Null
+      ,IIT_LCO_LAMP_CONFIG_ID         IN NUMBER   DEFAULT Null
+      ,IIT_LENGTH                     IN NUMBER   DEFAULT Null
+      ,IIT_MATERIAL                   IN VARCHAR2 DEFAULT Null
+      ,IIT_MATERIAL_TXT               IN VARCHAR2 DEFAULT Null
+      ,IIT_METHOD                     IN VARCHAR2 DEFAULT Null
+      ,IIT_METHOD_TXT                 IN VARCHAR2 DEFAULT Null
+      ,IIT_NOTE                       IN VARCHAR2 DEFAULT Null
+      ,IIT_NO_OF_UNITS                IN NUMBER   DEFAULT Null
+      ,IIT_OPTIONS                    IN VARCHAR2 DEFAULT Null
+      ,IIT_OPTIONS_TXT                IN VARCHAR2 DEFAULT Null
+      ,IIT_OUN_ORG_ID_ELEC_BOARD      IN NUMBER   DEFAULT Null
+      ,IIT_OWNER                      IN VARCHAR2 DEFAULT Null
+      ,IIT_OWNER_TXT                  IN VARCHAR2 DEFAULT Null
+      ,IIT_PEO_INVENT_BY_ID           IN NUMBER   DEFAULT Null
+      ,IIT_PHOTO                      IN VARCHAR2 DEFAULT Null
+      ,IIT_POWER                      IN NUMBER   DEFAULT Null
+      ,IIT_PROV_FLAG                  IN VARCHAR2 DEFAULT Null
+      ,IIT_REV_BY                     IN VARCHAR2 DEFAULT Null
+      ,IIT_REV_DATE                   IN VARCHAR2 DEFAULT Null
+      ,IIT_TYPE                       IN VARCHAR2 DEFAULT Null
+      ,IIT_TYPE_TXT                   IN VARCHAR2 DEFAULT Null
+      ,IIT_WIDTH                      IN NUMBER   DEFAULT Null
+      ,IIT_XTRA_CHAR_1                IN VARCHAR2 DEFAULT Null
+      ,IIT_XTRA_DATE_1                IN VARCHAR2 DEFAULT Null
+      ,IIT_XTRA_DOMAIN_1              IN VARCHAR2 DEFAULT Null
+      ,IIT_XTRA_DOMAIN_TXT_1          IN VARCHAR2 DEFAULT Null
+      ,IIT_XTRA_NUMBER_1              IN NUMBER   DEFAULT Null
+      ,IIT_X_SECT                     IN VARCHAR2 DEFAULT Null
+      ,IIT_DET_XSP                    IN VARCHAR2 DEFAULT Null
+      ,IIT_OFFSET                     IN NUMBER   DEFAULT Null
+      ,IIT_X                          IN NUMBER   DEFAULT Null
+      ,IIT_Y                          IN NUMBER   DEFAULT Null
+      ,IIT_Z                          IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB96               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB97               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB98               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB99               IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB100              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB101              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB102              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB103              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB104              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB105              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB106              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB107              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB108              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB109              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB110              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB111              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB112              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB113              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB114              IN NUMBER   DEFAULT Null
+      ,IIT_NUM_ATTRIB115              IN NUMBER   DEFAULT Null
+      ,START_ELEMENT                  IN VARCHAR2
+      ,START_ELEMENT_MP               IN NUMBER
+      ,START_ELEMENT_SUBCLASS         IN VARCHAR2
+      ,END_ELEMENT                    IN VARCHAR2
+      ,END_ELEMENT_MP                 IN NUMBER
+      ,END_ELEMENT_SUBCLASS           IN VARCHAR2
+      ,p_module                       IN VARCHAR2 DEFAULT NULL
+      ,p_module_title                 IN VARCHAR2 DEFAULT NULL
+--
+      );
+--
+----------------------------------------------------------------------------------------
+--
+   PROCEDURE translate_some_screen_text (p_ita_scrn_text IN OUT VARCHAR2);
+   FUNCTION  translate_some_screen_text (p_ita_scrn_text IN VARCHAR2) RETURN VARCHAR2;
+--
+----------------------------------------------------------------------------------------
+--
+END xtnz_lar_create_inv;
+/

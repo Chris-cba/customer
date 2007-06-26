@@ -1,0 +1,156 @@
+create or replace package xtnz_lar_mail_merge as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xtnz_lar_mail_merge.pkh	1.1 03/15/05
+--       Module Name      : xtnz_lar_mail_merge.pkh
+--       Date into SCCS   : 05/03/15 03:46:06
+--       Date fetched Out : 07/06/06 14:40:28
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   Transit LAR Mail Merge package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid          CONSTANT VARCHAR2(2000) := '"@(#)xtnz_lar_mail_merge.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+   g_some_found       BOOLEAN;
+   g_iit_ne_id        nm_inv_items.iit_ne_id%TYPE;
+   g_xll_id           xtnz_lar_letters.xll_id%TYPE;
+   g_csv_filename     VARCHAR2(255);
+   g_xll_dq_id        doc_query.dq_id%TYPE;
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_version">
+-- This function returns the current SCCS version
+--
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_body_version">
+-- This function returns the current SCCS version of the package body
+--
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="main">
+--
+PROCEDURE main (pi_nau_admin_unit nm_admin_units.nau_admin_unit%TYPE DEFAULT NULL);
+--
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+----<PROC NAME="show_single_inv_item_details">
+--
+PROCEDURE show_single_inv_item_details (pi_iit_ne_id      nm_inv_items.iit_ne_id%TYPE DEFAULT NULL
+                                       ,pi_prevent_update BOOLEAN DEFAULT FALSE
+                                       );
+----
+----</PROC>
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE get_all_inv_items_by_au (pi_nau_admin_unit   IN nm_admin_units.nau_admin_unit%TYPE
+                                  ,pi_iit_inv_type     IN nm_inv_items.iit_inv_type%TYPE
+                                  ,pi_iit_ne_id_parent IN nm_inv_items.iit_ne_id%TYPE DEFAULT NULL
+                                  ,pi_ngqi_job_id      IN nm_gaz_query_item_list.ngqi_job_id%TYPE DEFAULT NULL
+                                  ,pi_checkbox_select  IN BOOLEAN DEFAULT FALSE
+                                  );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE do_letter (pi_xll_id    IN xtnz_lar_letters.xll_id%TYPE
+                    ,pi_iit_ne_id IN nm_inv_items.iit_ne_id%TYPE
+                    );
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_iit_ne_id RETURN nm_inv_items.iit_ne_id%TYPE;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_xll_id RETURN xtnz_lar_letters.xll_id%TYPE;
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE process_download;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE put_rows_into_table (pi_xll_id    NUMBER
+                              ,pi_iit_ne_id NUMBER DEFAULT NULL
+                              );
+PROCEDURE put_rows_into_table (pi_xll_id    NUMBER
+                              ,pi_iit_ne_id owa_util.ident_arr DEFAULT nm3web.g_empty_ident_arr
+                              );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE update_item (ita_attrib_name    owa_util.ident_arr
+                      ,iit_value_orig     owa_util.vc_arr
+                      ,iit_value          owa_util.vc_arr
+                      ,iit_ne_id          owa_util.ident_arr
+                      ,nit_update_allowed owa_util.ident_arr
+                      ,ita_format         owa_util.ident_arr
+                      ,ita_format_mask    owa_util.ident_arr
+                      ,iit_inv_type       owa_util.ident_arr
+                      ,iit_start_date     owa_util.ident_arr
+                      ,iit_date_modified  owa_util.ident_arr
+                      ,iit_admin_unit     owa_util.ident_arr
+                      );
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_detail_url (pi_iit_ne_id nm_inv_items.iit_ne_id%TYPE) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE view_associated_documents (pi_iit_ne_id      nm_inv_items.iit_ne_id%TYPE
+                                    ,pi_prevent_update VARCHAR2 DEFAULT 'FALSE'
+                                    );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE associate_new_doc (pi_iit_ne_id nm_inv_items.iit_ne_id%TYPE);
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE associate_new (pi_dtp_code  docs.doc_dtp_code%TYPE
+                        ,pi_dlc_id    docs.doc_dlc_id%TYPE
+                        ,pi_doc_file  docs.doc_file%TYPE
+                        ,pi_doc_title docs.doc_title%TYPE
+                        ,pi_doc_descr docs.doc_descr%TYPE
+                        ,pi_iit_ne_id nm_inv_items.iit_ne_id%TYPE
+                        );
+--
+----------------------------------------------------------------------------------------
+--
+PROCEDURE delete_checked_das (pi_iit_ne_id nm_inv_items.iit_ne_id%TYPE
+                             ,pi_doc_id    nm3type.tab_varchar30
+                             );
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, WNPS, WNDS, TRUST);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, WNPS, WNDS, TRUST);
+   PRAGMA RESTRICT_REFERENCES (get_detail_url, WNPS, WNDS, TRUST);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xtnz_lar_mail_merge;
+/

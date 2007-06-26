@@ -1,0 +1,130 @@
+create or replace package xtnz_trid_aor_reporting as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xtnz_trid_aor_reporting.pkh	1.1 03/15/05
+--       Module Name      : xtnz_trid_aor_reporting.pkh
+--       Date into SCCS   : 05/03/15 03:46:12
+--       Date fetched Out : 07/06/06 14:40:34
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   TNZ TRID AoR Reporting package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xtnz_trid_aor_reporting.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   g_ne_nt_type    nm_elements.ne_nt_type%TYPE;
+   g_ne_unique     nm_elements.ne_unique%TYPE;
+   g_ne_descr      nm_elements.ne_descr%TYPE;
+   g_ne_owner      nm_elements.ne_owner%TYPE;
+   g_ne_name_1     nm_elements.ne_name_1%TYPE;
+   g_ne_name_2     nm_elements.ne_name_2%TYPE;
+   g_ne_prefix     nm_elements.ne_prefix%TYPE;
+   g_ne_number     nm_elements.ne_number%TYPE;
+   g_ne_sub_type   nm_elements.ne_sub_type%TYPE;
+   g_ne_group      nm_elements.ne_group%TYPE;
+   g_ne_sub_class  nm_elements.ne_sub_class%TYPE;
+   g_ne_nsg_ref    nm_elements.ne_nsg_ref%TYPE;
+   g_ne_version_no nm_elements.ne_version_no%TYPE;
+   g_tab_ne_unique nm3type.tab_varchar30;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="trid">
+--
+PROCEDURE trid;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="nt_query">
+--
+PROCEDURE nt_qry (p_ne_nt_type nm_elements.ne_nt_type%TYPE DEFAULT NULL);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="main">
+--
+PROCEDURE main (p_ne_nt_type    nm_elements.ne_nt_type%TYPE    DEFAULT NULL
+               ,p_ne_unique     nm_elements.ne_unique%TYPE     DEFAULT NULL
+               ,p_ne_descr      nm_elements.ne_descr%TYPE      DEFAULT NULL
+               ,p_ne_owner      nm_elements.ne_owner%TYPE      DEFAULT NULL
+               ,p_ne_name_1     nm_elements.ne_name_1%TYPE     DEFAULT NULL
+               ,p_ne_name_2     nm_elements.ne_name_2%TYPE     DEFAULT NULL
+               ,p_ne_prefix     nm_elements.ne_prefix%TYPE     DEFAULT NULL
+               ,p_ne_number     nm_elements.ne_number%TYPE     DEFAULT NULL
+               ,p_ne_sub_type   nm_elements.ne_sub_type%TYPE   DEFAULT NULL
+               ,p_ne_group      nm_elements.ne_group%TYPE      DEFAULT NULL
+               ,p_ne_sub_class  nm_elements.ne_sub_class%TYPE  DEFAULT NULL
+               ,p_ne_nsg_ref    nm_elements.ne_nsg_ref%TYPE    DEFAULT NULL
+               ,p_ne_version_no nm_elements.ne_version_no%TYPE DEFAULT NULL
+               );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="find_inv">
+--
+PROCEDURE find_inv (pi_route        VARCHAR2
+                   ,pi_nit_inv_type VARCHAR2 DEFAULT NULL
+                   );
+--
+PROCEDURE find_inv (pi_route        VARCHAR2
+                   ,pi_nit_inv_type owa_util.ident_arr
+                   );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_ngqi_job_id RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+--PROCEDURE other;
+----
+-------------------------------------------------------------------------------
+----
+--PROCEDURE run (pi_module VARCHAR2);
+----
+-------------------------------------------------------------------------------
+----
+--FUNCTION is_module_type_supported (pi_module_type VARCHAR2) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_ngqi_job_id, RNDS, WNPS, WNDS);
+--   PRAGMA RESTRICT_REFERENCES (is_module_type_supported, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xtnz_trid_aor_reporting;
+/
