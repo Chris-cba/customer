@@ -1,0 +1,135 @@
+create or replace package xact_cleanaway_mail as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xact_cleanaway_mail.pkh	1.1 03/14/05
+--       Module Name      : xact_cleanaway_mail.pkh
+--       Date into SCCS   : 05/03/14 23:10:53
+--       Date fetched Out : 07/06/06 14:33:43
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   ACT Cleanaway Mail package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xact_cleanaway_mail.pkh	1.1 03/14/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   g_rec_dac doc_actions%ROWTYPE;
+   g_rec_doc docs%ROWTYPE;
+   g_rec_hct hig_contacts%ROWTYPE;
+   g_rec_iit nm_inv_items%ROWTYPE;
+   g_rec_had hig_address%ROWTYPE;
+--
+   g_tab_field   nm3type.tab_varchar2000;
+   g_tab_value   nm3type.tab_varchar2000;
+   g_tab_comment nm3type.tab_varchar2000;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_action">
+--
+PROCEDURE process_action (p_nmpm_id nm_mail_pop_messages.nmpm_id%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+----<PROC NAME="process_acknowledgement">
+----
+--PROCEDURE process_acknowledgement (p_nmpm_id nm_mail_pop_messages.nmpm_id%TYPE);
+----</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="send_cleanaway_mail">
+--
+PROCEDURE send_cleanaway_mail (p_dac_id doc_actions.dac_id%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_street_name">
+--
+FUNCTION get_street_name (p_full_street_name VARCHAR2) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_street_type">
+--
+FUNCTION get_street_type (p_full_street_name VARCHAR2) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE append_dac (pi_dac_id doc_actions.dac_id%TYPE);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE clear_dac_array;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE process_dac_array;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_address RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_full_name RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_transaction_code RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_transaction_code_comment RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_complaint_code RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_contract_code RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_contract_code_comment RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xact_cleanaway_mail;
+/

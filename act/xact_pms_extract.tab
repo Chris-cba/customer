@@ -1,0 +1,72 @@
+
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xact_pms_extract.tab	1.1 03/14/05
+--       Module Name      : xact_pms_extract.tab
+--       Date into SCCS   : 05/03/14 23:10:56
+--       Date fetched Out : 07/06/06 14:33:45
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2005
+-----------------------------------------------------------------------------
+
+DROP TABLE xact_pms_extract
+/
+
+CREATE TABLE xact_pms_extract
+   (ROUTE_UNIQUE            VARCHAR2(30) NOT NULL
+   ,ROUTE_NE_ID             NUMBER       NOT NULL
+   ,BEGIN_MP                NUMBER       NOT NULL
+   ,END_MP                  NUMBER       NOT NULL
+   ,XSP                     VARCHAR2(4)  NOT NULL
+   ,NAASRA_CLASS            VARCHAR2(3)
+   ,PAVEMENT_TYPE           VARCHAR2(15)
+   ,LASR_NAASRA             NUMBER
+   ,TREATMENT_DATE          DATE
+   ,SEGT_TREATMENT_TYPE     VARCHAR2(50)
+   ,AVE_DRIVER_RUT_DEPTH    NUMBER
+   ,AVE_PASSENGER_RUT_DEPTH NUMBER
+   ,AVE_FWD_LOAD            NUMBER
+   ,AVE_FWD_M_000               NUMBER
+   ,AVE_FWD_M_200               NUMBER
+--   ,AVE_FWD_M_300               NUMBER
+--   ,AVE_FWD_M_600               NUMBER
+--   ,AVE_FWD_M_750               NUMBER
+--   ,AVE_FWD_M_900               NUMBER
+--   ,AVE_FWD_M_1500              NUMBER
+   ,MAX_DRIVER_RUT_DEPTH    NUMBER
+   ,MAX_PASSENGER_RUT_DEPTH NUMBER
+   ,MAX_FWD_LOAD            NUMBER
+   ,MAX_FWD_M_000               NUMBER
+   ,MAX_FWD_M_200               NUMBER
+--   ,MAX_FWD_M_300               NUMBER
+--   ,MAX_FWD_M_600               NUMBER
+--   ,MAX_FWD_M_750               NUMBER
+--   ,MAX_FWD_M_900               NUMBER
+--   ,MAX_FWD_M_1500              NUMBER
+   ,MIN_DRIVER_RUT_DEPTH    NUMBER
+   ,MIN_PASSENGER_RUT_DEPTH NUMBER
+   ,MIN_FWD_LOAD            NUMBER
+   ,MIN_FWD_M_000               NUMBER
+   ,MIN_FWD_M_200               NUMBER
+--   ,MIN_FWD_M_300               NUMBER
+--   ,MIN_FWD_M_600               NUMBER
+--   ,MIN_FWD_M_750               NUMBER
+--   ,MIN_FWD_M_900               NUMBER
+--   ,MIN_FWD_M_1500              NUMBER
+   ,SD_DRIVER_RUT_DEPTH     NUMBER
+   ,SD_PASSENGER_RUT_DEPTH  NUMBER
+   ,SD_FWD_LOAD             NUMBER
+   ,SD_FWD_M_000                NUMBER
+   ,SD_FWD_M_200                NUMBER
+--   ,SD_FWD_M_300                NUMBER
+--   ,SD_FWD_M_600                NUMBER
+--   ,SD_FWD_M_750                NUMBER
+--   ,SD_FWD_M_900                NUMBER
+--   ,SD_FWD_M_1500               NUMBER
+   )
+/

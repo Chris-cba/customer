@@ -1,0 +1,112 @@
+create or replace package xact_acc_reports as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xact_acc_reports.pkh	1.1 03/14/05
+--       Module Name      : xact_acc_reports.pkh
+--       Date into SCCS   : 05/03/14 23:10:48
+--       Date fetched Out : 07/06/06 14:33:37
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   ACT Accident Reporting package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xact_acc_reports.pkh	1.1 03/14/05"';
+--  g_sccsid is the SCCS ID for the package
+   c_federation_date     CONSTANT DATE         := TO_DATE('01011901','DDMMYYYY');
+   c_biggest_date        CONSTANT DATE         := TO_DATE('31129999','DDMMYYYY');
+   --c_intx_only_query     CONSTANT VARCHAR2(30) := 'INTX_ONLY';
+   --c_midblock_only_query CONSTANT VARCHAR2(30) := 'MIDBLOCK_ONLY';
+--
+   g_tab_location_id nm3type.tab_number;
+--
+   g_tab_acc_id   nm3type.tab_number;
+   g_tab_acc_sev  nm3type.tab_number;
+   g_tab_acc_type nm3type.tab_number;
+--
+   c_ait_id_acc CONSTANT acc_item_types.ait_id%TYPE := 'ACC';
+   c_ait_id_veh CONSTANT acc_item_types.ait_id%TYPE := 'VEH';
+   c_ait_id_cas CONSTANT acc_item_types.ait_id%TYPE := 'CAS';
+--
+   g_start_date DATE;
+   g_end_date   DATE;
+   g_location_id NUMBER;
+   g_acc_count   NUMBER;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prepopulate_acc_ranking">
+PROCEDURE prepopulate_acc_ranking (pi_start_date     DATE
+                                  ,pi_end_date       DATE
+                                  ,pi_run_type       VARCHAR2
+                                  ,pi_records        PLS_INTEGER DEFAULT NULL
+                                  ,pi_fatal_score    PLS_INTEGER DEFAULT 16
+                                  ,pi_injury_score   PLS_INTEGER DEFAULT 4
+                                  ,pi_property_score PLS_INTEGER DEFAULT 1
+                                  ,pi_fatal_set      VARCHAR2    DEFAULT NULL
+                                  ,pi_serious_set    VARCHAR2    DEFAULT NULL
+                                  ,pi_minor_set      VARCHAR2    DEFAULT NULL
+                                  ,pi_property_set   VARCHAR2    DEFAULT NULL
+                                  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prepopulate_site_hist_inj_type">
+PROCEDURE prepopulate_site_hist_inj_type (pi_start_date     DATE
+                                         ,pi_end_date       DATE
+                                         ,pi_run_type       VARCHAR2
+                                         ,pi_node_id        NUMBER
+                                         ,pi_element_id     NUMBER
+                                         );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prepopulate_street_hist">
+PROCEDURE prepopulate_street_hist (pi_start_date     DATE
+                                  ,pi_end_date       DATE
+                                  ,pi_element_id     NUMBER
+                                  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_list_value">
+FUNCTION get_list_value (pi_value VARCHAR2, pi_aat_id VARCHAR2) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xact_acc_reports;
+/

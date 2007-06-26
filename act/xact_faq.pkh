@@ -1,0 +1,157 @@
+create or replace package xact_faq as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xact_faq.pkh	1.1 03/14/05
+--       Module Name      : xact_faq.pkh
+--       Date into SCCS   : 05/03/14 23:10:56
+--       Date fetched Out : 07/06/06 14:33:45
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   ACT FAQ package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xact_faq.pkh	1.1 03/14/05"';
+--  g_sccsid is the SCCS ID for the package
+   c_xfaq    CONSTANT hig_products.hpr_product%TYPE := 'XFAQ';
+--
+   c_faq_start_branch CONSTANT hig_options.hop_value%TYPE := hig.get_sysopt('XFAQSTFOLD');
+   c_base_url         CONSTANT hig_options.hop_value%TYPE := hig.get_sysopt ('XFAQBASE');
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_create_new">
+PROCEDURE prompt_create_new;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_update_content">
+PROCEDURE prompt_update_content;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_add_content">
+PROCEDURE prompt_add_content;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_update_access">
+PROCEDURE prompt_update_access;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_delete">
+PROCEDURE prompt_delete;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="prompt_update_title">
+PROCEDURE prompt_update_title;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_faq">
+PROCEDURE create_faq (p_filename       VARCHAR2
+                     ,p_replace        VARCHAR2
+                     ,p_module_name    VARCHAR2
+                     ,p_module_title   VARCHAR2
+                     ,p_role           nm3type.tab_varchar30
+                     ,p_folder         nm3type.tab_varchar30
+                     ,p_call_mode      VARCHAR2
+                     ,p_this_module    VARCHAR2
+                     ,p_this_mod_title VARCHAR2
+                     );
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="modify_faq_access">
+PROCEDURE modify_faq_access (p_module_name hig_modules.hmo_module%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="is_existing_hsf_child">
+-- Returns 'SELECTED' if the parent/child relationship exists
+--
+FUNCTION is_existing_hsf_child (p_parent VARCHAR2
+                               ,p_child  VARCHAR2
+                               ) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_hmr_selected_text">
+FUNCTION get_hmr_selected_text (p_role   VARCHAR2
+                               ,p_module VARCHAR2
+                               ) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="perform_access_change">
+PROCEDURE perform_access_change (p_module_name VARCHAR2
+                                ,p_role        nm3type.tab_varchar30
+                                ,p_folder      nm3type.tab_varchar30
+                                );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="delete_faq">
+PROCEDURE delete_faq (p_module_name VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="modify_faq_title">
+PROCEDURE modify_faq_title (p_module_name VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="perform_title_change">
+PROCEDURE perform_title_change (p_module_name  VARCHAR2
+                               ,p_module_title VARCHAR2
+                               );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xact_faq;
+/

@@ -1,0 +1,120 @@
+create or replace package xact_cgd_interface as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xact_cgd_interface.pkh	1.1 03/14/05
+--       Module Name      : xact_cgd_interface.pkh
+--       Date into SCCS   : 05/03/14 23:10:51
+--       Date fetched Out : 07/06/06 14:33:41
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   ACT CGD Interface package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xact_cgd_interface.pkh	1.1 03/14/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   c_db_link_name    CONSTANT VARCHAR2(30) := 'CGD';
+   c_cgd_schema      CONSTANT VARCHAR2(30) := 'CGD';
+   c_mdsys_schema    CONSTANT VARCHAR2(30) := 'MDSYS';
+   c_sde_schema      CONSTANT VARCHAR2(30) := 'SDE';
+   c_sde_sdo_keyword CONSTANT VARCHAR2(30) := 'SDO_GEOMETRY';
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_view_name_from_cgd_table">
+FUNCTION get_view_name_from_cgd_table (p_table VARCHAR2) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+----<PROC NAME="add_cgd_view">
+--PROCEDURE add_cgd_view (p_table VARCHAR2, p_inv_type VARCHAR2, p_del_inv_type BOOLEAN DEFAULT FALSE);
+----</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="refresh_cgd_data">
+-- Refreshes CGD data for the specified table (regardless of whether or not
+--  it has actually changed on CGD since the last refresh
+--
+PROCEDURE refresh_cgd_data (p_table VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_xct">
+-- Returns a xact_cgd_tables record
+--
+FUNCTION get_xct (pi_xct_table_name  xact_cgd_tables.xct_table_name%TYPE
+                 ,pi_raise_not_found BOOLEAN DEFAULT FALSE
+                 ) RETURN xact_cgd_tables%ROWTYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="maintain_all_cgd_data">
+-- Rebuilds all necessary CGD data based on the CGD.CGD_PHYSICAL_ENTITY table's
+--  LAST_UPDATE_DATE
+--
+PROCEDURE maintain_all_cgd_data;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE submit_maintain_cgd_job (p_next     DATE     DEFAULT (TRUNC(SYSDATE)+1)
+                                  ,p_interval VARCHAR2 DEFAULT 'TRUNC(SYSDATE)+1'
+                                  );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE clone_sde_metadata (p_remote_table VARCHAR2
+                             ,p_local_table  VARCHAR2
+                             );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE create_block_datum (p_block_id NUMBER);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE create_all_block_datums (p_limit NUMBER DEFAULT Null);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE create_and_locate_street_addr;
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xact_cgd_interface;
+/
