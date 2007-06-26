@@ -1,0 +1,67 @@
+create or replace package xmrwa_extended_mrg as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xmrwa_extended_mrg.pkh	1.1 03/15/05
+--       Module Name      : xmrwa_extended_mrg.pkh
+--       Date into SCCS   : 05/03/15 00:45:33
+--       Date fetched Out : 07/06/06 14:38:20
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   MRWA Extended Merge package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xmrwa_extended_mrg.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_sula_sush_specified_year">
+--
+PROCEDURE get_sula_sush_specified_year;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_temp_ne_from_grp">
+--  This function creates a temporary network extent from the run parameters
+--
+FUNCTION create_temp_ne_from_grp (pi_grr_job_id         IN gri_report_runs.grr_job_id%TYPE
+                                 ,pi_element_param_name IN gri_params.gp_param%TYPE DEFAULT NULL
+                                 ,pi_extent_param_name  IN gri_params.gp_param%TYPE DEFAULT NULL
+                                 ) RETURN nm_nw_temp_extents.nte_job_id%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xmrwa_extended_mrg;
+/

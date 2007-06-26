@@ -1,0 +1,75 @@
+create or replace package xmrwa_695596_das_3081 as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xmrwa_695596_das_3081.pkh	1.1 03/15/05
+--       Module Name      : xmrwa_695596_das_3081.pkh
+--       Date into SCCS   : 05/03/15 00:45:21
+--       Date fetched Out : 07/06/06 14:38:09
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   MRWA DOCUMENT_GATEWAYS v3.0.x.x workaround package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xmrwa_695596_das_3081.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_to_globals">
+--
+PROCEDURE add_to_globals (p_das_table_name doc_assocs.das_table_name%TYPE
+                         ,p_das_rec_id     doc_assocs.das_rec_id%TYPE
+                         ,p_das_doc_id     doc_assocs.das_doc_id%TYPE
+                         ,p_inserting      BOOLEAN
+                         ,p_deleting       BOOLEAN
+                         );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="clear_globals">
+--
+PROCEDURE clear_globals;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_globals">
+--
+PROCEDURE process_globals;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xmrwa_695596_das_3081;
+/

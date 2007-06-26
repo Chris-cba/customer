@@ -1,0 +1,48 @@
+CREATE OR REPLACE PACKAGE xmrwa_le_support IS
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xmrwa_le_support.pkh	1.1 03/15/05
+--       Module Name      : xmrwa_le_support.pkh
+--       Date into SCCS   : 05/03/15 00:45:36
+--       Date fetched Out : 07/06/06 14:38:22
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2005
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xmrwa_le_support.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+---------------------------------------------------------------------------------
+--
+PROCEDURE create_batch_file (p_inv_type VARCHAR2,p_app_owner_pwd VARCHAR2);
+--
+---------------------------------------------------------------------------------
+--
+PROCEDURE create_all_batch_files (p_app_owner_pwd VARCHAR2);
+--
+---------------------------------------------------------------------------------
+--
+END xmrwa_le_support;
+/
