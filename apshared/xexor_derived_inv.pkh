@@ -1,0 +1,102 @@
+create or replace package xexor_derived_inv as
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)xexor_derived_inv.pkh	1.1 03/15/05
+--       Module Name      : xexor_derived_inv.pkh
+--       Date into SCCS   : 05/03/15 22:46:49
+--       Date fetched Out : 07/06/06 14:36:37
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+--   Derived Inventory package
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)xexor_derived_inv.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--
+   g_rec_iit_old            nm_inv_items%ROWTYPE;
+   g_rec_iit_new            nm_inv_items%ROWTYPE;
+   g_rec_iit_child          nm_inv_items%ROWTYPE;
+   g_rec_iit_parent         nm_inv_items%ROWTYPE;
+   g_vals_changed           BOOLEAN;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_pair_to_arrays">
+PROCEDURE add_pair_to_arrays (p_rec_iit_old nm_inv_items%ROWTYPE
+                             ,p_rec_iit_new nm_inv_items%ROWTYPE
+                             );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="clear_arrays">
+PROCEDURE clear_arrays;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_arrays">
+PROCEDURE process_arrays;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_iit_pair">
+PROCEDURE process_iit_pair   (p_rec_iit_old nm_inv_items%ROWTYPE
+                             ,p_rec_iit_new nm_inv_items%ROWTYPE
+                             );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_child_record">
+FUNCTION get_child_record (p_iit_ne_id_parent nm_inv_items.iit_ne_id%TYPE
+                          ,p_child_asset_type nm_inv_types.nit_inv_type%TYPE
+                          ,p_raise_not_found  BOOLEAN DEFAULT TRUE
+                          ) RETURN nm_inv_items%ROWTYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="translate_formula_string">
+FUNCTION translate_formula_string (p_formula    VARCHAR2
+                                  ,p_inv_type   nm_inv_types.nit_inv_type%TYPE
+                                  ,p_is_parent  VARCHAR2 DEFAULT 'N'
+                                  ) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xexor_derived_inv;
+/

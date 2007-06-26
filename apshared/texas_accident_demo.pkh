@@ -1,0 +1,55 @@
+CREATE OR REPLACE PACKAGE texas_accident_demo IS
+--<PACKAGE>
+--   SCCS Identifiers :-
+--
+--       sccsid           : @(#)texas_accident_demo.pkh	1.1 03/15/05
+--       Module Name      : texas_accident_demo.pkh
+--       Date into SCCS   : 05/03/15 22:46:47
+--       Date fetched Out : 07/06/06 14:36:36
+--       SCCS Version     : 1.1
+--
+--
+--   Author : Jonathan Mills
+--
+-----------------------------------------------------------------------------
+--   Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+   g_sccsid      CONSTANT  VARCHAR2(2000) := '"@(#)texas_accident_demo.pkh	1.1 03/15/05"';
+--  g_sccsid is the SCCS ID for the package
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+PROCEDURE home;
+PROCEDURE accident1(pi_acc_id NUMBER DEFAULT NULL);
+PROCEDURE accident2(pi_acc_id NUMBER DEFAULT NULL);
+PROCEDURE accident3(pi_acc_id NUMBER DEFAULT NULL);
+PROCEDURE data_entry;
+PROCEDURE find_accident;
+PROCEDURE get_acc_by_accname (pi_acc_name VARCHAR2);
+PROCEDURE frameset;
+PROCEDURE login;
+PROCEDURE update_pending_reason (pi_acc_id NUMBER, pi_pending_reason acc_items_all.acc_status%TYPE);
+PROCEDURE logoff;
+--
+-----------------------------------------------------------------------------------
+--
+PROCEDURE launch;
+--
+-----------------------------------------------------------------------------------
+--
+END texas_accident_demo;
+/
