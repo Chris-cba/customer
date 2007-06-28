@@ -2,13 +2,14 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 -----------------------------------------------------------------------------
 --
---   SCCS Identifiers :-
+--   PVCS Identifiers :-
 --
---       sccsid           : @(#)xnor_may_gurney_interface.pkb	1.6 01/26/07
---       Module Name      : xnor_may_gurney_interface.pkb
---       Date into SCCS   : 07/01/26 11:37:00
---       Date fetched Out : 07/06/06 14:38:59
---       SCCS Version     : 1.6
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.1   Jun 28 2007 11:38:04   smarshall  $
+--       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
+--       Date into SCCS   : $Date:   Jun 28 2007 11:38:04  $
+--       Date fetched Out : $Modtime:   Jun 28 2007 11:36:00  $
+--       PVCS Version     : $Revision:   2.1  $
+--       Originally based on SCCS version 1.6
 --
 --
 --   Author : Kevin Angus
@@ -59,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '"@(#)xnor_may_gurney_interface.pkb	1.6 01/26/07"';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.1  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -794,8 +795,6 @@ BEGIN
     wor.wor_date_confirmed IS NOT NULL
   AND
     wor.wor_date_confirmed BETWEEN pi_start_date AND pi_end_date
-  AND  
-    wor.wor_date_closed IS NOT NULL
   AND
     wor.wor_works_order_no = wol.wol_works_order_no
   AND
@@ -2035,3 +2034,4 @@ END generate_payment_file;
 --
 END xnor_may_gurney_interface;
 /
+
