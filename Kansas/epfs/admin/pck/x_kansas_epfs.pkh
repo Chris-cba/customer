@@ -1,0 +1,135 @@
+create or replace package x_kansas_epfs
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/customer/Kanzas/epfs/admin/pck/x_kansas_epfs.pkh-arc   2.0   Jul 06 2007 14:07:16   Ian Turnbull  $
+--       Module Name      : $Workfile:   x_kansas_epfs.pkh  $
+--       Date into SCCS   : $Date:   Jul 06 2007 14:07:16  $
+--       Date fetched Out : $Modtime:   Jul 06 2007 13:10:32  $
+--       SCCS Version     : $Revision:   2.0  $
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '"%W% %G%"';
+
+  type pv_rec_type is record (module     varchar2(30)
+                             ,param_name varchar2(30)
+                             ,value      varchar2(200));
+
+  type pv_tab_type is table of pv_rec_type index by binary_integer;
+
+  p_tolerence number default 0;
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+
+function ins_gri_parameters( pi_pv_tab pv_tab_type)
+return number ;
+--
+-----------------------------------------------------------------------------
+--
+function ins_gri_parameters( pi_pv_rec pv_rec_type)
+return number ;
+--
+-----------------------------------------------------------------------------
+--
+function ins_gri_parameters( pi_module varchar2
+                            ,pi_param_name varchar2
+                            ,pi_value      varchar2
+                            ,pi_job_id number default null
+                            )
+return number ;
+--
+-----------------------------------------------------------------------------
+--
+procedure set_tolerence(pi_tolerence number default 0);
+--
+-----------------------------------------------------------------------------
+--
+function get_tolerence return number;
+--
+-----------------------------------------------------------------------------
+--
+function get_noninter_cmd( pi_username varchar2
+                          ,pi_password varchar2
+                          ,pi_instance varchar2
+                          ,pi_assessment_id number
+                          ,pi_county number
+                         ) return varchar2;
+
+function get_noninter_hp_cmd( pi_username varchar2
+                          ,pi_password varchar2
+                          ,pi_instance varchar2
+                          ,pi_assessment_id number
+                          ,pi_county number
+                          ,pi_threshold number
+                         )return varchar2;
+--
+-----------------------------------------------------------------------------
+--
+function get_inter_cmd( pi_username varchar2
+                          ,pi_password varchar2
+                          ,pi_instance varchar2
+                          ,pi_assessment_id number
+                          ,pi_county number
+                         ) return varchar2;
+
+function get_inter_hp_cmd( pi_username varchar2
+                          ,pi_password varchar2
+                          ,pi_instance varchar2
+                          ,pi_assessment_id number
+                          ,pi_county number
+                          ,pi_threshold number
+                         )return varchar2;
+--
+-----------------------------------------------------------------------------
+--
+function get_bridge_cmd( pi_username varchar2
+                          ,pi_password varchar2
+                          ,pi_instance varchar2
+                          ,pi_assessment_id number
+                          ,pi_county number
+                         ) return varchar2;
+
+function get_bridge_hp_cmd( pi_username varchar2
+                          ,pi_password varchar2
+                          ,pi_instance varchar2
+                          ,pi_assessment_id number
+                          ,pi_county number
+                          ,pi_threshold number
+                         )return varchar2;
+end x_kansas_epfs;
+/
