@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/Kanzas/epfs/admin/pck/x_kansas_epfs.pkb-arc   2.0   Jul 06 2007 14:07:16   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/Kanzas/epfs/admin/pck/x_kansas_epfs.pkb-arc   2.1   Jul 19 2007 08:34:56   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_kansas_epfs.pkb  $
---       Date into SCCS   : $Date:   Jul 06 2007 14:07:16  $
---       Date fetched Out : $Modtime:   Jul 06 2007 13:10:32  $
---       SCCS Version     : $Revision:   2.0  $
+--       Date into SCCS   : $Date:   Jul 19 2007 08:34:56  $
+--       Date fetched Out : $Modtime:   Jul 19 2007 08:28:58  $
+--       SCCS Version     : $Revision:   2.1  $
 --
 -----------------------------------------------------------------------------
 --	Copyright (c) exor corporation ltd, 2007
@@ -142,7 +142,8 @@ function get_noninter_cmd( pi_username varchar2
                           ,pi_password varchar2
                           ,pi_instance varchar2
                           ,pi_assessment_id number
-                          ,pi_county number
+                          ,pi_county NUMBER
+                          ,pi_arcmap_exe VARCHAR2
                          )
 return varchar2
 is
@@ -170,7 +171,11 @@ begin
 
    l_job_id := x_kansas_epfs.ins_gri_parameters( pi_pv_tab => l_tab );
 
-	l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+   l_sm_path := pi_arcmap_exe;
+   IF l_sm_path IS NULL
+    THEN
+	   l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+	END IF;
 
 	open c_map(l_module);
 	fetch c_map into l_map_name;
@@ -193,7 +198,8 @@ function get_noninter_hp_cmd( pi_username varchar2
                           ,pi_instance varchar2
                           ,pi_assessment_id number
                           ,pi_county number
-                          ,pi_threshold number
+                          ,pi_threshold NUMBER
+                          ,pi_arcmap_exe VARCHAR2
                          )
 return varchar2
 is
@@ -225,7 +231,11 @@ begin
 
    l_job_id := x_kansas_epfs.ins_gri_parameters( pi_pv_tab => l_tab );
 
-	l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+   l_sm_path := pi_arcmap_exe;
+   IF l_sm_path IS NULL
+    THEN
+	   l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+	END IF;
 
 	open c_map(l_module);
 	fetch c_map into l_map_name;
@@ -247,7 +257,8 @@ function get_inter_cmd( pi_username varchar2
                           ,pi_password varchar2
                           ,pi_instance varchar2
                           ,pi_assessment_id number
-                          ,pi_county number
+                          ,pi_county NUMBER
+                          ,pi_arcmap_exe VARCHAR2
                          )
 return varchar2
 is
@@ -275,7 +286,11 @@ begin
 
    l_job_id := x_kansas_epfs.ins_gri_parameters( pi_pv_tab => l_tab );
 
-	l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+   l_sm_path := pi_arcmap_exe;
+   IF l_sm_path IS NULL
+    THEN
+	   l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+	END IF;
 
 	open c_map(l_module);
 	fetch c_map into l_map_name;
@@ -298,7 +313,8 @@ function get_inter_hp_cmd( pi_username varchar2
                           ,pi_instance varchar2
                           ,pi_assessment_id number
                           ,pi_county number
-                          ,pi_threshold number
+                          ,pi_threshold NUMBER
+                          ,pi_arcmap_exe VARCHAR2
                          )
 return varchar2
 is
@@ -330,7 +346,11 @@ begin
 
    l_job_id := x_kansas_epfs.ins_gri_parameters( pi_pv_tab => l_tab );
 
-	l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+   l_sm_path := pi_arcmap_exe;
+   IF l_sm_path IS NULL
+    THEN
+	   l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+	END IF;
 
 	open c_map(l_module);
 	fetch c_map into l_map_name;
@@ -352,7 +372,8 @@ function get_bridge_cmd( pi_username varchar2
                           ,pi_password varchar2
                           ,pi_instance varchar2
                           ,pi_assessment_id number
-                          ,pi_county number
+                          ,pi_county NUMBER
+                          ,pi_arcmap_exe VARCHAR2
                          )
 return varchar2
 is
@@ -380,7 +401,11 @@ begin
 
    l_job_id := x_kansas_epfs.ins_gri_parameters( pi_pv_tab => l_tab );
 
-	l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+   l_sm_path := pi_arcmap_exe;
+   IF l_sm_path IS NULL
+    THEN
+	   l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+	END IF;
 
 	open c_map(l_module);
 	fetch c_map into l_map_name;
@@ -403,7 +428,8 @@ function get_bridge_hp_cmd( pi_username varchar2
                           ,pi_instance varchar2
                           ,pi_assessment_id number
                           ,pi_county number
-                          ,pi_threshold number
+                          ,pi_threshold NUMBER
+                          ,pi_arcmap_exe VARCHAR2
                          )
 return varchar2
 is
@@ -435,7 +461,11 @@ begin
 
    l_job_id := x_kansas_epfs.ins_gri_parameters( pi_pv_tab => l_tab );
 
-	l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+   l_sm_path := pi_arcmap_exe;
+   IF l_sm_path IS NULL
+    THEN
+	   l_sm_path := hig.get_user_or_sys_opt('SMPATH');
+	END IF;
 
 	open c_map(l_module);
 	fetch c_map into l_map_name;
