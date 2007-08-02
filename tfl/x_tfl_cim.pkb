@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.1   Jul 06 2007 11:56:50   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.2   Aug 02 2007 09:50:38   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Jul 06 2007 11:56:50  $
---       Date fetched Out : $Modtime:   Jul 06 2007 11:48:00  $
---       SCCS Version     : $Revision:   2.1  $
+--       Date into SCCS   : $Date:   Aug 02 2007 09:50:38  $
+--       Date fetched Out : $Modtime:   Aug 02 2007 09:39:06  $
+--       SCCS Version     : $Revision:   2.2  $
 --
 --
 --   Author : Ian Turnbull
@@ -379,13 +379,13 @@ procedure process_in_ftp_queue
 is
    cursor c_ftp_dirs
    is
-   select *
+   select * 
    from x_tfl_ftp_dirs
    where ftp_type = 'CIM';
-
+   
    cursor c_in_ftp( c_con_id x_tfl_ftp_queue.tfq_con_id%type)
    is
-   select *
+   select * 
    from x_tfl_ftp_queue
    where tfq_direction = c_in
      and tfq_ftp_site is null
@@ -398,14 +398,14 @@ is
    l_bytes number;
    l_trans_start date;
    l_trans_end date;
-begin
-   set_cim_action(pi_cim_action => 'WCWI');
+begin 
+   set_cim_action(pi_cim_action => 'WCWI'); 
    for dir_rec in c_ftp_dirs
     loop
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
       for ftp_rec in c_in_ftp(dir_rec.ftp_contractor)
-       loop
-         l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath
+       loop 
+         l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath 
                                       ,p_filename => ftp_rec.tfq_filename
                                       ,p_remotepath => dir_rec.ftp_in_dir
                                       ,p_username => dir_rec.ftp_username
@@ -414,12 +414,35 @@ begin
                                       ,v_status  => l_status
                                       ,v_error_message => l_error
                                       ,n_bytes_transmitted => l_bytes
-                                      ,d_trans_start => l_trans_start
+                                      ,d_trans_start => l_trans_start 
                                       ,d_trans_end => l_trans_end);
-         if not l_ftp
-          then
-            -- try again
-            l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath
+
+         if l_ftp then                              
+         l_ftp := x_tfl_ftp_util.remove( p_localpath => g_interpath 
+                                      ,p_filename => ftp_rec.tfq_filename
+                                      ,p_remotepath => dir_rec.ftp_in_dir
+                                      ,p_username => dir_rec.ftp_username
+                                      ,p_password => dir_rec.ftp_password
+                                      ,p_hostname => dir_rec.ftp_host
+                                      ,v_status  => l_status
+                                      ,v_error_message => l_error
+                                      ,n_bytes_transmitted => l_bytes
+                                      ,d_trans_start => l_trans_start 
+                                      ,d_trans_end => l_trans_end);
+               -- log the error
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                  , pi_ftp_dir => dir_rec.ftp_in_dir
+                  , pi_archive_dir => null
+                  , pi_message => 'REMOVE FTP process. Status = ' ||l_status||' '||
+                                  'Error: ' ||l_error||' '||
+                                  'Bytes: ' ||l_bytes||' ');                                
+
+         end if;
+                                      
+         if not l_ftp 
+          then 
+            -- try again 
+            l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath 
                                         ,p_filename => ftp_rec.tfq_filename
                                         ,p_remotepath => dir_rec.ftp_in_dir
                                         ,p_username => dir_rec.ftp_username
@@ -428,33 +451,56 @@ begin
                                         ,v_status  => l_status
                                         ,v_error_message => l_error
                                         ,n_bytes_transmitted => l_bytes
-                                        ,d_trans_start => l_trans_start
+                                        ,d_trans_start => l_trans_start 
                                         ,d_trans_end => l_trans_end);
-            if not l_ftp
-             then
+
+         if l_ftp then                                         
+         l_ftp := x_tfl_ftp_util.remove( p_localpath => g_interpath 
+                                      ,p_filename => ftp_rec.tfq_filename
+                                      ,p_remotepath => dir_rec.ftp_in_dir
+                                      ,p_username => dir_rec.ftp_username
+                                      ,p_password => dir_rec.ftp_password
+                                      ,p_hostname => dir_rec.ftp_host
+                                      ,v_status  => l_status
+                                      ,v_error_message => l_error
+                                      ,n_bytes_transmitted => l_bytes
+                                      ,d_trans_start => l_trans_start 
+                                      ,d_trans_end => l_trans_end);
+               -- log the error
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                  , pi_ftp_dir => dir_rec.ftp_in_dir
+                  , pi_archive_dir => null
+                  , pi_message => 'REMOVE FTP process. Status = ' ||l_status||' '||
+                                  'Error: ' ||l_error||' '||
+                                  'Bytes: ' ||l_bytes||' ');                                
+
+          end if;                                        
+                                        
+            if not l_ftp 
+             then 
                -- send an email
                send_email(pi_msg => 'FTP process. Status = ' ||l_status||' '||
                                     'Error: ' ||l_error||' '||
-                                    'Bytes: ' ||l_bytes||' ');
+                                    'Bytes: ' ||l_bytes||' ');     
                -- log the error
                ins_log(pi_filename => ftp_rec.tfq_filename
                   , pi_ftp_dir => dir_rec.ftp_in_dir
                   , pi_archive_dir => null
                   , pi_message => 'FTP process. Status = ' ||l_status||' '||
                                   'Error: ' ||l_error||' '||
-                                  'Bytes: ' ||l_bytes||' ');
+                                  'Bytes: ' ||l_bytes||' ');                                
                exit;
             end if;
-         end if;
-         -- log success
+         end if;   
+         -- log success        
          upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
-
+           
          ins_log(pi_filename => ftp_rec.tfq_filename
             , pi_ftp_dir => dir_rec.ftp_in_dir
             , pi_archive_dir => null
             , pi_message => 'FTP process. Status = ' ||l_status||' '||
                             'Error: ' ||l_error||' '||
-                            'Bytes: ' ||l_bytes||' ');
+                            'Bytes: ' ||l_bytes||' ');                                
       end loop;
    end loop;
 end process_in_ftp_queue;
@@ -657,6 +703,7 @@ begin
       for ftp_rec in c_out_delete(dir_rec.ftp_contractor)
        loop
          begin
+            dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'/'||ftp_rec.tfq_filename, 'delete' );
             nm3file.delete_File(pi_dir => g_interpath, pi_file => ftp_rec.tfq_filename);
          exception
             when others then
@@ -710,6 +757,7 @@ begin
       for ftp_rec in c_in_delete(dir_rec.ftp_contractor)
        loop
          begin
+            dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'/'||ftp_rec.tfq_filename, 'delete' );
             nm3file.delete_File(pi_dir => g_interpath, pi_file => ftp_rec.tfq_filename);
          exception
             when others then
