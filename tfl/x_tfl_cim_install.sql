@@ -1,11 +1,11 @@
 -----------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim_install.sql-arc   2.0   Jun 14 2007 10:09:44   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim_install.sql-arc   2.1   Aug 02 2007 10:17:56   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim_install.sql  $
---       Date into SCCS   : $Date:   Jun 14 2007 10:09:44  $
---       Date fetched Out : $Modtime:   Jun 14 2007 10:09:26  $
---       SCCS Version     : $Revision:   2.0  $
+--       Date into SCCS   : $Date:   Aug 02 2007 10:17:56  $
+--       Date fetched Out : $Modtime:   Aug 02 2007 10:16:00  $
+--       SCCS Version     : $Revision:   2.1  $
 --
 --
 --   Author : Ian Turnbull
@@ -115,6 +115,17 @@ begin
 end;
 /
 
+Insert into HIG_OPTION_LIST
+   (HOL_ID, HOL_PRODUCT, HOL_NAME, HOL_REMARKS, HOL_DATATYPE, HOL_MIXED_CASE)
+ Values
+   ('CIMMAIL', 'HIG', 'CIM email Group name', 'Email group used for CIM error messages.', 'VARCHAR2', 'N');
+   
+insert into hig_option_values
+   (hov_id, hov_value)
+ values
+   ('CIMMAIL','SET ME');
+
+commit;   
 
 spool off
 
