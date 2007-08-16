@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/Kanzas/epfs/admin/pck/x_kansas_epfs.pkb-arc   2.1   Jul 19 2007 08:34:56   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/Kanzas/epfs/admin/pck/x_kansas_epfs.pkb-arc   2.2   Aug 16 2007 14:04:26   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_kansas_epfs.pkb  $
---       Date into SCCS   : $Date:   Jul 19 2007 08:34:56  $
---       Date fetched Out : $Modtime:   Jul 19 2007 08:28:58  $
---       SCCS Version     : $Revision:   2.1  $
+--       Date into SCCS   : $Date:   Aug 16 2007 14:04:26  $
+--       Date fetched Out : $Modtime:   Aug 16 2007 14:03:26  $
+--       SCCS Version     : $Revision:   2.2  $
 --
 -----------------------------------------------------------------------------
 --	Copyright (c) exor corporation ltd, 2007
@@ -26,7 +26,7 @@ AS
   g_package_name CONSTANT varchar2(30) := 'x_kansas_epfs';
 
 
-  g_assessment_param constant varchar2(20) := 'ASSESMENT_ID';
+  g_assessment_param constant varchar2(20) := 'ASSESSMENT_ID';
   g_county_param constant varchar2(20) := 'COUNTY_NUMBER';
   g_THRESHOLD_param constant varchar2(20) := 'THRESHOLD';
 
