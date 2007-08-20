@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/tfl3863.sql-arc   2.0   Jun 15 2007 09:53:32   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/tfl3863.sql-arc   2.1   Aug 20 2007 09:17:24   Ian Turnbull  $
 --       Module Name      : $Workfile:   tfl3863.sql  $
---       Date into SCCS   : $Date:   Jun 15 2007 09:53:32  $
---       Date fetched Out : $Modtime:   Jun 15 2007 09:01:28  $
---       SCCS Version     : $Revision:   2.0  $
+--       Date into SCCS   : $Date:   Aug 20 2007 09:17:24  $
+--       Date fetched Out : $Modtime:   Aug 20 2007 09:16:26  $
+--       SCCS Version     : $Revision:   2.1  $
 --
 -----------------------------------------------------------------------------
 rem
@@ -82,9 +82,9 @@ begin
         l_ftp := x_tfl_ftp_util.PUT( p_localpath => l_interpath 
                                     ,p_filename => l_file_list(i)
                                     ,p_remotepath => l_repoutpath
-                                    ,p_username => l_ftp_rec..ftp_username
-                                    ,p_password => l_ftp_rec..ftp_password
-                                    ,p_hostname => l_ftp_rec..ftp_host
+                                    ,p_username => l_ftp_rec.ftp_username
+                                    ,p_password => l_ftp_rec.ftp_password
+                                    ,p_hostname => l_ftp_rec.ftp_host
                                     ,v_status  => l_status
                                     ,v_error_message => l_error
                                     ,n_bytes_transmitted => l_bytes
