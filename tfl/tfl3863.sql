@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/tfl3863.sql-arc   2.1   Aug 20 2007 09:17:24   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/tfl3863.sql-arc   2.2   Aug 20 2007 15:06:36   Ian Turnbull  $
 --       Module Name      : $Workfile:   tfl3863.sql  $
---       Date into SCCS   : $Date:   Aug 20 2007 09:17:24  $
---       Date fetched Out : $Modtime:   Aug 20 2007 09:16:26  $
---       SCCS Version     : $Revision:   2.1  $
+--       Date into SCCS   : $Date:   Aug 20 2007 15:06:36  $
+--       Date fetched Out : $Modtime:   Aug 20 2007 15:03:46  $
+--       SCCS Version     : $Revision:   2.2  $
 --
 -----------------------------------------------------------------------------
 rem
@@ -16,6 +16,7 @@ rem  Descr  : This program will enable the user to create specified output
 rem           file formats from the standard exor interface extraction
 rem           programs.
 rem
+
 set serveroutput on
 set ver off
 set feed off
@@ -73,7 +74,7 @@ begin
   -- put PED files on to the ftp host
   for i in 1..l_file_list.count
    loop
-     if substr(upper(l_file_list(i)),instr('.')+1,3) = 'PED'
+     if substr(upper(l_file_list(i)),instr(upper(l_file_list(i)),'.')+1,3) = 'PED'
       then
         higgrirp.write_gri_spool(&1,'Transfering '||l_file_list(i));  
         higgrirp.write_gri_spool(&1,'from  '||l_interpath);
@@ -95,7 +96,8 @@ begin
         if l_ftp 
          then 
            -- delete the ped file from the database server if transfer ok.
-           nm3file.DELETE_FILE(po_dir => l_interpath, pi_file => l_file_list(i)); 
+           dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', l_interpath||'/'||l_file_list(i), 'delete' );
+           nm3file.DELETE_FILE(pi_dir => l_interpath, pi_file => l_file_list(i)); 
         end if;                              
      end if;                              
   end loop;                              
