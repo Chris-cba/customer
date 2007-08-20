@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.2   Aug 02 2007 09:50:38   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.3   Aug 20 2007 11:19:24   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Aug 02 2007 09:50:38  $
---       Date fetched Out : $Modtime:   Aug 02 2007 09:39:06  $
---       SCCS Version     : $Revision:   2.2  $
+--       Date into SCCS   : $Date:   Aug 20 2007 11:19:24  $
+--       Date fetched Out : $Modtime:   Aug 20 2007 11:16:06  $
+--       SCCS Version     : $Revision:   2.3  $
 --
 --
 --   Author : Ian Turnbull
@@ -37,6 +37,8 @@ AS
 
   c_out constant varchar2(3) := 'OUT';
   c_in  constant varchar2(2) := 'IN';
+  
+  
 
 --
 -----------------------------------------------------------------------------
@@ -507,6 +509,23 @@ end process_in_ftp_queue;
 --
 -----------------------------------------------------------------------------
 --
+function get_wc_date
+return varchar2
+is
+   l_wc_name varchar2(20);
+   rtrn varchar2(100);
+begin
+   -- get the last monday date
+   l_wc_name := 'WC'||to_char(NEXT_DAY(trunc(sysdate),'MON')-7,'YYYYMMDD') ;
+   
+   rtrn := l_wc_name;
+      
+   return rtrn; 
+   
+end get_wc_date;                                              
+--
+-----------------------------------------------------------------------------
+--
 procedure process_out_archive_queue
 is
    cursor c_ftp_dirs
@@ -536,14 +555,28 @@ begin
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
       for ftp_rec in c_out_archive(dir_rec.ftp_contractor)
        loop
+         if get_wc_date = 'WC'||to_char(NEXT_DAY(trunc(sysdate),'MON'),'YYYYMMDD') 
+          then 
+            -- create dir
+             l_ftp := x_tfl_ftp_util.mkdir_remote (
+                                                    p_remotepath               => dir_rec.ftp_arc_out_dir
+                                                   ,p_target_dir               => get_wc_date
+                                                   ,p_username                 => dir_rec.ftp_arc_username
+                                                   ,p_password                 => dir_rec.ftp_arc_password
+                                                   ,p_hostname                 => dir_rec.ftp_arc_host
+                                                   ,v_status                   => l_status
+                                                   ,v_error_message            => l_error
+                                                   );
+         end if;
+         
          l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
-                                     ,p_filename => ftp_rec.tfq_filename
-                                     ,p_remotepath => dir_rec.ftp_arc_out_dir
+                                     ,p_filename => ftp_rec.tfq_filename 
+                                     ,p_remotepath => dir_rec.ftp_arc_out_dir || '\' || get_wc_date
                                      ,p_username => dir_rec.ftp_arc_username
                                      ,p_password => dir_rec.ftp_arc_password
                                      ,p_hostname => dir_rec.ftp_arc_host
                                      ,v_status  => l_status
-                                     ,v_error_message => l_error
+                                      ,v_error_message => l_error
                                      ,n_bytes_transmitted => l_bytes
                                      ,d_trans_start => l_trans_start
                                      ,d_trans_end => l_trans_end);
@@ -552,7 +585,7 @@ begin
             -- try again
             l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
                                         ,p_filename => ftp_rec.tfq_filename
-                                        ,p_remotepath => dir_rec.ftp_arc_out_dir
+                                        ,p_remotepath => dir_rec.ftp_arc_out_dir || '\' || get_wc_date
                                         ,p_username => dir_rec.ftp_arc_username
                                         ,p_password => dir_rec.ftp_arc_password
                                         ,p_hostname => dir_rec.ftp_arc_host
@@ -621,9 +654,23 @@ begin
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
       for ftp_rec in c_out_archive(dir_rec.ftp_contractor)
        loop
+         if get_wc_date = 'WC'||to_char(NEXT_DAY(trunc(sysdate),'MON'),'YYYYMMDD') 
+          then 
+            -- create dir
+             l_ftp := x_tfl_ftp_util.mkdir_remote (
+                                                    p_remotepath               => dir_rec.ftp_arc_in_dir
+                                                   ,p_target_dir               => get_wc_date
+                                                   ,p_username                 => dir_rec.ftp_arc_username
+                                                   ,p_password                 => dir_rec.ftp_arc_password
+                                                   ,p_hostname                 => dir_rec.ftp_arc_host
+                                                   ,v_status                   => l_status
+                                                   ,v_error_message            => l_error
+                                                   );
+         end if;
+--       
          l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
                                      ,p_filename => ftp_rec.tfq_filename
-                                     ,p_remotepath => dir_rec.ftp_arc_in_dir
+                                     ,p_remotepath => dir_rec.ftp_arc_in_dir || '\' || get_wc_date
                                      ,p_username => dir_rec.ftp_arc_username
                                      ,p_password => dir_rec.ftp_arc_password
                                      ,p_hostname => dir_rec.ftp_arc_host
@@ -637,7 +684,7 @@ begin
             -- try again
             l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
                                         ,p_filename => ftp_rec.tfq_filename
-                                        ,p_remotepath => dir_rec.ftp_arc_in_dir
+                                        ,p_remotepath => dir_rec.ftp_arc_in_dir || '\' || get_wc_date
                                         ,p_username => dir_rec.ftp_arc_username
                                         ,p_password => dir_rec.ftp_arc_password
                                         ,p_hostname => dir_rec.ftp_arc_host
