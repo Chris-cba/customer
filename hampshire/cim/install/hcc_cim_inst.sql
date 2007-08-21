@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/install/hcc_cim_inst.sql-arc   2.0   Aug 21 2007 14:22:08   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/install/hcc_cim_inst.sql-arc   2.1   Aug 21 2007 16:03:56   Ian Turnbull  $
 --       Module Name      : $Workfile:   hcc_cim_inst.sql  $
---       Date into PVCS   : $Date:   Aug 21 2007 14:22:08  $
---       Date fetched Out : $Modtime:   Aug 21 2007 13:50:28  $
---       PVCS Version     : $Revision:   2.0  $
+--       Date into PVCS   : $Date:   Aug 21 2007 16:03:56  $
+--       Date fetched Out : $Modtime:   Aug 21 2007 15:44:58  $
+--       PVCS Version     : $Revision:   2.1  $
 --
 -- Hampshire CIM Automation
 -- 
@@ -14,6 +14,27 @@ clear screen
 Prompt
 Prompt Hampshire CIM Automation install.
 Prompt 
+Prompt Dropping existing x_hcc_cim_log table
+drop table x_hcc_cim_log;
+
+Prompt 
+Prompt Creating x_hcc_cim_log table
+
+create table x_hcc_cim_log
+( hcl_id number not null
+ ,hcl_date date not null
+ ,hcl_text varchar2(1000) not null
+);
+
+prompt
+prompt drop sequence xhcl_id_seq;
+drop sequence xhcl_id_seq;
+
+prompt
+prompt create sequence xhcl_id_seq;
+create sequence xhcl_id_seq;
+
+
 Prompt Dropping existing x_hcc_cim_dirs table
 drop table x_hcc_cim_dirs;
 
