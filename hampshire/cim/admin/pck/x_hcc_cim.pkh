@@ -1,0 +1,96 @@
+create or replace package x_hcc_cim
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkh-arc   2.0   Aug 21 2007 16:12:52   Ian Turnbull  $
+--       Module Name      : $Workfile:   x_hcc_cim.pkh  $
+--       Date into PVCS   : $Date:   Aug 21 2007 16:12:52  $
+--       Date fetched Out : $Modtime:   Aug 21 2007 16:03:12  $
+--       PVCS Version     : $Revision:   2.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : ITurnbull
+--
+--    x_hcc_cim
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   2.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_ftp_dir">
+-- This function returns the directory from x_hcc_cim_dir based on the direction passed
+
+function get_ftp_dir(pi_direction varchar2) return varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_output_files">
+-- Processes output files
+procedure process_output_files;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_input_files">
+-- Processes input files
+procedure process_input_files;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_all_files">
+-- Calls process_output_files then process_input_files in one easy to use procedure
+procedure process_all_files;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="submit_dbms_job">
+-- submits a dbms_job to call process_all_files
+PROCEDURE submit_dbms_job (p_every_n_minutes number DEFAULT 30);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+
+
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end x_hcc_cim;
+/
