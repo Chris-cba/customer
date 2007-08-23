@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.0   Aug 21 2007 16:13:18   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.1   Aug 23 2007 11:27:56   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_hcc_cim.pkb  $
---       Date into PVCS   : $Date:   Aug 21 2007 16:13:18  $
---       Date fetched Out : $Modtime:   Aug 21 2007 15:59:26  $
---       PVCS Version     : $Revision:   2.0  $
+--       Date into PVCS   : $Date:   Aug 23 2007 11:27:56  $
+--       Date fetched Out : $Modtime:   Aug 23 2007 11:25:56  $
+--       PVCS Version     : $Revision:   2.1  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.0  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.1  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_hcc_cim';
   
@@ -52,6 +52,105 @@ FUNCTION get_body_version RETURN varchar2 IS
 BEGIN
    RETURN g_body_sccsid;
 END get_body_version;
+
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_true_dir_name
+  (pi_loc       IN varchar2
+  ,pi_use_hig   in boolean
+  ) RETURN varchar2  is
+l_directory_path all_directories.directory_path%type ;
+l_errmess varchar2(200);
+begin
+  nm_debug.proc_start(g_package_name,'get_true_dir_name');
+  if pi_use_hig
+  then
+    l_errmess := ' in HIG_DIRECTORIES table' ;
+--    select hdir_path
+--      into l_directory_path
+--      from hig_directories
+--     where hdir_name = upper( pi_loc ) ;
+  else
+    l_errmess := ' in ALL_DIRECTORIES table' ;
+    select directory_path
+      into l_directory_path
+      from all_directories
+     where directory_name = upper( pi_loc ) 
+            ;
+  end if ;
+  nm_debug.proc_end(g_package_name,'get_true_dir_name');
+  return l_directory_path ;
+exception
+  when no_data_found then
+    nm_debug.debug( 'get_true_dir_name: Location name "' || pi_loc || '" not found' || l_errmess ) ;
+    raise_application_error(-20001,'get_true_dir_name: Location name "' || pi_loc || '" not found' || l_errmess );
+end get_true_dir_name;
+--
+-----------------------------------------------------------------------------
+--
+-- Java procedure move file
+function java_move_file
+   ( "fileFrom"  in varchar2
+   , "fileTo"    in varchar2
+   , "fromDir"   in varchar2
+   , "toDir"     in varchar2
+   , "overWrite" in varchar2
+   ) return varchar2
+AS LANGUAGE JAVA
+NAME 'Util.moveFile( java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String ) return java.lang.String';
+--
+-----------------------------------------------------------------------------
+--
+procedure move_file 
+  ( pi_from_file  in  varchar2
+  , pi_from_loc   in  varchar2 default null
+  , pi_to_file    in  varchar2 default null
+  , pi_to_loc     in  varchar2 default null
+  , pi_use_hig    in  boolean  default false
+  , pi_overwrite  in  boolean  default false
+  , po_err_no     out integer
+  , po_err_mess   out varchar2
+  )
+  is
+-- No 'to' file name assume it's the same name
+l_to_file varchar2(32767) := nvl(pi_to_file,pi_from_file) ;
+-- no 'to' file dir assume it's the same dir
+l_to_loc varchar2(32767) := nvl(pi_to_loc,pi_from_loc) ;
+l_from_handle utl_file.file_type ;
+l_to_handle utl_file.file_type ;
+l_line_buffer varchar2(32767) ;
+b_eof_data boolean ;
+l_directory_path varchar2(256) ;
+l_move_status varchar2(1) ;
+begin
+  nm_debug.proc_start(g_package_name,'move_file');
+  po_err_no := null ;
+  l_move_status := java_move_file
+                   ( "fileFrom"  => pi_from_file
+                   , "fileTo"    => l_to_file
+                   , "fromDir"   => get_true_dir_name( pi_from_loc, pi_use_hig )
+                   , "toDir"     => get_true_dir_name( l_to_loc, pi_use_hig ) 
+                   , "overWrite" => case when pi_overwrite then 'Y'
+                                    else 'N'
+                                    end
+                   ) ;
+  if l_move_status = 'N'
+  then
+    raise_application_error(-20001,'Move file failed ' || 
+          get_true_dir_name( pi_from_loc, pi_use_hig ) || pi_from_file ||
+          ' -> ' ||
+          get_true_dir_name( l_to_loc, pi_use_hig )  || l_to_file
+          );
+  end if ;
+  po_err_mess := null ;
+  nm_debug.proc_end(g_package_name,'move_file');
+exception
+  when others then
+    nm_debug.debug( sqlerrm ) ;
+    po_err_no := sqlcode ;
+    po_err_mess := sqlerrm ;
+end move_file;
 --
 -----------------------------------------------------------------------------
 --
@@ -121,7 +220,7 @@ begin
       ins_log('pi_from_loc  => '||g_interpath);
       ins_log('pi_to_file   => '||l_filename);
       ins_log('pi_to_loc    => '||get_ftp_dir(pi_direction => c_out )); 
-      nm3file.move_file( pi_from_file => l_filename 
+      move_file( pi_from_file => l_filename 
                         ,pi_from_loc  => g_interpath
                         ,pi_to_file   => l_filename
                         ,pi_to_loc    => get_ftp_dir(pi_direction => c_out )
@@ -166,7 +265,7 @@ begin
          ins_log('pi_to_file   => '||l_file_list(i));
          ins_log('pi_to_loc    => '||g_interpath); 
 
-         nm3file.move_file( pi_from_file => l_file_list(i)
+         move_file( pi_from_file => l_file_list(i)
                            ,pi_from_loc  => get_ftp_dir(pi_direction => c_in )
                            ,pi_to_file   => l_file_list(i)
                            ,pi_to_loc    => g_interpath
