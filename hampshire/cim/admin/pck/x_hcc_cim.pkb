@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.1   Aug 23 2007 11:27:56   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.2   Aug 23 2007 14:32:48   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_hcc_cim.pkb  $
---       Date into PVCS   : $Date:   Aug 23 2007 11:27:56  $
---       Date fetched Out : $Modtime:   Aug 23 2007 11:25:56  $
---       PVCS Version     : $Revision:   2.1  $
+--       Date into PVCS   : $Date:   Aug 23 2007 14:32:48  $
+--       Date fetched Out : $Modtime:   Aug 23 2007 14:31:28  $
+--       PVCS Version     : $Revision:   2.2  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.1  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.2  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_hcc_cim';
   
@@ -183,7 +183,7 @@ is
    ref_cur ref_cursor;
 begin
    
-   open ref_cur for 'select hcd_directory from x_hcc_cim_dirs where hcd_direction = '||pi_direction;
+   open ref_cur for 'select hcd_directory from x_hcc_cim_dirs where hcd_direction = '''||pi_direction||'''';
    fetch ref_cur into rtrn;
    close ref_cur;
     
