@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.4   Aug 24 2007 11:54:50   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.5   Aug 24 2007 15:10:36   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_hcc_cim.pkb  $
---       Date into PVCS   : $Date:   Aug 24 2007 11:54:50  $
---       Date fetched Out : $Modtime:   Aug 24 2007 11:53:12  $
---       PVCS Version     : $Revision:   2.4  $
+--       Date into PVCS   : $Date:   Aug 24 2007 15:10:36  $
+--       Date fetched Out : $Modtime:   Aug 24 2007 15:10:00  $
+--       PVCS Version     : $Revision:   2.5  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.4  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.5  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_hcc_cim';
   
@@ -56,25 +56,11 @@ END get_body_version;
 --
 -----------------------------------------------------------------------------
 --
--- Java procedure move file
-function java_move_file
-   ( "fileFrom"  in varchar2
-   , "fileTo"    in varchar2
-   , "fromDir"   in varchar2
-   , "toDir"     in varchar2
-   , "overWrite" in varchar2
-   ) return varchar2
-AS LANGUAGE JAVA
-NAME 'Util.moveFile( java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String ) return java.lang.String';
---
------------------------------------------------------------------------------
---
 procedure move_file 
   ( pi_from_file  in  varchar2
   , pi_from_loc   in  varchar2 default null
   , pi_to_file    in  varchar2 default null
   , pi_to_loc     in  varchar2 default null
-  , pi_use_hig    in  boolean  default false
   , pi_overwrite  in  boolean  default false
   , po_err_no     out integer
   , po_err_mess   out varchar2
@@ -89,34 +75,34 @@ l_to_handle utl_file.file_type ;
 l_line_buffer varchar2(32767) ;
 b_eof_data boolean ;
 l_directory_path varchar2(256) ;
-l_move_status varchar2(1) ;
 begin
   nm_debug.proc_start(g_package_name,'move_file');
-  po_err_no := null ;
-  l_move_status := java_move_file
-                   ( "fileFrom"  => pi_from_file
-                   , "fileTo"    => l_to_file
-                   , "fromDir"   =>  pi_from_loc
-                   , "toDir"     => l_to_loc 
-                   , "overWrite" => case when pi_overwrite then 'Y'
-                                    else 'N'
-                                    end
-                   ) ;
-  if l_move_status = 'N'
+  if not pi_overwrite and nm3file.file_exists( l_to_loc, l_to_file ) = 'Y'
   then
-    raise_application_error(-20001,'Move file failed ' || 
-           pi_from_loc || pi_from_file ||
-          ' -> ' ||
-           l_to_loc  || l_to_file
-          );
-  end if ;
-  po_err_mess := null ;
+    raise_application_error(-20001,'move_file: "To" file ' || l_to_file || ' exists and overwrite not specified ' );
+  elsif nm3file.file_exists( pi_from_loc, pi_from_file ) = 'N'
+  then
+    raise_application_error(-20001,'move_file: "From" file ' || pi_from_file || ' does not exist ' );
+  end if;
+  l_from_handle := nm3file.fopen( pi_from_loc, pi_from_file, nm3file.c_read_mode, 32767 ) ;
+  l_to_handle := nm3file.fopen( l_to_loc, l_to_file, nm3file.c_write_mode, 32767 ) ;
+  -- We are going to do this a line at a time because of memory considerations
+  -- it might be quite slow
+  b_eof_data := false ;
+  while true
+  loop
+    nm3file.get_line( l_from_handle, l_line_buffer, b_eof_data ) ;
+    exit when b_eof_data ;
+    nm3file.put_line( l_to_handle, l_line_buffer ) ;
+  end loop;
+  nm3file.fclose_all ;
   nm_debug.proc_end(g_package_name,'move_file');
 exception
   when others then
     nm_debug.debug( sqlerrm ) ;
     po_err_no := sqlcode ;
     po_err_mess := sqlerrm ;
+
 end move_file;
 --
 -----------------------------------------------------------------------------
