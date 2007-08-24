@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.3   Aug 24 2007 10:19:36   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.4   Aug 24 2007 11:54:50   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_hcc_cim.pkb  $
---       Date into PVCS   : $Date:   Aug 24 2007 10:19:36  $
---       Date fetched Out : $Modtime:   Aug 24 2007 10:18:34  $
---       PVCS Version     : $Revision:   2.3  $
+--       Date into PVCS   : $Date:   Aug 24 2007 11:54:50  $
+--       Date fetched Out : $Modtime:   Aug 24 2007 11:53:12  $
+--       PVCS Version     : $Revision:   2.4  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.3  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.4  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_hcc_cim';
   
@@ -53,39 +53,6 @@ BEGIN
    RETURN g_body_sccsid;
 END get_body_version;
 
---
------------------------------------------------------------------------------
---
-FUNCTION get_true_dir_name
-  (pi_loc       IN varchar2
-  ,pi_use_hig   in boolean
-  ) RETURN varchar2  is
-l_directory_path all_directories.directory_path%type ;
-l_errmess varchar2(200);
-begin
-  nm_debug.proc_start(g_package_name,'get_true_dir_name');
-  if pi_use_hig
-  then
-    l_errmess := ' in HIG_DIRECTORIES table' ;
---    select hdir_path
---      into l_directory_path
---      from hig_directories
---     where hdir_name = upper( pi_loc ) ;
-  else
-    l_errmess := ' in ALL_DIRECTORIES table' ;
-    select directory_path
-      into l_directory_path
-      from all_directories
-     where directory_name = upper( pi_loc ) 
-            ;
-  end if ;
-  nm_debug.proc_end(g_package_name,'get_true_dir_name');
-  return l_directory_path ;
-exception
-  when no_data_found then
-    nm_debug.debug( 'get_true_dir_name: Location name "' || pi_loc || '" not found' || l_errmess ) ;
-    raise_application_error(-20001,'get_true_dir_name: Location name "' || pi_loc || '" not found' || l_errmess );
-end get_true_dir_name;
 --
 -----------------------------------------------------------------------------
 --
@@ -129,8 +96,8 @@ begin
   l_move_status := java_move_file
                    ( "fileFrom"  => pi_from_file
                    , "fileTo"    => l_to_file
-                   , "fromDir"   => get_true_dir_name( pi_from_loc, pi_use_hig )
-                   , "toDir"     => get_true_dir_name( l_to_loc, pi_use_hig ) 
+                   , "fromDir"   =>  pi_from_loc
+                   , "toDir"     => l_to_loc 
                    , "overWrite" => case when pi_overwrite then 'Y'
                                     else 'N'
                                     end
@@ -138,9 +105,9 @@ begin
   if l_move_status = 'N'
   then
     raise_application_error(-20001,'Move file failed ' || 
-          get_true_dir_name( pi_from_loc, pi_use_hig ) || pi_from_file ||
+           pi_from_loc || pi_from_file ||
           ' -> ' ||
-          get_true_dir_name( l_to_loc, pi_use_hig )  || l_to_file
+           l_to_loc  || l_to_file
           );
   end if ;
   po_err_mess := null ;
