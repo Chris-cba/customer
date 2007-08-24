@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.2   Aug 23 2007 14:32:48   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.3   Aug 24 2007 10:19:36   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_hcc_cim.pkb  $
---       Date into PVCS   : $Date:   Aug 23 2007 14:32:48  $
---       Date fetched Out : $Modtime:   Aug 23 2007 14:31:28  $
---       PVCS Version     : $Revision:   2.2  $
+--       Date into PVCS   : $Date:   Aug 24 2007 10:19:36  $
+--       Date fetched Out : $Modtime:   Aug 24 2007 10:18:34  $
+--       PVCS Version     : $Revision:   2.3  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.2  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.3  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_hcc_cim';
   
@@ -213,8 +213,10 @@ begin
                                               ,p_seq_no	      => null
                                               ,p_filepath	   => g_interpath);
       ins_log( pi_message => 'Created file '||l_filename);
-      dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'\*', 'read,write,delete' ) ;
-      dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', get_ftp_dir(pi_direction => c_out )||'\*', 'read,write,delete' ) ;
+      
+      --dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'\*', 'read,write,delete' ) ;
+      --dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', get_ftp_dir(pi_direction => c_out )||'\*', 'read,write,delete' ) ;
+      dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', '<<ALL FILES>>', 'read,write,delete' ) ;
       ins_log('Starting move file');
       ins_log('pi_from_file => '||l_filename);
       ins_log('pi_from_loc  => '||g_interpath);
@@ -246,7 +248,9 @@ is
 begin 
    null;
    -- get a list of files in the ftp in dir
-   dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', get_ftp_dir(pi_direction => c_in )||'\*', 'read,write,delete' ) ;   
+   --dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', get_ftp_dir(pi_direction => c_in )||'\*', 'read,write,delete' ) ;
+     
+   dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', '<<ALL FILES>>' , 'read,write,delete' ) ;
    ins_log('Getting file list for ' || get_ftp_dir(pi_direction => c_in ));    
    l_file_list := nm3file.get_files_in_directory( pi_dir => get_ftp_dir(pi_direction => c_in ) ); 
 
@@ -256,8 +260,10 @@ begin
        then 
          -- move each file from the ftp dir to the interpath dir
 
-         dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'\*', 'read,write,delete' ) ;
-         dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', get_ftp_dir(pi_direction => c_in )||'\*', 'read,write,delete' ) ;
+--         dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'\*', 'read,write,delete' ) ;
+--         dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', get_ftp_dir(pi_direction => c_in )||'\*', 'read,write,delete' ) ;
+         dbms_java.grant_permission( user, 'SYS:java.io.FilePermission','<<ALL FILES>>' , 'read,write,delete' ) ;
+         dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', '<<ALL FILES>>', 'read,write,delete' ) ;
 
          ins_log('Starting move file');
          ins_log('pi_from_file => '|| l_file_list(i));
