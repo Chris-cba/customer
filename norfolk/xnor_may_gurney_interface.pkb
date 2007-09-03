@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.1   Jun 28 2007 11:38:04   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.2   Sep 03 2007 10:10:54   aedwards  $
 --       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
---       Date into SCCS   : $Date:   Jun 28 2007 11:38:04  $
---       Date fetched Out : $Modtime:   Jun 28 2007 11:36:00  $
---       PVCS Version     : $Revision:   2.1  $
+--       Date into SCCS   : $Date:   Sep 03 2007 10:10:54  $
+--       Date fetched Out : $Modtime:   Sep 03 2007 09:09:54  $
+--       PVCS Version     : $Revision:   2.2  $
 --       Originally based on SCCS version 1.6
 --
 --
@@ -60,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.1  $';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.2  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -104,12 +104,16 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --position of relevant cost codes in budget cost code field
   c_pandt_cost_code_pos        CONSTANT pls_integer := 1;
   
+  c_user_jre_category_name constant varchar2(30) := 'NCC HMS MAY GURNEY';
+  c_encumbrance_type_id    constant varchar2(4)  := '1042';
+  c_actual_flag            constant varchar2(1)  := 'E';
+  
   -----------
   --variables
   -----------
   g_grr_job_id gri_report_runs.grr_job_id%TYPE;
   
-  g_debug_on boolean := FALSE;
+  g_debug_on boolean := false;
 --
 -----------------------------------------------------------------------------
 --
@@ -685,7 +689,7 @@ END generate_filename;
 --
 FUNCTION get_commitment_data(pi_oun_id         IN contracts.con_contr_org_id%TYPE
                             ,pi_financial_year IN financial_years.fyr_id%TYPE
-                            ,pi_start_date     IN date
+                            --,pi_start_date     IN date
                             ,pi_end_date       IN date
                             ) RETURN t_commitment_data_arr IS 
 
@@ -727,7 +731,9 @@ BEGIN
   AND
     wor.wor_date_confirmed IS NOT NULL
   AND
-    wor.wor_date_confirmed BETWEEN pi_start_date AND pi_end_date
+    (pi_end_date IS NULL
+     OR
+     wor.wor_date_confirmed <= pi_end_date)
   AND  
     wor.wor_date_closed IS NULL
   AND
@@ -735,7 +741,9 @@ BEGIN
   AND
     wol.wol_bud_id = bud.bud_id
   AND
-    bud.bud_fyr_id = pi_financial_year;
+    bud.bud_fyr_id = pi_financial_year
+  order by
+    wol.wol_id;
     
   nm_debug.proc_end(p_package_name   => g_package_name
                    ,p_procedure_name => 'get_commitment_data');
@@ -967,34 +975,7 @@ END get_accounting_date;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_full_accounting_code(pi_cost_code IN varchar2
-                                 ) RETURN varchar2 IS
 
-  l_cost_code varchar2(4000) := pi_cost_code;
-
-BEGIN
-  nm_debug.proc_start(p_package_name   => g_package_name
-                     ,p_procedure_name => 'get_full_accounting_code');
-
-  IF SUBSTR(l_cost_code, 1, 3) = '10-'
-  THEN
-    l_cost_code :=substr(l_cost_code, 4);
-  END IF;
-  
-  IF SUBSTR(l_cost_code, LENGTH(l_cost_code), 1) = '-'
-  THEN
-    l_cost_code := substr(l_cost_code, 1, length(l_cost_code) - 1);
-  END IF;
-
-  nm_debug.proc_end(p_package_name   => g_package_name
-                   ,p_procedure_name => 'get_full_accounting_code');
-
-  RETURN interfaces.reformat_cost_code(p_cost_code => l_cost_code);
-
-END get_full_accounting_code;
---
------------------------------------------------------------------------------
---
 FUNCTION get_line_description(pi_works_order_no IN work_orders.wor_works_order_no%TYPE
                              ,pi_wol_id         IN work_order_lines.wol_id%TYPE
                              ,pi_defect_id      IN work_order_lines.wol_def_defect_id%TYPE
@@ -1121,93 +1102,93 @@ END get_first_payment_details;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_encumbrance_line(pi_accounting_date IN date
-                             ,pi_cost            IN work_order_lines.wol_est_cost%TYPE
-                             ,pi_descr           IN varchar2
-                             ,pi_cost_code       IN varchar2
-                             ) RETURN varchar2 IS
+--FUNCTION get_encumbrance_line(pi_accounting_date IN date
+--                             ,pi_cost            IN work_order_lines.wol_est_cost%TYPE
+--                             ,pi_descr           IN varchar2
+--                             ,pi_cost_code       IN varchar2
+--                             ) RETURN varchar2 IS
 
-  l_retval nm3type.max_varchar2;
-  
-  l_entered_cr work_order_lines.wol_est_cost%TYPE;
-  l_entered_dr work_order_lines.wol_est_cost%TYPE;
-  
-  l_accounting_code varchar2(4000);
+--  l_retval nm3type.max_varchar2;
+--  
+--  l_entered_cr work_order_lines.wol_est_cost%TYPE;
+--  l_entered_dr work_order_lines.wol_est_cost%TYPE;
+--  
+--  l_accounting_code varchar2(4000);
 
-BEGIN
-  nm_debug.proc_start(p_package_name   => g_package_name
-                     ,p_procedure_name => 'get_encumbrance_line');
+--BEGIN
+--  nm_debug.proc_start(p_package_name   => g_package_name
+--                     ,p_procedure_name => 'get_encumbrance_line');
 
-  IF pi_cost > 0
-  THEN
-    l_entered_dr := pi_cost;
-  ELSE
-    l_entered_cr := -pi_cost;
-  END IF;
-  
-  l_accounting_code := get_full_accounting_code(pi_cost_code => pi_cost_code);
-  
-  l_retval :=             'GLJEH01'                                       --record_type
-              || c_sep || 'NEW'                                           --status
-              || c_sep || '1'                                             --set_of_books_id
-              || c_sep || TO_CHAR(pi_accounting_date, c_csv_date_format)  --accounting_date
-              || c_sep || c_currency_code                                 --curreny_code
-              || c_sep || NULL                                            --date_created
-              || c_sep || NULL                                            --created_by
-              || c_sep || 'E'                                             --actual_flag
-              || c_sep || 'NCC HMS MAY GURNEY'                            --user_je_category_name
-              || c_sep || 'NCC HMS'                                       --user_je_source_name
-              || c_sep || NULL                                            --currency_conversion_date
-              || c_sep || '1042'                                          --encumbrance_type_id
-              || c_sep || NULL                                            --budget_version_id
-              || c_sep || NULL                                            --user_currency_conversion_type
-              || c_sep || NULL                                            --currency_conversion_rate
-              || c_sep || NULL                                            --average_journal_flag
-              || c_sep || NULL                                            --originating_bal_seg_value
-              || c_sep || NULL                                            --segment1
-              || c_sep || NULL                                            --segment2
-              || c_sep || NULL                                            --segment3
-              || c_sep || NULL                                            --segment4
-              || c_sep || NULL                                            --segment5
-              || c_sep || NULL                                            --segment6
-              || c_sep || NULL                                            --segment7
-              || c_sep || TO_CHAR(l_entered_dr, c_csv_currency_format)    --entered_dr
-              || c_sep || TO_CHAR(l_entered_cr, c_csv_currency_format)    --entered_cr
-              || c_sep || NULL                                            --accounted_dr
-              || c_sep || NULL                                            --accounted_cr
-              || c_sep || NULL                                            --transaction_date
-              || c_sep || NULL                                            --reference1
-              || c_sep || NULL                                            --reference2
-              || c_sep || NULL                                            --reference4
-              || c_sep || NULL                                            --reference5
-              || c_sep || NULL                                            --reference6
-              || c_sep || NULL                                            --reference7
-              || c_sep || NULL                                            --reference8
-              || c_sep || pi_descr                                        --reference10
-              || c_sep || NULL                                            --reference11
-              || c_sep || NULL                                            --reference12
-              || c_sep || NULL                                            --reference13
-              || c_sep || NULL                                            --reference14
-              || c_sep || NULL                                            --reference15
-              || c_sep || NULL                                            --reference16
-              || c_sep || NULL                                            --reference17
-              || c_sep || NULL                                            --reference18
-              || c_sep || NULL                                            --reference19
-              || c_sep || NULL                                            --reference20
-              || c_sep || NULL                                            --period_name
-              || c_sep || NULL                                            --je_line_num
-              || c_sep || NULL                                            --chart_of_accounts_id
-              || c_sep || NULL                                            --code_combination_id
-              || c_sep || NULL                                            --stat_amount
-              || c_sep || NULL                                            --group_id
-              || c_sep || l_accounting_code;                              --attribute1
+--  IF pi_cost > 0
+--  THEN
+--    l_entered_dr := pi_cost;
+--  ELSE
+--    l_entered_cr := -pi_cost;
+--  END IF;
+--  
+--  l_accounting_code := get_full_accounting_code(pi_cost_code => pi_cost_code);
+--  
+--  l_retval :=             'GLJEH01'                                       --record_type
+--              || c_sep || 'NEW'                                           --status
+--              || c_sep || '1'                                             --set_of_books_id
+--              || c_sep || TO_CHAR(pi_accounting_date, c_csv_date_format)  --accounting_date
+--              || c_sep || c_currency_code                                 --curreny_code
+--              || c_sep || NULL                                            --date_created
+--              || c_sep || NULL                                            --created_by
+--              || c_sep || 'E'                                             --actual_flag
+--              || c_sep || 'NCC HMS MAY GURNEY'                            --user_je_category_name
+--              || c_sep || 'NCC HMS'                                       --user_je_source_name
+--              || c_sep || NULL                                            --currency_conversion_date
+--              || c_sep || '1042'                                          --encumbrance_type_id
+--              || c_sep || NULL                                            --budget_version_id
+--              || c_sep || NULL                                            --user_currency_conversion_type
+--              || c_sep || NULL                                            --currency_conversion_rate
+--              || c_sep || NULL                                            --average_journal_flag
+--              || c_sep || NULL                                            --originating_bal_seg_value
+--              || c_sep || NULL                                            --segment1
+--              || c_sep || NULL                                            --segment2
+--              || c_sep || NULL                                            --segment3
+--              || c_sep || NULL                                            --segment4
+--              || c_sep || NULL                                            --segment5
+--              || c_sep || NULL                                            --segment6
+--              || c_sep || NULL                                            --segment7
+--              || c_sep || TO_CHAR(l_entered_dr, c_csv_currency_format)    --entered_dr
+--              || c_sep || TO_CHAR(l_entered_cr, c_csv_currency_format)    --entered_cr
+--              || c_sep || NULL                                            --accounted_dr
+--              || c_sep || NULL                                            --accounted_cr
+--              || c_sep || NULL                                            --transaction_date
+--              || c_sep || NULL                                            --reference1
+--              || c_sep || NULL                                            --reference2
+--              || c_sep || NULL                                            --reference4
+--              || c_sep || NULL                                            --reference5
+--              || c_sep || NULL                                            --reference6
+--              || c_sep || NULL                                            --reference7
+--              || c_sep || NULL                                            --reference8
+--              || c_sep || pi_descr                                        --reference10
+--              || c_sep || NULL                                            --reference11
+--              || c_sep || NULL                                            --reference12
+--              || c_sep || NULL                                            --reference13
+--              || c_sep || NULL                                            --reference14
+--              || c_sep || NULL                                            --reference15
+--              || c_sep || NULL                                            --reference16
+--              || c_sep || NULL                                            --reference17
+--              || c_sep || NULL                                            --reference18
+--              || c_sep || NULL                                            --reference19
+--              || c_sep || NULL                                            --reference20
+--              || c_sep || NULL                                            --period_name
+--              || c_sep || NULL                                            --je_line_num
+--              || c_sep || NULL                                            --chart_of_accounts_id
+--              || c_sep || NULL                                            --code_combination_id
+--              || c_sep || NULL                                            --stat_amount
+--              || c_sep || NULL                                            --group_id
+--              || c_sep || l_accounting_code;                              --attribute1
 
-  nm_debug.proc_end(p_package_name   => g_package_name
-                   ,p_procedure_name => 'get_encumbrance_line');
+--  nm_debug.proc_end(p_package_name   => g_package_name
+--                   ,p_procedure_name => 'get_encumbrance_line');
 
-  RETURN l_retval;
+--  RETURN l_retval;
 
-END get_encumbrance_line;
+--END get_encumbrance_line;
 --
 -----------------------------------------------------------------------------
 --
@@ -1359,12 +1340,12 @@ BEGIN
                                                                                      ,a_param  => 'CONTRACTOR_ID')
                                    ,pi_financial_year => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
                                                                                      ,a_param  => 'FINANCIAL_YEAR')
-                                   ,pi_start_date     => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
-                                                                                     ,a_param  => 'FROM_DATE')
                                    ,pi_end_date       => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
                                                                                      ,a_param  => 'TO_DATE')
                                    ,pi_file_path      => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
-                                                                                     ,a_param  => 'TEXT'));
+                                                                                     ,a_param  => 'TEXT')
+                                   ,pi_period_13      => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
+                                                                                     ,a_param  => 'PERIOD_13') = 'Y');
   
   g_grr_job_id := NULL;
   
@@ -1379,9 +1360,9 @@ END generate_order_file;
 --
 FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
                             ,pi_financial_year IN financial_years.fyr_id%TYPE
-                            ,pi_start_date     IN date
                             ,pi_end_date       IN date
                             ,pi_file_path      IN varchar2
+                            ,pi_period_13      in boolean
                             ) RETURN varchar2 IS
   
   l_oun_rec org_units%ROWTYPE;
@@ -1433,7 +1414,7 @@ BEGIN
   db(g_package_name || '.generate_order_file');
   db('  pi_contractor_id  = ' || pi_contractor_id);
   db('  pi_financial_year = ' || pi_financial_year);
-  db('  pi_start_date     = ' || TO_CHAR(pi_start_date, 'dd-mon-yyyy hh24:mi:ss'));
+  --db('  pi_start_date     = ' || TO_CHAR(pi_start_date, 'dd-mon-yyyy hh24:mi:ss'));
   db('  pi_end_date       = ' || TO_CHAR(pi_end_date, 'dd-mon-yyyy hh24:mi:ss'));
   db('  pi_file_path      = ' || pi_file_path);
 
@@ -1443,7 +1424,7 @@ BEGIN
   
   l_commitment_data_arr := get_commitment_data(pi_oun_id         => pi_contractor_id
                                               ,pi_financial_year => pi_financial_year
-                                              ,pi_start_date     => pi_start_date
+                                              --,pi_start_date     => pi_start_date
                                               ,pi_end_date       => pi_end_date);
                                    
   db('Found ' || l_commitment_data_arr.COUNT || ' work order lines');
@@ -1463,16 +1444,22 @@ BEGIN
     l_file_id := open_output_file(pi_file_path => pi_file_path
                                  ,pi_filename  => l_filename);
   
+    --which date do we use in the output file?
+    l_accounting_date := xnor_financial_interface.get_accounting_date(pi_period_13 => pi_period_13);
+  
     -------------------------
     --process the wol records
     -------------------------
     FOR i IN 1..l_commitment_data_arr.COUNT
     LOOP
+    db('processing wol ' || l_commitment_data_arr(i).wol_id || ' with cost ' || l_commitment_data_arr(i).wol_cost);  
+    
       l_write_wol_to_file := FALSE;
       
-      --get accounting date for this works order
-      l_accounting_date := get_accounting_date(pi_date_order_raised    => l_commitment_data_arr(i).wor_date_confirmed
-                                              ,pi_order_financial_year => pi_financial_year);
+      --accounting date now set above for whole file
+        --get accounting date for this works order
+        --l_accounting_date := get_accounting_date(pi_date_order_raised    => l_commitment_data_arr(i).wor_date_confirmed
+        --                                        ,pi_order_financial_year => pi_financial_year);
       
       l_line_descr := get_line_description(pi_works_order_no => l_commitment_data_arr(i).works_order_no
                                           ,pi_wol_id         => l_commitment_data_arr(i).wol_id
@@ -1485,22 +1472,32 @@ BEGIN
       BEGIN
         l_xmgw_rec := get_xmgw(pi_wol_id => l_commitment_data_arr(i).wol_id);
         
+        db('found xmgw record');
+        
         ---------------------------------
         --check values against log record
         ---------------------------------
         IF l_commitment_data_arr(i).wol_cost <> l_xmgw_rec.xmgw_commitment_value
         THEN
+          db('writing reversal');
           --we need to generate a reversal record for the original value in the file
           --PandT line
-          writeln(get_encumbrance_line(pi_accounting_date => l_accounting_date
-                                      ,pi_cost            => -l_xmgw_rec.xmgw_commitment_value
-                                      ,pi_descr           => l_line_descr
-                                      ,pi_cost_code       => l_commitment_cost_code));
+          writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
+                                                              ,pi_cost                  => -l_xmgw_rec.xmgw_commitment_value
+                                                              ,pi_descr                 => l_line_descr
+                                                              ,pi_cost_code             => l_commitment_cost_code
+                                                              ,pi_user_je_category_name => c_user_jre_category_name
+                                                              ,pi_encumbrance_type_id   => c_encumbrance_type_id
+                                                              ,pi_actual_flag           => c_actual_flag));
+        
           --commitment line
-          writeln(get_encumbrance_line(pi_accounting_date => l_accounting_date
-                                      ,pi_cost            => l_xmgw_rec.xmgw_commitment_value
-                                      ,pi_descr           => l_line_descr
-                                      ,pi_cost_code       => c_mag_encumb_cost_code));
+          writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
+                                                              ,pi_cost                  => l_xmgw_rec.xmgw_commitment_value
+                                                              ,pi_descr                 => l_line_descr
+                                                              ,pi_cost_code             => c_mag_encumb_cost_code
+                                                              ,pi_user_je_category_name => c_user_jre_category_name
+                                                              ,pi_encumbrance_type_id   => c_encumbrance_type_id
+                                                              ,pi_actual_flag           => c_actual_flag));
           
           --we also need to update the log file with the new value
           --add data to log table update arrays
@@ -1517,6 +1514,7 @@ BEGIN
       EXCEPTION
         WHEN no_data_found
         THEN
+          db('xmgw not found');
           --if we have a non-zero cost then add it to the log
           IF l_commitment_data_arr(i).wol_cost <> 0
           THEN
@@ -1538,16 +1536,23 @@ BEGIN
       IF l_write_wol_to_file
         AND l_commitment_data_arr(i).wol_cost <> 0
       THEN
+        db('writing lines');
         --write PandT line
-        writeln(get_encumbrance_line(pi_accounting_date => l_accounting_date
-                                    ,pi_cost            => l_commitment_data_arr(i).wol_cost
-                                    ,pi_descr           => l_line_descr
-                                    ,pi_cost_code       => l_commitment_cost_code));
+        writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
+                                                            ,pi_cost                  => l_commitment_data_arr(i).wol_cost
+                                                            ,pi_descr                 => l_line_descr
+                                                            ,pi_cost_code             => l_commitment_cost_code
+                                                            ,pi_user_je_category_name => c_user_jre_category_name
+                                                            ,pi_encumbrance_type_id   => c_encumbrance_type_id
+                                                            ,pi_actual_flag           => c_actual_flag));
         --write commitment line
-        writeln(get_encumbrance_line(pi_accounting_date => l_accounting_date
-                                    ,pi_cost            => -l_commitment_data_arr(i).wol_cost
-                                    ,pi_descr           => l_line_descr
-                                    ,pi_cost_code       => c_mag_encumb_cost_code));
+        writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
+                                                            ,pi_cost                  => -l_commitment_data_arr(i).wol_cost
+                                                            ,pi_descr                 => l_line_descr
+                                                            ,pi_cost_code             => c_mag_encumb_cost_code
+                                                            ,pi_user_je_category_name => c_user_jre_category_name
+                                                            ,pi_encumbrance_type_id   => c_encumbrance_type_id
+                                                            ,pi_actual_flag           => c_actual_flag));
       
         --record credits/debits in file
         l_total_credits := l_total_credits + l_commitment_data_arr(i).wol_cost;
@@ -1628,6 +1633,8 @@ BEGIN
                                                                             ,a_param  => 'TO_DATE')
                        ,pi_file_path         => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
                                                                             ,a_param  => 'TEXT')
+                       ,pi_period_13         => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
+                                                                            ,a_param  => 'PERIOD_13') = 'Y'
                        ,po_payment_filename  => po_payment_filename
                        ,po_reversal_filename => po_reversal_filename);
   
@@ -1645,6 +1652,7 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
                                ,pi_start_date        IN     date
                                ,pi_end_date          IN     date
                                ,pi_file_path         IN     varchar2
+                               ,pi_period_13         in     boolean
                                ,po_payment_filename     OUT varchar2
                                ,po_reversal_filename    OUT varchar2
                                ) IS
@@ -1769,6 +1777,9 @@ BEGIN
     l_reversal_file_id := open_output_file(pi_file_path => pi_file_path
                                           ,pi_filename  => po_reversal_filename);
   
+    --which date do we use in the output file?
+    l_accounting_date := xnor_financial_interface.get_accounting_date(pi_period_13 => pi_period_13);
+    
     -------------------------
     --process the wol records
     -------------------------
@@ -1787,8 +1798,9 @@ BEGIN
       ------------------------------------
       --get some information for this line
       ------------------------------------
-      l_accounting_date := get_accounting_date(pi_date_order_raised    => SYSDATE
-                                              ,pi_order_financial_year => pi_financial_year);
+      --accounting date now set above for whole file
+        --l_accounting_date := get_accounting_date(pi_date_order_raised    => SYSDATE
+        --                                        ,pi_order_financial_year => pi_financial_year);
       
       l_line_descr := get_line_description(pi_works_order_no => l_payment_data_arr(i).works_order_no
                                           ,pi_wol_id         => l_payment_data_arr(i).wol_id
@@ -1813,19 +1825,25 @@ BEGIN
         IF NVL(l_xmgw_rec.xmgw_commitment_value, 0) <> 0
         THEN
           --we need to generate a reversal record for the commitment value
-          writeln_rev(get_encumbrance_line(pi_accounting_date => l_accounting_date
-                                          ,pi_cost            => -l_xmgw_rec.xmgw_commitment_value
-                                          ,pi_descr           => l_line_descr
-                                          ,pi_cost_code       => l_commitment_cost_code));
-          writeln_rev(get_encumbrance_line(pi_accounting_date => l_accounting_date
-                                          ,pi_cost            => l_xmgw_rec.xmgw_commitment_value
-                                          ,pi_descr           => l_line_descr
-                                          ,pi_cost_code       => c_mag_encumb_cost_code));
+          writeln_rev(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
+                                                                  ,pi_cost                  => -l_xmgw_rec.xmgw_commitment_value
+                                                                  ,pi_descr                 => l_line_descr
+                                                                  ,pi_cost_code             => l_commitment_cost_code
+                                                                  ,pi_user_je_category_name => c_user_jre_category_name
+                                                                  ,pi_encumbrance_type_id   => c_encumbrance_type_id
+                                                                  ,pi_actual_flag           => c_actual_flag));
+          writeln_rev(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
+                                                                  ,pi_cost                  => l_xmgw_rec.xmgw_commitment_value
+                                                                  ,pi_descr                 => l_line_descr
+                                                                  ,pi_cost_code             => c_mag_encumb_cost_code
+                                                                  ,pi_user_je_category_name => c_user_jre_category_name
+                                                                  ,pi_encumbrance_type_id   => c_encumbrance_type_id
+                                                                  ,pi_actual_flag           => c_actual_flag));
         
           --record credits/debits in reversal file
           l_rev_total_credits := l_rev_total_credits + l_xmgw_rec.xmgw_commitment_value;
           l_rev_total_debits  := l_rev_total_debits + l_xmgw_rec.xmgw_commitment_value;
-        END IF;
+        END IF;                                                            
         
         --update the log file with the payment value
         --add data to log table update arrays
@@ -1866,7 +1884,7 @@ BEGIN
                                ,pi_accounting_date => SYSDATE
                                ,pi_line_descr      => l_line_descr
                                ,pi_tax_code        => c_vat_tax_code
-                               ,pi_cost_code       => get_full_accounting_code(pi_cost_code => l_payment_cost_code));
+                               ,pi_cost_code       => xnor_financial_interface.get_full_accounting_code(pi_cost_code => l_payment_cost_code));
       END IF;
       
       --set values which will be used to update the work order/claim/payment details
@@ -1985,7 +2003,7 @@ BEGIN
                                   ,pi_accounting_date => SYSDATE
                                   ,pi_line_descr      => l_line_descr
                                   ,pi_tax_code        => c_vat_tax_code
-                                  ,pi_cost_code       => get_full_accounting_code(pi_cost_code => c_vat_cost_code)));
+                                  ,pi_cost_code       => xnor_financial_interface.get_full_accounting_code(pi_cost_code => c_vat_cost_code)));
     END IF;
 
     -------------
