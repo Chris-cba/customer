@@ -1,0 +1,97 @@
+create or replace package xnor_hops_gl_interface
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkh-arc   2.0   Sep 03 2007 10:32:06   dyounger  $
+--       Module Name      : $Workfile:   xnor_hops_gl_interface.pkh  $
+--       Date into PVCS   : $Date:   Sep 03 2007 10:32:06  $
+--       Date fetched Out : $Modtime:   Sep 02 2007 10:59:08  $
+--       PVCS Version     : $Revision:   2.0  $
+--
+--
+--   Author : Kevin Angus
+--
+--    xnor_hops_gl_interface
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="generate_commitment_file">
+--
+-- This function generates the HOPS GL Commitment File.
+--
+-- Returns: the name of the file created.
+--
+function generate_commitment_file(pi_grr_job_id IN gri_report_runs.grr_job_id%TYPE
+                                 ) RETURN varchar2;
+function generate_commitment_file(pi_seq_no         in interface_run_log.irl_run_number%type
+                                 ,pi_contractor_id  IN org_units.oun_org_id%TYPE
+                                 ,pi_financial_year IN financial_years.fyr_id%TYPE
+                                 ,pi_end_date       IN date
+                                 ,pi_file_path      IN varchar2
+                                 ,pi_period_13      in boolean
+                                 ) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="generate_commitment_file">
+--
+-- These routines process the HOPS GL Payment Run.
+--
+FUNCTION process_payment_run(pi_grr_job_id IN gri_report_runs.grr_job_id%TYPE
+                              ) return varchar2;
+PROCEDURE process_payment_run(pi_con_id         in     contracts.con_id%type
+                             ,pi_apply_vat      in     boolean
+                             ,pi_oun_ord_id     in     org_units.oun_org_id%type
+                             ,pi_start_date     in     date
+                             ,pi_end_date       in     date
+                             ,pi_financial_year in     financial_years.fyr_id%TYPE
+                             ,pi_file_path      in     varchar2
+                             ,pi_period_13      in     boolean
+                             ,po_cnp_id            out work_order_lines.wol_cnp_id%type
+                             ,po_error_code        out hig_errors.her_no%type
+                             ,po_error_appl        out hig_errors.her_appl%type
+                             ,po_filename          out varchar2
+                             );
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xnor_hops_gl_interface;
+/
