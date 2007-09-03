@@ -1,0 +1,111 @@
+create or replace package xnor_financial_interface
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_financial_interface.pkh-arc   2.0   Sep 03 2007 10:27:36   dyounger  $
+--       Module Name      : $Workfile:   xnor_financial_interface.pkh  $
+--       Date into PVCS   : $Date:   Sep 03 2007 10:27:36  $
+--       Date fetched Out : $Modtime:   Sep 02 2007 10:52:36  $
+--       PVCS Version     : $Revision:   2.0  $
+--
+--
+--   Author : Kevin Angus
+--
+--    xnor_financial_interface
+--
+-----------------------------------------------------------------------------
+--  Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.0  $"';
+
+  c_wol_status_paid CONSTANT work_order_lines.wol_status_code%TYPE := 'PAID';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_commitment_line">
+--
+-- This function returns the supplied data in the correct format for a line
+-- in a commitment file. 
+--
+FUNCTION get_commitment_line(pi_accounting_date       IN date
+                            ,pi_cost                  IN work_order_lines.wol_est_cost%TYPE
+                            ,pi_descr                 IN varchar2
+                            ,pi_cost_code             IN varchar2
+                            ,pi_user_je_category_name in varchar2
+                            ,pi_encumbrance_type_id   in number
+                            ,pi_actual_flag           in varchar2
+                            ,pi_part_cost_code        in boolean default true
+                            ) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_full_accounting_code">
+--
+-- This function returns the full accounting code from a partial one
+--
+FUNCTION get_full_accounting_code(pi_cost_code IN varchar2
+                                 ) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="write_ctrl_file">
+--
+-- This procedure writes a control file for the specified file.
+--
+procedure write_ctrl_file(pi_filename      in varchar2
+                         ,pi_filepath      in varchar2
+                         ,pi_total_lines   in pls_integer
+                         ,pi_total_credits in number
+                         ,pi_total_debits  in number
+                         );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="write_ctrl_file">
+--
+-- This function returns the accounting date to use in an output file.
+--
+FUNCTION get_accounting_date(pi_period_13 in boolean
+                            ) RETURN date;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xnor_financial_interface;
+/
