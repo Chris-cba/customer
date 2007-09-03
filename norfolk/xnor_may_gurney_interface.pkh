@@ -56,9 +56,9 @@ FUNCTION generate_order_file(pi_grr_job_id IN gri_report_runs.grr_job_id%TYPE
 
 FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
                             ,pi_financial_year IN financial_years.fyr_id%TYPE
-                            ,pi_start_date     IN date
                             ,pi_end_date       IN date
                             ,pi_file_path      IN varchar2
+                            ,pi_period_13      in boolean
                             ) RETURN varchar2;
 --</PROC>
 --
@@ -80,6 +80,7 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
                                ,pi_start_date        IN     date
                                ,pi_end_date          IN     date
                                ,pi_file_path         IN     varchar2
+                               ,pi_period_13         in     boolean
                                ,po_payment_filename     OUT varchar2
                                ,po_reversal_filename    OUT varchar2
                                );
