@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.5   Aug 24 2007 15:10:36   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/cim/admin/pck/x_hcc_cim.pkb-arc   2.6   Sep 06 2007 13:26:14   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_hcc_cim.pkb  $
---       Date into PVCS   : $Date:   Aug 24 2007 15:10:36  $
---       Date fetched Out : $Modtime:   Aug 24 2007 15:10:00  $
---       PVCS Version     : $Revision:   2.5  $
+--       Date into PVCS   : $Date:   Sep 06 2007 13:26:14  $
+--       Date fetched Out : $Modtime:   Sep 06 2007 13:25:10  $
+--       PVCS Version     : $Revision:   2.6  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.5  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.6  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_hcc_cim';
   
@@ -237,11 +237,21 @@ begin
          ins_log('Starting load for ');
          ins_log('contractor ' || substr(l_file_list(i),instr(l_file_list(i),'.')+1) );
          ins_log('filename ' ||  l_file_list(i));
-         interfaces.completion_file_ph1(p_contractor_id => substr(l_file_list(i),instr(l_file_list(i),'.')+1)
-                                       ,p_seq_no => null
-                                       ,p_filepath => g_interpath
-                                       ,p_filename => l_file_list(i)
-                                       ,p_error => l_errors );
+         if substr(l_file_list(i),1,2) in ('WC')
+          then 
+            interfaces.completion_file_ph1(p_contractor_id => substr(l_file_list(i),instr(l_file_list(i),'.')+1)
+                                          ,p_seq_no => null
+                                          ,p_filepath => g_interpath
+                                          ,p_filename => l_file_list(i)
+                                          ,p_error => l_errors );
+         elsif substr(l_file_list(i),1,2) in ('WI') 
+          then 
+            interfaces.claim_file_ph1(p_contractor_id => substr(l_file_list(i),instr(l_file_list(i),'.')+1)
+                                     ,p_seq_no => null
+                                     ,p_filepath => g_interpath
+                                     ,p_filename => l_file_list(i)
+                                     ,p_error => l_errors );
+         end if;                                      
          ins_log('loaded file ' || l_file_list(i));
          ins_log('p_error => '||l_errors );                                        
       end if;
