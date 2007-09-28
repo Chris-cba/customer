@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.3   Aug 20 2007 11:19:24   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.4   Sep 28 2007 10:35:04   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Aug 20 2007 11:19:24  $
---       Date fetched Out : $Modtime:   Aug 20 2007 11:16:06  $
---       SCCS Version     : $Revision:   2.3  $
+--       Date into SCCS   : $Date:   Sep 28 2007 10:35:04  $
+--       Date fetched Out : $Modtime:   Sep 28 2007 10:33:34  $
+--       SCCS Version     : $Revision:   2.4  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) := '"%W% %G%"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.4  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -555,19 +555,16 @@ begin
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
       for ftp_rec in c_out_archive(dir_rec.ftp_contractor)
        loop
-         if get_wc_date = 'WC'||to_char(NEXT_DAY(trunc(sysdate),'MON'),'YYYYMMDD') 
-          then 
-            -- create dir
-             l_ftp := x_tfl_ftp_util.mkdir_remote (
-                                                    p_remotepath               => dir_rec.ftp_arc_out_dir
-                                                   ,p_target_dir               => get_wc_date
-                                                   ,p_username                 => dir_rec.ftp_arc_username
-                                                   ,p_password                 => dir_rec.ftp_arc_password
-                                                   ,p_hostname                 => dir_rec.ftp_arc_host
-                                                   ,v_status                   => l_status
-                                                   ,v_error_message            => l_error
-                                                   );
-         end if;
+          -- create dir
+          l_ftp := x_tfl_ftp_util.mkdir_remote (
+                                                 p_remotepath               => dir_rec.ftp_arc_out_dir
+                                                ,p_target_dir               => get_wc_date
+                                                ,p_username                 => dir_rec.ftp_arc_username
+                                                ,p_password                 => dir_rec.ftp_arc_password
+                                                ,p_hostname                 => dir_rec.ftp_arc_host
+                                                ,v_status                   => l_status
+                                                ,v_error_message            => l_error
+                                                );
          
          l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
                                      ,p_filename => ftp_rec.tfq_filename 
@@ -654,19 +651,16 @@ begin
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
       for ftp_rec in c_out_archive(dir_rec.ftp_contractor)
        loop
-         if get_wc_date = 'WC'||to_char(NEXT_DAY(trunc(sysdate),'MON'),'YYYYMMDD') 
-          then 
-            -- create dir
-             l_ftp := x_tfl_ftp_util.mkdir_remote (
-                                                    p_remotepath               => dir_rec.ftp_arc_in_dir
-                                                   ,p_target_dir               => get_wc_date
-                                                   ,p_username                 => dir_rec.ftp_arc_username
-                                                   ,p_password                 => dir_rec.ftp_arc_password
-                                                   ,p_hostname                 => dir_rec.ftp_arc_host
-                                                   ,v_status                   => l_status
-                                                   ,v_error_message            => l_error
-                                                   );
-         end if;
+         -- create dir
+          l_ftp := x_tfl_ftp_util.mkdir_remote (
+                                                 p_remotepath               => dir_rec.ftp_arc_in_dir
+                                                ,p_target_dir               => get_wc_date
+                                                ,p_username                 => dir_rec.ftp_arc_username
+                                                ,p_password                 => dir_rec.ftp_arc_password
+                                                ,p_hostname                 => dir_rec.ftp_arc_host
+                                                ,v_status                   => l_status
+                                                ,v_error_message            => l_error
+                                                );
 --       
          l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
                                      ,p_filename => ftp_rec.tfq_filename
