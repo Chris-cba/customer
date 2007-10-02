@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.0   Sep 03 2007 10:31:32   dyounger  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.1   Oct 02 2007 10:02:50   smarshall  $
 --       Module Name      : $Workfile:   xnor_hops_gl_interface.pkb  $
---       Date into PVCS   : $Date:   Sep 03 2007 10:31:32  $
---       Date fetched Out : $Modtime:   Sep 03 2007 09:14:18  $
---       PVCS Version     : $Revision:   2.0  $
+--       Date into PVCS   : $Date:   Oct 02 2007 10:02:50  $
+--       Date fetched Out : $Modtime:   Oct 02 2007 09:54:12  $
+--       PVCS Version     : $Revision:   2.1  $
 --
 --
 --   Author : Kevin Angus
@@ -30,7 +30,8 @@ AS
                                       ,wol_cost         work_order_lines.wol_act_cost%TYPE
                                       ,road_id          interface_wol.iwol_road_id%type
                                       ,cost_code        interface_wol.iwol_cost_code%TYPE
-                                      ,wol_status_code  work_order_lines.wol_status_code%type);
+                                      ,wol_status_code  work_order_lines.wol_status_code%type
+                                      ,defect_id        work_order_lines.wol_def_defect_id%type);
   TYPE t_commitment_data_arr IS TABLE OF t_commitment_data_rec INDEX BY pls_integer;
 
   type t_payment_wols_rec    is record(wol_id                work_order_lines.wol_id%TYPE
@@ -48,9 +49,11 @@ AS
                                       ,wor_act_balancing_sum work_orders.wor_act_balancing_sum%type);
   type t_payment_wols_arr    is table of t_payment_wols_rec INDEX BY pls_integer;
   
-  type t_payment_data_rec    is record(wol_id        work_order_lines.wol_id%TYPE
-                                      ,wol_act_cost  work_order_lines.wol_act_cost%TYPE
-                                      ,bud_cost_code budgets.bud_cost_code%TYPE);
+  type t_payment_data_rec    is record(wol_id         work_order_lines.wol_id%TYPE
+                                      ,wol_act_cost   work_order_lines.wol_act_cost%TYPE
+                                      ,bud_cost_code  budgets.bud_cost_code%TYPE
+                                      ,works_order_no work_order_lines.wol_works_order_no%TYPE
+                                      ,defect_id      work_order_lines.wol_def_defect_id%type);
   type t_payment_data_arr    is table of t_payment_data_rec INDEX BY pls_integer;
   
   type t_trans_id_arr        is table of interface_wor.iwor_transaction_id%type INDEX BY pls_integer;
@@ -64,7 +67,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.0  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.1  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xnor_hops_gl_interface';
   
@@ -86,7 +89,7 @@ AS
   -----------
   g_grr_job_id gri_report_runs.grr_job_id%type;
   
-  g_debug_on boolean := false;
+  g_debug_on boolean := FALSE;
 --
 -----------------------------------------------------------------------------
 --
@@ -198,7 +201,8 @@ BEGIN
     SUM(iboq.iboq_cost) wol_est_cost,
     iwol.iwol_road_id,
     nvl(iwol.iwol_cost_code, bud.bud_cost_code),
-    wol.wol_status_code
+    wol.wol_status_code,
+    wol.wol_def_defect_id
   bulk collect into
     l_commitment_data_arr
   from
@@ -238,7 +242,8 @@ BEGIN
     iwol.iwol_road_id,
     iwol.iwol_cost_code,
     wol.wol_status_code,
-    bud.bud_cost_code
+    bud.bud_cost_code,
+    wol.wol_def_defect_id
   order by
     iwol.iwol_id,
     iwor.iwor_transaction_id desc;
@@ -386,6 +391,36 @@ END get_last_committed_cost;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION get_line_description(pi_works_order_no IN work_orders.wor_works_order_no%TYPE
+                             ,pi_wol_id         IN work_order_lines.wol_id%TYPE
+                             ,pi_defect_id      IN work_order_lines.wol_def_defect_id%TYPE
+                             ) RETURN varchar2 IS
+
+  c_descr_sep CONSTANT varchar2(1) := '~';
+  
+  l_retval varchar2(4000);
+
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'get_line_description');
+
+  l_retval :=                   pi_works_order_no
+              || c_descr_sep || pi_wol_id;
+
+  IF pi_defect_id IS NOT NULL
+  THEN
+    l_retval := l_retval || c_descr_sep || pi_defect_id;
+  END IF;
+              
+  nm_debug.proc_end(p_package_name   => g_package_name
+                   ,p_procedure_name => 'get_line_description');
+
+  RETURN l_retval;
+
+END get_line_description;
+--
+-----------------------------------------------------------------------------
+--
 FUNCTION generate_file_name(pi_file_type         in varchar2
                            ,pi_seq_no            in pls_integer
                            ,pi_oun_contractor_id in org_units.oun_contractor_id%type
@@ -467,12 +502,9 @@ function generate_commitment_file(pi_seq_no         in interface_run_log.irl_run
 
   l_file_id utl_file.file_type;
   
-  l_last_transaction_type interface_wor.iwor_transaction_type%type := NULL;
-  l_last_works_order_no   interface_wor.iwor_works_order_no%TYPE := NULL;
-  l_last_wol_id           work_order_lines.wol_id%TYPE := NULL;
-  l_last_wol_cost         work_order_lines.wol_act_cost%TYPE := NULL;
-  l_last_road_id          interface_wol.iwol_road_id%type := NULL;
-  l_last_cost_code        interface_wol.iwol_cost_code%TYPE := NULL;
+  l_line_descr varchar2(4000);
+  
+  l_last_wol_id work_order_lines.wol_id%TYPE := NULL;
   
   l_new_commitment    boolean;
   l_reversal_required boolean;
@@ -574,6 +606,11 @@ BEGIN
         
         end case;
  
+        --get description for file lines
+        l_line_descr := get_line_description(pi_works_order_no => l_commitment_data_arr(i).works_order_no
+                                            ,pi_wol_id         => l_commitment_data_arr(i).wol_id
+                                            ,pi_defect_id      => l_commitment_data_arr(i).defect_id);  
+
         if l_reversal_required
         then
           db('potential reversal required');
@@ -596,16 +633,16 @@ BEGIN
               
               --write reversal for last if nec
               writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                                  ,pi_cost                  => l_last_sent_cost
-                                                                  ,pi_descr                 => l_commitment_data_arr(i).wol_id
+                                                                  ,pi_cost                  => -l_last_sent_cost
+                                                                  ,pi_descr                 => l_line_descr
                                                                   ,pi_cost_code             => l_credit_cost_code
                                                                   ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                                   ,pi_encumbrance_type_id   => c_encumbrance_type_id
                                                                   ,pi_actual_flag           => c_actual_flag_estimate
                                                                   ,pi_part_cost_code        => FALSE));
               writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                                  ,pi_cost                  => -l_last_sent_cost
-                                                                  ,pi_descr                 => l_commitment_data_arr(i).wol_id
+                                                                  ,pi_cost                  => l_last_sent_cost
+                                                                  ,pi_descr                 => l_line_descr
                                                                   ,pi_cost_code             => l_debit_cost_code
                                                                   ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                                   ,pi_encumbrance_type_id   => c_encumbrance_type_id
@@ -632,16 +669,16 @@ BEGIN
             
           --write reversal for last if nec
           writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                              ,pi_cost                  => -l_commitment_data_arr(i).wol_cost
-                                                              ,pi_descr                 => l_commitment_data_arr(i).wol_id
+                                                              ,pi_cost                  => l_commitment_data_arr(i).wol_cost
+                                                              ,pi_descr                 => l_line_descr
                                                               ,pi_cost_code             => l_debit_cost_code
                                                               ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                               ,pi_encumbrance_type_id   => c_encumbrance_type_id
                                                               ,pi_actual_flag           => c_actual_flag_estimate
                                                               ,pi_part_cost_code        => FALSE));
           writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                              ,pi_cost                  => l_commitment_data_arr(i).wol_cost
-                                                              ,pi_descr                 => l_commitment_data_arr(i).wol_id
+                                                              ,pi_cost                  => -l_commitment_data_arr(i).wol_cost
+                                                              ,pi_descr                 => l_line_descr
                                                               ,pi_cost_code             => l_credit_cost_code
                                                               ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                               ,pi_encumbrance_type_id   => c_encumbrance_type_id
@@ -707,8 +744,8 @@ END generate_commitment_file;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_payment_file_data(pi_contractor_id in contracts.con_contr_org_id%type
-                              ,pi_cnp_id        in claim_payments.cp_payment_id%type
+FUNCTION get_payment_file_data(pi_contractor_id  in contracts.con_contr_org_id%type
+                              ,pi_cnp_id         in claim_payments.cp_payment_id%type
                               ,pi_financial_year IN     financial_years.fyr_id%TYPE
                               ,pi_start_date     IN     date
                               ,pi_end_date       IN     date
@@ -727,7 +764,9 @@ BEGIN
   SELECT
     wol.wol_id,
     wol.wol_act_cost,
-    bud.bud_cost_code
+    bud.bud_cost_code,
+    wol.wol_works_order_no,
+    wol.wol_def_defect_id
   bulk collect into
     l_retval
   FROM  org_units,
@@ -800,6 +839,8 @@ PROCEDURE generate_payment_file(pi_contractor_id  IN     contracts.con_contr_org
   
   l_output_date date;
   
+  l_line_descr varchar2(4000);
+  
   PROCEDURE writeln(pi_text IN varchar2
                        ) IS
   BEGIN
@@ -856,6 +897,10 @@ BEGIN
       db('wol_act_cost         = ' || l_payment_data_arr(i).wol_act_cost);
       db('bud_cost_code        = ' || l_payment_data_arr(i).bud_cost_code);
       
+      l_line_descr := get_line_description(pi_works_order_no => l_payment_data_arr(i).works_order_no
+                                          ,pi_wol_id         => l_payment_data_arr(i).wol_id
+                                          ,pi_defect_id      => l_payment_data_arr(i).defect_id);
+      
       --------------------
       --reversal required?
       --------------------
@@ -875,7 +920,7 @@ BEGIN
         --write reversal for last if nec
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
                                                             ,pi_cost                  => l_reversal_cost
-                                                            ,pi_descr                 => l_payment_data_arr(i).wol_id
+                                                            ,pi_descr                 => l_line_descr
                                                             ,pi_cost_code             => l_credit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                             ,pi_encumbrance_type_id   => c_encumbrance_type_id
@@ -883,7 +928,7 @@ BEGIN
                                                             ,pi_part_cost_code        => FALSE));
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
                                                             ,pi_cost                  => -l_reversal_cost
-                                                            ,pi_descr                 => l_payment_data_arr(i).wol_id
+                                                            ,pi_descr                 => l_line_descr
                                                             ,pi_cost_code             => l_debit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                             ,pi_encumbrance_type_id   => c_encumbrance_type_id
@@ -907,7 +952,7 @@ BEGIN
                 
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
                                                             ,pi_cost                  => -l_payment_data_arr(i).wol_act_cost
-                                                            ,pi_descr                 => l_payment_data_arr(i).wol_id
+                                                            ,pi_descr                 => l_line_descr
                                                             ,pi_cost_code             => l_debit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_payment
                                                             ,pi_encumbrance_type_id   => NULL
@@ -915,7 +960,7 @@ BEGIN
                                                             ,pi_part_cost_code        => FALSE));
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
                                                             ,pi_cost                  => l_payment_data_arr(i).wol_act_cost
-                                                            ,pi_descr                 => l_payment_data_arr(i).wol_id
+                                                            ,pi_descr                 => l_line_descr
                                                             ,pi_cost_code             => l_credit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_payment
                                                             ,pi_encumbrance_type_id   => NULL
