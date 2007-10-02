@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.2   Sep 03 2007 10:10:54   aedwards  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.3   Oct 02 2007 10:03:06   smarshall  $
 --       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
---       Date into SCCS   : $Date:   Sep 03 2007 10:10:54  $
---       Date fetched Out : $Modtime:   Sep 03 2007 09:09:54  $
---       PVCS Version     : $Revision:   2.2  $
+--       Date into SCCS   : $Date:   Oct 02 2007 10:03:06  $
+--       Date fetched Out : $Modtime:   Oct 01 2007 14:49:38  $
+--       PVCS Version     : $Revision:   2.3  $
 --       Originally based on SCCS version 1.6
 --
 --
@@ -23,14 +23,14 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   -------
   --types
   -------
-  TYPE t_xmgw_arr                  IS TABLE OF xnor_may_gurney_wols%ROWTYPE INDEX BY pls_integer;
-  TYPE t_xmgw_wol_id_arr           IS TABLE OF xnor_may_gurney_wols.xmgw_wol_id%TYPE INDEX BY pls_integer;
-  TYPE t_xmgw_commitment_value_arr IS TABLE OF xnor_may_gurney_wols.xmgw_commitment_value%TYPE INDEX BY pls_integer;
-  TYPE t_xmgw_payment_value_arr    IS TABLE OF xnor_may_gurney_wols.xmgw_payment_value%TYPE INDEX BY pls_integer;
+  TYPE t_xmgw_arr                  IS TABLE OF xnor_may_gurney_wols%ROWTYPE INDEX BY PLS_INTEGER;
+  TYPE t_xmgw_wol_id_arr           IS TABLE OF xnor_may_gurney_wols.xmgw_wol_id%TYPE INDEX BY PLS_INTEGER;
+  TYPE t_xmgw_commitment_value_arr IS TABLE OF xnor_may_gurney_wols.xmgw_commitment_value%TYPE INDEX BY PLS_INTEGER;
+  TYPE t_xmgw_payment_value_arr    IS TABLE OF xnor_may_gurney_wols.xmgw_payment_value%TYPE INDEX BY PLS_INTEGER;
   
-  TYPE t_wol_id_arr                IS TABLE OF work_order_lines.wol_id%TYPE INDEX BY pls_integer;
-  TYPE t_claim_ref_arr             IS TABLE OF claim_payments.cp_woc_claim_ref%TYPE INDEX BY pls_integer;
-  TYPE t_payment_code_arr          IS TABLE OF work_order_lines.wol_payment_code%TYPE INDEX BY pls_integer;
+  TYPE t_wol_id_arr                IS TABLE OF work_order_lines.wol_id%TYPE INDEX BY PLS_INTEGER;
+  TYPE t_claim_ref_arr             IS TABLE OF claim_payments.cp_woc_claim_ref%TYPE INDEX BY PLS_INTEGER;
+  TYPE t_payment_code_arr          IS TABLE OF work_order_lines.wol_payment_code%TYPE INDEX BY PLS_INTEGER;
   
   TYPE t_commitment_data_rec       IS RECORD(works_order_no     work_orders.wor_works_order_no%TYPE
                                             ,wor_date_confirmed work_orders.wor_date_confirmed%TYPE
@@ -39,7 +39,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
                                             ,wol_cost           work_order_lines.wol_act_cost%TYPE
                                             ,bud_id             work_order_lines.wol_bud_id%TYPE
                                             ,budget_cost_code   budgets.bud_cost_code%TYPE);
-  TYPE t_commitment_data_arr       IS TABLE OF t_commitment_data_rec INDEX BY pls_integer;
+  TYPE t_commitment_data_arr       IS TABLE OF t_commitment_data_rec INDEX BY PLS_INTEGER;
   
   TYPE t_payment_data_rec          IS RECORD(works_order_no      work_orders.wor_works_order_no%TYPE
                                             ,wor_date_closed     work_orders.wor_date_closed%TYPE
@@ -54,13 +54,13 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
                                             ,def_rechar_org_id   defects.def_rechar_org_id%TYPE
                                             ,woc_claim_ref       claim_payments.cp_woc_claim_ref%TYPE
                                             ,rse_link_code       road_segments_all.rse_linkcode%TYPE);
-  TYPE t_payment_data_arr          IS TABLE OF t_payment_data_rec INDEX BY pls_integer;
+  TYPE t_payment_data_arr          IS TABLE OF t_payment_data_rec INDEX BY PLS_INTEGER;
   
   -----------
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.2  $';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.3  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -68,7 +68,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   
   c_ampersand                  CONSTANT varchar2(1) := CHR(38);
   
-  c_default_error_code         CONSTANT pls_integer := -20000;
+  c_default_error_code         CONSTANT PLS_INTEGER := -20000;
   
   c_commitments_file_type      CONSTANT varchar2(3) := 'COM';
   c_payments_file_type         CONSTANT varchar2(3) := 'PAY';
@@ -102,18 +102,18 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   c_claim_domain               CONSTANT hig_status_codes.hsc_domain_code%TYPE := 'CLAIM STATUS';
   
   --position of relevant cost codes in budget cost code field
-  c_pandt_cost_code_pos        CONSTANT pls_integer := 1;
+  c_pandt_cost_code_pos        CONSTANT PLS_INTEGER := 1;
   
-  c_user_jre_category_name constant varchar2(30) := 'NCC HMS MAY GURNEY';
-  c_encumbrance_type_id    constant varchar2(4)  := '1042';
-  c_actual_flag            constant varchar2(1)  := 'E';
+  c_user_jre_category_name CONSTANT varchar2(30) := 'NCC HMS MAY GURNEY';
+  c_encumbrance_type_id    CONSTANT varchar2(4)  := '1042';
+  c_actual_flag            CONSTANT varchar2(1)  := 'E';
   
   -----------
   --variables
   -----------
   g_grr_job_id gri_report_runs.grr_job_id%TYPE;
   
-  g_debug_on boolean := false;
+  g_debug_on BOOLEAN := FALSE;
 --
 -----------------------------------------------------------------------------
 --
@@ -131,7 +131,7 @@ END get_body_version;
 --
 -----------------------------------------------------------------------------
 --
-PROCEDURE set_debug(pi_debug_on IN boolean DEFAULT TRUE
+PROCEDURE set_debug(pi_debug_on IN BOOLEAN DEFAULT TRUE
                    ) IS
 BEGIN
   nm_debug.proc_start(p_package_name   => g_package_name
@@ -165,14 +165,14 @@ END db;
 -----------------------------------------------------------------------------
 --
 PROCEDURE log_error(pi_error_msg        IN varchar2
-                   ,pi_fatal            IN boolean     DEFAULT FALSE
-                   ,pi_fatal_error_code IN pls_integer DEFAULT c_default_error_code
+                   ,pi_fatal            IN BOOLEAN     DEFAULT FALSE
+                   ,pi_fatal_error_code IN PLS_INTEGER DEFAULT c_default_error_code
                    ) IS
 BEGIN
   nm_debug.proc_start(p_package_name   => g_package_name
                      ,p_procedure_name => 'log_error');
 
-  DBMS_OUTPUT.PUT_LINE(pi_error_msg);
+  dbms_output.put_line(pi_error_msg);
   
   IF g_grr_job_id IS NOT NULL
   THEN
@@ -182,7 +182,7 @@ BEGIN
   
   IF pi_fatal
   THEN
-    RAISE_APPLICATION_ERROR(c_default_error_code, pi_error_msg);
+    raise_application_error(c_default_error_code, pi_error_msg);
   END IF;
   
                            
@@ -227,7 +227,7 @@ END open_output_file;
 --
 FUNCTION write_control_file(pi_file_path     IN varchar2
                            ,pi_file_name     IN varchar2
-                           ,pi_total_lines   IN pls_integer
+                           ,pi_total_lines   IN PLS_INTEGER
                            ,pi_total_credits IN number
                            ,pi_total_debits  IN number
                            ) RETURN varchar2 IS
@@ -240,7 +240,7 @@ FUNCTION write_control_file(pi_file_path     IN varchar2
                    ) IS
   BEGIN
     nm3file.put_line(FILE   => l_file_id
-                    ,buffer => pi_text);
+                    ,BUFFER => pi_text);
   END writeln;
   
 BEGIN
@@ -349,11 +349,11 @@ END get_con;
 -----------------------------------------------------------------------------
 --
 FUNCTION running_for_current_year(pi_financial_year IN financial_years.fyr_id%TYPE
-                                 ) RETURN boolean IS
+                                 ) RETURN BOOLEAN IS
 
-  l_retval boolean;
+  l_retval BOOLEAN;
   
-  l_dummy pls_integer;
+  l_dummy PLS_INTEGER;
 
 BEGIN
   nm_debug.proc_start(p_package_name   => g_package_name
@@ -394,11 +394,11 @@ END running_for_current_year;
 --
 FUNCTION payment_on_contract_this_year(pi_contract_id    IN contracts.con_id%TYPE
                                       ,pi_financial_year IN financial_years.fyr_id%TYPE
-                                      ) RETURN boolean IS
+                                      ) RETURN BOOLEAN IS
 
-  l_retval boolean;
+  l_retval BOOLEAN;
   
-  l_dummy pls_integer;
+  l_dummy PLS_INTEGER;
 
 BEGIN
   nm_debug.proc_start(p_package_name   => g_package_name
@@ -593,7 +593,7 @@ END get_claim_status_paid_code;
 -----------------------------------------------------------------------------
 --
 FUNCTION get_functional_act(pi_rechar IN defects.def_rechar_org_id%TYPE
-                           ) RETURN pls_integer IS
+                           ) RETURN PLS_INTEGER IS
 
 BEGIN
   --this is part of the standard payment run functionality based 
@@ -612,7 +612,7 @@ END get_functional_act;
 -----------------------------------------------------------------------------
 --
 FUNCTION get_payment_code(pi_wor_coc_cost_centre IN work_orders.wor_coc_cost_centre%TYPE
-                         ,pi_functional_act      IN pls_integer
+                         ,pi_functional_act      IN PLS_INTEGER
                          ,pi_wol_siss_id         IN work_order_lines.wol_siss_id%TYPE
                          ,pi_cost_code           IN contracts.con_cost_code%TYPE
                          ,pi_wor_job_number      IN work_orders.wor_job_number%TYPE
@@ -742,7 +742,7 @@ BEGIN
     wol.wol_bud_id = bud.bud_id
   AND
     bud.bud_fyr_id = pi_financial_year
-  order by
+  ORDER BY
     wol.wol_id;
     
   nm_debug.proc_end(p_package_name   => g_package_name
@@ -785,7 +785,7 @@ BEGIN
     wor.wor_coc_cost_centre,
     wor.wor_job_number,
     bud.bud_cost_code,
-    def.def_rechar_org_id,
+    DEF.def_rechar_org_id,
     cp.cp_woc_claim_ref,
     rse.rse_linkcode    
   BULK COLLECT INTO
@@ -794,7 +794,7 @@ BEGIN
     work_orders       wor,
     work_order_lines  wol,
     budgets           bud,
-    defects           def,
+    defects           DEF,
     road_segments_all rse,
     claim_payments    cp
   WHERE
@@ -812,7 +812,7 @@ BEGIN
   AND
     bud.bud_fyr_id = pi_financial_year
   AND
-    def.def_defect_id  (+) = wol.wol_def_defect_id
+    DEF.def_defect_id  (+) = wol.wol_def_defect_id
   AND
     rse.rse_he_id = wol.wol_rse_he_id
   AND
@@ -1238,8 +1238,8 @@ BEGIN
               || c_sep || NULL                                                  --voucher_num
               || c_sep || NULL                                                  --goods_received_date
               || c_sep || NULL                                                  --not used
-              || c_sep || to_char(pi_invoice_received_date, c_csv_date_format)  --invoice_received_date
-              || c_sep || to_char(pi_gl_date, c_csv_date_format)                --gl_date
+              || c_sep || TO_CHAR(pi_invoice_received_date, c_csv_date_format)  --invoice_received_date
+              || c_sep || TO_CHAR(pi_gl_date, c_csv_date_format)                --gl_date
               || c_sep || NULL                                                  --accts_pay_code_combination
               || c_sep || NULL                                                  --ussgl_transaction_code
               || c_sep || TO_CHAR(pi_invoice_amount, c_csv_currency_format);    --amount_applicable_to_discount
@@ -1362,7 +1362,7 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
                             ,pi_financial_year IN financial_years.fyr_id%TYPE
                             ,pi_end_date       IN date
                             ,pi_file_path      IN varchar2
-                            ,pi_period_13      in boolean
+                            ,pi_period_13      IN BOOLEAN
                             ) RETURN varchar2 IS
   
   l_oun_rec org_units%ROWTYPE;
@@ -1388,11 +1388,11 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
   l_file_id utl_file.file_type;
   l_control_file_id utl_file.file_type;
   
-  l_write_wol_to_file boolean;
+  l_write_wol_to_file BOOLEAN;
   
   l_commitment_cost_code budgets.bud_cost_code%TYPE;
   
-  l_lines_written_to_file pls_integer := 0;
+  l_lines_written_to_file PLS_INTEGER := 0;
   
   l_total_credits number := 0;
   l_total_debits  number := 0;
@@ -1401,7 +1401,7 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
                    ) IS
   BEGIN
     nm3file.put_line(FILE   => l_file_id
-                    ,buffer => pi_text);
+                    ,BUFFER => pi_text);
   
     l_lines_written_to_file := l_lines_written_to_file + 1;
   
@@ -1605,7 +1605,7 @@ BEGIN
 EXCEPTION
   WHEN others
   THEN
-    log_error(pi_error_msg => 'Unexpected error: ' || DBMS_UTILITY.FORMAT_ERROR_STACK
+    log_error(pi_error_msg => 'Unexpected error: ' || dbms_utility.format_error_stack
              ,pi_fatal     => TRUE);
   
 END generate_order_file;
@@ -1652,7 +1652,7 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
                                ,pi_start_date        IN     date
                                ,pi_end_date          IN     date
                                ,pi_file_path         IN     varchar2
-                               ,pi_period_13         in     boolean
+                               ,pi_period_13         IN     BOOLEAN
                                ,po_payment_filename     OUT varchar2
                                ,po_reversal_filename    OUT varchar2
                                ) IS
@@ -1661,7 +1661,7 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
   
   c_claim_paid_status_code CONSTANT hig_status_codes.hsc_status_code%TYPE := get_claim_status_paid_code;
   
-  c_tax_line_number constant varchar2(15) := to_char(sysdate, 'YYYYMMDDHH24MI');
+  c_tax_line_number CONSTANT varchar2(15) := TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI');
   
   l_con_rec contracts%ROWTYPE;
   l_cnp_rec contract_payments%ROWTYPE;
@@ -1681,7 +1681,7 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
   l_values_paid_arr       nm3type.tab_number;
   l_payment_code_arr      t_payment_code_arr;
   
-  l_write_wol_to_file boolean;
+  l_write_wol_to_file BOOLEAN;
   
   l_accounting_date date;
   
@@ -1699,8 +1699,8 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
   l_payment_cost_code    budgets.bud_cost_code%TYPE;
   l_commitment_cost_code budgets.bud_cost_code%TYPE;
   
-  l_lines_written_to_pay_file pls_integer := 0;
-  l_lines_written_to_rev_file pls_integer := 0;
+  l_lines_written_to_pay_file PLS_INTEGER := 0;
+  l_lines_written_to_rev_file PLS_INTEGER := 0;
   
   l_total_invoice_amount number := 0;
   l_total_tax_amount     number := 0;
@@ -1715,7 +1715,7 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
                        ) IS
   BEGIN
     nm3file.put_line(FILE   => l_payment_file_id
-                    ,buffer => pi_text);
+                    ,BUFFER => pi_text);
   
     l_lines_written_to_pay_file := l_lines_written_to_pay_file + 1;
   
@@ -1725,7 +1725,7 @@ PROCEDURE generate_payment_file(pi_contract_id       IN     contracts.con_id%TYP
                        ) IS
   BEGIN
     nm3file.put_line(FILE   => l_reversal_file_id
-                    ,buffer => pi_text);
+                    ,BUFFER => pi_text);
   
     l_lines_written_to_rev_file := l_lines_written_to_rev_file + 1;
   
@@ -1881,7 +1881,7 @@ BEGIN
                                ,pi_line_no         => l_payment_data_arr(i).wol_id
                                ,pi_line_type       => c_payment_line_type_item
                                ,pi_invoice_amount  => l_payment_data_arr(i).wol_act_cost
-                               ,pi_accounting_date => SYSDATE
+                               ,pi_accounting_date => l_accounting_date
                                ,pi_line_descr      => l_line_descr
                                ,pi_tax_code        => c_vat_tax_code
                                ,pi_cost_code       => xnor_financial_interface.get_full_accounting_code(pi_cost_code => l_payment_cost_code));
@@ -1923,7 +1923,7 @@ BEGIN
       UPDATE
         claim_payments cp
       SET
-        cp.cp_payment_date  = SYSDATE,
+        cp.cp_payment_date  = l_accounting_date,
         cp.cp_payment_id    = c_pay_run_id,
         cp.cp_status        = c_claim_paid_status_code,
         cp.cp_payment_value = l_values_paid_arr(i)
@@ -1942,7 +1942,7 @@ BEGIN
         wol.wol_cnp_id         = c_pay_run_id,
         wol.wol_status_code    = c_wol_status_paid,
         wol.wol_invoice_status = maiwo.wol_invoice_status(l_wols_to_set_paid_arr(i)),
-        wol.wol_date_paid      = SYSDATE,
+        wol.wol_date_paid      = l_accounting_date,
         wol_payment_code       = l_payment_code_arr(i)
       WHERE
         wol.wol_id = l_wols_to_set_paid_arr(i);
@@ -2000,7 +2000,7 @@ BEGIN
                                   ,pi_line_no         => c_tax_line_number
                                   ,pi_line_type       => c_payment_line_type_tax
                                   ,pi_invoice_amount  => l_total_tax_amount
-                                  ,pi_accounting_date => SYSDATE
+                                  ,pi_accounting_date => l_accounting_date
                                   ,pi_line_descr      => l_line_descr
                                   ,pi_tax_code        => c_vat_tax_code
                                   ,pi_cost_code       => xnor_financial_interface.get_full_accounting_code(pi_cost_code => c_vat_cost_code)));
@@ -2043,7 +2043,7 @@ BEGIN
 EXCEPTION
   WHEN others
   THEN
-    log_error(pi_error_msg => 'Unexpected error: ' || DBMS_UTILITY.FORMAT_ERROR_STACK
+    log_error(pi_error_msg => 'Unexpected error: ' || dbms_utility.format_error_stack
              ,pi_fatal     => TRUE);
   
 END generate_payment_file;
