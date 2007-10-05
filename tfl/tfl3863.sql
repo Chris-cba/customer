@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/tfl3863.sql-arc   2.2   Aug 20 2007 15:06:36   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/tfl3863.sql-arc   2.3   Oct 05 2007 11:24:24   Ian Turnbull  $
 --       Module Name      : $Workfile:   tfl3863.sql  $
---       Date into SCCS   : $Date:   Aug 20 2007 15:06:36  $
---       Date fetched Out : $Modtime:   Aug 20 2007 15:03:46  $
---       SCCS Version     : $Revision:   2.2  $
+--       Date into SCCS   : $Date:   Oct 05 2007 11:24:24  $
+--       Date fetched Out : $Modtime:   Oct 05 2007 11:23:48  $
+--       SCCS Version     : $Revision:   2.3  $
 --
 -----------------------------------------------------------------------------
 rem
@@ -82,7 +82,7 @@ begin
         higgrirp.write_gri_spool(&1,'');
         l_ftp := x_tfl_ftp_util.PUT( p_localpath => l_interpath 
                                     ,p_filename => l_file_list(i)
-                                    ,p_remotepath => l_repoutpath
+                                    ,p_remotepath => l_ftp_rec.ftp_arc_out_dir 
                                     ,p_username => l_ftp_rec.ftp_username
                                     ,p_password => l_ftp_rec.ftp_password
                                     ,p_hostname => l_ftp_rec.ftp_host
