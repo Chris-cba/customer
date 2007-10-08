@@ -1,0 +1,84 @@
+create or replace package xlbb_sap_wo_interface
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/barnet/xlbb_sap_wo_interface.pkh-arc   2.0   Oct 08 2007 11:41:48   smarshall  $
+--       Module Name      : $Workfile:   xlbb_sap_wo_interface.pkh  $
+--       Date into PVCS   : $Date:   Oct 08 2007 11:41:48  $
+--       Date fetched Out : $Modtime:   Oct 08 2007 10:47:38  $
+--       PVCS Version     : $Revision:   2.0  $
+--
+--
+--   Author : Kevin Angus
+--
+--    xlbb_sap_wo_interface
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="generate_wo_interface_file">
+--
+-- This procedure generates the Atlas to SAP interface file.
+--
+PROCEDURE generate_wo_interface_file(pi_grr_job_id       IN     gri_report_runs.grr_job_id%TYPE
+                                    ,po_extract_filename    OUT varchar2
+                                    ,po_log_filename        OUT varchar2
+                                    );
+PROCEDURE generate_wo_interface_file(po_extract_filename    OUT varchar2
+                                    ,po_log_filename        OUT varchar2
+                                    );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="set_debug">
+--
+-- This procedure switches debug on/off for subsequent runs of the interface
+-- in the session.
+--
+procedure set_debug(pi_on in boolean default true
+                   );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xlbb_sap_wo_interface;
+/
+
