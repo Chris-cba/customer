@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.2   Oct 15 2007 16:08:50   smarshall  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.3   Oct 15 2007 16:16:42   smarshall  $
 --       Module Name      : $Workfile:   xnor_hops_gl_interface.pkb  $
---       Date into PVCS   : $Date:   Oct 15 2007 16:08:50  $
---       Date fetched Out : $Modtime:   Oct 15 2007 15:48:04  $
---       PVCS Version     : $Revision:   2.2  $
+--       Date into PVCS   : $Date:   Oct 15 2007 16:16:42  $
+--       Date fetched Out : $Modtime:   Oct 15 2007 16:14:18  $
+--       PVCS Version     : $Revision:   2.3  $
 --
 --
 --   Author : Kevin Angus
@@ -67,7 +67,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.2  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.3  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xnor_hops_gl_interface';
   
@@ -818,11 +818,7 @@ PROCEDURE generate_payment_file(pi_contractor_id  IN     contracts.con_contr_org
                                                                        ,p_contractor_id => pi_contractor_id
                                                                        ,p_seq_no        => NULL
                                                                        ,p_file_type     => c_file_type_payment);
-  
-  c_filename constant varchar2(100) := generate_file_name(pi_file_type         => c_file_type_payment
-                                                         ,pi_seq_no            => c_seq_no
-                                                         ,pi_oun_contractor_id => interfaces.get_oun_id(p_contractor_id => pi_contractor_id));  
-  
+
   l_payment_data_arr t_payment_data_arr;
   
   l_file_id  utl_file.file_type;
@@ -882,13 +878,17 @@ BEGIN
 
   if l_payment_data_arr.count > 0
   then
+    po_filename := generate_file_name(pi_file_type         => c_file_type_payment
+                                     ,pi_seq_no            => c_seq_no
+                                     ,pi_oun_contractor_id => interfaces.get_oun_id(p_contractor_id => pi_contractor_id));
+    
     db('which date do we use in the output file?');
     --which date do we use in the output file?
     l_output_date := xnor_financial_interface.get_accounting_date(pi_period_13 => pi_period_13);
     
-    db('opening file ' || pi_file_path || ' ' || c_filename);
+    db('opening file ' || pi_file_path || ' ' || po_filename);
     l_file_id := open_output_file(pi_file_path => pi_file_path
-                                 ,pi_filename  => c_filename);
+                                 ,pi_filename  => po_filename);
   
   
     for i in 1..l_payment_data_arr.count
@@ -979,7 +979,7 @@ BEGIN
     db('Closing file');
     nm3file.fclose(FILE => l_file_id);
 
-    xnor_financial_interface.write_ctrl_file(pi_filename      => c_filename
+    xnor_financial_interface.write_ctrl_file(pi_filename      => po_filename
                                             ,pi_filepath      => pi_file_path
                                             ,pi_total_lines   => l_lines_written_to_file
                                             ,pi_total_credits => l_total_credits
