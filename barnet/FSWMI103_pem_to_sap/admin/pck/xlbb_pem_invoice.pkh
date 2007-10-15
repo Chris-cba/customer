@@ -1,0 +1,66 @@
+create or replace package xlbb_pem_invoice
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/barnet/FSWMI103_pem_to_sap/admin/pck/xlbb_pem_invoice.pkh-arc   2.0   Oct 15 2007 08:38:30   smarshall  $
+--       Module Name      : $Workfile:   xlbb_pem_invoice.pkh  $
+--       Date into PVCS   : $Date:   Oct 15 2007 08:38:30  $
+--       Date fetched Out : $Modtime:   Oct 15 2007 07:45:16  $
+--       PVCS Version     : $Revision:   2.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : ITurnbull
+--
+--    xlbb_pem_invoice
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   2.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+function create_extract_file return varchar2;
+
+procedure update_pem_from_sap;
+--
+-----------------------------------------------------------------------------
+--
+
+end xlbb_pem_invoice;
+/
