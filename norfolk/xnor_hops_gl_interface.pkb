@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.1   Oct 02 2007 10:02:50   smarshall  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.2   Oct 15 2007 16:08:50   smarshall  $
 --       Module Name      : $Workfile:   xnor_hops_gl_interface.pkb  $
---       Date into PVCS   : $Date:   Oct 02 2007 10:02:50  $
---       Date fetched Out : $Modtime:   Oct 02 2007 09:54:12  $
---       PVCS Version     : $Revision:   2.1  $
+--       Date into PVCS   : $Date:   Oct 15 2007 16:08:50  $
+--       Date fetched Out : $Modtime:   Oct 15 2007 15:48:04  $
+--       PVCS Version     : $Revision:   2.2  $
 --
 --
 --   Author : Kevin Angus
@@ -67,7 +67,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.1  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.2  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xnor_hops_gl_interface';
   
@@ -633,14 +633,6 @@ BEGIN
               
               --write reversal for last if nec
               writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                                  ,pi_cost                  => -l_last_sent_cost
-                                                                  ,pi_descr                 => l_line_descr
-                                                                  ,pi_cost_code             => l_credit_cost_code
-                                                                  ,pi_user_je_category_name => c_user_jre_cat_name_order
-                                                                  ,pi_encumbrance_type_id   => c_encumbrance_type_id
-                                                                  ,pi_actual_flag           => c_actual_flag_estimate
-                                                                  ,pi_part_cost_code        => FALSE));
-              writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
                                                                   ,pi_cost                  => l_last_sent_cost
                                                                   ,pi_descr                 => l_line_descr
                                                                   ,pi_cost_code             => l_debit_cost_code
@@ -648,6 +640,15 @@ BEGIN
                                                                   ,pi_encumbrance_type_id   => c_encumbrance_type_id
                                                                   ,pi_actual_flag           => c_actual_flag_estimate
                                                                   ,pi_part_cost_code        => FALSE));
+              writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
+                                                                  ,pi_cost                  => -l_last_sent_cost
+                                                                  ,pi_descr                 => l_line_descr
+                                                                  ,pi_cost_code             => l_credit_cost_code
+                                                                  ,pi_user_je_category_name => c_user_jre_cat_name_order
+                                                                  ,pi_encumbrance_type_id   => c_encumbrance_type_id
+                                                                  ,pi_actual_flag           => c_actual_flag_estimate
+                                                                  ,pi_part_cost_code        => FALSE));
+              
 
               log_ctrl_data(pi_credit => l_last_sent_cost
                            ,pi_debit  => l_last_sent_cost);
@@ -921,7 +922,7 @@ BEGIN
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
                                                             ,pi_cost                  => l_reversal_cost
                                                             ,pi_descr                 => l_line_descr
-                                                            ,pi_cost_code             => l_credit_cost_code
+                                                            ,pi_cost_code             => l_debit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                             ,pi_encumbrance_type_id   => c_encumbrance_type_id
                                                             ,pi_actual_flag           => c_actual_flag_estimate
@@ -929,7 +930,7 @@ BEGIN
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
                                                             ,pi_cost                  => -l_reversal_cost
                                                             ,pi_descr                 => l_line_descr
-                                                            ,pi_cost_code             => l_debit_cost_code
+                                                            ,pi_cost_code             => l_credit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_order
                                                             ,pi_encumbrance_type_id   => c_encumbrance_type_id
                                                             ,pi_actual_flag           => c_actual_flag_estimate
@@ -951,7 +952,7 @@ BEGIN
                                                                                                      ,p_number    => 1));
                 
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                            ,pi_cost                  => -l_payment_data_arr(i).wol_act_cost
+                                                            ,pi_cost                  => l_payment_data_arr(i).wol_act_cost
                                                             ,pi_descr                 => l_line_descr
                                                             ,pi_cost_code             => l_debit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_payment
@@ -959,7 +960,7 @@ BEGIN
                                                             ,pi_actual_flag           => c_actual_flag_actual
                                                             ,pi_part_cost_code        => FALSE));
         writeln(xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                            ,pi_cost                  => l_payment_data_arr(i).wol_act_cost
+                                                            ,pi_cost                  => -l_payment_data_arr(i).wol_act_cost
                                                             ,pi_descr                 => l_line_descr
                                                             ,pi_cost_code             => l_credit_cost_code
                                                             ,pi_user_je_category_name => c_user_jre_cat_name_payment
