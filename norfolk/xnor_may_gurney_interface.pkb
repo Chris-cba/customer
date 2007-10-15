@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.3   Oct 02 2007 10:03:06   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.4   Oct 15 2007 16:08:36   smarshall  $
 --       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
---       Date into SCCS   : $Date:   Oct 02 2007 10:03:06  $
---       Date fetched Out : $Modtime:   Oct 01 2007 14:49:38  $
---       PVCS Version     : $Revision:   2.3  $
+--       Date into SCCS   : $Date:   Oct 15 2007 16:08:36  $
+--       Date fetched Out : $Modtime:   Oct 15 2007 11:26:28  $
+--       PVCS Version     : $Revision:   2.4  $
 --       Originally based on SCCS version 1.6
 --
 --
@@ -60,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.3  $';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.4  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -1984,9 +1984,9 @@ BEGIN
       --write header
       writeln_pay(get_payment_header_line(pi_invoice_no            => l_run_name
                                          ,pi_invoice_amount        => l_total_invoice_amount + l_total_tax_amount
-                                         ,pi_invoice_date          => SYSDATE
-                                         ,pi_invoice_received_date => SYSDATE
-                                         ,pi_gl_date               => SYSDATE
+                                         ,pi_invoice_date          => l_accounting_date
+                                         ,pi_invoice_received_date => l_accounting_date
+                                         ,pi_gl_date               => l_accounting_date
                                          ,pi_invoice_descr         => l_run_name));
     
       --write lines
