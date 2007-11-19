@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.4   Sep 28 2007 10:35:04   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.5   Nov 19 2007 08:23:50   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Sep 28 2007 10:35:04  $
---       Date fetched Out : $Modtime:   Sep 28 2007 10:33:34  $
---       SCCS Version     : $Revision:   2.4  $
+--       Date into SCCS   : $Date:   Nov 19 2007 08:23:50  $
+--       Date fetched Out : $Modtime:   Nov 15 2007 16:23:54  $
+--       SCCS Version     : $Revision:   2.5  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,11 +26,13 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.4  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.5  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
   g_interpath constant varchar2(200) := hig.get_user_or_sys_opt('INTERPATH');
+  
+  g_ftp_get_filename constant varchar2(100) := 'ftp_get_files.sh';
 
   g_con_id varchar2(5);
   g_cim_action varchar2(10);
@@ -38,6 +40,13 @@ AS
   c_out constant varchar2(3) := 'OUT';
   c_in  constant varchar2(2) := 'IN';
   
+  c_dirrepstrn           CONSTANT VARCHAR2(1)    := hig.get_sysopt(p_option_id => 'DIRREPSTRN'); --'/';
+  b_is_unix          BOOLEAN := c_dirrepstrn = '/';
+--
+  c_sde_bin_home     VARCHAR2(500) := '/app/oracle/sdeexe83/bin';
+  c_unix_bin_home    VARCHAR2(500) := '/bin';
+  c_comment_unix     VARCHAR2(10)  := '#';
+  c_comment_win      VARCHAR2(10)  := 'REM';
   
 
 --
@@ -187,22 +196,41 @@ procedure ins_ftp_queue( pi_con_id varchar2
                        )
 is
    pragma autonomous_transaction;
+   
+   cursor c_exists 
+   is 
+   select 1 
+   from x_tfl_ftp_queue
+   where tfq_con_id = pi_con_id
+     and tfq_filename = pi_filename
+     and tfq_direction = pi_direction;
+   
+   l_dummy number;
 begin
-   insert into x_tfl_ftp_queue
-      ( tfq_id
-       ,tfq_date
-       ,tfq_con_id
-       ,tfq_filename
-       ,tfq_direction
-      )
-   values
-      ( tfq_id_seq.nextval
-       ,sysdate
-       ,pi_con_id
-       ,pi_filename
-       ,pi_direction
-      );
-   commit;
+   -- only insert if the name and contractor do not already exist
+   open c_exists;
+   fetch c_exists into l_dummy;
+   
+   if c_exists%NOTfound 
+    then 
+      insert into x_tfl_ftp_queue
+         ( tfq_id
+          ,tfq_date
+          ,tfq_con_id
+          ,tfq_filename
+          ,tfq_direction
+         )
+      values
+         ( tfq_id_seq.nextval
+          ,sysdate
+          ,pi_con_id
+          ,pi_filename
+          ,pi_direction
+         );
+      commit;
+   end if;
+   
+   close c_exists;
 end ins_ftp_queue;
 --
 -----------------------------------------------------------------------------
@@ -1009,6 +1037,164 @@ end process_output_files;
 --
 -----------------------------------------------------------------------------
 --
+procedure create_get_ftp_script( pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
+                                ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
+                                ,pi_password x_tfl_ftp_dirs.FTP_PASSWORD%type
+                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type)
+is
+   cursor c1
+   is
+   select * 
+   from x_tfl_ftp_dirs;
+      
+   l_contents nm3type.tab_varchar32767;
+   
+   i number;
+   
+   procedure add(pi_text varchar2)
+   is
+   begin 
+      l_contents(i) := pi_text ;
+      i := i + 1;
+   end add;
+begin 
+   i := 1;
+   add('cd ' ||g_interpath);
+   add('ftp -v -i -n <<-!END_FTP');
+   for c1rec in c1 
+    loop       
+       add('open ' || pi_host);
+       add('user '||pi_username||' '||pi_password);
+       add('cd ' ||pi_remotepath);
+       add('mget *');
+       add('mget *');
+       add('mdelete *');
+       add('mdelete *');
+       add('close');            
+  end loop;
+  add('!END_FTP');
+   
+  nm3file.write_file(location  => g_interpath
+                    ,filename  => g_ftp_get_filename
+                    ,all_lines => l_contents
+                    );
+                    
+end create_get_ftp_script;
+--
+-----------------------------------------------------------------------------
+--
+--
+-----------------------------------------------------------------------------
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE enable_permissions
+IS
+BEGIN
+--
+  dbms_java.grant_permission
+               (grantee           => 'MCP_ADMIN'
+               ,permission_type   => 'java.io.FilePermission'
+               ,permission_name   => '<<ALL FILES>>'
+               ,permission_action => 'read,write,delete,execute');
+--
+  IF b_is_unix
+  THEN
+    dbms_java.grant_permission
+                 (user,
+                 'java.io.FilePermission',
+                  c_unix_bin_home||'/sh',
+                 'execute');
+  END IF;
+--
+END enable_permissions;
+
+PROCEDURE disable_permissions
+IS
+  CURSOR c1 IS
+  SELECT seq
+    FROM dba_java_policy
+   WHERE grantee = user
+     AND name = '<<ALL FILES>>';
+  l_seq NUMBER;
+BEGIN
+  OPEN c1;
+  FETCH c1 INTO l_seq;
+  CLOSE c1;
+  
+  dbms_java.disable_permission(l_seq);
+  dbms_java.delete_permission(l_seq);
+--  dbms_java.revoke_permission( grantee           => 'MCP_ADMIN'
+--                                , permission_type   => 'java.io.FilePermission'
+--                                , permission_name   =>  '<<ALL FILES>>'
+--                                , permission_action => 'execute'
+--                                );
+END disable_permissions;
+--
+-----------------------------------------------------------------------------
+--
+-- Allows you to run a command using Java UTIL class
+
+FUNCTION runthis ("args" IN VARCHAR2)
+RETURN NUMBER
+AS LANGUAGE JAVA
+NAME 'Util.RunThis(java.lang.String) return int';
+--
+-----------------------------------------------------------------------------
+--
+-- Wrapper to execute a command on the server using runit
+
+PROCEDURE exec_command( pi_command  varchar2
+                      ,pi_username varchar2 DEFAULT USER
+                     )
+IS
+--
+ l_ret_code           NUMBER;
+ l_command            VARCHAR2(250);
+--
+BEGIN
+--
+--    nm_debug.debug_on;
+ nm_debug.debug ('Execute - '||('cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command));
+--
+--    IF b_is_unix
+--    THEN
+--      -- Running on Unix
+--      --l_command := '/bin/sh '||l_sdebatdir||c_dirrepstrn||pi_command;
+--      l_command := '/bin/sh '||l_sdebatdir||c_dirrepstrn||'extract.csh';--pi_command;
+--    ELSE
+--      -- Running on Windows
+--      l_command := 'cmd.exe /C '||l_sdebatdir||c_dirrepstrn||pi_command;
+--    END IF;
+--  --
+--    l_ret_code := runthis(l_command);
+--    --nm_debug.debug ('Execute - '||l_ret_code);
+--  -- runthis returns -1 if there is an error
+--    nm_debug.debug ('Execute result = '||l_ret_code);
+--    IF l_ret_code < 0 
+--    THEN
+--      RAISE_APPLICATION_ERROR(-20401,'Error - '||SQLERRM||' - '||l_sdebatdir||c_dirrepstrn||pi_command);
+--    END IF;
+ IF b_is_unix
+ THEN
+   -- Running on Unix
+   l_command := c_unix_bin_home||'/sh '||g_interpath||c_dirrepstrn||pi_command;
+ ELSE
+   -- Running on Windows
+   l_command := 'cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command;
+ END IF;
+--
+ l_ret_code := runthis(l_command);
+--
+ IF l_ret_code < 0 
+ THEN
+   RAISE_APPLICATION_ERROR(-20401,'Error - '||SQLERRM||' - '||g_interpath||c_dirrepstrn||pi_command);
+ END IF;
+--
+END exec_command;
+--
+-----------------------------------------------------------------------------
+--
 function  get_list(pi_type varchar2
                   ,pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
                   ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
@@ -1017,7 +1203,9 @@ function  get_list(pi_type varchar2
                   )
 return nm3type.tab_varchar32767
 is
-   l_file_list nm3type.tab_varchar32767;
+   l_file_list nm3file.file_list;
+   rtrn_file_list nm3type.tab_varchar32767;
+   l_cnt number ;
    l_ftp boolean;
    l_status varchar2(100);
    l_error varchar2(800);
@@ -1025,20 +1213,48 @@ is
    l_trans_start date;
    l_trans_end date;
 begin
-   l_file_list := x_tfl_ftp_util.list(
-                                    p_localpath         => g_interpath
-                              ,     p_filename_filter   => pi_type||'*.*'
-                              ,     p_remotepath        => pi_remotepath
-                              ,     p_username          => pi_username
-                              ,     p_password          => pi_password
-                              ,     p_hostname          => pi_host
-                              ,     v_status            => l_status
-                              ,     v_error_message     => l_error
-                              ,     n_bytes_transmitted => l_bytes
-                              ,     d_trans_start       => l_trans_start
-                              ,     d_trans_end         => l_trans_end
-                              );
-   RETURN l_file_list;
+--   l_file_list := x_tfl_ftp_util.list(
+--                                    p_localpath         => g_interpath
+--                              ,     p_filename_filter   => pi_type||'*.*'
+--                              ,     p_remotepath        => pi_remotepath
+--                              ,     p_username          => pi_username
+--                              ,     p_password          => pi_password
+--                              ,     p_hostname          => pi_host
+--                              ,     v_status            => l_status
+--                              ,     v_error_message     => l_error
+--                              ,     n_bytes_transmitted => l_bytes
+--                              ,     d_trans_start       => l_trans_start
+--                              ,     d_trans_end         => l_trans_end
+--                              );
+-- 
+   -- build a script file to be executed to get the files from the ftp site
+   create_get_ftp_script( pi_remotepath => pi_remotepath
+                         ,pi_username   => pi_username
+                         ,pi_password   => pi_password
+                         ,pi_host       => pi_host
+                        );
+   -- execute the script 
+   enable_permissions;
+  --
+    exec_command (g_ftp_get_filename,user );
+  --
+    disable_permissions;
+   -- do a directory listing on the g_interpath for the type of files.
+   -- populate l_filelist with the names of the files in the directory
+   dbms_java.grant_permission(user,'SYS:java.io.FilePermission',g_interpath,'read');
+   l_file_list := nm3file.get_files_in_directory (pi_dir => g_interpath);
+   l_cnt := 1;
+   for i in 1..l_file_list.count
+    loop
+      if     substr(upper(l_file_list(i)),1,2) = pi_type
+         and substr(upper(l_file_list(i)),instr(l_file_list(i),'.')+1) = get_con_id
+      then 
+         rtrn_file_list(l_cnt) := l_file_list(i);
+         l_cnt := l_cnt + 1;
+      end if;
+   end loop;
+                                 
+   RETURN rtrn_file_list;
 end get_list;
 --
 -----------------------------------------------------------------------------
