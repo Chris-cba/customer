@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.5   Nov 19 2007 08:23:50   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.6   Nov 20 2007 14:35:52   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Nov 19 2007 08:23:50  $
---       Date fetched Out : $Modtime:   Nov 15 2007 16:23:54  $
---       SCCS Version     : $Revision:   2.5  $
+--       Date into SCCS   : $Date:   Nov 20 2007 14:35:52  $
+--       Date fetched Out : $Modtime:   Nov 20 2007 14:35:30  $
+--       SCCS Version     : $Revision:   2.6  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.5  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.6  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -1093,7 +1093,7 @@ IS
 BEGIN
 --
   dbms_java.grant_permission
-               (grantee           => 'MCP_ADMIN'
+               (grantee           => user
                ,permission_type   => 'java.io.FilePermission'
                ,permission_name   => '<<ALL FILES>>'
                ,permission_action => 'read,write,delete,execute');
