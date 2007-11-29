@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.6   Nov 20 2007 14:35:52   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.7   Nov 29 2007 10:19:58   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Nov 20 2007 14:35:52  $
---       Date fetched Out : $Modtime:   Nov 20 2007 14:35:30  $
---       SCCS Version     : $Revision:   2.6  $
+--       Date into SCCS   : $Date:   Nov 29 2007 10:19:58  $
+--       Date fetched Out : $Modtime:   Nov 26 2007 14:48:28  $
+--       SCCS Version     : $Revision:   2.7  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.6  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.7  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -40,8 +40,8 @@ AS
   c_out constant varchar2(3) := 'OUT';
   c_in  constant varchar2(2) := 'IN';
   
-  c_dirrepstrn           CONSTANT VARCHAR2(1)    := hig.get_sysopt(p_option_id => 'DIRREPSTRN'); --'/';
-  b_is_unix          BOOLEAN := c_dirrepstrn = '/';
+  c_dirrepstrn           CONSTANT VARCHAR2(1)    :=  '/'; -- hig.get_sysopt(p_option_id => 'DIRREPSTRN'); --'/';
+  b_is_unix          BOOLEAN := true;
 --
   c_sde_bin_home     VARCHAR2(500) := '/app/oracle/sdeexe83/bin';
   c_unix_bin_home    VARCHAR2(500) := '/bin';
@@ -761,6 +761,7 @@ is
    where tfq_direction = c_out
      and tfq_ftp_site is not null
      and tfq_archive is not null
+     and tfq_delete is null
      and tfq_con_id = c_con_id;
 
    l_fail boolean := false;
@@ -815,6 +816,7 @@ is
      and tfq_ftp_site is not null
      and tfq_archive is not null
      and tfq_import is not null
+     and tfq_delete is null
      and tfq_con_id = c_con_id;
 
    l_fail boolean := false;
@@ -1042,14 +1044,17 @@ procedure create_get_ftp_script( pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
                                 ,pi_password x_tfl_ftp_dirs.FTP_PASSWORD%type
                                 ,pi_host x_tfl_ftp_dirs.FTP_HOST%type)
 is
-   cursor c1
+   cursor c1 (c_con_id varchar2)
    is
    select * 
-   from x_tfl_ftp_dirs;
+   from x_tfl_ftp_dirs
+   where ftp_type = 'CIM'
+   and ftp_contractor = c_con_id;
       
    l_contents nm3type.tab_varchar32767;
    
    i number;
+   l_con_id varchar2(100) := get_con_id;
    
    procedure add(pi_text varchar2)
    is
@@ -1059,20 +1064,23 @@ is
    end add;
 begin 
    i := 1;
+   add('#!/bin/sh');
    add('cd ' ||g_interpath);
+   ADD('chmod 777 ' || g_ftp_get_filename);
    add('ftp -v -i -n <<-!END_FTP');
-   for c1rec in c1 
+   for c1rec in c1 (l_con_id)
     loop       
        add('open ' || pi_host);
        add('user '||pi_username||' '||pi_password);
+       add('lcd ' ||g_interpath);
        add('cd ' ||pi_remotepath);
        add('mget *');
-       add('mget *');
-       add('mdelete *');
        add('mdelete *');
        add('close');            
+       add('quit');
   end loop;
   add('!END_FTP');
+  add('exit');
    
   nm3file.write_file(location  => g_interpath
                     ,filename  => g_ftp_get_filename
@@ -1080,11 +1088,6 @@ begin
                     );
                     
 end create_get_ftp_script;
---
------------------------------------------------------------------------------
---
---
------------------------------------------------------------------------------
 --
 -----------------------------------------------------------------------------
 --
@@ -1101,7 +1104,7 @@ BEGIN
   IF b_is_unix
   THEN
     dbms_java.grant_permission
-                 (user,
+                 ('HIG_USER',
                  'java.io.FilePermission',
                   c_unix_bin_home||'/sh',
                  'execute');
@@ -1124,11 +1127,7 @@ BEGIN
   
   dbms_java.disable_permission(l_seq);
   dbms_java.delete_permission(l_seq);
---  dbms_java.revoke_permission( grantee           => 'MCP_ADMIN'
---                                , permission_type   => 'java.io.FilePermission'
---                                , permission_name   =>  '<<ALL FILES>>'
---                                , permission_action => 'execute'
---                                );
+
 END disable_permissions;
 --
 -----------------------------------------------------------------------------
@@ -1155,26 +1154,8 @@ IS
 BEGIN
 --
 --    nm_debug.debug_on;
- nm_debug.debug ('Execute - '||('cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command));
---
---    IF b_is_unix
---    THEN
---      -- Running on Unix
---      --l_command := '/bin/sh '||l_sdebatdir||c_dirrepstrn||pi_command;
---      l_command := '/bin/sh '||l_sdebatdir||c_dirrepstrn||'extract.csh';--pi_command;
---    ELSE
---      -- Running on Windows
---      l_command := 'cmd.exe /C '||l_sdebatdir||c_dirrepstrn||pi_command;
---    END IF;
---  --
---    l_ret_code := runthis(l_command);
---    --nm_debug.debug ('Execute - '||l_ret_code);
---  -- runthis returns -1 if there is an error
---    nm_debug.debug ('Execute result = '||l_ret_code);
---    IF l_ret_code < 0 
---    THEN
---      RAISE_APPLICATION_ERROR(-20401,'Error - '||SQLERRM||' - '||l_sdebatdir||c_dirrepstrn||pi_command);
---    END IF;
+-- nm_debug.debug ('Execute - '||('cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command));
+
  IF b_is_unix
  THEN
    -- Running on Unix
@@ -1188,7 +1169,7 @@ BEGIN
 --
  IF l_ret_code < 0 
  THEN
-   RAISE_APPLICATION_ERROR(-20401,'Error - '||SQLERRM||' - '||g_interpath||c_dirrepstrn||pi_command);
+   RAISE_APPLICATION_ERROR(-20401,'Error - '||SQLERRM||' - '||g_interpath||c_dirrepstrn||pi_command||' - '||l_command);
  END IF;
 --
 END exec_command;
@@ -1238,7 +1219,7 @@ begin
   --
     exec_command (g_ftp_get_filename,user );
   --
-    disable_permissions;
+ --   disable_permissions;
    -- do a directory listing on the g_interpath for the type of files.
    -- populate l_filelist with the names of the files in the directory
    dbms_java.grant_permission(user,'SYS:java.io.FilePermission',g_interpath,'read');
