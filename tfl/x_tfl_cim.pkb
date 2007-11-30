@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.8   Nov 29 2007 11:01:16   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.9   Nov 30 2007 13:54:16   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Nov 29 2007 11:01:16  $
---       Date fetched Out : $Modtime:   Nov 29 2007 11:00:16  $
---       SCCS Version     : $Revision:   2.8  $
+--       Date into SCCS   : $Date:   Nov 30 2007 13:54:16  $
+--       Date fetched Out : $Modtime:   Nov 30 2007 13:54:08  $
+--       SCCS Version     : $Revision:   2.9  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,13 +26,14 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.8  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.9  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
   g_interpath constant varchar2(200) := hig.get_user_or_sys_opt('INTERPATH');
 
   g_ftp_get_filename constant varchar2(100) := 'ftp_get_files.sh';
+  g_ftp_put_filename constant varchar2(100) := 'ftp_put_files.sh';
 
   g_con_id varchar2(5);
   g_cim_action varchar2(10);
@@ -82,6 +83,210 @@ is
 begin
    return g_cim_action;
 end get_cim_action;
+--
+-----------------------------------------------------------------------------
+--
+procedure create_put_ftp_script( pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
+                                ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
+                                ,pi_password x_tfl_ftp_dirs.FTP_PASSWORD%type
+                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type
+                                ,pi_filename varchar2)
+is
+     l_contents nm3type.tab_varchar32767;
+
+   i number;
+
+   procedure add(pi_text varchar2)
+   is
+   begin
+      l_contents(i) := pi_text ;
+      i := i + 1;
+   end add;
+begin
+   i := 1;
+   add('#!/bin/sh');
+   add('cd ' ||g_interpath);
+   ADD('chmod 755 ' || g_ftp_put_filename);
+   add('/bin/ftp -v -i -n >'||g_ftp_put_filename||'.log'||'<<-!END_FTP');
+   add('open ' || pi_host);
+   add('user '||pi_username||' '||pi_password);
+   add('lcd ' ||g_interpath);
+   add('cd ' ||pi_remotepath);
+   add('put '||pi_filename);
+   add('close');
+   add('quit');
+  add('!END_FTP');
+  add('exit');
+
+  nm3file.write_file(location  => g_interpath
+                    ,filename  => g_ftp_get_filename
+                    ,all_lines => l_contents
+                    );
+
+end create_put_ftp_script;
+--
+-----------------------------------------------------------------------------
+--
+procedure create_get_ftp_script( pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
+                                ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
+                                ,pi_password x_tfl_ftp_dirs.FTP_PASSWORD%type
+                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type)
+is
+   cursor c1 (c_con_id varchar2)
+   is
+   select *
+   from x_tfl_ftp_dirs
+   where ftp_type = 'CIM'
+   and ftp_contractor = c_con_id;
+
+   l_contents nm3type.tab_varchar32767;
+
+   i number;
+   l_con_id varchar2(100) := get_con_id;
+
+   procedure add(pi_text varchar2)
+   is
+   begin
+      l_contents(i) := pi_text ;
+      i := i + 1;
+   end add;
+begin
+   i := 1;
+   add('#!/bin/sh');
+   add('cd ' ||g_interpath);
+   ADD('chmod 755 ' || g_ftp_get_filename);
+   add('/bin/ftp -v -i -n >'||g_ftp_get_filename||'.log'||'<<-!END_FTP');
+   for c1rec in c1 (l_con_id)
+    loop
+       add('open ' || pi_host);
+       add('user '||pi_username||' '||pi_password);
+       add('lcd ' ||g_interpath);
+       add('cd ' ||pi_remotepath);
+       add('mget *');
+       add('mdelete *');
+       add('close');
+       add('quit');
+  end loop;
+  add('!END_FTP');
+  add('exit');
+
+  nm3file.write_file(location  => g_interpath
+                    ,filename  => g_ftp_get_filename
+                    ,all_lines => l_contents
+                    );
+
+end create_get_ftp_script;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE enable_permissions
+IS
+BEGIN
+--
+  dbms_java.grant_permission
+               (grantee           => user
+               ,permission_type   => 'java.io.FilePermission'
+               ,permission_name   => '<<ALL FILES>>'
+               ,permission_action => 'execute,read,write,delete');
+  dbms_java.grant_permission
+               (grantee           => user
+               ,permission_type   => 'java.io.FilePermission'
+               ,permission_name   => g_interpath||c_dirrepstrn||g_ftp_get_filename
+               ,permission_action => 'execute,read,write,delete');
+--
+  IF b_is_unix
+  THEN
+    dbms_java.grant_permission
+                 ('HIG_ADMIN',
+                 'java.io.FilePermission',
+                  c_unix_bin_home||'/sh',
+                 'execute');
+    dbms_java.grant_permission
+                 ('HIG_ADMIN',
+                 'java.io.FilePermission',
+                  c_unix_bin_home||'/ftp',
+                 'execute');
+
+    dbms_java.grant_permission
+                 (grantee           => 'HIG_ADMIN'
+                 ,permission_type   => 'java.io.FilePermission'
+                 ,permission_name   => g_interpath||c_dirrepstrn||g_ftp_get_filename
+                 ,permission_action => 'execute,read,write,delete');
+
+    dbms_java.grant_permission
+                 (grantee           => 'HIG_ADMIN'
+                 ,permission_type   => 'java.io.FilePermission'
+                 ,permission_name   => g_interpath||c_dirrepstrn||'-'
+                 ,permission_action => 'execute,read,write,delete');
+
+  END IF;
+--
+END enable_permissions;
+
+PROCEDURE disable_permissions
+IS
+  CURSOR c1 IS
+  SELECT seq
+    FROM dba_java_policy
+   WHERE grantee = user
+     AND name = '<<ALL FILES>>';
+  l_seq NUMBER;
+BEGIN
+  OPEN c1;
+  FETCH c1 INTO l_seq;
+  CLOSE c1;
+
+  dbms_java.disable_permission(l_seq);
+  dbms_java.delete_permission(l_seq);
+
+END disable_permissions;
+--
+-----------------------------------------------------------------------------
+--
+-- Allows you to run a command using Java UTIL class
+
+FUNCTION runthis ("args" IN VARCHAR2)
+RETURN NUMBER
+AS LANGUAGE JAVA
+NAME 'Util.RunThis(java.lang.String) return int';
+--
+-----------------------------------------------------------------------------
+--
+-- Wrapper to execute a command on the server using runit
+
+PROCEDURE exec_command( pi_command  varchar2
+                      ,pi_username varchar2 DEFAULT USER
+                     )
+IS
+--
+ l_ret_code           NUMBER;
+ l_command            VARCHAR2(250);
+--
+BEGIN
+--
+--    nm_debug.debug_on;
+-- nm_debug.debug ('Execute - '||('cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command));
+
+ IF b_is_unix
+ THEN
+   -- Running on Unix
+   l_command := c_unix_bin_home||'/sh '||g_interpath||c_dirrepstrn||pi_command;
+ ELSE
+   -- Running on Windows
+   l_command := 'cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command;
+ END IF;
+--
+ l_ret_code := runthis(l_command);
+--
+ IF l_ret_code < 0
+ THEN
+   if nm3file.FILE_EXISTS(location => g_interpath, filename => pi_command ) = 'N'
+   then
+      RAISE_APPLICATION_ERROR(-20401,'Error - '||SQLERRM||' - '||g_interpath||c_dirrepstrn||pi_command||' - '||l_command);
+   end if;
+ END IF;
+--
+END exec_command;
 --
 -----------------------------------------------------------------------------
 --
@@ -348,47 +553,63 @@ begin
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
       for ftp_rec in c_out_ftp(dir_rec.ftp_contractor)
        loop
-         l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
-                                     ,p_filename => ftp_rec.tfq_filename
-                                     ,p_remotepath => dir_rec.ftp_out_dir
-                                     ,p_username => dir_rec.ftp_username
-                                     ,p_password => dir_rec.ftp_password
-                                     ,p_hostname => dir_rec.ftp_host
-                                     ,v_status  => l_status
-                                     ,v_error_message => l_error
-                                     ,n_bytes_transmitted => l_bytes
-                                     ,d_trans_start => l_trans_start
-                                     ,d_trans_end => l_trans_end);
-         if not l_ftp
-          then
-            -- try again
-            l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
-                                        ,p_filename => ftp_rec.tfq_filename
-                                        ,p_remotepath => dir_rec.ftp_out_dir
-                                        ,p_username => dir_rec.ftp_username
-                                        ,p_password => dir_rec.ftp_password
-                                        ,p_hostname => dir_rec.ftp_host
-                                        ,v_status  => l_status
-                                        ,v_error_message => l_error
-                                        ,n_bytes_transmitted => l_bytes
-                                        ,d_trans_start => l_trans_start
-                                        ,d_trans_end => l_trans_end);
-            if not l_ftp
-             then
-               -- send an email
-               send_email(pi_msg => 'FTP process. Status = ' ||l_status||' '||
-                                    'Error: ' ||l_error||' '||
-                                    'Bytes: ' ||l_bytes||' ');
-               -- log the error
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                  , pi_ftp_dir => dir_rec.ftp_out_dir
-                  , pi_archive_dir => null
-                  , pi_message => 'FTP process. Status = ' ||l_status||' '||
-                                  'Error: ' ||l_error||' '||
-                                  'Bytes: ' ||l_bytes||' ');
-               exit;
-            end if;
-         end if;
+       -- build a script file to be executed to get the files from the ftp site
+         create_put_ftp_script( pi_remotepath => dir_rec.ftp_out_dir
+                               ,pi_username   => dir_rec.ftp_username
+                               ,pi_password   => dir_rec.ftp_password
+                               ,pi_host       => dir_rec.ftp_host
+                               ,pi_filename   => ftp_rec.tfq_filename
+                              );
+         -- execute the script
+         enable_permissions;
+        --
+          exec_command (g_ftp_put_filename,user );
+        --
+             
+       
+      -- this code commented out as the put is done by executing a shell script
+      --
+--         l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
+--                                     ,p_filename => ftp_rec.tfq_filename
+--                                     ,p_remotepath => dir_rec.ftp_out_dir
+--                                     ,p_username => dir_rec.ftp_username
+--                                     ,p_password => dir_rec.ftp_password
+--                                     ,p_hostname => dir_rec.ftp_host
+--                                     ,v_status  => l_status
+--                                     ,v_error_message => l_error
+--                                     ,n_bytes_transmitted => l_bytes
+--                                     ,d_trans_start => l_trans_start
+--                                     ,d_trans_end => l_trans_end);
+--         if not l_ftp
+--          then
+--            -- try again
+--            l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
+--                                        ,p_filename => ftp_rec.tfq_filename
+--                                        ,p_remotepath => dir_rec.ftp_out_dir
+--                                        ,p_username => dir_rec.ftp_username
+--                                        ,p_password => dir_rec.ftp_password
+--                                        ,p_hostname => dir_rec.ftp_host
+--                                        ,v_status  => l_status
+--                                        ,v_error_message => l_error
+--                                        ,n_bytes_transmitted => l_bytes
+--                                        ,d_trans_start => l_trans_start
+--                                        ,d_trans_end => l_trans_end);
+--            if not l_ftp
+--             then
+--               -- send an email
+--               send_email(pi_msg => 'FTP process. Status = ' ||l_status||' '||
+--                                    'Error: ' ||l_error||' '||
+--                                    'Bytes: ' ||l_bytes||' ');
+--               -- log the error
+--               ins_log(pi_filename => ftp_rec.tfq_filename
+--                  , pi_ftp_dir => dir_rec.ftp_out_dir
+--                  , pi_archive_dir => null
+--                  , pi_message => 'FTP process. Status = ' ||l_status||' '||
+--                                  'Error: ' ||l_error||' '||
+--                                  'Bytes: ' ||l_bytes||' ');
+--               exit;
+--            end if;
+--         end if;
          -- log success
          upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
 
@@ -434,93 +655,94 @@ begin
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
       for ftp_rec in c_in_ftp(dir_rec.ftp_contractor)
        loop
-         l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath
-                                      ,p_filename => ftp_rec.tfq_filename
-                                      ,p_remotepath => dir_rec.ftp_in_dir
-                                      ,p_username => dir_rec.ftp_username
-                                      ,p_password => dir_rec.ftp_password
-                                      ,p_hostname => dir_rec.ftp_host
-                                      ,v_status  => l_status
-                                      ,v_error_message => l_error
-                                      ,n_bytes_transmitted => l_bytes
-                                      ,d_trans_start => l_trans_start
-                                      ,d_trans_end => l_trans_end);
+       -- this commeneted out as the get is done by calling an ftp script
+--         l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath
+--                                      ,p_filename => ftp_rec.tfq_filename
+--                                      ,p_remotepath => dir_rec.ftp_in_dir
+--                                      ,p_username => dir_rec.ftp_username
+--                                      ,p_password => dir_rec.ftp_password
+--                                      ,p_hostname => dir_rec.ftp_host
+--                                      ,v_status  => l_status
+--                                      ,v_error_message => l_error
+--                                      ,n_bytes_transmitted => l_bytes
+--                                      ,d_trans_start => l_trans_start
+--                                      ,d_trans_end => l_trans_end);
 
-         if l_ftp then
-         l_ftp := x_tfl_ftp_util.remove( p_localpath => g_interpath
-                                      ,p_filename => ftp_rec.tfq_filename
-                                      ,p_remotepath => dir_rec.ftp_in_dir
-                                      ,p_username => dir_rec.ftp_username
-                                      ,p_password => dir_rec.ftp_password
-                                      ,p_hostname => dir_rec.ftp_host
-                                      ,v_status  => l_status
-                                      ,v_error_message => l_error
-                                      ,n_bytes_transmitted => l_bytes
-                                      ,d_trans_start => l_trans_start
-                                      ,d_trans_end => l_trans_end);
-               -- log the error
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                  , pi_ftp_dir => dir_rec.ftp_in_dir
-                  , pi_archive_dir => null
-                  , pi_message => 'REMOVE FTP process. Status = ' ||l_status||' '||
-                                  'Error: ' ||l_error||' '||
-                                  'Bytes: ' ||l_bytes||' ');
+--         if l_ftp then
+--         l_ftp := x_tfl_ftp_util.remove( p_localpath => g_interpath
+--                                      ,p_filename => ftp_rec.tfq_filename
+--                                      ,p_remotepath => dir_rec.ftp_in_dir
+--                                      ,p_username => dir_rec.ftp_username
+--                                      ,p_password => dir_rec.ftp_password
+--                                      ,p_hostname => dir_rec.ftp_host
+--                                      ,v_status  => l_status
+--                                      ,v_error_message => l_error
+--                                      ,n_bytes_transmitted => l_bytes
+--                                      ,d_trans_start => l_trans_start
+--                                      ,d_trans_end => l_trans_end);
+--               -- log the error
+--               ins_log(pi_filename => ftp_rec.tfq_filename
+--                  , pi_ftp_dir => dir_rec.ftp_in_dir
+--                  , pi_archive_dir => null
+--                  , pi_message => 'REMOVE FTP process. Status = ' ||l_status||' '||
+--                                  'Error: ' ||l_error||' '||
+--                                  'Bytes: ' ||l_bytes||' ');
 
-         end if;
+--         end if;
 
-         if not l_ftp
-          then
-            -- try again
-            l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath
-                                        ,p_filename => ftp_rec.tfq_filename
-                                        ,p_remotepath => dir_rec.ftp_in_dir
-                                        ,p_username => dir_rec.ftp_username
-                                        ,p_password => dir_rec.ftp_password
-                                        ,p_hostname => dir_rec.ftp_host
-                                        ,v_status  => l_status
-                                        ,v_error_message => l_error
-                                        ,n_bytes_transmitted => l_bytes
-                                        ,d_trans_start => l_trans_start
-                                        ,d_trans_end => l_trans_end);
+--         if not l_ftp
+--          then
+--            -- try again
+--            l_ftp := x_tfl_ftp_util.get( p_localpath => g_interpath
+--                                        ,p_filename => ftp_rec.tfq_filename
+--                                        ,p_remotepath => dir_rec.ftp_in_dir
+--                                        ,p_username => dir_rec.ftp_username
+--                                        ,p_password => dir_rec.ftp_password
+--                                        ,p_hostname => dir_rec.ftp_host
+--                                        ,v_status  => l_status
+--                                        ,v_error_message => l_error
+--                                        ,n_bytes_transmitted => l_bytes
+--                                        ,d_trans_start => l_trans_start
+--                                        ,d_trans_end => l_trans_end);
 
-         if l_ftp then
-         l_ftp := x_tfl_ftp_util.remove( p_localpath => g_interpath
-                                      ,p_filename => ftp_rec.tfq_filename
-                                      ,p_remotepath => dir_rec.ftp_in_dir
-                                      ,p_username => dir_rec.ftp_username
-                                      ,p_password => dir_rec.ftp_password
-                                      ,p_hostname => dir_rec.ftp_host
-                                      ,v_status  => l_status
-                                      ,v_error_message => l_error
-                                      ,n_bytes_transmitted => l_bytes
-                                      ,d_trans_start => l_trans_start
-                                      ,d_trans_end => l_trans_end);
-               -- log the error
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                  , pi_ftp_dir => dir_rec.ftp_in_dir
-                  , pi_archive_dir => null
-                  , pi_message => 'REMOVE FTP process. Status = ' ||l_status||' '||
-                                  'Error: ' ||l_error||' '||
-                                  'Bytes: ' ||l_bytes||' ');
+--         if l_ftp then
+--         l_ftp := x_tfl_ftp_util.remove( p_localpath => g_interpath
+--                                      ,p_filename => ftp_rec.tfq_filename
+--                                      ,p_remotepath => dir_rec.ftp_in_dir
+--                                      ,p_username => dir_rec.ftp_username
+--                                      ,p_password => dir_rec.ftp_password
+--                                      ,p_hostname => dir_rec.ftp_host
+--                                      ,v_status  => l_status
+--                                      ,v_error_message => l_error
+--                                      ,n_bytes_transmitted => l_bytes
+--                                      ,d_trans_start => l_trans_start
+--                                      ,d_trans_end => l_trans_end);
+--               -- log the error
+--               ins_log(pi_filename => ftp_rec.tfq_filename
+--                  , pi_ftp_dir => dir_rec.ftp_in_dir
+--                  , pi_archive_dir => null
+--                  , pi_message => 'REMOVE FTP process. Status = ' ||l_status||' '||
+--                                  'Error: ' ||l_error||' '||
+--                                  'Bytes: ' ||l_bytes||' ');
 
-          end if;
+--          end if;
 
-            if not l_ftp
-             then
-               -- send an email
-               send_email(pi_msg => 'FTP process. Status = ' ||l_status||' '||
-                                    'Error: ' ||l_error||' '||
-                                    'Bytes: ' ||l_bytes||' ');
-               -- log the error
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                  , pi_ftp_dir => dir_rec.ftp_in_dir
-                  , pi_archive_dir => null
-                  , pi_message => 'FTP process. Status = ' ||l_status||' '||
-                                  'Error: ' ||l_error||' '||
-                                  'Bytes: ' ||l_bytes||' ');
-               exit;
-            end if;
-         end if;
+--            if not l_ftp
+--             then
+--               -- send an email
+--               send_email(pi_msg => 'FTP process. Status = ' ||l_status||' '||
+--                                    'Error: ' ||l_error||' '||
+--                                    'Bytes: ' ||l_bytes||' ');
+--               -- log the error
+--               ins_log(pi_filename => ftp_rec.tfq_filename
+--                  , pi_ftp_dir => dir_rec.ftp_in_dir
+--                  , pi_archive_dir => null
+--                  , pi_message => 'FTP process. Status = ' ||l_status||' '||
+--                                  'Error: ' ||l_error||' '||
+--                                  'Bytes: ' ||l_bytes||' ');
+--               exit;
+--            end if;
+--         end if;
          -- log success
          upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
 
@@ -1035,172 +1257,7 @@ begin
 
 
 end process_output_files;
---
------------------------------------------------------------------------------
---
-procedure create_get_ftp_script( pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
-                                ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
-                                ,pi_password x_tfl_ftp_dirs.FTP_PASSWORD%type
-                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type)
-is
-   cursor c1 (c_con_id varchar2)
-   is
-   select *
-   from x_tfl_ftp_dirs
-   where ftp_type = 'CIM'
-   and ftp_contractor = c_con_id;
 
-   l_contents nm3type.tab_varchar32767;
-
-   i number;
-   l_con_id varchar2(100) := get_con_id;
-
-   procedure add(pi_text varchar2)
-   is
-   begin
-      l_contents(i) := pi_text ;
-      i := i + 1;
-   end add;
-begin
-   i := 1;
-   add('#!/bin/sh');
-   add('cd ' ||g_interpath);
-   ADD('chmod 755 ' || g_ftp_get_filename);
-   add('/bin/ftp -v -i -n >'||g_ftp_get_filename||'.log'||'<<-!END_FTP');
-   for c1rec in c1 (l_con_id)
-    loop
-       add('open ' || pi_host);
-       add('user '||pi_username||' '||pi_password);
-       add('lcd ' ||g_interpath);
-       add('cd ' ||pi_remotepath);
-       add('mget *');
-       add('mdelete *');
-       add('close');
-       add('quit');
-  end loop;
-  add('!END_FTP');
-  add('exit');
-
-  nm3file.write_file(location  => g_interpath
-                    ,filename  => g_ftp_get_filename
-                    ,all_lines => l_contents
-                    );
-
-end create_get_ftp_script;
---
------------------------------------------------------------------------------
---
-PROCEDURE enable_permissions
-IS
-BEGIN
---
-  dbms_java.grant_permission
-               (grantee           => user
-               ,permission_type   => 'java.io.FilePermission'
-               ,permission_name   => '<<ALL FILES>>'
-               ,permission_action => 'execute,read,write,delete');
-  dbms_java.grant_permission
-               (grantee           => user
-               ,permission_type   => 'java.io.FilePermission'
-               ,permission_name   => g_interpath||c_dirrepstrn||g_ftp_get_filename
-               ,permission_action => 'execute,read,write,delete');
---
-  IF b_is_unix
-  THEN
-    dbms_java.grant_permission
-                 ('HIG_ADMIN',
-                 'java.io.FilePermission',
-                  c_unix_bin_home||'/sh',
-                 'execute');
-    dbms_java.grant_permission
-                 ('HIG_ADMIN',
-                 'java.io.FilePermission',
-                  c_unix_bin_home||'/ftp',
-                 'execute');
-
-    dbms_java.grant_permission
-                 (grantee           => 'HIG_ADMIN'
-                 ,permission_type   => 'java.io.FilePermission'
-                 ,permission_name   => g_interpath||c_dirrepstrn||g_ftp_get_filename
-                 ,permission_action => 'execute,read,write,delete');
-
-    dbms_java.grant_permission
-                 (grantee           => 'HIG_ADMIN'
-                 ,permission_type   => 'java.io.FilePermission'
-                 ,permission_name   => g_interpath||c_dirrepstrn||'-'
-                 ,permission_action => 'execute,read,write,delete');
-
-  END IF;
---
-END enable_permissions;
-
-PROCEDURE disable_permissions
-IS
-  CURSOR c1 IS
-  SELECT seq
-    FROM dba_java_policy
-   WHERE grantee = user
-     AND name = '<<ALL FILES>>';
-  l_seq NUMBER;
-BEGIN
-  OPEN c1;
-  FETCH c1 INTO l_seq;
-  CLOSE c1;
-
-  dbms_java.disable_permission(l_seq);
-  dbms_java.delete_permission(l_seq);
-
-END disable_permissions;
---
------------------------------------------------------------------------------
---
--- Allows you to run a command using Java UTIL class
-
-FUNCTION runthis ("args" IN VARCHAR2)
-RETURN NUMBER
-AS LANGUAGE JAVA
-NAME 'Util.RunThis(java.lang.String) return int';
---
------------------------------------------------------------------------------
---
--- Wrapper to execute a command on the server using runit
-
-PROCEDURE exec_command( pi_command  varchar2
-                      ,pi_username varchar2 DEFAULT USER
-                     )
-IS
---
- l_ret_code           NUMBER;
- l_command            VARCHAR2(250);
---
-BEGIN
---
---    nm_debug.debug_on;
--- nm_debug.debug ('Execute - '||('cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command));
-
- IF b_is_unix
- THEN
-   -- Running on Unix
-   l_command := c_unix_bin_home||'/sh '||g_interpath||c_dirrepstrn||pi_command;
- ELSE
-   -- Running on Windows
-   l_command := 'cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command;
- END IF;
---
- l_ret_code := runthis(l_command);
---
- IF l_ret_code < 0
- THEN
-   if nm3file.FILE_EXISTS(location => g_interpath, filename => g_ftp_get_filename ) = 'N'
-   then
-      RAISE_APPLICATION_ERROR(-20401,'Error - '||SQLERRM||' - '||g_interpath||c_dirrepstrn||pi_command||' - '||l_command);
-   end if;
- END IF;
---
-END exec_command;
---
------------------------------------------------------------------------------
---
 function  get_list(pi_type varchar2
                   ,pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
                   ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
