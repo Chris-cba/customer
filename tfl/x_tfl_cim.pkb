@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.9   Nov 30 2007 13:54:16   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.10   Dec 03 2007 16:00:26   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Nov 30 2007 13:54:16  $
---       Date fetched Out : $Modtime:   Nov 30 2007 13:54:08  $
---       SCCS Version     : $Revision:   2.9  $
+--       Date into SCCS   : $Date:   Dec 03 2007 16:00:26  $
+--       Date fetched Out : $Modtime:   Dec 03 2007 15:47:06  $
+--       SCCS Version     : $Revision:   2.10  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.9  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.10  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -49,6 +49,8 @@ AS
   c_comment_win      VARCHAR2(10)  := 'REM';
 
 
+  type t_keys_type  is table of number index by binary_integer;
+  g_keys t_keys_type;  
 --
 -----------------------------------------------------------------------------
 --
@@ -119,7 +121,7 @@ begin
   add('exit');
 
   nm3file.write_file(location  => g_interpath
-                    ,filename  => g_ftp_get_filename
+                    ,filename  => g_ftp_put_filename
                     ,all_lines => l_contents
                     );
 
@@ -179,7 +181,24 @@ end create_get_ftp_script;
 --
 -----------------------------------------------------------------------------
 --
-PROCEDURE enable_permissions
+procedure revoke_remove_permission(pi_key number)
+is
+begin 
+   dbms_java.disable_permission(pi_key);
+   dbms_java.delete_permission(pi_key);
+end ;  
+
+procedure revoke_remove_permission(pi_keys t_keys_type)
+is
+begin 
+   for i in 1..pi_keys.count
+    loop
+      revoke_remove_permission(pi_key => pi_keys(i));
+   end loop;
+end ;  
+
+
+PROCEDURE enable_permissions(pi_filename varchar2)
 IS
 BEGIN
 --
@@ -187,12 +206,29 @@ BEGIN
                (grantee           => user
                ,permission_type   => 'java.io.FilePermission'
                ,permission_name   => '<<ALL FILES>>'
-               ,permission_action => 'execute,read,write,delete');
+               ,permission_action => 'execute,read,write,delete'
+                );
   dbms_java.grant_permission
                (grantee           => user
                ,permission_type   => 'java.io.FilePermission'
-               ,permission_name   => g_interpath||c_dirrepstrn||g_ftp_get_filename
+               ,permission_name   => g_interpath||c_dirrepstrn||pi_filename
                ,permission_action => 'execute,read,write,delete');
+  dbms_java.grant_permission
+                 (grantee           => user
+                 ,permission_type   => 'java.io.FilePermission'
+                 ,permission_name   => g_interpath||c_dirrepstrn||'-'
+                 ,permission_action => 'execute,read,write,delete');
+    dbms_java.grant_permission
+                 (user,
+                 'java.io.FilePermission',
+                  c_unix_bin_home||'/sh',
+                 'execute');
+               
+    dbms_java.grant_permission
+                 (user,
+                 'java.io.FilePermission',
+                  c_unix_bin_home||'/ftp',
+                 'execute');                
 --
   IF b_is_unix
   THEN
@@ -210,7 +246,7 @@ BEGIN
     dbms_java.grant_permission
                  (grantee           => 'HIG_ADMIN'
                  ,permission_type   => 'java.io.FilePermission'
-                 ,permission_name   => g_interpath||c_dirrepstrn||g_ftp_get_filename
+                 ,permission_name   => g_interpath||c_dirrepstrn||pi_filename
                  ,permission_action => 'execute,read,write,delete');
 
     dbms_java.grant_permission
@@ -561,7 +597,7 @@ begin
                                ,pi_filename   => ftp_rec.tfq_filename
                               );
          -- execute the script
-         enable_permissions;
+         enable_permissions(pi_filename => g_ftp_put_filename);
         --
           exec_command (g_ftp_put_filename,user );
         --
@@ -986,6 +1022,7 @@ is
      and tfq_con_id = c_con_id;
 
    l_fail boolean := false;
+   l_key number;
 begin
    set_cim_action(pi_cim_action => 'WO');
    for dir_rec in c_ftp_dirs
@@ -994,8 +1031,10 @@ begin
       for ftp_rec in c_out_delete(dir_rec.ftp_contractor)
        loop
          begin
-            dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'/'||ftp_rec.tfq_filename, 'delete' );
+            dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'/'||ftp_rec.tfq_filename, 'delete',l_key );
             nm3file.delete_File(pi_dir => g_interpath, pi_file => ftp_rec.tfq_filename);
+            revoke_remove_permission(pi_key => l_key);
+            
          exception
             when others then
             -- send email
@@ -1041,6 +1080,7 @@ is
      and tfq_con_id = c_con_id;
 
    l_fail boolean := false;
+   l_key number;
 begin
    set_cim_action(pi_cim_action => 'WCWI');
    for dir_rec in c_ftp_dirs
@@ -1049,8 +1089,9 @@ begin
       for ftp_rec in c_in_delete(dir_rec.ftp_contractor)
        loop
          begin
-            dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'/'||ftp_rec.tfq_filename, 'delete' );
+            dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'/'||ftp_rec.tfq_filename, 'delete', l_key );
             nm3file.delete_File(pi_dir => g_interpath, pi_file => ftp_rec.tfq_filename);
+            revoke_remove_permission(pi_key => l_key);
          exception
             when others then
             -- send email
@@ -1297,7 +1338,7 @@ begin
                          ,pi_host       => pi_host
                         );
    -- execute the script
-   enable_permissions;
+   enable_permissions(pi_filename => g_ftp_get_filename);
   --
     exec_command (g_ftp_get_filename,user );
   --
