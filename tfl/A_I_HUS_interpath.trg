@@ -6,11 +6,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/A_I_HUS_interpath.trg-arc   2.0   Nov 19 2007 13:31:48   smarshall  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/A_I_HUS_interpath.trg-arc   2.1   Dec 04 2007 08:41:52   Ian Turnbull  $
 --       Module Name      : $Workfile:   A_I_HUS_interpath.trg  $
---       Date into PVCS   : $Date:   Nov 19 2007 13:31:48  $
---       Date fetched Out : $Modtime:   Nov 19 2007 08:28:46  $
---       PVCS Version     : $Revision:   2.0  $
+--       Date into PVCS   : $Date:   Dec 04 2007 08:41:52  $
+--       Date fetched Out : $Modtime:   Dec 04 2007 08:41:30  $
+--       PVCS Version     : $Revision:   2.1  $
 --
 --
 --   Author : ITurnbull
@@ -24,6 +24,10 @@ begin
   FROM hig_user_options
  WHERE huo_hus_user_id = 1
    AND huo_id = 'INTERPATH';
-   dbms_java.grant_permission(:new.hus_username,'SYS:java.io.FilePermission',l_INTERPATH,'read');
+   dbms_java.grant_permission('HIG_USER','SYS:java.io.FilePermission',l_INTERPATH,'read,write,delete');
 end A_I_HUS_interpath;
 /
+
+
+
+
