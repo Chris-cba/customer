@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.10   Dec 03 2007 16:00:26   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.11   Dec 06 2007 11:23:32   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 03 2007 16:00:26  $
---       Date fetched Out : $Modtime:   Dec 03 2007 15:47:06  $
---       SCCS Version     : $Revision:   2.10  $
+--       Date into SCCS   : $Date:   Dec 06 2007 11:23:32  $
+--       Date fetched Out : $Modtime:   Dec 06 2007 11:22:24  $
+--       SCCS Version     : $Revision:   2.11  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.10  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.11  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -54,6 +54,14 @@ AS
 --
 -----------------------------------------------------------------------------
 --
+
+procedure ins_log(  pi_filename varchar2 default null
+                   ,pi_ftp_dir varchar2 default null
+                   ,pi_archive_dir varchar2 default null
+                   ,pi_message varchar2
+                   );
+                   
+
 procedure set_con_id(pi_con_id varchar2)
 is
 begin
@@ -103,13 +111,16 @@ is
    begin
       l_contents(i) := pi_text ;
       i := i + 1;
+--      ins_log(pi_message => pi_text);
    end add;
 begin
    i := 1;
+   l_contents.delete;
+   
    add('#!/bin/sh');
    add('cd ' ||g_interpath);
    ADD('chmod 755 ' || g_ftp_put_filename);
-   add('/bin/ftp -v -i -n >'||g_ftp_put_filename||'.log'||'<<-!END_FTP');
+   add('/bin/ftp -v -i -n >'||g_ftp_put_filename||'.log'||get_con_id||'<<-!END_FTP');
    add('open ' || pi_host);
    add('user '||pi_username||' '||pi_password);
    add('lcd ' ||g_interpath);
@@ -118,8 +129,10 @@ begin
    add('close');
    add('quit');
   add('!END_FTP');
+  --add ('cp ' || g_ftp_put_filename || ' ' || g_ftp_put_filename||'.'||get_con_id);
   add('exit');
 
+  
   nm3file.write_file(location  => g_interpath
                     ,filename  => g_ftp_put_filename
                     ,all_lines => l_contents
@@ -312,7 +325,12 @@ BEGIN
    l_command := 'cmd.exe /C '||g_interpath||c_dirrepstrn||pi_command;
  END IF;
 --
+ --ins_log(pi_message => 'current con is is ' || get_con_id);
+ --ins_log(pi_message => 'l_command is '||l_command);
  l_ret_code := runthis(l_command);
+ l_ret_code := runthis(l_command);
+ --ins_log(pi_message => 'l_ret_code is '||l_ret_code);
+ 
 --
  IF l_ret_code < 0
  THEN
@@ -583,13 +601,16 @@ is
    l_trans_start date;
    l_trans_end date;
 begin
+--   ins_log(pi_message => 'start process_out_ftp_queue');
    set_cim_action(pi_cim_action => 'WO');
    for dir_rec in c_ftp_dirs
     loop
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
+  --    ins_log(pi_message => 'contractor set to '||dir_rec.ftp_contractor);
       for ftp_rec in c_out_ftp(dir_rec.ftp_contractor)
        loop
        -- build a script file to be executed to get the files from the ftp site
+    --     ins_log(pi_message => 'calling create_put_ftp_script for '||ftp_rec.tfq_filename);
          create_put_ftp_script( pi_remotepath => dir_rec.ftp_out_dir
                                ,pi_username   => dir_rec.ftp_username
                                ,pi_password   => dir_rec.ftp_password
@@ -649,12 +670,12 @@ begin
          -- log success
          upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
 
-         ins_log(pi_filename => ftp_rec.tfq_filename
-            , pi_ftp_dir => dir_rec.ftp_out_dir
-            , pi_archive_dir => null
-            , pi_message => 'FTP process. Status = ' ||l_status||' '||
-                            'Error: ' ||l_error||' '||
-                            'Bytes: ' ||l_bytes||' ');
+--         ins_log(pi_filename => ftp_rec.tfq_filename
+--            , pi_ftp_dir => dir_rec.ftp_out_dir
+--            , pi_archive_dir => null
+--            , pi_message => 'FTP process. Status = ' ||l_status||' '||
+--                            'Error: ' ||l_error||' '||
+--                            'Bytes: ' ||l_bytes||' ');
       end loop;
    end loop;
 end process_out_ftp_queue;
@@ -782,12 +803,12 @@ begin
          -- log success
          upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
 
-         ins_log(pi_filename => ftp_rec.tfq_filename
-            , pi_ftp_dir => dir_rec.ftp_in_dir
-            , pi_archive_dir => null
-            , pi_message => 'FTP process. Status = ' ||l_status||' '||
-                            'Error: ' ||l_error||' '||
-                            'Bytes: ' ||l_bytes||' ');
+--         ins_log(pi_filename => ftp_rec.tfq_filename
+--            , pi_ftp_dir => dir_rec.ftp_in_dir
+--            , pi_archive_dir => null
+--            , pi_message => 'FTP process. Status = ' ||l_status||' '||
+--                            'Error: ' ||l_error||' '||
+--                            'Bytes: ' ||l_bytes||' ');
       end loop;
    end loop;
 end process_in_ftp_queue;
