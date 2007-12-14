@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.11   Dec 06 2007 11:23:32   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.12   Dec 14 2007 08:28:14   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 06 2007 11:23:32  $
---       Date fetched Out : $Modtime:   Dec 06 2007 11:22:24  $
---       SCCS Version     : $Revision:   2.11  $
+--       Date into SCCS   : $Date:   Dec 14 2007 08:28:14  $
+--       Date fetched Out : $Modtime:   Dec 13 2007 22:05:56  $
+--       SCCS Version     : $Revision:   2.12  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.11  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.12  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -99,10 +99,9 @@ end get_cim_action;
 procedure create_put_ftp_script( pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
                                 ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
                                 ,pi_password x_tfl_ftp_dirs.FTP_PASSWORD%type
-                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type
-                                ,pi_filename varchar2)
+                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type)
 is
-     l_contents nm3type.tab_varchar32767;
+   l_contents nm3type.tab_varchar32767;
 
    i number;
 
@@ -125,18 +124,18 @@ begin
    add('user '||pi_username||' '||pi_password);
    add('lcd ' ||g_interpath);
    add('cd ' ||pi_remotepath);
-   add('put '||pi_filename);
+   add('mput '||'WO*.'||get_con_id);
    add('close');
    add('quit');
-  add('!END_FTP');
-  --add ('cp ' || g_ftp_put_filename || ' ' || g_ftp_put_filename||'.'||get_con_id);
-  add('exit');
+   add('!END_FTP');
+   --add ('cp ' || g_ftp_put_filename || ' ' || g_ftp_put_filename||'.'||get_con_id);
+   add('exit');
 
   
-  nm3file.write_file(location  => g_interpath
-                    ,filename  => g_ftp_put_filename
-                    ,all_lines => l_contents
-                    );
+   nm3file.write_file(location  => g_interpath
+                     ,filename  => g_ftp_put_filename
+                     ,all_lines => l_contents
+                     );
 
 end create_put_ftp_script;
 --
@@ -181,14 +180,14 @@ begin
        add('mdelete *');
        add('close');
        add('quit');
-  end loop;
-  add('!END_FTP');
-  add('exit');
+   end loop;
+   add('!END_FTP');
+   add('exit');
 
-  nm3file.write_file(location  => g_interpath
-                    ,filename  => g_ftp_get_filename
-                    ,all_lines => l_contents
-                    );
+   nm3file.write_file(location  => g_interpath
+                     ,filename  => g_ftp_get_filename
+                     ,all_lines => l_contents
+                     );
 
 end create_get_ftp_script;
 --
@@ -600,6 +599,8 @@ is
    l_bytes number;
    l_trans_start date;
    l_trans_end date;
+   
+   l_lines nm3type.tab_varchar32767;
 begin
 --   ins_log(pi_message => 'start process_out_ftp_queue');
    set_cim_action(pi_cim_action => 'WO');
@@ -607,75 +608,76 @@ begin
     loop
       set_con_id(pi_con_id => dir_rec.ftp_contractor);
   --    ins_log(pi_message => 'contractor set to '||dir_rec.ftp_contractor);
+      create_put_ftp_script( pi_remotepath => dir_rec.ftp_out_dir
+                            ,pi_username   => dir_rec.ftp_username
+                            ,pi_password   => dir_rec.ftp_password
+                            ,pi_host       => dir_rec.ftp_host
+                           );
+       -- execute the script
+      enable_permissions(pi_filename => g_ftp_put_filename);
+      --
+      exec_command (g_ftp_put_filename,user );
+      
+      -- read the ftp log file produced
+      l_lines.delete;
+      nm3file.get_file(location  => g_interpath
+                     , filename  => g_ftp_put_filename||'.log'||get_con_id
+                     , all_lines => l_lines);
+
+      if l_lines.count = 0
+       then
+         ins_log( pi_message => g_ftp_put_filename||'.log'||get_con_id || ' log file does not exist. put not executed');
+      end if;
+        
       for ftp_rec in c_out_ftp(dir_rec.ftp_contractor)
        loop
-       -- build a script file to be executed to get the files from the ftp site
-    --     ins_log(pi_message => 'calling create_put_ftp_script for '||ftp_rec.tfq_filename);
-         create_put_ftp_script( pi_remotepath => dir_rec.ftp_out_dir
-                               ,pi_username   => dir_rec.ftp_username
-                               ,pi_password   => dir_rec.ftp_password
-                               ,pi_host       => dir_rec.ftp_host
-                               ,pi_filename   => ftp_rec.tfq_filename
-                              );
-         -- execute the script
-         enable_permissions(pi_filename => g_ftp_put_filename);
-        --
-          exec_command (g_ftp_put_filename,user );
-        --
-             
-       
-      -- this code commented out as the put is done by executing a shell script
-      --
---         l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
---                                     ,p_filename => ftp_rec.tfq_filename
---                                     ,p_remotepath => dir_rec.ftp_out_dir
---                                     ,p_username => dir_rec.ftp_username
---                                     ,p_password => dir_rec.ftp_password
---                                     ,p_hostname => dir_rec.ftp_host
---                                     ,v_status  => l_status
---                                     ,v_error_message => l_error
---                                     ,n_bytes_transmitted => l_bytes
---                                     ,d_trans_start => l_trans_start
---                                     ,d_trans_end => l_trans_end);
---         if not l_ftp
---          then
---            -- try again
---            l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
---                                        ,p_filename => ftp_rec.tfq_filename
---                                        ,p_remotepath => dir_rec.ftp_out_dir
---                                        ,p_username => dir_rec.ftp_username
---                                        ,p_password => dir_rec.ftp_password
---                                        ,p_hostname => dir_rec.ftp_host
---                                        ,v_status  => l_status
---                                        ,v_error_message => l_error
---                                        ,n_bytes_transmitted => l_bytes
---                                        ,d_trans_start => l_trans_start
---                                        ,d_trans_end => l_trans_end);
---            if not l_ftp
---             then
---               -- send an email
---               send_email(pi_msg => 'FTP process. Status = ' ||l_status||' '||
---                                    'Error: ' ||l_error||' '||
---                                    'Bytes: ' ||l_bytes||' ');
---               -- log the error
---               ins_log(pi_filename => ftp_rec.tfq_filename
---                  , pi_ftp_dir => dir_rec.ftp_out_dir
---                  , pi_archive_dir => null
---                  , pi_message => 'FTP process. Status = ' ||l_status||' '||
---                                  'Error: ' ||l_error||' '||
---                                  'Bytes: ' ||l_bytes||' ');
---               exit;
---            end if;
---         end if;
          -- log success
-         upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
+         for i in 1..l_lines.count 
+          loop
+            if substr(l_lines(i),1,3) = '150'
+               and 
+               instr(l_lines(i),ftp_rec.tfq_filename) = 0
+               and 
+               substr(l_lines(i+1),1,3) = '226'
+             then
+               upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
+               
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => 'FTP transfer OK');
+               
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i));
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i+1));
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i+2));
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i+3));
+            else
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => 'FTP transfer Failed');
+               
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i));
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i+1));
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i+2));
+               ins_log(pi_filename => ftp_rec.tfq_filename
+                     , pi_ftp_dir => dir_rec.ftp_out_dir
+                     , pi_message => l_lines(i+3));
+            end if;
+         end loop;
 
---         ins_log(pi_filename => ftp_rec.tfq_filename
---            , pi_ftp_dir => dir_rec.ftp_out_dir
---            , pi_archive_dir => null
---            , pi_message => 'FTP process. Status = ' ||l_status||' '||
---                            'Error: ' ||l_error||' '||
---                            'Bytes: ' ||l_bytes||' ');
       end loop;
    end loop;
 end process_out_ftp_queue;
