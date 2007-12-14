@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.13   Dec 14 2007 09:58:06   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.14   Dec 14 2007 13:59:52   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 14 2007 09:58:06  $
---       Date fetched Out : $Modtime:   Dec 14 2007 09:53:16  $
---       SCCS Version     : $Revision:   2.13  $
+--       Date into SCCS   : $Date:   Dec 14 2007 13:59:52  $
+--       Date fetched Out : $Modtime:   Dec 14 2007 13:47:34  $
+--       SCCS Version     : $Revision:   2.14  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.13  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.14  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -325,9 +325,9 @@ BEGIN
  END IF;
 --
  --ins_log(pi_message => 'current con is is ' || get_con_id);
- --ins_log(pi_message => 'l_command is '||l_command);
+ ins_log(pi_message => 'l_command is '||l_command);
  l_ret_code := runthis(l_command);
- l_ret_code := runthis(l_command);
+ --l_ret_code := runthis(l_command);
  --ins_log(pi_message => 'l_ret_code is '||l_ret_code);
  
 --
