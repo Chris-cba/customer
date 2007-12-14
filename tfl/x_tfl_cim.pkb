@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.12   Dec 14 2007 08:28:14   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.13   Dec 14 2007 09:58:06   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 14 2007 08:28:14  $
---       Date fetched Out : $Modtime:   Dec 13 2007 22:05:56  $
---       SCCS Version     : $Revision:   2.12  $
+--       Date into SCCS   : $Date:   Dec 14 2007 09:58:06  $
+--       Date fetched Out : $Modtime:   Dec 14 2007 09:53:16  $
+--       SCCS Version     : $Revision:   2.13  $
 --
 --
 --   Author : Ian Turnbull
@@ -17,7 +17,7 @@ AS
 --   x_tfl_cim body
 --
 -----------------------------------------------------------------------------
---	Copyright (c) exor corporation ltd, 2007
+--   Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
 --all global package variables here
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.12  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.13  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -601,6 +601,9 @@ is
    l_trans_end date;
    
    l_lines nm3type.tab_varchar32767;
+   
+   i number;
+   
 begin
 --   ins_log(pi_message => 'start process_out_ftp_queue');
    set_cim_action(pi_cim_action => 'WO');
@@ -632,13 +635,13 @@ begin
       for ftp_rec in c_out_ftp(dir_rec.ftp_contractor)
        loop
          -- log success
-         for i in 1..l_lines.count 
-          loop
+         i := 1;
+         loop
             if substr(l_lines(i),1,3) = '150'
                and 
-               instr(l_lines(i),ftp_rec.tfq_filename) = 0
-               and 
                substr(l_lines(i+1),1,3) = '226'
+               and 
+               instr(l_lines(i+2),ftp_rec.tfq_filename) = 0
              then
                upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
                
@@ -649,33 +652,21 @@ begin
                ins_log(pi_filename => ftp_rec.tfq_filename
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => l_lines(i));
+                     
                ins_log(pi_filename => ftp_rec.tfq_filename
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => l_lines(i+1));
+                     
                ins_log(pi_filename => ftp_rec.tfq_filename
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => l_lines(i+2));
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => l_lines(i+3));
-            else
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => 'FTP transfer Failed');
-               
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => l_lines(i));
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => l_lines(i+1));
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => l_lines(i+2));
+                     
                ins_log(pi_filename => ftp_rec.tfq_filename
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => l_lines(i+3));
             end if;
+            i := i + 4;
+            exit when i > l_lines.count;
          end loop;
 
       end loop;
@@ -1294,9 +1285,9 @@ begin
       set_con_id(pi_con_id => con_rec.ftp_contractor);
 
       -- produce the wo extract file
-      l_filename := interfaces.write_wor_file( p_contractor_id	=> con_rec.ftp_contractor
-                                              ,p_seq_no	      => null
-                                              ,p_filepath	   => g_interpath);
+      l_filename := interfaces.write_wor_file( p_contractor_id   => con_rec.ftp_contractor
+                                              ,p_seq_no         => null
+                                              ,p_filepath      => g_interpath);
       ins_log(pi_filename => l_filename
             , pi_ftp_dir => null
             , pi_archive_dir => null
@@ -1487,21 +1478,21 @@ begin
    htp.p('<tr>');
    htp.p('<td align="center"><h1><b>Exor TFL CIM</font></b></h1></td>');
    htp.p('</tr>');
-   htp.p('		<tr>');
-   htp.p('		<td align="center">');
-   htp.p('		<h1><b><a href="x_tfl_cim.show_ftp_settings">FTP Settings</a></b></h1>');
-   htp.p('		</td>');
-   htp.p('	</tr>');
-   htp.p('		<tr>');
-   htp.p('		<td align="center">');
-   htp.p('		<h1><b><a href="x_tfl_cim.show_ftp_queue">FTP Queue</a></b></h1>');
-   htp.p('		</td>');
-   htp.p('	</tr>');
-   htp.p('		<tr>');
-   htp.p('		<td align="center">');
-   htp.p('		<h1><b><a href="x_tfl_cim.show_cim_log">Log Details</a></b></h1>');
-   htp.p('		</td>');
-   htp.p('	</tr>');
+   htp.p('      <tr>');
+   htp.p('      <td align="center">');
+   htp.p('      <h1><b><a href="x_tfl_cim.show_ftp_settings">FTP Settings</a></b></h1>');
+   htp.p('      </td>');
+   htp.p('   </tr>');
+   htp.p('      <tr>');
+   htp.p('      <td align="center">');
+   htp.p('      <h1><b><a href="x_tfl_cim.show_ftp_queue">FTP Queue</a></b></h1>');
+   htp.p('      </td>');
+   htp.p('   </tr>');
+   htp.p('      <tr>');
+   htp.p('      <td align="center">');
+   htp.p('      <h1><b><a href="x_tfl_cim.show_cim_log">Log Details</a></b></h1>');
+   htp.p('      </td>');
+   htp.p('   </tr>');
    htp.p('</table>');
    htp.p('</body>');
    htp.p('</html>');
@@ -1550,7 +1541,7 @@ BEGIN
              ||CHR(10)||'--It moves the file around and processes them'
              ||CHR(10)||'--'
              ||CHR(10)||'-----------------------------------------------------------------------------'
-             ||CHR(10)||'--	Copyright (c) exor corporation ltd, 2007'
+             ||CHR(10)||'--   Copyright (c) exor corporation ltd, 2007'
              ||CHR(10)||'-----------------------------------------------------------------------------'
              ||CHR(10)||'--'
              ||CHR(10)||'   l_server_not_there EXCEPTION;'
