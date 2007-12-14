@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.15   Dec 14 2007 15:52:48   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.16   Dec 14 2007 17:13:02   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 14 2007 15:52:48  $
---       Date fetched Out : $Modtime:   Dec 14 2007 15:51:02  $
---       SCCS Version     : $Revision:   2.15  $
+--       Date into SCCS   : $Date:   Dec 14 2007 17:13:02  $
+--       Date fetched Out : $Modtime:   Dec 14 2007 17:12:32  $
+--       SCCS Version     : $Revision:   2.16  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.15  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.16  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -640,11 +640,12 @@ begin
          -- log success
          i := 1;
          loop
-            if substr(l_lines(i),1,3) = '150'
-               and 
-               substr(l_lines(i+1),1,3) = '226'
-               and 
-               instr(l_lines(i+2),ftp_rec.tfq_filename) = 0
+            if 
+            --substr(l_lines(i),1,3) = '150'
+             --  and 
+             --  substr(l_lines(i+1),1,3) = '226'
+             --  and 
+               instr(l_lines(i),ftp_rec.tfq_filename) = 0
              then
                upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
                
@@ -656,19 +657,20 @@ begin
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => l_lines(i));
                      
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => l_lines(i+1));
-                     
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => l_lines(i+2));
-                     
-               ins_log(pi_filename => ftp_rec.tfq_filename
-                     , pi_ftp_dir => dir_rec.ftp_out_dir
-                     , pi_message => l_lines(i+3));
+--               ins_log(pi_filename => ftp_rec.tfq_filename
+--                     , pi_ftp_dir => dir_rec.ftp_out_dir
+--                     , pi_message => l_lines(i+1));
+--                     
+--               ins_log(pi_filename => ftp_rec.tfq_filename
+--                     , pi_ftp_dir => dir_rec.ftp_out_dir
+--                     , pi_message => l_lines(i+2));
+--                     
+--               ins_log(pi_filename => ftp_rec.tfq_filename
+--                     , pi_ftp_dir => dir_rec.ftp_out_dir
+--                     , pi_message => l_lines(i+3));
+               i := l_lines.count;      
             end if;
-            i := i + 4;
+            i := i + 1;
             exit when i > l_lines.count;
          end loop;
 
