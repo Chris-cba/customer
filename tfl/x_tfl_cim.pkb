@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.14   Dec 14 2007 13:59:52   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.15   Dec 14 2007 15:52:48   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 14 2007 13:59:52  $
---       Date fetched Out : $Modtime:   Dec 14 2007 13:47:34  $
---       SCCS Version     : $Revision:   2.14  $
+--       Date into SCCS   : $Date:   Dec 14 2007 15:52:48  $
+--       Date fetched Out : $Modtime:   Dec 14 2007 15:51:02  $
+--       SCCS Version     : $Revision:   2.15  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.14  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.15  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -99,7 +99,8 @@ end get_cim_action;
 procedure create_put_ftp_script( pi_remotepath x_tfl_ftp_dirs.FTP_IN_DIR%type
                                 ,pi_username x_tfl_ftp_dirs.FTP_USERNAME%type
                                 ,pi_password x_tfl_ftp_dirs.FTP_PASSWORD%type
-                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type)
+                                ,pi_host x_tfl_ftp_dirs.FTP_HOST%type
+                                ,pi_filename varchar2)
 is
    l_contents nm3type.tab_varchar32767;
 
@@ -124,7 +125,8 @@ begin
    add('user '||pi_username||' '||pi_password);
    add('lcd ' ||g_interpath);
    add('cd ' ||pi_remotepath);
-   add('mput '||'WO*.'||get_con_id);
+   add('put '||pi_filename);
+   add('put '||pi_filename);
    add('close');
    add('quit');
    add('!END_FTP');
@@ -609,31 +611,32 @@ begin
    set_cim_action(pi_cim_action => 'WO');
    for dir_rec in c_ftp_dirs
     loop
-      set_con_id(pi_con_id => dir_rec.ftp_contractor);
-  --    ins_log(pi_message => 'contractor set to '||dir_rec.ftp_contractor);
-      create_put_ftp_script( pi_remotepath => dir_rec.ftp_out_dir
-                            ,pi_username   => dir_rec.ftp_username
-                            ,pi_password   => dir_rec.ftp_password
-                            ,pi_host       => dir_rec.ftp_host
-                           );
-       -- execute the script
-      enable_permissions(pi_filename => g_ftp_put_filename);
-      --
-      exec_command (g_ftp_put_filename,user );
-      
-      -- read the ftp log file produced
-      l_lines.delete;
-      nm3file.get_file(location  => g_interpath
-                     , filename  => g_ftp_put_filename||'.log'||get_con_id
-                     , all_lines => l_lines);
-
-      if l_lines.count = 0
-       then
-         ins_log( pi_message => g_ftp_put_filename||'.log'||get_con_id || ' log file does not exist. put not executed');
-      end if;
-        
       for ftp_rec in c_out_ftp(dir_rec.ftp_contractor)
        loop
+         set_con_id(pi_con_id => dir_rec.ftp_contractor);
+     --    ins_log(pi_message => 'contractor set to '||dir_rec.ftp_contractor);
+         create_put_ftp_script( pi_remotepath => dir_rec.ftp_out_dir
+                               ,pi_username   => dir_rec.ftp_username
+                               ,pi_password   => dir_rec.ftp_password
+                               ,pi_host       => dir_rec.ftp_host
+                               ,pi_filename   => ftp_rec.tfq_filename
+                              );
+          -- execute the script
+         enable_permissions(pi_filename => g_ftp_put_filename);
+         --
+         exec_command (g_ftp_put_filename,user );
+         
+         -- read the ftp log file produced
+         l_lines.delete;
+         nm3file.get_file(location  => g_interpath
+                        , filename  => g_ftp_put_filename||'.log'||get_con_id
+                        , all_lines => l_lines);
+
+         if l_lines.count = 0
+          then
+            ins_log( pi_message => g_ftp_put_filename||'.log'||get_con_id || ' log file does not exist. put not executed');
+         end if;
+              
          -- log success
          i := 1;
          loop
