@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.16   Dec 14 2007 17:13:02   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.17   Dec 18 2007 16:11:40   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 14 2007 17:13:02  $
---       Date fetched Out : $Modtime:   Dec 14 2007 17:12:32  $
---       SCCS Version     : $Revision:   2.16  $
+--       Date into SCCS   : $Date:   Dec 18 2007 16:11:40  $
+--       Date fetched Out : $Modtime:   Dec 18 2007 16:11:20  $
+--       SCCS Version     : $Revision:   2.17  $
 --
 --
 --   Author : Ian Turnbull
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.16  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.17  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -119,6 +119,7 @@ begin
    
    add('#!/bin/sh');
    add('cd ' ||g_interpath);
+   ADD('rm ' || g_ftp_put_filename||'.log'||get_con_id);
    ADD('chmod 755 ' || g_ftp_put_filename);
    add('/bin/ftp -v -i -n >'||g_ftp_put_filename||'.log'||get_con_id||'<<-!END_FTP');
    add('open ' || pi_host);
@@ -592,7 +593,8 @@ is
    from x_tfl_ftp_queue
    where tfq_direction = c_out
      and tfq_ftp_site is null
-     and tfq_con_id = c_con_id;
+     and tfq_con_id = c_con_id
+   order by tfq_filename;
 
 
    l_ftp boolean;
@@ -603,8 +605,7 @@ is
    l_trans_end date;
    
    l_lines nm3type.tab_varchar32767;
-   
-   i number;
+  
    
 begin
 --   ins_log(pi_message => 'start process_out_ftp_queue');
@@ -625,27 +626,30 @@ begin
          enable_permissions(pi_filename => g_ftp_put_filename);
          --
          exec_command (g_ftp_put_filename,user );
+        
+         
+         WHILE nm3file.file_exists(g_interpath,g_ftp_put_filename||'.log'||get_con_id) = 'N'  LOOP
+            null; -- just wait;
+            for x in 1..1000000 loop null; end loop;
+         END LOOP;
          
          -- read the ftp log file produced
          l_lines.delete;
+         
          nm3file.get_file(location  => g_interpath
                         , filename  => g_ftp_put_filename||'.log'||get_con_id
                         , all_lines => l_lines);
-
+         
          if l_lines.count = 0
           then
             ins_log( pi_message => g_ftp_put_filename||'.log'||get_con_id || ' log file does not exist. put not executed');
          end if;
               
          -- log success
-         i := 1;
+         for i in 1..l_lines.count
          loop
             if 
-            --substr(l_lines(i),1,3) = '150'
-             --  and 
-             --  substr(l_lines(i+1),1,3) = '226'
-             --  and 
-               instr(l_lines(i),ftp_rec.tfq_filename) = 0
+               instr(l_lines(i),ftp_rec.tfq_filename) > 0
              then
                upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
                
@@ -657,21 +661,7 @@ begin
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => l_lines(i));
                      
---               ins_log(pi_filename => ftp_rec.tfq_filename
---                     , pi_ftp_dir => dir_rec.ftp_out_dir
---                     , pi_message => l_lines(i+1));
---                     
---               ins_log(pi_filename => ftp_rec.tfq_filename
---                     , pi_ftp_dir => dir_rec.ftp_out_dir
---                     , pi_message => l_lines(i+2));
---                     
---               ins_log(pi_filename => ftp_rec.tfq_filename
---                     , pi_ftp_dir => dir_rec.ftp_out_dir
---                     , pi_message => l_lines(i+3));
-               i := l_lines.count;      
-            end if;
-            i := i + 1;
-            exit when i > l_lines.count;
+            end if;            
          end loop;
 
       end loop;
