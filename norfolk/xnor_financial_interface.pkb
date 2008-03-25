@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_financial_interface.pkb-arc   2.0   Sep 03 2007 10:30:10   dyounger  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_financial_interface.pkb-arc   2.1   Mar 25 2008 10:46:22   smarshall  $
 --       Module Name      : $Workfile:   xnor_financial_interface.pkb  $
---       Date into PVCS   : $Date:   Sep 03 2007 10:30:10  $
---       Date fetched Out : $Modtime:   Sep 02 2007 10:53:56  $
---       PVCS Version     : $Revision:   2.0  $
+--       Date into PVCS   : $Date:   Mar 25 2008 10:46:22  $
+--       Date fetched Out : $Modtime:   Mar 25 2008 08:29:44  $
+--       PVCS Version     : $Revision:   2.1  $
 --
 --
 --   Author : Kevin Angus
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.0  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.1  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xnor_financial_interface';
 
@@ -65,12 +65,12 @@ BEGIN
 
   IF SUBSTR(l_cost_code, 1, 3) = '10-'
   THEN
-    l_cost_code :=substr(l_cost_code, 4);
+    l_cost_code :=SUBSTR(l_cost_code, 4);
   END IF;
   
   IF SUBSTR(l_cost_code, LENGTH(l_cost_code), 1) = '-'
   THEN
-    l_cost_code := substr(l_cost_code, 1, length(l_cost_code) - 1);
+    l_cost_code := SUBSTR(l_cost_code, 1, LENGTH(l_cost_code) - 1);
   END IF;
 
   nm_debug.proc_end(p_package_name   => g_package_name
@@ -86,10 +86,11 @@ FUNCTION get_commitment_line(pi_accounting_date       IN date
                             ,pi_cost                  IN work_order_lines.wol_est_cost%TYPE
                             ,pi_descr                 IN varchar2
                             ,pi_cost_code             IN varchar2
-                            ,pi_user_je_category_name in varchar2
-                            ,pi_encumbrance_type_id   in number
-                            ,pi_actual_flag           in varchar2
-                            ,pi_part_cost_code        in boolean default true
+                            ,pi_user_je_category_name IN varchar2
+                            ,pi_encumbrance_type_id   IN number
+                            ,pi_actual_flag           IN varchar2
+                            ,pi_period_13             IN BOOLEAN
+                            ,pi_part_cost_code        IN BOOLEAN DEFAULT TRUE
                             ) RETURN varchar2 IS
 
   l_retval nm3type.max_varchar2;
@@ -98,6 +99,8 @@ FUNCTION get_commitment_line(pi_accounting_date       IN date
   l_entered_dr work_order_lines.wol_est_cost%TYPE;
   
   l_accounting_code varchar2(4000);
+  
+  l_period_name varchar2(30);
 
 BEGIN
   nm_debug.proc_start(p_package_name   => g_package_name
@@ -110,12 +113,14 @@ BEGIN
     l_entered_cr := -pi_cost;
   END IF;
   
-  if pi_part_cost_code
-  then
+  IF pi_part_cost_code
+  THEN
     l_accounting_code := get_full_accounting_code(pi_cost_code => pi_cost_code);
-  else
+  ELSE
     l_accounting_code := pi_cost_code;
-  end if;
+  END IF;
+  
+  l_period_name := get_accounting_period_name(pi_period_13 => pi_period_13);
   
   l_retval :=             'GLJEH01'                                       --record_type
               || c_sep || 'NEW'                                           --status
@@ -164,7 +169,7 @@ BEGIN
               || c_sep || NULL                                            --reference18
               || c_sep || NULL                                            --reference19
               || c_sep || NULL                                            --reference20
-              || c_sep || NULL                                            --period_name
+              || c_sep || l_period_name                                   --period_name
               || c_sep || NULL                                            --je_line_num
               || c_sep || NULL                                            --chart_of_accounts_id
               || c_sep || NULL                                            --code_combination_id
@@ -181,41 +186,41 @@ END get_commitment_line;
 --
 -----------------------------------------------------------------------------
 --
-procedure write_ctrl_file(pi_filename      in varchar2
-                         ,pi_filepath      in varchar2
-                         ,pi_total_lines   in pls_integer
-                         ,pi_total_credits in number
-                         ,pi_total_debits  in number
+PROCEDURE write_ctrl_file(pi_filename      IN varchar2
+                         ,pi_filepath      IN varchar2
+                         ,pi_total_lines   IN PLS_INTEGER
+                         ,pi_total_credits IN number
+                         ,pi_total_debits  IN number
                          ) IS
   
-  c_ctrl_filepath constant varchar2(2000) := pi_filepath;
-  c_ctrl_filename constant varchar2(2000) := pi_filename || '.CTL';
+  c_ctrl_filepath CONSTANT varchar2(2000) := pi_filepath;
+  c_ctrl_filename CONSTANT varchar2(2000) := pi_filename || '.CTL';
 
   l_lines nm3type.tab_varchar32767;
         
-begin
- l_lines(l_lines.count + 1) := 'Highways Financial Interface';
- l_lines(l_lines.count + 1) := '';
- l_lines(l_lines.count + 1) := 'Control information for file ' || pi_filename;
- l_lines(l_lines.count + 1) := '';
- l_lines(l_lines.count + 1) := '================================================================';
- l_lines(l_lines.count + 1) := 'Lines in file: ' || to_char(pi_total_lines);
- l_lines(l_lines.count + 1) := '';
- l_lines(l_lines.count + 1) := 'Total credits: ' || to_char(pi_total_credits, c_csv_currency_format);
- l_lines(l_lines.count + 1) := '';
- l_lines(l_lines.count + 1) := 'Total debits : ' || to_char(pi_total_debits, c_csv_currency_format);
- l_lines(l_lines.count + 1) := '';
- l_lines(l_lines.count + 1) := '================================================================';
+BEGIN
+ l_lines(l_lines.COUNT + 1) := 'Highways Financial Interface';
+ l_lines(l_lines.COUNT + 1) := '';
+ l_lines(l_lines.COUNT + 1) := 'Control information for file ' || pi_filename;
+ l_lines(l_lines.COUNT + 1) := '';
+ l_lines(l_lines.COUNT + 1) := '================================================================';
+ l_lines(l_lines.COUNT + 1) := 'Lines in file: ' || TO_CHAR(pi_total_lines);
+ l_lines(l_lines.COUNT + 1) := '';
+ l_lines(l_lines.COUNT + 1) := 'Total credits: ' || TO_CHAR(pi_total_credits, c_csv_currency_format);
+ l_lines(l_lines.COUNT + 1) := '';
+ l_lines(l_lines.COUNT + 1) := 'Total debits : ' || TO_CHAR(pi_total_debits, c_csv_currency_format);
+ l_lines(l_lines.COUNT + 1) := '';
+ l_lines(l_lines.COUNT + 1) := '================================================================';
 
-  nm3file.write_file(location  => c_ctrl_filepath
+  nm3file.write_file(LOCATION  => c_ctrl_filepath
                     ,filename  => c_ctrl_filename
                     ,all_lines => l_lines);
                               
-end write_ctrl_file;
+END write_ctrl_file;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_accounting_date(pi_period_13 in boolean
+FUNCTION get_accounting_date(pi_period_13 IN BOOLEAN
                             ) RETURN date IS
 
   l_retval date;
@@ -224,14 +229,14 @@ BEGIN
   nm_debug.proc_start(p_package_name   => g_package_name
                      ,p_procedure_name => 'get_accounting_date');
 
-  if pi_period_13
-  then
+  IF pi_period_13
+  THEN
     --period 13 option set so use end of March this year
-    l_retval := to_date('31-MAR-' || to_char(sysdate, 'YYYY'), 'DD-MON-YYYY');
-  else
+    l_retval := TO_DATE('31-MAR-' || TO_CHAR(SYSDATE, 'YYYY'), 'DD-MON-YYYY');
+  ELSE
     --otherwise use current date
-    l_retval := sysdate;
-  end if;
+    l_retval := SYSDATE;
+  END IF;
 
   nm_debug.proc_end(p_package_name   => g_package_name
                    ,p_procedure_name => 'get_accounting_date');
@@ -239,8 +244,32 @@ BEGIN
   RETURN l_retval;
 
 END get_accounting_date;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_accounting_period_name(pi_period_13 IN BOOLEAN
+                                   ) RETURN varchar2 IS
 
-    
+  l_retval varchar2(30);
 
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'get_accounting_date');
+
+  IF pi_period_13
+  THEN
+    --period 13 option set so set the period name
+    l_retval := 'P13-' || TO_CHAR(SYSDATE, 'YY');
+  END IF;
+
+  nm_debug.proc_end(p_package_name   => g_package_name
+                   ,p_procedure_name => 'get_accounting_date');
+
+  RETURN l_retval;
+
+END get_accounting_period_name;
+--
+-----------------------------------------------------------------------------
+--
 END xnor_financial_interface;
 /
