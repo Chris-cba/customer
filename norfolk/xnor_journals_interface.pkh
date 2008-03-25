@@ -1,0 +1,86 @@
+CREATE OR REPLACE PACKAGE xnor_journals_interface AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_journals_interface.pkh-arc   2.0   Mar 25 2008 10:50:28   smarshall  $
+--       Module Name      : $Workfile:   xnor_journals_interface.pkh  $
+--       Date into PVCS   : $Date:   Mar 25 2008 10:50:28  $
+--       Date fetched Out : $Modtime:   Mar 25 2008 10:50:04  $
+--       PVCS Version     : $Revision:   2.0  $
+--
+--
+--   Author : Kevin Angus
+--
+--    xnor_journals_interface
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2008
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+  -------
+  --types
+  -------
+  TYPE t_lines_arr   IS TABLE OF xnor_journal_lines.xjl_line%TYPE INDEX BY PLS_INTEGER;
+  TYPE t_line_cr_arr IS TABLE OF xnor_journal_lines.xjl_line_cr%TYPE INDEX BY PLS_INTEGER;
+  TYPE t_line_dr_arr IS TABLE OF xnor_journal_lines.xjl_line_dr%TYPE INDEX BY PLS_INTEGER;
+  TYPE t_rowid_arr   IS TABLE OF rowid INDEX BY PLS_INTEGER;
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+PROCEDURE set_debug(pi_debug_on IN BOOLEAN DEFAULT TRUE
+                   );
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="log_line_for_journal">
+--
+-- This procedure logs a line to be subsequently output in the journal
+-- extract.
+--
+PROCEDURE log_line_for_journal(pi_line   IN xnor_journal_lines.xjl_line%TYPE
+                              ,pi_cr     IN xnor_journal_lines.xjl_line_cr%TYPE
+                              ,pi_dr     IN xnor_journal_lines.xjl_line_dr%TYPE
+                              ,pi_source IN xnor_journal_lines.xjl_extract_source%TYPE
+                              );
+--</PROC>
+--
+
+
+FUNCTION generate_journal_file(pi_grr_job_id IN gri_report_runs.grr_job_id%TYPE
+                              ) RETURN varchar2;
+FUNCTION generate_journal_file(pi_file_path      IN varchar2
+                              ,pi_run_up_to_date IN date
+                              ) RETURN varchar2;
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+END xnor_journals_interface;
+/
