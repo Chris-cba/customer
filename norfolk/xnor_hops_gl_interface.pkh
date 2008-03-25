@@ -1,15 +1,15 @@
-create or replace package xnor_hops_gl_interface
+CREATE OR REPLACE PACKAGE xnor_hops_gl_interface
 AS
 --<PACKAGE>
 -----------------------------------------------------------------------------
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkh-arc   2.0   Sep 03 2007 10:32:06   dyounger  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkh-arc   2.1   Mar 25 2008 10:46:48   smarshall  $
 --       Module Name      : $Workfile:   xnor_hops_gl_interface.pkh  $
---       Date into PVCS   : $Date:   Sep 03 2007 10:32:06  $
---       Date fetched Out : $Modtime:   Sep 02 2007 10:59:08  $
---       PVCS Version     : $Revision:   2.0  $
+--       Date into PVCS   : $Date:   Mar 25 2008 10:46:48  $
+--       Date fetched Out : $Modtime:   Mar 25 2008 08:29:44  $
+--       PVCS Version     : $Revision:   2.1  $
 --
 --
 --   Author : Kevin Angus
@@ -26,7 +26,7 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.0  $"';
+  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.1  $"';
 
 --</GLOBVAR>
 --
@@ -52,14 +52,14 @@ FUNCTION get_body_version RETURN varchar2;
 --
 -- Returns: the name of the file created.
 --
-function generate_commitment_file(pi_grr_job_id IN gri_report_runs.grr_job_id%TYPE
+FUNCTION generate_commitment_file(pi_grr_job_id IN gri_report_runs.grr_job_id%TYPE
                                  ) RETURN varchar2;
-function generate_commitment_file(pi_seq_no         in interface_run_log.irl_run_number%type
+FUNCTION generate_commitment_file(pi_seq_no         IN interface_run_log.irl_run_number%TYPE
                                  ,pi_contractor_id  IN org_units.oun_org_id%TYPE
                                  ,pi_financial_year IN financial_years.fyr_id%TYPE
                                  ,pi_end_date       IN date
                                  ,pi_file_path      IN varchar2
-                                 ,pi_period_13      in boolean
+                                 ,pi_period_13      IN BOOLEAN
                                  ) RETURN varchar2;
 --</PROC>
 --
@@ -70,20 +70,23 @@ function generate_commitment_file(pi_seq_no         in interface_run_log.irl_run
 -- These routines process the HOPS GL Payment Run.
 --
 FUNCTION process_payment_run(pi_grr_job_id IN gri_report_runs.grr_job_id%TYPE
-                              ) return varchar2;
-PROCEDURE process_payment_run(pi_con_id         in     contracts.con_id%type
-                             ,pi_apply_vat      in     boolean
-                             ,pi_oun_ord_id     in     org_units.oun_org_id%type
-                             ,pi_start_date     in     date
-                             ,pi_end_date       in     date
-                             ,pi_financial_year in     financial_years.fyr_id%TYPE
-                             ,pi_file_path      in     varchar2
-                             ,pi_period_13      in     boolean
-                             ,po_cnp_id            out work_order_lines.wol_cnp_id%type
-                             ,po_error_code        out hig_errors.her_no%type
-                             ,po_error_appl        out hig_errors.her_appl%type
-                             ,po_filename          out varchar2
+                              ) RETURN varchar2;
+PROCEDURE process_payment_run(pi_con_id         IN     contracts.con_id%TYPE
+                             ,pi_apply_vat      IN     BOOLEAN
+                             ,pi_oun_ord_id     IN     org_units.oun_org_id%TYPE
+                             ,pi_start_date     IN     date
+                             ,pi_end_date       IN     date
+                             ,pi_financial_year IN     financial_years.fyr_id%TYPE
+                             ,pi_file_path      IN     varchar2
+                             ,pi_period_13      IN     BOOLEAN
+                             ,po_cnp_id            OUT work_order_lines.wol_cnp_id%TYPE
+                             ,po_error_code        OUT hig_errors.her_no%TYPE
+                             ,po_error_appl        OUT hig_errors.her_appl%TYPE
+                             ,po_filename          OUT varchar2
                              );
+
+PROCEDURE set_debug(pi_debug_on IN BOOLEAN DEFAULT TRUE
+                   );
 -----------------------------------------------------------------------------
 --
 --<PRAGMA>
@@ -93,5 +96,5 @@ PROCEDURE process_payment_run(pi_con_id         in     contracts.con_id%type
 --
 -----------------------------------------------------------------------------
 --
-end xnor_hops_gl_interface;
+END xnor_hops_gl_interface;
 /
