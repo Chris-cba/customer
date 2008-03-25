@@ -1,15 +1,15 @@
-create or replace package xnor_financial_interface
+CREATE OR REPLACE PACKAGE xnor_financial_interface
 AS
 --<PACKAGE>
 -----------------------------------------------------------------------------
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_financial_interface.pkh-arc   2.0   Sep 03 2007 10:27:36   dyounger  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_financial_interface.pkh-arc   2.1   Mar 25 2008 10:46:18   smarshall  $
 --       Module Name      : $Workfile:   xnor_financial_interface.pkh  $
---       Date into PVCS   : $Date:   Sep 03 2007 10:27:36  $
---       Date fetched Out : $Modtime:   Sep 02 2007 10:52:36  $
---       PVCS Version     : $Revision:   2.0  $
+--       Date into PVCS   : $Date:   Mar 25 2008 10:46:18  $
+--       Date fetched Out : $Modtime:   Mar 25 2008 08:29:44  $
+--       PVCS Version     : $Revision:   2.1  $
 --
 --
 --   Author : Kevin Angus
@@ -26,9 +26,15 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.0  $"';
+  g_sccsid CONSTANT VARCHAR2(2000) := '"$Revision:   2.1  $"';
 
   c_wol_status_paid CONSTANT work_order_lines.wol_status_code%TYPE := 'PAID';
+  
+  c_line_source_hops_commitment CONSTANT xnor_journal_lines.xjl_extract_source%TYPE := 'HOPS_COMMITMENT';
+  --c_line_source_hops_reversal   CONSTANT xnor_journal_lines.xjl_extract_source%TYPE := 'HOPS_REVERSAL';
+  c_line_source_hops_payment    CONSTANT xnor_journal_lines.xjl_extract_source%TYPE := 'HOPS_PAYMENT';
+  c_line_source_mg_commitment   CONSTANT xnor_journal_lines.xjl_extract_source%TYPE := 'MG_COMMITMENT';
+  c_line_source_mg_reversal     CONSTANT xnor_journal_lines.xjl_extract_source%TYPE := 'MG_REVERSAL';
 
 --</GLOBVAR>
 --
@@ -50,10 +56,11 @@ FUNCTION get_commitment_line(pi_accounting_date       IN date
                             ,pi_cost                  IN work_order_lines.wol_est_cost%TYPE
                             ,pi_descr                 IN varchar2
                             ,pi_cost_code             IN varchar2
-                            ,pi_user_je_category_name in varchar2
-                            ,pi_encumbrance_type_id   in number
-                            ,pi_actual_flag           in varchar2
-                            ,pi_part_cost_code        in boolean default true
+                            ,pi_user_je_category_name IN varchar2
+                            ,pi_encumbrance_type_id   IN number
+                            ,pi_actual_flag           IN varchar2
+                            ,pi_period_13             IN BOOLEAN
+                            ,pi_part_cost_code        IN BOOLEAN DEFAULT TRUE
                             ) RETURN varchar2;
 --</PROC>
 --
@@ -73,11 +80,11 @@ FUNCTION get_full_accounting_code(pi_cost_code IN varchar2
 --
 -- This procedure writes a control file for the specified file.
 --
-procedure write_ctrl_file(pi_filename      in varchar2
-                         ,pi_filepath      in varchar2
-                         ,pi_total_lines   in pls_integer
-                         ,pi_total_credits in number
-                         ,pi_total_debits  in number
+PROCEDURE write_ctrl_file(pi_filename      IN varchar2
+                         ,pi_filepath      IN varchar2
+                         ,pi_total_lines   IN PLS_INTEGER
+                         ,pi_total_credits IN number
+                         ,pi_total_debits  IN number
                          );
 --</PROC>
 --
@@ -87,7 +94,7 @@ procedure write_ctrl_file(pi_filename      in varchar2
 --
 -- This function returns the accounting date to use in an output file.
 --
-FUNCTION get_accounting_date(pi_period_13 in boolean
+FUNCTION get_accounting_date(pi_period_13 IN BOOLEAN
                             ) RETURN date;
 --</PROC>
 --
@@ -100,6 +107,16 @@ FUNCTION get_body_version RETURN varchar2;
 --
 -----------------------------------------------------------------------------
 --
+--<PROC NAME="write_ctrl_file">
+--
+-- This function returns the accounting date to use in an output file.
+--
+FUNCTION get_accounting_period_name(pi_period_13 IN BOOLEAN
+                                   ) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
 --<PRAGMA>
   PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
   PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
@@ -107,5 +124,5 @@ FUNCTION get_body_version RETURN varchar2;
 --
 -----------------------------------------------------------------------------
 --
-end xnor_financial_interface;
+END xnor_financial_interface;
 /
