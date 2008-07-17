@@ -1,0 +1,224 @@
+CREATE OR REPLACE PACKAGE mai_web_service AS
+--
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkh-arc   1.0   Jul 17 2008 16:16:26   mhuitson  $
+--       Module Name      : $Workfile:   mai_web_service.pkh  $
+--       Date into PVCS   : $Date:   Jul 17 2008 16:16:26  $
+--       Date fetched Out : $Modtime:   Jul 17 2008 15:41:56  $
+--       PVCS Version     : $Revision:   1.0  $
+--
+-----------------------------------------------------------------------------
+--      Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--
+--<GLOBVAR>
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+  g_application_owner  VARCHAR2(30);
+--</GLOBVAR>
+--
+--<TYPE>
+--
+--</TYPE>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_auto_defect_priority">
+--FUNCTION get_auto_defect_priority(section_id    IN NUMBER
+--                                 ,sys_flag      IN VARCHAR2
+--                                 ,activity      IN VARCHAR2
+--                                 ,defect_code   IN VARCHAR2)
+--  RETURN get_auto_def_priority_out;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_users">
+FUNCTION get_users
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_admin_units">
+FUNCTION get_admin_units
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_admin_groups">
+FUNCTION get_admin_groups
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_road_sections">
+FUNCTION get_road_sections
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_asset_types">
+FUNCTION get_asset_types
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_asset_type_attribs">
+FUNCTION get_asset_type_attribs
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_exor_assets">
+--FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
+--  RETURN get_asset_ids_out;
+FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
+  RETURN xmltype;
+--FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
+--  RETURN clob;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_exor_assets">
+FUNCTION get_modified_asset_ids(pi_asset_type    IN nm_inv_types_all.nit_inv_type%TYPE
+                               ,pi_modified_date IN VARCHAR2)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_exor_assets">
+FUNCTION get_asset_details(pi_asset_id IN nm_inv_items_all.iit_ne_id%TYPE)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_sd_flags">
+FUNCTION get_sd_flags
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_initiation_types">
+FUNCTION get_initiation_types
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_repair_types">
+FUNCTION get_repair_types
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_nw_activities">
+FUNCTION get_nw_activities
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_asset_activities">
+FUNCTION get_asset_activities
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_priorities">
+FUNCTION get_priorities
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_treatments">
+FUNCTION get_treatments
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_defect_codes">
+FUNCTION get_defect_codes
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_siss_codes">
+FUNCTION get_siss_codes
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_standard_items">
+FUNCTION get_standard_items
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_notify_orgs">
+FUNCTION get_notify_orgs
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_recharge_orgs">
+FUNCTION get_recharge_orgs
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_def_attributes_list">
+--FUNCTION get_def_attributes_list(sys_flag       IN VARCHAR2
+--                                ,activity       IN VARCHAR2
+--                                ,defect_type    IN VARCHAR2
+--                                ,effective_date IN VARCHAR2)
+--  RETURN code_meaning_error_type;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_adhoc_defect">
+FUNCTION create_adhoc_defect(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+END mai_web_service;
+/
