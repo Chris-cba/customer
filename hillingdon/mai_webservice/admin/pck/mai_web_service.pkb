@@ -5,17 +5,17 @@ CREATE OR REPLACE PACKAGE BODY mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.0   Jul 17 2008 16:16:26   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.1   Jul 22 2008 19:35:08   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkb  $
---       Date into PVCS   : $Date:   Jul 17 2008 16:16:26  $
---       Date fetched Out : $Modtime:   Jul 17 2008 15:41:38  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jul 22 2008 19:35:08  $
+--       Date fetched Out : $Modtime:   Jul 22 2008 19:25:58  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 -----------------------------------------------------------------------------
 --  Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
-  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.0  $';
+  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.1  $';
   g_package_name  CONSTANT  varchar2(30)   := 'mai_web_service';
   c_date_format   CONSTANT  varchar2(20)   := 'DD-MON-YYYY';
   c_xmlns         CONSTANT  varchar2(50)   := ' xmlns="http://exor_mai_ws/exor_mai_ws"';
@@ -89,6 +89,28 @@ END date_to_varchar;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION datetime_to_varchar(pi_date_in DATE)
+  RETURN VARCHAR2 IS
+  --
+  lv_retval VARCHAR2(100);
+  --
+BEGIN
+  --
+  IF pi_date_in IS NOT NULL
+   THEN
+      lv_retval := to_char(pi_date_in,'DD-MON-YYYY HH24:MI:SS');
+  END IF;
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RAISE date_format_error;
+END datetime_to_varchar;
+--
+-----------------------------------------------------------------------------
+--
 FUNCTION varchar_to_date(pi_date_in VARCHAR2)
   RETURN DATE IS
   --
@@ -147,11 +169,16 @@ FUNCTION gen_tags(pi_indent     IN PLS_INTEGER
   --
 BEGIN
   --
-  FOR i IN 1..pi_indent LOOP
-    lv_indent := lv_indent||' ';
-  END LOOP;
-  --
-  lv_retval := CHR(10)||lv_indent||'<'||pi_element||'>'||dbms_xmlgen.convert(pi_data)||'</'||pi_element||'>';
+  IF pi_data IS NOT NULL
+   THEN
+      --
+      FOR i IN 1..pi_indent LOOP
+        lv_indent := lv_indent||' ';
+      END LOOP;
+      --
+      lv_retval := CHR(10)||lv_indent||'<'||pi_element||'>'||dbms_xmlgen.convert(pi_data)||'</'||pi_element||'>';
+      --
+  END IF;
   --
   RETURN lv_retval;
   --
@@ -241,7 +268,6 @@ FUNCTION get_users
   RETURN xmltype IS
   --
   TYPE retval_rec IS RECORD(hus_user_id    hig_users.hus_user_id%TYPE
-                           ,hus_username   hig_users.hus_username%TYPE
                            ,hus_initials   hig_users.hus_initials%TYPE
                            ,hus_name       hig_users.hus_name%TYPE
                            ,hus_admin_unit hig_users.hus_admin_unit%TYPE
@@ -257,7 +283,6 @@ FUNCTION get_users
 BEGIN
   --
   SELECT hus_user_id
-        ,hus_username
         ,hus_initials
         ,hus_name
         ,hus_admin_unit
@@ -266,6 +291,7 @@ BEGIN
     BULK COLLECT
     INTO lt_retval
     FROM hig_users
+   WHERE hus_admin_unit IS NOT NULL
        ;
   --
   IF lt_retval.count = 0
@@ -280,7 +306,6 @@ BEGIN
                       ||'<Initials>'||dbms_xmlgen.convert(lt_retval(i).hus_initials)||'</Initials>'
                       ||'<User_Name>'||dbms_xmlgen.convert(lt_retval(i).hus_name)||'</User_Name>'
                       ||'<Admin_Unit_Id>'||lt_retval(i).hus_admin_unit||'</Admin_Unit_Id>'
-                      ||'<DB_Username>'||dbms_xmlgen.convert(lt_retval(i).hus_username)||'</DB_Username>'
                       ||'<Startdate>'||date_to_varchar(lt_retval(i).hus_start_date)||'</Startdate>'
                       ||'<Enddate>'||date_to_varchar(lt_retval(i).hus_end_date)||'</Enddate>'
                     ||'</User>'
@@ -397,6 +422,10 @@ BEGIN
     BULK COLLECT
     INTO lt_retval
     FROM hig_admin_groups
+   WHERE hag_parent_admin_unit IN(SELECT hau_admin_unit
+                                    FROM hig_admin_units)
+     AND hag_child_admin_unit IN (SELECT hau_admin_unit
+                                    FROM hig_admin_units)
        ;
   --
   IF lt_retval.count = 0
@@ -466,6 +495,7 @@ BEGIN
     BULK COLLECT
     INTO lt_retval
     FROM road_sections_all
+   WHERE rse_sys_flag in ('L','D')
        ;
   --
   IF lt_retval.count = 0
@@ -527,7 +557,7 @@ BEGIN
   --
   SELECT nit_inv_type
         ,nit_descr
-        ,nit_screen_seq
+        ,NVL(nit_screen_seq,999)
         ,nit_start_date
         ,nit_end_date
     BULK COLLECT
@@ -545,7 +575,7 @@ BEGIN
     lv_str := NULL;
     --
     lv_str := lv_str||'<Asset_Type>'
-                      ||'<Asset_Type>'||lt_retval(i).nit_inv_type||'</Asset_Type>'
+                      ||'<Asset_Type_Code>'||lt_retval(i).nit_inv_type||'</Asset_Type_Code>'
                       ||'<Description>'||dbms_xmlgen.convert(lt_retval(i).nit_descr)||'</Description>'
                       ||'<Display_Sequence>'||lt_retval(i).nit_screen_seq||'</Display_Sequence>'
                       ||'<Startdate>'||date_to_varchar(lt_retval(i).nit_start_date)||'</Startdate>'
@@ -612,7 +642,7 @@ BEGIN
     lv_str := NULL;
     --
     lv_str := lv_str||'<Asset_Attribute>'
-                      ||'<Asset_Type>'||lt_retval(i).ita_inv_type||'</Asset_Type>'
+                      ||'<Asset_Type_Code>'||lt_retval(i).ita_inv_type||'</Asset_Type_Code>'
                       ||'<Attribute_Name>'||dbms_xmlgen.convert(lt_retval(i).ita_scrn_text)||'</Attribute_Name>'
                       ||'<Asset_Column>'||lt_retval(i).ita_attrib_name||'</Asset_Column>'
                       ||'<Datatype>'||lt_retval(i).ita_format||'</Datatype>'
@@ -867,8 +897,8 @@ BEGIN
                   ||gen_tags(4,'iit_inv_type',TO_CHAR(lr_retval.iit_inv_type))
                   ||gen_tags(4,'iit_primary_key',lr_retval.iit_primary_key)
                   ||gen_tags(4,'iit_start_date',date_to_varchar(lr_retval.iit_start_date))
-                  ||gen_tags(4,'iit_date_created',date_to_varchar(lr_retval.iit_date_created))
-                  ||gen_tags(4,'iit_date_modified',date_to_varchar(lr_retval.iit_date_modified))
+                  ||gen_tags(4,'iit_date_created',datetime_to_varchar(lr_retval.iit_date_created))
+                  ||gen_tags(4,'iit_date_modified',datetime_to_varchar(lr_retval.iit_date_modified))
                   ||gen_tags(4,'iit_created_by',lr_retval.iit_created_by)
                   ||gen_tags(4,'iit_modified_by',lr_retval.iit_modified_by)
                   ||gen_tags(4,'iit_admin_unit',TO_CHAR(lr_retval.iit_admin_unit))
@@ -949,16 +979,16 @@ BEGIN
                   ||gen_tags(4,'iit_num_attrib83',TO_CHAR(lr_retval.iit_num_attrib83))
                   ||gen_tags(4,'iit_num_attrib84',TO_CHAR(lr_retval.iit_num_attrib84))
                   ||gen_tags(4,'iit_num_attrib85',TO_CHAR(lr_retval.iit_num_attrib85))
-                  ||gen_tags(4,'iit_date_attrib86',date_to_varchar(lr_retval.iit_date_attrib86))
-                  ||gen_tags(4,'iit_date_attrib87',date_to_varchar(lr_retval.iit_date_attrib87))
-                  ||gen_tags(4,'iit_date_attrib88',date_to_varchar(lr_retval.iit_date_attrib88))
-                  ||gen_tags(4,'iit_date_attrib89',date_to_varchar(lr_retval.iit_date_attrib89))
-                  ||gen_tags(4,'iit_date_attrib90',date_to_varchar(lr_retval.iit_date_attrib90))
-                  ||gen_tags(4,'iit_date_attrib91',date_to_varchar(lr_retval.iit_date_attrib91))
-                  ||gen_tags(4,'iit_date_attrib92',date_to_varchar(lr_retval.iit_date_attrib92))
-                  ||gen_tags(4,'iit_date_attrib93',date_to_varchar(lr_retval.iit_date_attrib93))
-                  ||gen_tags(4,'iit_date_attrib94',date_to_varchar(lr_retval.iit_date_attrib94))
-                  ||gen_tags(4,'iit_date_attrib95',date_to_varchar(lr_retval.iit_date_attrib95))
+                  ||gen_tags(4,'iit_date_attrib86',datetime_to_varchar(lr_retval.iit_date_attrib86))
+                  ||gen_tags(4,'iit_date_attrib87',datetime_to_varchar(lr_retval.iit_date_attrib87))
+                  ||gen_tags(4,'iit_date_attrib88',datetime_to_varchar(lr_retval.iit_date_attrib88))
+                  ||gen_tags(4,'iit_date_attrib89',datetime_to_varchar(lr_retval.iit_date_attrib89))
+                  ||gen_tags(4,'iit_date_attrib90',datetime_to_varchar(lr_retval.iit_date_attrib90))
+                  ||gen_tags(4,'iit_date_attrib91',datetime_to_varchar(lr_retval.iit_date_attrib91))
+                  ||gen_tags(4,'iit_date_attrib92',datetime_to_varchar(lr_retval.iit_date_attrib92))
+                  ||gen_tags(4,'iit_date_attrib93',datetime_to_varchar(lr_retval.iit_date_attrib93))
+                  ||gen_tags(4,'iit_date_attrib94',datetime_to_varchar(lr_retval.iit_date_attrib94))
+                  ||gen_tags(4,'iit_date_attrib95',datetime_to_varchar(lr_retval.iit_date_attrib95))
                   ||gen_tags(4,'iit_angle',TO_CHAR(lr_retval.iit_angle))
                   ||gen_tags(4,'iit_angle_txt',lr_retval.iit_angle_txt)
                   ||gen_tags(4,'iit_class',lr_retval.iit_class)
@@ -974,8 +1004,8 @@ BEGIN
                   ||gen_tags(4,'iit_height',TO_CHAR(lr_retval.iit_height))
                   ||gen_tags(4,'iit_height_2',TO_CHAR(lr_retval.iit_height_2))
                   ||gen_tags(4,'iit_id_code',lr_retval.iit_id_code)
-                  ||gen_tags(4,'iit_instal_date',date_to_varchar(lr_retval.iit_instal_date))
-                  ||gen_tags(4,'iit_invent_date',date_to_varchar(lr_retval.iit_invent_date))
+                  ||gen_tags(4,'iit_instal_date',datetime_to_varchar(lr_retval.iit_instal_date))
+                  ||gen_tags(4,'iit_invent_date',datetime_to_varchar(lr_retval.iit_invent_date))
                   ||gen_tags(4,'iit_inv_ownership',lr_retval.iit_inv_ownership)
                   ||gen_tags(4,'iit_itemcode',lr_retval.iit_itemcode)
                   ||gen_tags(4,'iit_lco_lamp_config_id',TO_CHAR(lr_retval.iit_lco_lamp_config_id))
@@ -996,12 +1026,12 @@ BEGIN
                   ||gen_tags(4,'iit_power',TO_CHAR(lr_retval.iit_power))
                   ||gen_tags(4,'iit_prov_flag',lr_retval.iit_prov_flag)
                   ||gen_tags(4,'iit_rev_by',lr_retval.iit_rev_by)
-                  ||gen_tags(4,'iit_rev_date',date_to_varchar(lr_retval.iit_rev_date))
+                  ||gen_tags(4,'iit_rev_date',datetime_to_varchar(lr_retval.iit_rev_date))
                   ||gen_tags(4,'iit_type',lr_retval.iit_type)
                   ||gen_tags(4,'iit_type_txt',lr_retval.iit_type_txt)
                   ||gen_tags(4,'iit_width',TO_CHAR(lr_retval.iit_width))
                   ||gen_tags(4,'iit_xtra_char_1',lr_retval.iit_xtra_char_1)
-                  ||gen_tags(4,'iit_xtra_date_1',date_to_varchar(lr_retval.iit_xtra_date_1))
+                  ||gen_tags(4,'iit_xtra_date_1',datetime_to_varchar(lr_retval.iit_xtra_date_1))
                   ||gen_tags(4,'iit_xtra_domain_1',lr_retval.iit_xtra_domain_1)
                   ||gen_tags(4,'iit_xtra_domain_txt_1',lr_retval.iit_xtra_domain_txt_1)
                   ||gen_tags(4,'iit_xtra_number_1',TO_CHAR(lr_retval.iit_xtra_number_1))
@@ -1288,7 +1318,7 @@ BEGIN
     lv_str := lv_str||'<AssetActivity>'
                       ||'<Activity_Code>'||lt_retval(i).mia_atv_acty_area_code||'</Activity_Code>'
                       ||'<Description>'||dbms_xmlgen.convert(lt_retval(i).atv_descr)||'</Description>'
-                      ||'<Asset_Type>'||lt_retval(i).mia_nit_inv_type||'</Asset_Type>'
+                      ||'<Asset_Type_Code>'||lt_retval(i).mia_nit_inv_type||'</Asset_Type_Code>'
                       ||'<Sys_Flag>'||lt_retval(i).atv_dtp_flag||'</Sys_Flag>'
                       ||'<Safety_Detailed_Flag>'||lt_retval(i).atv_maint_insp_flag||'</Safety_Detailed_Flag>'
                       ||'<Display_Sequence>'||lt_retval(i).atv_sequence_no||'</Display_Sequence>'
@@ -1674,7 +1704,8 @@ END get_standard_items;
 FUNCTION get_notify_orgs
   RETURN xmltype IS
   --
-  TYPE retval_rec IS RECORD(oun_unit_code    org_units.oun_unit_code%TYPE
+  TYPE retval_rec IS RECORD(oun_org_id       org_units.oun_org_id%TYPE
+                           ,oun_unit_code    org_units.oun_unit_code%TYPE
                            ,oun_name         org_units.oun_name%TYPE
                            ,oun_admin_org_id org_units.oun_admin_org_id%TYPE
                            ,oun_start_date   org_units.oun_start_date%TYPE
@@ -1689,7 +1720,8 @@ FUNCTION get_notify_orgs
   --
 BEGIN
   --
-  SELECT oun_unit_code
+  SELECT oun_org_id
+        ,oun_unit_code
         ,oun_name
         ,oun_admin_org_id
         ,oun_start_date
@@ -1699,7 +1731,8 @@ BEGIN
     FROM org_units
    WHERE oun_org_unit_type = 'NO'
    UNION
-  SELECT oun_unit_code
+  SELECT oun_org_id
+        ,oun_unit_code
         ,oun_name
         ,oun_admin_org_id
         ,oun_start_date
@@ -1719,6 +1752,7 @@ BEGIN
   FOR i IN 1..lt_retval.count LOOP
     --
     lv_str := lv_str||'<Notify_Org>'
+                      ||'<Org_Id>'||TO_CHAR(lt_retval(i).oun_org_id)||'</Org_Id>'
                       ||'<Org_Code>'||lt_retval(i).oun_unit_code||'</Org_Code>'
                       ||'<Org_Name>'||dbms_xmlgen.convert(lt_retval(i).oun_name)||'</Org_Name>'
                       ||'<Admin_Unit_Id>'||TO_CHAR(lt_retval(i).oun_admin_org_id)||'</Admin_Unit_Id>'           
@@ -1752,7 +1786,8 @@ END get_notify_orgs;
 FUNCTION get_recharge_orgs
   RETURN xmltype IS
   --
-  TYPE retval_rec IS RECORD(oun_unit_code    org_units.oun_unit_code%TYPE
+  TYPE retval_rec IS RECORD(oun_org_id       org_units.oun_org_id%TYPE
+                           ,oun_unit_code    org_units.oun_unit_code%TYPE
                            ,oun_name         org_units.oun_name%TYPE
                            ,oun_admin_org_id org_units.oun_admin_org_id%TYPE
                            ,oun_start_date   org_units.oun_start_date%TYPE
@@ -1767,7 +1802,8 @@ FUNCTION get_recharge_orgs
   --
 BEGIN
   --
-  SELECT oun_unit_code
+  SELECT oun_org_id
+        ,oun_unit_code
         ,oun_name
         ,oun_admin_org_id
         ,oun_start_date
@@ -1786,6 +1822,7 @@ BEGIN
   FOR i IN 1..lt_retval.count LOOP
     --
     lv_str := lv_str||'<Recharge_Org>'
+                      ||'<Org_Id>'||TO_CHAR(lt_retval(i).oun_org_id)||'</Org_Id>'
                       ||'<Org_Code>'||lt_retval(i).oun_unit_code||'</Org_Code>'
                       ||'<Org_Name>'||dbms_xmlgen.convert(lt_retval(i).oun_name)||'</Org_Name>'
                       ||'<Admin_Unit_Id>'||TO_CHAR(lt_retval(i).oun_admin_org_id)||'</Admin_Unit_Id>'
@@ -1827,7 +1864,7 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Northing',cp_xmlns)             northing
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Section_Id',cp_xmlns)           section_id
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Chainage',cp_xmlns)             chainage
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Asset_Type',cp_xmlns)           asset_type
+        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Asset_Type_Code',cp_xmlns)      asset_type
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Asset_Id',cp_xmlns)             asset_id
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Datetime',cp_xmlns)      defect_datetime
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Initiation_Code',cp_xmlns)      initiation_code
@@ -1845,8 +1882,8 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
    FROM dual
       ;
   --
-  CURSOR get_repairs(cp_xml IN XMLTYPE
-                    ,cp_xmlns       IN VARCHAR2)
+  CURSOR get_repairs(cp_xml   IN XMLTYPE
+                    ,cp_xmlns IN VARCHAR2)
       IS
   SELECT EXTRACTVALUE(VALUE(x),'Repair/Repair_Type_Code',cp_xmlns)   repair_type
         ,EXTRACTVALUE(VALUE(x),'Repair/Treatment_Code',cp_xmlns)     treatment_code
@@ -1855,13 +1892,13 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
     FROM TABLE(xmlsequence(EXTRACT(cp_xml,'/Repair',cp_xmlns))) x
       ;
   --
-  CURSOR get_boqs(cp_xml IN XMLTYPE
-                 ,cp_xmlns       IN VARCHAR2)
+  CURSOR get_boqs(cp_xml   IN XMLTYPE
+                 ,cp_xmlns IN VARCHAR2)
       IS
-  SELECT EXTRACTVALUE(cp_xml,'Boq/Item_Code',cp_xmlns)  item_code
-        ,EXTRACTVALUE(cp_xml,'Boq/Dimension1',cp_xmlns) dimension1
-        ,EXTRACTVALUE(cp_xml,'Boq/Dimension2',cp_xmlns) dimension2
-        ,EXTRACTVALUE(cp_xml,'Boq/Dimension3',cp_xmlns) dimension3
+  SELECT EXTRACTVALUE(VALUE(x),'Boq/Item_Code',cp_xmlns)  item_code
+        ,EXTRACTVALUE(VALUE(x),'Boq/Dimension1',cp_xmlns) dimension1
+        ,EXTRACTVALUE(VALUE(x),'Boq/Dimension2',cp_xmlns) dimension2
+        ,EXTRACTVALUE(VALUE(x),'Boq/Dimension3',cp_xmlns) dimension3
     FROM TABLE(xmlsequence(EXTRACT(cp_xml,'/Boq',cp_xmlns))) x
       ;
   --
@@ -1996,7 +2033,7 @@ BEGIN
     lt_repairs(rep_ind).rep_tre_treat_code     := lt_get_repairs(i).treatment_code;
     lt_repairs(rep_ind).rep_descr              := lt_get_repairs(i).repair_description;
     --
-    nm_debug.debug('Getting Repair params');
+    nm_debug.debug('Getting BOQ params for :'||lt_get_repairs(i).boq_xml.getstringval);
     OPEN  get_boqs(lt_get_repairs(i).boq_xml
                   ,c_xmlns);
     FETCH get_boqs
