@@ -4,17 +4,17 @@ CREATE OR REPLACE PACKAGE BODY mai_api AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkb-arc   1.0   Jul 17 2008 16:16:22   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkb-arc   1.1   Aug 05 2008 15:26:50   mhuitson  $
 --       Module Name      : $Workfile:   mai_api.pkb  $
---       Date into PVCS   : $Date:   Jul 17 2008 16:16:22  $
---       Date fetched Out : $Modtime:   Jul 17 2008 15:41:50  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Aug 05 2008 15:26:50  $
+--       Date fetched Out : $Modtime:   Aug 05 2008 14:53:34  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 -----------------------------------------------------------------------------
 --  Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
-  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.0  $';
+  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.1  $';
   g_package_name  CONSTANT  varchar2(30)   := 'mai_api';
   --
   insert_error  EXCEPTION;
@@ -64,6 +64,8 @@ CREATE OR REPLACE PACKAGE BODY mai_api AS
 || -20040,'Error Occured While Creating Activities Report Line : '
 || -20041,'Error Occured While Creating Repair(s) : '
 || -20042,'Error Occured While Creating BOQs : '
+|| -20044,'Cannot Create More Than One Repair Of Each Repair Type'
+|| -20045,'Invalid Defect Attribute Value Specified. ['||lv_attr||']'
 */
 --
 -----------------------------------------------------------------------------
@@ -100,17 +102,109 @@ END;
 -----------------------------------------------------------------------------
 --
 PROCEDURE check_asset_security(pi_inv_type  IN nm_inv_types.nit_inv_type%TYPE
-                              ,pi_iit_ne_id IN nm_inv_items_all.iit_ne_id%TYPE) IS
+                              ,pi_iit_ne_id IN nm_inv_items_all.iit_ne_id%TYPE
+                              ,pi_user_id   IN hig_users.hus_user_id%TYPE) IS
   --
   ex_security  EXCEPTION;
-  PRAGMA       exception_init(ex_security,-20000);
+  --
+  lv_nm3_inv_type  nm_inv_types_all.nit_inv_type%TYPE;
+  lr_inv_type      nm_inv_types_all%ROWTYPE;
+  --
+  FUNCTION check_asset_admin_unit
+    RETURN BOOLEAN IS
+    --
+    lv_dummy NUMBER;
+    --
+  BEGIN
+    --
+    SELECT iit_ne_id
+      INTO lv_dummy
+      FROM nm_inv_items
+     WHERE iit_ne_id = pi_iit_ne_id
+       AND EXISTS(SELECT 1
+                    FROM nm_admin_groups
+                        ,nm_user_aus
+                   WHERE nua_user_id          = pi_user_id
+                     AND nua_mode             = nm3type.get_constant('c_normal')
+                     AND nua_admin_unit       = nag_parent_admin_unit
+                     AND nag_child_admin_unit = iit_admin_unit)
+         ;
+    --
+    RETURN TRUE;
+    --
+  EXCEPTION
+    WHEN others
+     THEN
+        RETURN FALSE;
+  END;
+  --
+  FUNCTION check_inv_type_role
+    RETURN BOOLEAN IS
+    --
+    lv_dummy NUMBER;
+    --
+  BEGIN
+    --
+    SELECT 1
+      INTO lv_dummy
+      FROM hig_users
+          ,hig_user_roles
+          ,nm_inv_type_roles
+     WHERE itr_inv_type = lv_nm3_inv_type
+       AND itr_mode     = nm3type.get_constant('c_normal')
+       AND itr_hro_role = hur_role 
+       AND hur_username = hus_username
+       AND hus_user_id  = pi_user_id 
+         ;
+    --
+    RETURN TRUE;
+    --
+  EXCEPTION
+    WHEN others
+     THEN
+        RETURN FALSE;
+  END check_inv_type_role;
   --
 BEGIN
-  --
+  /*
+  ||Can't use nm3lock as the Web Service logs on as the
+  ||Highways Owner so need to make sure the specified
+  ||Inspector can update the asset.
   nm3lock.lock_asset_item(pi_nit_id          => pi_inv_type
                          ,pi_pk_id           => pi_iit_ne_id
                          ,pi_lock_for_update => TRUE
                          ,pi_updrdonly       => nm3lock.get_updrdonly);
+  */
+  /*
+  ||Translate The Two Character MAI Inv Code
+  ||Into a 4 Character NM3 Asset Type.
+  */
+  BEGIN
+    lv_nm3_inv_type := mai.translate_mai_inv_type(pi_inv_type);
+  EXCEPTION
+    WHEN others
+     THEN
+        raise_application_error(-20003,'Cannot Translate Asset Type.');
+  END;
+  /*
+  ||Get The Asset Type Details.
+  */
+  lr_inv_type := nm3get.get_nit(lv_nm3_inv_type);
+  /*
+  ||Check Inspector Security.
+  */
+  IF NOT check_inv_type_role
+   THEN
+      raise ex_security;
+  END IF;
+  --
+  IF lr_inv_type.nit_table_name IS NULL
+   THEN
+      IF NOT check_asset_admin_unit
+       THEN
+          raise ex_security;
+      END IF;
+  END IF;
   --
 EXCEPTION
   WHEN ex_security
@@ -187,7 +281,7 @@ BEGIN
               ||'  FROM '||lr_inv_type.nit_table_name
               ||' WHERE '||lr_inv_type.nit_lr_ne_column_name||'='||pi_item_id;
       /*
-      ||Exacute SQL.
+      ||Execute SQL.
       */
       EXECUTE IMMEDIATE(lv_sql) INTO lv_ft_id;
       /*
@@ -881,64 +975,172 @@ PROCEDURE validate_defect(pi_are_report_id       IN     activities_report.are_re
                          ,pi_are_rse_he_id       IN     activities_report.are_rse_he_id%TYPE
                          ,pi_are_date_work_done  IN     activities_report.are_date_work_done%TYPE
                          ,pi_are_maint_insp_flag IN     activities_report.are_maint_insp_flag%TYPE
-                         ,pio_defect_rec         IN OUT defects%ROWTYPE)
+                         ,pi_def_attr_tab        IN     def_attr_tab)
   IS
   --
-  lr_defect_rec  defects%ROWTYPE;
   lr_rse         road_sections%ROWTYPE;
   --
   lv_siss  hig_options.hop_value%TYPE := NVL(hig.get_sysopt('DEF_SISS'),'ALL');
   --
+  lv_def_attr1 VARCHAR2(254);
+  lv_def_attr2 VARCHAR2(254);
+  lv_def_attr3 VARCHAR2(254);
+  lv_def_attr4 VARCHAR2(254);
+  --
+  PROCEDURE process_def_attr(pi_def_type  IN def_types.dty_defect_code%TYPE
+                            ,pi_activity  IN def_types.dty_atv_acty_area_code%TYPE
+                            ,pi_sys_flag  IN def_types.dty_dtp_flag%TYPE
+                            ,pi_def_attr1 IN VARCHAR2
+                            ,pi_def_attr2 IN VARCHAR2
+                            ,pi_def_attr3 IN VARCHAR2
+                            ,pi_def_attr4 IN VARCHAR2) IS
+    --
+    lr_def_types  def_types%ROWTYPE;
+    lv_attr       VARCHAR2(20);
+    --
+    PROCEDURE set_attribute(pi_column IN VARCHAR2
+                           ,pi_value  IN VARCHAR2)
+      IS
+      --
+      lv_data_type  all_tab_columns.data_type%TYPE;
+      lv_column_assign VARCHAR2(100) := 'BEGIN mai_api.gr_defect_rec.'||pi_column||' := ';
+      --
+    BEGIN
+      nm_debug.debug('ATTR Column = '||pi_column);
+      nm_debug.debug('ATTR Value = '||pi_value);
+      /*
+      ||Get The Datatype Of The Column.
+      */
+      SELECT data_type
+        INTO lv_data_type
+        FROM all_tab_columns
+       WHERE table_name  = 'DEFECTS'
+         AND column_name = pi_column
+         AND owner = hig.get_application_owner
+           ;
+      /*
+      ||Set The Value.
+      */
+      nm_debug.debug('ATTR Datatype = '||lv_data_type);
+
+      IF lv_data_type = 'NUMBER'
+       THEN
+          --
+          EXECUTE IMMEDIATE lv_column_assign||'TO_NUMBER('||pi_value||'); END;';
+          --
+      ELSIF lv_data_type = 'DATE'
+       THEN
+          --
+          EXECUTE IMMEDIATE lv_column_assign||'TO_DATE('||nm3flx.string(pi_value)
+                                                   ||','||nm3flx.string('DD-MON-YYYY')||');';
+          --
+      ELSE
+          --
+          EXECUTE IMMEDIATE lv_column_assign||pi_value||';';
+          --
+      END IF;
+      --
+    EXCEPTION
+      WHEN others
+       THEN
+          raise_application_error(-20045,'Invalid Defect Attribute Value Specified. ['||lv_attr||']');
+    END set_attribute;
+  BEGIN
+    /*
+    ||Get Attribute Details
+    */
+    SELECT * 
+      INTO lr_def_types
+      FROM def_types
+     WHERE dty_defect_code        = pi_def_type
+       AND dty_atv_acty_area_code = pi_activity
+       AND dty_dtp_flag           = pi_sys_flag
+         ;
+    /*
+    ||Validate The Attributes
+    ||And Assign To Defect Record.
+    */
+    IF lr_def_types.dty_hh_attribute_1 IS NOT NULL
+     AND pi_def_attr1 IS NOT NULL
+     THEN
+        lv_attr := 'Attribute 1';
+        set_attribute(pi_column => lr_def_types.dty_hh_attribute_1
+                     ,pi_value  => pi_def_attr1);
+    END IF;
+    --
+    IF lr_def_types.dty_hh_attribute_2 IS NOT NULL
+     AND pi_def_attr2 IS NOT NULL
+     THEN
+        lv_attr := 'Attribute 2';
+        set_attribute(pi_column => lr_def_types.dty_hh_attribute_2
+                     ,pi_value  => pi_def_attr2);
+    END IF;
+    --
+    IF lr_def_types.dty_hh_attribute_3 IS NOT NULL
+     AND pi_def_attr3 IS NOT NULL
+     THEN
+        lv_attr := 'Attribute 3';
+        set_attribute(pi_column => lr_def_types.dty_hh_attribute_3
+                     ,pi_value  => pi_def_attr3);
+    END IF;
+    --
+    IF lr_def_types.dty_hh_attribute_4 IS NOT NULL
+     AND pi_def_attr4 IS NOT NULL
+     THEN
+        lv_attr := 'Attribute 4';
+        set_attribute(pi_column => lr_def_types.dty_hh_attribute_4
+                     ,pi_value  => pi_def_attr4);
+    END IF;
+  END process_def_attr;
 BEGIN
   --
   nm_debug.debug('Validate Defect');
-  lr_defect_rec := pio_defect_rec;
   /*
   ||Validate/Default The Inspection Id.
   */
   nm_debug.debug('Insp Id');
-  IF lr_defect_rec.def_are_report_id IS NULL
-   OR lr_defect_rec.def_are_report_id != pi_are_report_id
+  IF gr_defect_rec.def_are_report_id IS NULL
+   OR gr_defect_rec.def_are_report_id != pi_are_report_id
    THEN
-      lr_defect_rec.def_are_report_id := pi_are_report_id;
+      gr_defect_rec.def_are_report_id := pi_are_report_id;
   END IF;
   /*
   ||Validate The Section.
   */
   nm_debug.debug('Section');
-  IF lr_defect_rec.def_rse_he_id IS NULL
+  IF gr_defect_rec.def_rse_he_id IS NULL
    THEN
       --
       raise_application_error(-20004,'No Section Supplied.');
       --
-  ELSIF lr_defect_rec.def_rse_he_id != pi_are_rse_he_id
+  ELSIF gr_defect_rec.def_rse_he_id != pi_are_rse_he_id
    THEN
       --
       raise_application_error(-20038,'Defect Section Must Match The Inspection Section.');
       --
   ELSE
       --
-      lr_rse := validate_section(lr_defect_rec.def_rse_he_id);
-      lr_defect_rec.def_ity_sys_flag := lr_rse.rse_sys_flag;
+      lr_rse := validate_section(gr_defect_rec.def_rse_he_id);
+      gr_defect_rec.def_ity_sys_flag := lr_rse.rse_sys_flag;
       --
   END IF;
   /*
   ||Validate Activity Code.
   */
   nm_debug.debug('Activity');
-  IF lr_defect_rec.def_iit_item_id IS NOT NULL
+  IF gr_defect_rec.def_iit_item_id IS NOT NULL
    THEN
-      IF NOT validate_asset_activity(pi_inv_type        => lr_defect_rec.def_ity_inv_code
+      IF NOT validate_asset_activity(pi_inv_type        => gr_defect_rec.def_ity_inv_code
                                     ,pi_maint_insp_flag => pi_are_maint_insp_flag
                                     ,pi_sys_flag        => lr_rse.rse_sys_flag
-                                    ,pi_activity        => lr_defect_rec.def_atv_acty_area_code)
+                                    ,pi_activity        => gr_defect_rec.def_atv_acty_area_code)
        THEN
           raise_application_error(-20017,'Invalid Asset Activity Code Supplied.');
       END IF;
   ELSE
       IF NOT validate_network_activity(pi_maint_insp_flag => pi_are_maint_insp_flag
                                       ,pi_sys_flag        => lr_rse.rse_sys_flag
-                                      ,pi_activity        => lr_defect_rec.def_atv_acty_area_code
+                                      ,pi_activity        => gr_defect_rec.def_atv_acty_area_code
                                       ,pi_effective_date  => pi_are_date_work_done)
        THEN
           raise_application_error(-20018,'Invalid Network Activity Code Supplied.');
@@ -948,13 +1150,13 @@ BEGIN
   ||Validate Defect Type.
   */
   nm_debug.debug('Defect Type');
-  IF lr_defect_rec.def_defect_code IS NULL
+  IF gr_defect_rec.def_defect_code IS NULL
    THEN
       raise_application_error(-20024,'No Defect Type Supplied.');
   ELSE
-     IF NOT validate_defect_type(pi_activity       => lr_defect_rec.def_atv_acty_area_code
+     IF NOT validate_defect_type(pi_activity       => gr_defect_rec.def_atv_acty_area_code
                                 ,pi_sys_flag       => lr_rse.rse_sys_flag
-                                ,pi_defect_type    => lr_defect_rec.def_defect_code
+                                ,pi_defect_type    => gr_defect_rec.def_defect_code
                                 ,pi_effective_date => pi_are_date_work_done)
       THEN
          raise_application_error(-20025,'Invalid Defect Type Supplied.');
@@ -964,12 +1166,12 @@ BEGIN
   ||Default  SISS Code.
   */
   nm_debug.debug('SISS');
-  IF lr_defect_rec.def_siss_id IS NULL
+  IF gr_defect_rec.def_siss_id IS NULL
    THEN
-      lr_defect_rec.def_siss_id := lv_siss;
+      gr_defect_rec.def_siss_id := lv_siss;
   END IF;
   --
-  IF NOT validate_siss_id(pi_siss_id        => lr_defect_rec.def_siss_id
+  IF NOT validate_siss_id(pi_siss_id        => gr_defect_rec.def_siss_id
                          ,pi_effective_date => pi_are_date_work_done)
    THEN
       --
@@ -980,59 +1182,59 @@ BEGIN
   ||Validate Priority.
   */
   nm_debug.debug('Priority');
-  IF lr_defect_rec.def_priority IS NULL
+  IF gr_defect_rec.def_priority IS NULL
    THEN
       --
       raise_application_error(-20026,'No Priority Specified.');
       --
   END IF;
   --
-  IF NOT validate_priority(pi_priority           => lr_defect_rec.def_priority
-                          ,pi_atv_acty_area_code => lr_defect_rec.def_atv_acty_area_code
+  IF NOT validate_priority(pi_priority           => gr_defect_rec.def_priority
+                          ,pi_atv_acty_area_code => gr_defect_rec.def_atv_acty_area_code
                           ,pi_effective_date     => pi_are_date_work_done)
    THEN
       --
-      raise_application_error(-20027,'Invalid Priority Specified. Priority ['||lr_defect_rec.def_priority
-                                   ||'] Activity ['||lr_defect_rec.def_atv_acty_area_code||']');
+      raise_application_error(-20027,'Invalid Priority Specified. Priority ['||gr_defect_rec.def_priority
+                                   ||'] Activity ['||gr_defect_rec.def_atv_acty_area_code||']');
       --
   END IF;
-  lr_defect_rec.def_orig_priority := lr_defect_rec.def_priority;
+  gr_defect_rec.def_orig_priority := gr_defect_rec.def_priority;
   /*
   ||Set The Created Date Fields
   */
   nm_debug.debug('Dates');
-  IF lr_defect_rec.def_created_date IS NULL
+  IF gr_defect_rec.def_created_date IS NULL
    THEN
-      lr_defect_rec.def_created_date := TRUNC(pi_are_date_work_done);
-      lr_defect_rec.def_time_hrs     := 0;
-      lr_defect_rec.def_time_mins    := 0;
+      gr_defect_rec.def_created_date := TRUNC(pi_are_date_work_done);
+      gr_defect_rec.def_time_hrs     := 0;
+      gr_defect_rec.def_time_mins    := 0;
   END IF;
   /*
   ||Default / Validate Defect Status.
   */
   nm_debug.debug('Status');
-  IF lr_defect_rec.def_status_code IS NULL
+  IF gr_defect_rec.def_status_code IS NULL
    THEN
       /*
       ||If A Completion Date Has Been Supplied
       ||Set The Status To Complete, Otherwise
       ||Set The Status To Available.
       */
-      IF lr_defect_rec.def_date_compl IS NULL
+      IF gr_defect_rec.def_date_compl IS NULL
        THEN
-          lr_defect_rec.def_status_code := get_initial_defect_status;
+          gr_defect_rec.def_status_code := get_initial_defect_status;
       ELSE
-          lr_defect_rec.def_status_code := get_complete_defect_status;
+          gr_defect_rec.def_status_code := get_complete_defect_status;
       END IF;
   END IF;
   --
-  IF lr_defect_rec.def_status_code = get_complete_defect_status
-   AND lr_defect_rec.def_date_compl IS NULL
+  IF gr_defect_rec.def_status_code = get_complete_defect_status
+   AND gr_defect_rec.def_date_compl IS NULL
    THEN
-      lr_defect_rec.def_date_compl := lr_defect_rec.def_created_date;
+      gr_defect_rec.def_date_compl := gr_defect_rec.def_created_date;
   END IF;
   --
-  IF NOT validate_defect_status(pi_defect_rec     => lr_defect_rec
+  IF NOT validate_defect_status(pi_defect_rec     => gr_defect_rec
                                ,pi_effective_date => pi_are_date_work_done)
    THEN
       --
@@ -1040,10 +1242,37 @@ BEGIN
       --   
   END IF;
   /*
-  ||Assign The Validated Record To The Output Record.
+  ||Assign The Attributes.
   */
+  CASE
+    WHEN pi_def_attr_tab.count = 1
+     THEN
+        lv_def_attr1 := pi_def_attr_tab(1);
+    WHEN pi_def_attr_tab.count = 2
+     THEN
+        lv_def_attr1 := pi_def_attr_tab(1);
+        lv_def_attr2 := pi_def_attr_tab(2);
+    WHEN pi_def_attr_tab.count = 3
+     THEN
+        lv_def_attr1 := pi_def_attr_tab(1);
+        lv_def_attr2 := pi_def_attr_tab(2);
+        lv_def_attr3 := pi_def_attr_tab(3);
+    WHEN pi_def_attr_tab.count >= 4
+     THEN
+        lv_def_attr1 := pi_def_attr_tab(1);
+        lv_def_attr2 := pi_def_attr_tab(2);
+        lv_def_attr3 := pi_def_attr_tab(3);
+        lv_def_attr4 := pi_def_attr_tab(4);
+  END CASE;
+  --
+  process_def_attr(pi_def_type  => gr_defect_rec.def_defect_code
+                  ,pi_activity  => gr_defect_rec.def_atv_acty_area_code
+                  ,pi_sys_flag  => lr_rse.rse_sys_flag
+                  ,pi_def_attr1 => lv_def_attr1
+                  ,pi_def_attr2 => lv_def_attr2
+                  ,pi_def_attr3 => lv_def_attr3
+                  ,pi_def_attr4 => lv_def_attr4);
   nm_debug.debug('Defect Validation Complete');
-  pio_defect_rec := lr_defect_rec;
   --
 END validate_defect;
 --
@@ -1495,6 +1724,9 @@ BEGIN
          ;
   --
 EXCEPTION
+  WHEN DUP_VAL_ON_INDEX
+   THEN
+      raise_application_error(-20044,'Cannot Create More Than One Repair Of Each Repair Type');
   WHEN others
    THEN
       raise_application_error(-20041, 'Error Occured While Creating Repair(s) : '||SQLERRM);
@@ -1641,6 +1873,7 @@ END get_admin_unit;
 --
 FUNCTION create_defect(pi_insp_rec           IN activities_report%ROWTYPE
                       ,pi_defect_rec         IN defects%ROWTYPE
+                      ,pi_def_attr_tab       IN def_attr_tab
                       ,pi_repair_tab         IN rep_tab
                       ,pi_boq_tab            IN boq_tab
                       ,pi_commit             IN VARCHAR2)
@@ -1658,7 +1891,7 @@ FUNCTION create_defect(pi_insp_rec           IN activities_report%ROWTYPE
   lv_iit_rse_he_id nm_elements_all.ne_id%TYPE;
   --
   lr_insp_rec     activities_report%ROWTYPE;
-  lr_defect_rec   defects%ROWTYPE;
+  --lr_defect_rec   defects%ROWTYPE;
   lt_repair_tab   rep_tab;
   lr_repair_rec   repairs%ROWTYPE;
   lr_rse          road_sections%ROWTYPE;
@@ -1672,29 +1905,35 @@ BEGIN
   */
   nm_debug.debug('create_defect, assigning input to local params');
   lr_insp_rec   := pi_insp_rec;
-  lr_defect_rec := pi_defect_rec;
+  gr_defect_rec := pi_defect_rec;
   lt_repair_tab := pi_repair_tab;
   lt_boq_tab    := pi_boq_tab;
   nm_debug.debug('create_defect, local params assigned');
   /*
   ||Check/Validate The Asset Id.
   */
-  IF lr_defect_rec.def_iit_item_id IS NOT NULL
+  IF gr_defect_rec.def_iit_item_id IS NOT NULL
    THEN
       /*
       ||Asset Id Supplied So Make Sure
       ||The Asset Type Has Also Been Given.
       */
-      IF lr_defect_rec.def_ity_inv_code IS NOT NULL
+      IF gr_defect_rec.def_ity_inv_code IS NOT NULL
        THEN
           /*
           ||Check That The Asset Exists.
           */
-          IF NOT validate_asset(pi_item_type => lr_defect_rec.def_ity_inv_code
-                               ,pi_item_id   => lr_defect_rec.def_iit_item_id)
+          IF NOT validate_asset(pi_item_type => gr_defect_rec.def_ity_inv_code
+                               ,pi_item_id   => gr_defect_rec.def_iit_item_id)
            THEN
               raise_application_error(-20001,'Invalid Asset Id Supplied.');
           END IF;
+          /*
+          ||Asset exists but can we work with it?
+          */
+          check_asset_security(pi_inv_type  => gr_defect_rec.def_ity_inv_code
+                              ,pi_iit_ne_id => gr_defect_rec.def_iit_item_id
+                              ,pi_user_id   => pi_insp_rec.are_peo_person_id_actioned);
       ELSE
          raise_application_error(-20002,'No Asset Type Supplied.');
       END IF;
@@ -1702,11 +1941,11 @@ BEGIN
       ||Get The Maintainance Section Associated With The Asset Or
       ||The Relevant Dummy Section For Off Network Assets.
       */
-      lv_iit_rse_he_id := mai.get_budget_allocation(p_inv_type  => lr_defect_rec.def_ity_inv_code
-                                                   ,p_iit_ne_id => lr_defect_rec.def_iit_item_id);
+      lv_iit_rse_he_id := mai.get_budget_allocation(p_inv_type  => gr_defect_rec.def_ity_inv_code
+                                                   ,p_iit_ne_id => gr_defect_rec.def_iit_item_id);
       --
       lr_insp_rec.are_rse_he_id := lv_iit_rse_he_id;
-      lr_defect_rec.def_rse_he_id := lv_iit_rse_he_id;
+      gr_defect_rec.def_rse_he_id := lv_iit_rse_he_id;
       FOR I IN 1..lt_repair_tab.count LOOP
         lt_repair_tab(i).rep_rse_he_id := lv_iit_rse_he_id;
       END LOOP;
@@ -1716,7 +1955,7 @@ BEGIN
       ||No Asset Id Supplied So Make Sure
       ||The Asset Type Is Also NULL.
       */
-      lr_defect_rec.def_ity_inv_code := NULL;
+      gr_defect_rec.def_ity_inv_code := NULL;
   END IF;
   /*
   ||Validate The Inspection.
@@ -1744,33 +1983,33 @@ BEGIN
                  ,pi_are_rse_he_id       => lr_insp_rec.are_rse_he_id
                  ,pi_are_date_work_done  => lr_insp_rec.are_date_work_done
                  ,pi_are_maint_insp_flag => lr_insp_rec.are_maint_insp_flag
-                 ,pio_defect_rec         => lr_defect_rec);
+                 ,pi_def_attr_tab        => pi_def_attr_tab);
   /*
   ||Process The Defect.
   */
   nm_debug.debug('Processing Defect.');
   ins_insp_line(pi_report_id          => lr_insp_rec.are_report_id
                ,pi_report_date        => lr_insp_rec.are_created_date
-               ,pi_atv_acty_area_code => lr_defect_rec.def_atv_acty_area_code);
+               ,pi_atv_acty_area_code => gr_defect_rec.def_atv_acty_area_code);
   --
-  lr_defect_rec.def_are_report_id := lr_insp_rec.are_report_id;
+  gr_defect_rec.def_are_report_id := lr_insp_rec.are_report_id;
   --
   /*
   || Create The Defect.
   */
   nm_debug.debug('Creating Defect.');
-  lv_defect_id := mai.create_defect(lr_defect_rec);
-  lr_defect_rec.def_defect_id := lv_defect_id;
+  lv_defect_id := mai.create_defect(gr_defect_rec);
+  gr_defect_rec.def_defect_id := lv_defect_id;
   /*
   ||Validate The Repairs.
   */
   nm_debug.debug('Getting Admin Unit.');
-  lv_admin_unit := mai_api.get_admin_unit(lr_defect_rec.def_iit_item_id
-                                         ,lr_defect_rec.def_rse_he_id);
+  lv_admin_unit := mai_api.get_admin_unit(gr_defect_rec.def_iit_item_id
+                                         ,gr_defect_rec.def_rse_he_id);
   --
   nm_debug.debug('Validating Repairs.');
   validate_repairs(pi_insp_rec    => lr_insp_rec
-                  ,pi_defect_rec  => lr_defect_rec
+                  ,pi_defect_rec  => gr_defect_rec
                   ,pi_admin_unit  => lv_admin_unit
                   ,pio_repair_tab => lt_repair_tab
                   ,pio_boq_tab    => lt_boq_tab);
