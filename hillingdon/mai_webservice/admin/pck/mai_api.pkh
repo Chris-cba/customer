@@ -5,11 +5,11 @@ CREATE OR REPLACE PACKAGE mai_api AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.0   Jul 17 2008 16:16:24   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.1   Aug 05 2008 15:25:14   mhuitson  $
 --       Module Name      : $Workfile:   mai_api.pkh  $
---       Date into PVCS   : $Date:   Jul 17 2008 16:16:24  $
---       Date fetched Out : $Modtime:   Jul 17 2008 15:41:44  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Aug 05 2008 15:25:14  $
+--       Date fetched Out : $Modtime:   Aug 04 2008 17:41:24  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 -----------------------------------------------------------------------------
 --      Copyright (c) exor corporation ltd, 2007
@@ -17,13 +17,16 @@ CREATE OR REPLACE PACKAGE mai_api AS
 --</PACKAGE>
 --
 --<GLOBVAR>
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.1  $';
   g_application_owner  VARCHAR2(30);
+  gr_defect_rec   defects%ROWTYPE;
 --</GLOBVAR>
 --
 --<TYPE>
 --
-TYPE rep_tab IS TABLE OF repairs%ROWTYPE INDEX BY binary_integer;
+TYPE def_attr_tab IS TABLE OF VARCHAR2(254) INDEX BY BINARY_INTEGER;
+--
+TYPE rep_tab IS TABLE OF repairs%ROWTYPE INDEX BY BINARY_INTEGER;
 --
 TYPE boq_tab IS TABLE OF boq_items%ROWTYPE INDEX BY BINARY_INTEGER;
 --
@@ -45,39 +48,6 @@ FUNCTION get_body_version RETURN varchar2;
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="GET_NEXT_ID">
---FUNCTION get_next_id(pi_seq_name IN VARCHAR2)
---  RETURN NUMBER;
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="VALIDATE_INSP">
---PROCEDURE validate_insp(pio_insp_rec IN OUT activities_report%ROWTYPE);
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="VALIDATE_DEFECT">
---PROCEDURE validate_defect(pi_are_report_id       IN     activities_report.are_report_id%TYPE
---                         ,pi_are_rse_he_id       IN     activities_report.are_rse_he_id%TYPE
---                         ,pi_are_date_work_done  IN     activities_report.are_date_work_done%TYPE
---                         ,pi_are_maint_insp_flag IN     activities_report.are_maint_insp_flag%TYPE
---                         ,pio_defect_rec         IN OUT defects%ROWTYPE);
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="VALIDATE_REPAIRS">
---PROCEDURE validate_repairs(pi_insp_rec    IN     activities_report%ROWTYPE
---                          ,pi_defect_rec  IN     defects%ROWTYPE
---                          ,pi_admin_unit  IN     hig_admin_units.hau_admin_unit%TYPE
---                          ,pio_repair_tab IN OUT rep_tab
---                          ,pio_boq_tab    IN OUT boq_tab);
---</PROC>
---
------------------------------------------------------------------------------
---
 --<PROC NAME="VALIDATE_REPAIR_BOQS">
 PROCEDURE validate_repair_boqs(pi_def_defect_id      IN     defects.def_defect_id%TYPE
                               ,pi_rep_action_cat     IN     repairs.rep_action_cat%TYPE
@@ -88,13 +58,6 @@ PROCEDURE validate_repair_boqs(pi_def_defect_id      IN     defects.def_defect_i
                               ,pi_def_defect_code    IN     defects.def_defect_code%TYPE
                               ,pi_sys_flag           IN     VARCHAR2
                               ,pio_boq_tab           IN OUT boq_tab);
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="VALIDATE_SECTION">
---FUNCTION validate_section(pi_rse_he_id IN nm_elements_all.ne_id%TYPE)
---  RETURN road_sections%ROWTYPE;
 --</PROC>
 --
 -----------------------------------------------------------------------------
@@ -113,14 +76,6 @@ FUNCTION get_complete_defect_status
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="GET_ADMIN_UNIT">
---FUNCTION get_admin_unit(pi_iit_ne_id IN nm_inv_items_all.iit_ne_id%TYPE
---                       ,pi_rse_he_id IN nm_elements_all.ne_id%TYPE)
---  RETURN nm_admin_units.nau_admin_unit%TYPE;
---</PROC>
---
------------------------------------------------------------------------------
---
 --<PROC NAME="VALIDATE_DEFECT_STATUS">
 FUNCTION validate_defect_status(pi_defect_rec     IN defects%ROWTYPE
                                ,pi_effective_date IN DATE)
@@ -132,6 +87,7 @@ FUNCTION validate_defect_status(pi_defect_rec     IN defects%ROWTYPE
 --<PROC NAME="CREATE_DEFECT">
 FUNCTION create_defect(pi_insp_rec           IN activities_report%ROWTYPE
                       ,pi_defect_rec         IN defects%ROWTYPE
+                      ,pi_def_attr_tab       IN def_attr_tab
                       ,pi_repair_tab         IN rep_tab
                       ,pi_boq_tab            IN boq_tab
                       ,pi_commit             IN VARCHAR2)
