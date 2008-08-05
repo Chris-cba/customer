@@ -5,17 +5,17 @@ CREATE OR REPLACE PACKAGE BODY mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.1   Jul 22 2008 19:35:08   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.2   Aug 05 2008 15:24:22   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkb  $
---       Date into PVCS   : $Date:   Jul 22 2008 19:35:08  $
---       Date fetched Out : $Modtime:   Jul 22 2008 19:25:58  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Aug 05 2008 15:24:22  $
+--       Date fetched Out : $Modtime:   Aug 05 2008 14:52:20  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 -----------------------------------------------------------------------------
 --  Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
-  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.1  $';
+  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.2  $';
   g_package_name  CONSTANT  varchar2(30)   := 'mai_web_service';
   c_date_format   CONSTANT  varchar2(20)   := 'DD-MON-YYYY';
   c_xmlns         CONSTANT  varchar2(50)   := ' xmlns="http://exor_mai_ws/exor_mai_ws"';
@@ -24,8 +24,8 @@ CREATE OR REPLACE PACKAGE BODY mai_web_service AS
 /*
 || Errors Raised.
 ||
-||-20043,'Invalid Organisation Specified.'
 ||-20010,'Invalid User Id Specified For Inspector.'
+||-20043,'Invalid Organisation Specified.'
 */
 --
 -----------------------------------------------------------------------------
@@ -542,11 +542,12 @@ END get_road_sections;
 FUNCTION get_asset_types
   RETURN xmltype IS
   --
-  TYPE retval_rec IS RECORD(nit_inv_type    nm_inv_types_all.nit_inv_type  %TYPE
-                           ,nit_descr       nm_inv_types_all.nit_descr     %TYPE
+  TYPE retval_rec IS RECORD(nit_inv_type    nm_inv_types_all.nit_inv_type%TYPE
+                           ,nit_descr       nm_inv_types_all.nit_descr%TYPE
+                           ,ity_sys_flag    inv_type_translations.ity_sys_flag%TYPE
                            ,nit_screen_seq  nm_inv_types_all.nit_screen_seq%TYPE
                            ,nit_start_date  nm_inv_types_all.nit_start_date%TYPE
-                           ,nit_end_date    nm_inv_types_all.nit_end_date  %TYPE);
+                           ,nit_end_date    nm_inv_types_all.nit_end_date%TYPE);
   TYPE retval_tab IS TABLE OF retval_rec;
   lt_retval retval_tab;
   lv_retval XMLType;
@@ -555,15 +556,19 @@ FUNCTION get_asset_types
   --
 BEGIN
   --
-  SELECT nit_inv_type
-        ,nit_descr
-        ,NVL(nit_screen_seq,999)
-        ,nit_start_date
-        ,nit_end_date
+  SELECT nit.nit_inv_type
+        ,nit.nit_descr
+        ,itt.ity_sys_flag
+        ,NVL(nit.nit_screen_seq,999)
+        ,nit.nit_start_date
+        ,nit.nit_end_date
     BULK COLLECT
     INTO lt_retval
-    FROM nm_inv_types_all
+    FROM nm_inv_types_all nit
+        ,inv_type_translations itt
+   WHERE itt.nit_inv_type = nit.nit_inv_type
        ;
+
   --
   IF lt_retval.count = 0
    THEN
@@ -577,6 +582,7 @@ BEGIN
     lv_str := lv_str||'<Asset_Type>'
                       ||'<Asset_Type_Code>'||lt_retval(i).nit_inv_type||'</Asset_Type_Code>'
                       ||'<Description>'||dbms_xmlgen.convert(lt_retval(i).nit_descr)||'</Description>'
+                      ||'<Sys_Flag>'||lt_retval(i).ity_sys_flag||'</Sys_Flag>'
                       ||'<Display_Sequence>'||lt_retval(i).nit_screen_seq||'</Display_Sequence>'
                       ||'<Startdate>'||date_to_varchar(lt_retval(i).nit_start_date)||'</Startdate>'
                       ||'<Enddate>'||date_to_varchar(lt_retval(i).nit_end_date)||'</Enddate>'
@@ -671,55 +677,6 @@ END get_asset_type_attribs;
 --
 -----------------------------------------------------------------------------
 --
---FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
---  RETURN get_asset_ids_out IS
---  --
---  po_params  get_asset_ids_out
---             := get_asset_ids_out(varchar_array(NULL)
---                                 ,NULL);
---  --
---  lv_str   nm3type.max_varchar2;
---  lv_array varchar_array := varchar_array();
---  --
---  TYPE retval_tab IS TABLE OF nm_inv_items_all.iit_ne_id%TYPE;
---  lt_retval retval_tab;
---  --
---BEGIN
---  --
---  SELECT iit_ne_id
---    BULK COLLECT
---    INTO lt_retval
---    FROM nm_inv_items_all
---   WHERE iit_inv_type = pi_asset_type
---       ;
---  --
---  IF lt_retval.count = 0
---   THEN
---      raise no_data_found;
---  END IF;
---  --
---  FOR i IN 1..lt_retval.count LOOP
---    --
---    lv_str := lv_str||'<Id>'||TO_CHAR(lt_retval(i))||'</Id>';
---    --
---    lv_array.EXTEND;
---    lv_array(i) := lv_str;
---    --
---  END LOOP;
---  --
---  po_params.assets := lv_array;
---  --
---  RETURN po_params;
---  --
---EXCEPTION
---  WHEN others
---   THEN
---      po_params.error := SQLERRM;
---      RETURN po_params;
---END get_asset_ids;
---
------------------------------------------------------------------------------
---
 FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
   RETURN xmltype IS
   --
@@ -767,57 +724,6 @@ EXCEPTION
    THEN
       RETURN build_error_xml(SQLERRM);
 END get_asset_ids;
---
------------------------------------------------------------------------------
---
---FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
---  RETURN clob IS
---  --
---  TYPE retval_tab IS TABLE OF nm_inv_items_all.iit_ne_id%TYPE;
---  lt_retval retval_tab;
---  lv_retval XMLType;
---  lv_str    nm3type.max_varchar2;
---  lv_clob   CLOB := '<Assets xmlns="http://testclob/testclob.wsdl">';
---  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 50;
---  --
---BEGIN
---  --
---  SELECT iit_ne_id
---    BULK COLLECT
---    INTO lt_retval
---    FROM nm_inv_items_all
---   WHERE iit_inv_type = pi_asset_type
---       ;
---  --
---  IF lt_retval.count = 0
---   THEN
---      raise no_data_found;
---  END IF;
---  --
---  FOR i IN 1..lt_retval.count LOOP
---    --
---    lv_str := lv_str||'<Id>'||TO_CHAR(lt_retval(i))||'</Id>';
---    --
---    IF length(lv_str) > lv_max_size
---     THEN
---        lv_clob := lv_clob||lv_str;
---        lv_str := NULL;
---    END IF;
---    --
---  END LOOP;
---  --
---  lv_clob := lv_clob||lv_str||'</Assets>';
---  --
---  --lv_retval := xmltype(lv_clob);
---  --
---  RETURN lv_clob;
---  --
---EXCEPTION
---  WHEN others
---   THEN
---      --RETURN build_error_xml(SQLERRM);
---      RAISE;
---END get_asset_ids;
 --
 -----------------------------------------------------------------------------
 --
@@ -1497,7 +1403,15 @@ FUNCTION get_defect_codes
                            ,dty_dtp_flag           def_types.dty_dtp_flag%TYPE
                            ,dty_atv_acty_area_code def_types.dty_atv_acty_area_code%TYPE
                            ,dty_start_date         def_types.dty_start_date%TYPE
-                           ,dty_end_date           def_types.dty_end_date%TYPE);
+                           ,dty_end_date           def_types.dty_end_date%TYPE
+                           ,dty_hh_attribute_1     def_types.dty_hh_attribute_1%TYPE
+                           ,dty_hh_attri_text_1    def_types.dty_hh_attri_text_1%TYPE
+                           ,dty_hh_attribute_2     def_types.dty_hh_attribute_2%TYPE
+                           ,dty_hh_attri_text_2    def_types.dty_hh_attri_text_2%TYPE
+                           ,dty_hh_attribute_3     def_types.dty_hh_attribute_3%TYPE
+                           ,dty_hh_attri_text_3    def_types.dty_hh_attri_text_3%TYPE
+                           ,dty_hh_attribute_4     def_types.dty_hh_attribute_4%TYPE
+                           ,dty_hh_attri_text_4    def_types.dty_hh_attri_text_4%TYPE);
   TYPE retval_tab IS TABLE OF retval_rec;
   lt_retval retval_tab;
   --
@@ -1505,7 +1419,91 @@ FUNCTION get_defect_codes
   lv_str    nm3type.max_varchar2;
   lv_clob   CLOB := '<Defect_Types'||c_xmlns||'>';
   --
+  TYPE attr_detail_rec IS RECORD(attr_datatype    all_tab_columns.data_type%TYPE
+                                ,attr_length      NUMBER
+                                ,attr_format      VARCHAR2(100));
+  TYPE attr_detail_tab IS TABLE OF attr_detail_rec INDEX BY VARCHAR2(100);
+  lt_attr_detail attr_detail_tab;
+  --
+  PROCEDURE pop_attr_detail_tab
+    IS
+    --
+    CURSOR get_attr_details
+        IS
+    SELECT column_name
+          ,data_type
+          ,DECODE(data_type,'VARCHAR2',data_length
+                           ,'DATE'    ,11
+                           ,'NUMBER'  ,DECODE(data_precision,NULL,38
+                                                                 ,NVL(data_precision,0)+DECODE(NVL(data_scale,0),0,0
+                                                                                                                  ,1
+                                                                                              )
+                                             )
+                 ) len
+          ,DECODE(data_type,'DATE'  ,'DD-MON-YYYY'
+                           ,'NUMBER',DECODE(data_scale,NULL,NULL
+                                                    ,0   ,RTRIM(LPAD('9',data_precision,'9'))
+                                                         ,RTRIM(LPAD('9',data_precision-(data_scale),'9'))||'.'||RTRIM(LPAD('9',data_scale,'9')))
+                 ) fmt
+      FROM all_tab_columns
+     WHERE table_name  = 'DEFECTS'
+       AND owner = hig.get_application_owner
+         ;
+    --
+  BEGIN
+    --
+    FOR attr_rec IN get_attr_details LOOP
+      --
+      lt_attr_detail(attr_rec.column_name).attr_datatype := attr_rec.data_type;
+      lt_attr_detail(attr_rec.column_name).attr_length   := attr_rec.len;
+      lt_attr_detail(attr_rec.column_name).attr_format   := attr_rec.fmt;
+      --
+    END LOOP;
+    --
+  END pop_attr_detail_tab;
+  --
+  FUNCTION get_attr_datatype(pi_column IN all_tab_columns.data_type%TYPE)
+    RETURN all_tab_columns.data_type%TYPE IS
+    --
+    lv_retval all_tab_columns.data_type%TYPE;
+    --
+  BEGIN
+    IF pi_column IS NOT NULL
+     THEN
+        lv_retval := lt_attr_detail(pi_column).attr_datatype;
+    END IF;
+    RETURN lv_retval;
+  END get_attr_datatype;
+  --
+  FUNCTION get_attr_length(pi_column IN all_tab_columns.data_type%TYPE)
+    RETURN VARCHAR2 IS
+    --
+    lv_retval VARCHAR2(40);
+    --
+  BEGIN
+    IF pi_column IS NOT NULL
+     THEN
+        lv_retval := TO_CHAR(lt_attr_detail(pi_column).attr_length);
+    END IF;
+    RETURN lv_retval;
+  END get_attr_length;
+  --
+  FUNCTION get_attr_format(pi_column IN all_tab_columns.data_type%TYPE)
+    RETURN VARCHAR2 IS
+    --
+    lv_retval VARCHAR2(100);
+    --
+  BEGIN
+    IF pi_column IS NOT NULL
+     THEN
+        lv_retval := lt_attr_detail(pi_column).attr_format;
+    END IF;
+    RETURN lv_retval;
+  END get_attr_format;
+  --
 BEGIN
+  --
+  pop_attr_detail_tab;
   --
   SELECT dty_defect_code
         ,dty_descr1
@@ -1513,6 +1511,14 @@ BEGIN
         ,dty_atv_acty_area_code
         ,dty_start_date
         ,dty_end_date
+        ,dty_hh_attribute_1
+        ,dty_hh_attri_text_1
+        ,dty_hh_attribute_2
+        ,dty_hh_attri_text_2
+        ,dty_hh_attribute_3
+        ,dty_hh_attri_text_3
+        ,dty_hh_attribute_4
+        ,dty_hh_attri_text_4
     BULK COLLECT
     INTO lt_retval
     FROM def_types
@@ -1532,6 +1538,22 @@ BEGIN
                       ||'<Description>'||dbms_xmlgen.convert(lt_retval(i).dty_descr1)||'</Description>'
                       ||'<Sys_Flag>'||lt_retval(i).dty_dtp_flag||'</Sys_Flag>'
                       ||'<Activity_Code>'||lt_retval(i).dty_atv_acty_area_code||'</Activity_Code>'
+                      ||'<Attribute1>'||lt_retval(i).dty_hh_attri_text_1||'</Attribute1>'
+                      ||'<Attribute1_Datatype>'||get_attr_datatype(lt_retval(i).dty_hh_attribute_1)||'</Attribute1_Datatype>'
+                      ||'<Attribute1_Length>'||get_attr_length(lt_retval(i).dty_hh_attribute_1)||'</Attribute1_Length>'
+                      ||'<Attribute1_Format>'||get_attr_format(lt_retval(i).dty_hh_attribute_1)||'</Attribute1_Format>'
+                      ||'<Attribute2>'||lt_retval(i).dty_hh_attri_text_2||'</Attribute2>'
+                      ||'<Attribute2_Datatype>'||get_attr_datatype(lt_retval(i).dty_hh_attribute_2)||'</Attribute2_Datatype>'
+                      ||'<Attribute2_Length>'||get_attr_length(lt_retval(i).dty_hh_attribute_2)||'</Attribute2_Length>'
+                      ||'<Attribute2_Format>'||get_attr_format(lt_retval(i).dty_hh_attribute_2)||'</Attribute2_Format>'
+                      ||'<Attribute3>'||lt_retval(i).dty_hh_attri_text_3||'</Attribute3>'
+                      ||'<Attribute3_Datatype>'||get_attr_datatype(lt_retval(i).dty_hh_attribute_3)||'</Attribute3_Datatype>'
+                      ||'<Attribute3_Length>'||get_attr_length(lt_retval(i).dty_hh_attribute_3)||'</Attribute3_Length>'
+                      ||'<Attribute3_Format>'||get_attr_format(lt_retval(i).dty_hh_attribute_3)||'</Attribute3_Format>'
+                      ||'<Attribute4>'||lt_retval(i).dty_hh_attri_text_4||'</Attribute4>'
+                      ||'<Attribute4_Datatype>'||get_attr_datatype(lt_retval(i).dty_hh_attribute_4)||'</Attribute4_Datatype>'
+                      ||'<Attribute4_Length>'||get_attr_length(lt_retval(i).dty_hh_attribute_4)||'</Attribute4_Length>'
+                      ||'<Attribute4_Format>'||get_attr_format(lt_retval(i).dty_hh_attribute_4)||'</Attribute4_Format>'
                       ||'<Startdate>'||date_to_varchar(lt_retval(i).dty_start_date)||'</Startdate>'
                       ||'<Enddate>'||date_to_varchar(lt_retval(i).dty_end_date)||'</Enddate>'
                     ||'</Defect_Type>';
@@ -1755,7 +1777,7 @@ BEGIN
                       ||'<Org_Id>'||TO_CHAR(lt_retval(i).oun_org_id)||'</Org_Id>'
                       ||'<Org_Code>'||lt_retval(i).oun_unit_code||'</Org_Code>'
                       ||'<Org_Name>'||dbms_xmlgen.convert(lt_retval(i).oun_name)||'</Org_Name>'
-                      ||'<Admin_Unit_Id>'||TO_CHAR(lt_retval(i).oun_admin_org_id)||'</Admin_Unit_Id>'           
+                      ||'<Admin_Unit_Id>'||TO_CHAR(lt_retval(i).oun_admin_org_id)||'</Admin_Unit_Id>'
                       ||'<Startdate>'||date_to_varchar(lt_retval(i).oun_start_date)||'</Startdate>'
                       ||'<Enddate>'||date_to_varchar(lt_retval(i).oun_end_date)||'</Enddate>'
                     ||'</Notify_Org>'
@@ -1878,6 +1900,10 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Priority_Code',cp_xmlns)        priority_code
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Notify_Org',cp_xmlns)           notify_org
         ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Recharge_Org',cp_xmlns)         recharge_org
+        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute1',cp_xmlns)    attribute1
+        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute2',cp_xmlns)    attribute2
+        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute3',cp_xmlns)    attribute3
+        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute4',cp_xmlns)    attribute4
         ,EXTRACT(cp_xml,'/Adhoc_Defect/Repair',cp_xmlns)                    repair_xml
    FROM dual
       ;
@@ -1913,6 +1939,7 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
   --
   lr_insp       activities_report%ROWTYPE;
   lr_defect     defects%ROWTYPE;
+  lt_def_attr   mai_api.def_attr_tab;
   lt_repairs    mai_api.rep_tab;
   lr_rse        road_sections%ROWTYPE;
   lt_boqs       mai_api.boq_tab;
@@ -2007,12 +2034,12 @@ BEGIN
       lr_defect.def_rechar_org_id      := get_org_id(lr_get_defect.recharge_org);
   END IF;
   /*
-  || Deal With Attributes Here.
+  || Set Defect Attributes.
   */
---  IF pi_params.defect.attribute1 IS NOT NULL
---   THEN
---      EXECUTE IMMEDIATE 'lr_defect_rec.'||lv_attr_col||' := '||pi_params.defect.attribute1||';';
---  END IF;
+  lt_def_attr(1) := lr_get_defect.attribute1;
+  lt_def_attr(2) := lr_get_defect.attribute2;
+  lt_def_attr(3) := lr_get_defect.attribute3;
+  lt_def_attr(4) := lr_get_defect.attribute4;
   --
   nm_debug.debug('Getting Repair params for :'||lr_get_defect.repair_xml.getstringval);
   OPEN  get_repairs(lr_get_defect.repair_xml
@@ -2057,11 +2084,12 @@ BEGIN
   END LOOP;
   nm_debug.debug('All input params Assigned');
   --
-  lv_defect_id := mai_api.create_defect(pi_insp_rec   => lr_insp
-                                       ,pi_defect_rec => lr_defect
-                                       ,pi_repair_tab => lt_repairs
-                                       ,pi_boq_tab    => lt_boqs
-                                       ,pi_commit     => 'Y');
+  lv_defect_id := mai_api.create_defect(pi_insp_rec     => lr_insp
+                                       ,pi_defect_rec   => lr_defect
+                                       ,pi_def_attr_tab => lt_def_attr
+                                       ,pi_repair_tab   => lt_repairs
+                                       ,pi_boq_tab      => lt_boqs
+                                       ,pi_commit       => 'Y');
   --
   nm_debug.debug('Building Output XML');
   lv_retval := '<Defect_Created>'
