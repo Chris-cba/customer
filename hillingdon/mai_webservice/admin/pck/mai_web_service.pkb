@@ -5,17 +5,17 @@ CREATE OR REPLACE PACKAGE BODY mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.2   Aug 05 2008 15:24:22   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.3   Sep 01 2008 18:41:52   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkb  $
---       Date into PVCS   : $Date:   Aug 05 2008 15:24:22  $
---       Date fetched Out : $Modtime:   Aug 05 2008 14:52:20  $
---       PVCS Version     : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   Sep 01 2008 18:41:52  $
+--       Date fetched Out : $Modtime:   Sep 01 2008 18:27:46  $
+--       PVCS Version     : $Revision:   1.3  $
 --
 -----------------------------------------------------------------------------
 --  Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
-  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.2  $';
+  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.3  $';
   g_package_name  CONSTANT  varchar2(30)   := 'mai_web_service';
   c_date_format   CONSTANT  varchar2(20)   := 'DD-MON-YYYY';
   c_xmlns         CONSTANT  varchar2(50)   := ' xmlns="http://exor_mai_ws/exor_mai_ws"';
@@ -1647,6 +1647,8 @@ FUNCTION get_standard_items
   TYPE retval_rec IS RECORD(sta_item_code    standard_items.sta_item_code%TYPE
                            ,sta_item_name    standard_items.sta_item_name%TYPE
                            ,sta_unit         standard_items.sta_unit%TYPE
+                           ,sta_rate         standard_items.sta_rate%TYPE
+                           ,sta_labour_units standard_items.sta_labour_units%TYPE
                            ,sta_max_quantity standard_items.sta_max_quantity%TYPE
                            ,sta_min_quantity standard_items.sta_min_quantity%TYPE
                            ,sta_dim1_text    standard_items.sta_dim1_text%TYPE
@@ -1667,6 +1669,8 @@ BEGIN
   SELECT sta_item_code
         ,sta_item_name
         ,sta_unit
+        ,NVL(sta_rate, 0) sta_rate
+        ,sta_labour_units
         ,sta_max_quantity
         ,sta_min_quantity
         ,sta_dim1_text
@@ -1691,6 +1695,8 @@ BEGIN
                       ||'<Item_Code>'||lt_retval(i).sta_item_code||'</Item_Code>'
                       ||'<Item_Name>'||dbms_xmlgen.convert(lt_retval(i).sta_item_name)||'</Item_Name>'
                       ||'<Unit>'||lt_retval(i).sta_unit||'</Unit>'
+                      ||'<Rate>'||TO_CHAR(lt_retval(i).sta_rate)||'</Rate>'
+                      ||'<Labour_Units>'||TO_CHAR(lt_retval(i).sta_labour_units)||'</Labour_Units>'
                       ||'<Max_Quantity>'||TO_CHAR(lt_retval(i).sta_max_quantity)||'</Max_Quantity>'
                       ||'<Min_Quantity>'||TO_CHAR(lt_retval(i).sta_min_quantity)||'</Min_Quantity>'
                       ||'<Dimension1_Name>'||dbms_xmlgen.convert(lt_retval(i).sta_dim1_text)||'</Dimension1_Name>'
