@@ -1,0 +1,66 @@
+CREATE OR REPLACE PACKAGE xact_pem_email_web AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/XACT/xact_pem_email_web.pkh-arc   3.0   Sep 26 2008 15:00:36   smarshall  $
+--       Module Name      : $Workfile:   xact_pem_email_web.pkh  $
+--       Date into PVCS   : $Date:   Sep 26 2008 15:00:36  $
+--       Date fetched Out : $Modtime:   Sep 26 2008 14:33:58  $
+--       PVCS Version     : $Revision:   3.0  $
+--
+--   Author : Kevin Angus
+--
+--    xact_pem_email_web
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2006
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT varchar2(2000) := '$Revision::   3.0      $';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+FUNCTION strip_dad_reference(pi_filename IN varchar2
+                            ) RETURN varchar2;
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="attach_file_dialog">
+-- 
+-- This procedure generates the attach file dialog web page.
+--
+--
+PROCEDURE attach_file(pi_pem_doc_id in docs.doc_id%type
+                     ,pi_file_name  in varchar2 default null
+                     );
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, rnds, wnps, wnds);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, rnds, wnps, wnds);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+END xact_pem_email_web;
+/
