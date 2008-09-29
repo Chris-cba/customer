@@ -4,11 +4,11 @@ AS
 -----------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/XACT/xact_pem_email.pkh-arc   3.0   Sep 26 2008 15:00:36   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/XACT/xact_pem_email.pkh-arc   3.1   Sep 29 2008 10:24:50   smarshall  $
 --       Module Name      : $Workfile:   xact_pem_email.pkh  $
---       Date into PVCS   : $Date:   Sep 26 2008 15:00:36  $
---       Date fetched Out : $Modtime:   Sep 26 2008 14:35:22  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 29 2008 10:24:50  $
+--       Date fetched Out : $Modtime:   Sep 29 2008 10:23:56  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --   Author : Kevin Angus
 --
@@ -30,7 +30,7 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid                CONSTANT varchar2(2000) := '$Revision::   3.0      $';
+  g_sccsid                CONSTANT varchar2(2000) := '$Revision::   3.1      $';
   
   c_nl                    constant varchar2(1) := chr(10);
 
@@ -52,7 +52,7 @@ AS
   --by details from the enquiry.
   c_details_marker       constant varchar2(30) := '<enq_details>';
   c_email_text           CONSTANT nm3type.max_varchar2
-    :=            'Dear Sir/Madam,'
+    :=            'Contract Supervisor,'
        || c_nl
        || c_nl || 'We have received a public enquiry that requires your attention.'
        || c_nl
@@ -62,7 +62,7 @@ AS
        || c_nl
        || c_nl || 'Regards,'
        || c_nl
-       || c_nl || 'ACT Urban Services';
+       || c_nl || 'Territory and Municipal Services';
 
 --</GLOBVAR>
 --
