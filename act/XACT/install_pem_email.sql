@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/XACT/install_pem_email.sql-arc   3.0   Sep 26 2008 15:00:36   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/XACT/install_pem_email.sql-arc   3.1   Sep 29 2008 10:27:52   smarshall  $
 --       Module Name      : $Workfile:   install_pem_email.sql  $
---       Date into PVCS   : $Date:   Sep 26 2008 15:00:36  $
---       Date fetched Out : $Modtime:   Sep 26 2008 14:39:02  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 29 2008 10:27:52  $
+--       Date fetched Out : $Modtime:   Sep 29 2008 10:27:24  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 -----------------------------------------------------------------------------
 --	Copyright (c) exor corporation ltd, 2006
@@ -133,8 +133,6 @@ prompt Creating packages...
 
 @@xact_pem_email.pkb
 @@xact_pem_email_web.pkb
-
-@@xact_pem_email.pks
 
 prompt
 prompt Install complete.
