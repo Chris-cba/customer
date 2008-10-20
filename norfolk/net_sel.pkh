@@ -1,0 +1,157 @@
+CREATE OR REPLACE PACKAGE net_sel AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/net_sel.pkh-arc   1.0   Oct 20 2008 16:33:00   smarshall  $
+--       Module Name      : $Workfile:   net_sel.pkh  $
+--       Date into PVCS   : $Date:   Oct 20 2008 16:33:00  $
+--       Date fetched Out : $Modtime:   Oct 20 2008 16:27:30  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on 1.2
+--
+--
+--   Author : GA
+--
+--    net_sel.pkh
+--   GA July 1999  Package to Create UKPMS Network Selection
+--                 As specified by UKPMS Tranche 2 Specification
+--                 Additional criteria to satisfy user requirements
+--
+--   VT 13/03/2000 Added function Handle quotes
+--                 Function called from SELECT_PROCESS
+--                 Allows insert statement to handle single
+--                 quote commonly used for abbreviations.
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2004
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+  g_application_owner		VARCHAR2(30);
+  g_language			VARCHAR2(30);
+--
+  pc_sql                      VARCHAR2(32767) := '';
+  pc_sql2                     VARCHAR2(32767) := '';
+  pc_tmp_sql                  VARCHAR2(32767) := '';
+  pc_alias                    VARCHAR2(10) := '';
+  err_string                  VARCHAR2(2000) := '';
+  lc_sys_flag                 VARCHAR2(1);
+--
+  X exception;
+--
+  Pragma exception_init (X,-29999);
+--</GLOBVAR>
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="TRANSFORM_OPERATOR">
+  Procedure transform_operator (user_op in hig_codes.hco_code%TYPE,
+                                code_op out hig_codes.hco_code%TYPE
+  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="SELECT_PROCESS">
+  Procedure select_process (road_group in road_segs.rse_he_id%TYPE,
+                                  result out number
+  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="SELECT_ROADS">
+  Procedure select_roads (nscr_id in net_sel_criteria.nscr_id%TYPE,
+                                road_group in road_segs.rse_he_id%TYPE
+  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="SELECT_ASSETS">
+  Procedure select_assets (nscr_id in net_sel_criteria.nscr_id%TYPE,
+                                 road_group in road_segs.rse_he_id%TYPE
+  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="SELECT_ENQUIRIES">
+  Procedure select_enquiries (nscr_id in net_sel_criteria.nscr_id%TYPE,
+                                    road_group in road_segs.rse_he_id%TYPE
+  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="SELECT_DEFECTS">
+  Procedure select_defects (nscr_id in net_sel_criteria.nscr_id%TYPE,
+                                  road_group in road_segs.rse_he_id%TYPE
+  );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="POPULATE_ROAD_GP_MEMBERS">
+  Function populate_road_gp_members
+  return number;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="DELETE_SELECT">
+ Function delete_select (road_group in road_segs.rse_he_id%TYPE,
+                             action in varchar2,
+			     block  in varchar2,
+       		             item_1 in number,
+			     item_2 in number,
+                         group_type in varchar2,
+                           sys_flag in varchar2)
+  Return boolean;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="PASS_SEL_CHK">
+  Function pass_sel_chk (road_group in road_segs.rse_he_id%TYPE)
+  return boolean;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="HANDLE_QUOTES">
+  Function handle_quotes(text in varchar2) return varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(handle_quotes, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+END net_sel;
+/
