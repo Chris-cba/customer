@@ -161,11 +161,5 @@ AS
    WHERE     ne.ne_id = nad_ne_id(+)
          AND nad_iit_ne_id = iit_ne_id(+)
          AND nau_admin_unit = ne.ne_admin_unit
-         AND ne_gty_group_type IS NOT NULL
---and nad_id = 1;;
-
-
-DROP PUBLIC SYNONYM ROAD_SEGS;
-
-CREATE PUBLIC SYNONYM ROAD_SEGS FOR ROAD_SEGS;
-
+         AND ne_gty_group_type IS NOT NULL;
+        
