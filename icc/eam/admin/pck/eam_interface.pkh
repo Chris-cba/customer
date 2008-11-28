@@ -1,0 +1,81 @@
+create or replace package eam_interface as
+--
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/admin/pck/eam_interface.pkh-arc   1.0   Nov 28 2008 11:01:18   mhuitson  $
+--       Module Name      : $Workfile:   eam_interface.pkh  $
+--       Date into PVCS   : $Date:   Nov 28 2008 11:01:18  $
+--       Date fetched Out : $Modtime:   Nov 28 2008 10:37:02  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+--
+--    eam_interface
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+--
+-- Public package variables
+  g_sccsid             CONSTANT VARCHAR2(2000) := '"%W% %G%"';
+  --
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--
+-----------------------------------------------------------------------------
+--
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE validate_service_request_no(pi_service_request_no IN     VARCHAR2
+                                     ,po_description        IN OUT VARCHAR2
+                                     ,po_target_date        IN OUT VARCHAR2);
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_asset_group_id(p_org_id   NUMBER
+                           ,p_inv_type VARCHAR2) RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION create_work_request(p_defect_id          IN defects.def_defect_id%TYPE
+                            ,p_service_request_no IN VARCHAR2) RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION return_eam_user_id(p_user_name in VARCHAR2) RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION create_work_order(p_defect_id          IN defects.def_defect_id%TYPE
+                          ,p_service_request_no IN VARCHAR2) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_next_id(p_seq_name IN VARCHAR2) RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE ins_edo(p_edo_rec IN eam_defect_objects%ROWTYPE);
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_eam_status(p_defect_id IN defects.def_defect_id%TYPE) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_work_order_no(p_defect_id IN defects.def_defect_id%TYPE) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+end eam_interface;
+/

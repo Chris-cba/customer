@@ -1,0 +1,106 @@
+CREATE OR REPLACE PACKAGE eam_asset
+AS
+--<PACKAGE>
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/icc/eam/admin/pck/eam_asset.pkh-arc   1.0   Nov 28 2008 11:01:18   mhuitson  $
+--       Module Name      : $Workfile:   eam_asset.pkh  $
+--       Date into PVCS   : $Date:   Nov 28 2008 11:01:18  $
+--       Date fetched Out : $Modtime:   Sep 07 2007 16:06:10  $
+--       Version          : $Revision:   1.0  $
+--       Based on SCCS version : 
+-------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+
+
+TYPE parent_asset_rec IS RECORD(item_id     nm_inv_items_all.iit_ne_id%TYPE
+                               ,inv_type    nm_inv_types_all.nit_inv_type%TYPE
+                               ,primary_key nm_inv_items_all.iit_primary_key%TYPE
+                               ,descr       nm_inv_items_all.iit_descr%TYPE
+                               ,road_id     nm_elements_all.ne_id%TYPE
+                               ,x           nm_inv_items_all.iit_x%TYPE
+                               ,y           nm_inv_items_all.iit_y%TYPE);
+TYPE parent_asset_tab IS TABLE OF parent_asset_rec INDEX BY BINARY_INTEGER;
+--
+TYPE child_asset_rec IS RECORD(parent_inv_type nm_inv_types_all.nit_inv_type%TYPE
+                              ,parent_primary  nm_inv_items_all.iit_primary_key%TYPE
+                              ,parent_descr    nm_inv_items_all.iit_descr%TYPE
+                              ,ne_id           nm_elements.ne_id%TYPE
+                              ,x               nm_inv_items_all.iit_x%TYPE
+                              ,y               nm_inv_items_all.iit_y%TYPE
+                              ,child_item_id   nm_inv_items_all.iit_ne_id%TYPE
+                              ,child_primary   nm_inv_items_all.iit_primary_key%TYPE
+                              ,child_inv_type  nm_inv_types_all.nit_inv_type%TYPE
+                              ,child_descr     nm_inv_items_all.iit_descr%TYPE);
+
+TYPE child_asset_tab IS TABLE OF child_asset_rec INDEX BY BINARY_INTEGER;
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+
+
+PROCEDURE validate_eftg_rec(pi_eftg_rec IN eam_ft_inv_type_groupings_all%ROWTYPE);
+
+FUNCTION get_drill_down_sql (pi_starting_inv_type    IN VARCHAR2
+                            ,pi_starting_id          IN NUMBER
+                            ,pi_child_inv_type       IN VARCHAR2) RETURN VARCHAR2;
+
+PROCEDURE set_child_asset_params(pi_parent_tab IN parent_asset_tab
+                                ,pi_child_type IN nm_inv_types_all.nit_inv_type%TYPE);
+
+PROCEDURE get_child_assets(po_child_assets IN OUT child_asset_tab);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+END eam_asset;
+/
