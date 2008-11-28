@@ -1,0 +1,114 @@
+create or replace package fnd_api_exor as
+--
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/admin/pck/fnd_api_exor.pkh-arc   1.0   Nov 28 2008 11:01:20   mhuitson  $
+--       Module Name      : $Workfile:   fnd_api_exor.pkh  $
+--       Date into PVCS   : $Date:   Nov 28 2008 11:01:20  $
+--       Date fetched Out : $Modtime:   Nov 28 2008 10:37:04  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+--
+--    fnd_api_exor
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+--
+-- Public package variables
+  g_sccsid             CONSTANT VARCHAR2(2000) := '"%W% %G%"';
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_version RETURN varchar2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_body_version RETURN varchar2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_g_true RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_g_false RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_g_valid_level_full RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_g_ret_sts_success RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_asset_group (p_org_id   NUMBER
+                         ,p_inv_type VARCHAR2) RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_g_opr_create RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_wip_constants_unreleased RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_wip_constants_draft RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE work_request_import(p_api_version      IN  NUMBER := 1.0
+                             ,p_mode             IN  VARCHAR2
+                             ,p_work_request_rec IN  WIP_EAM_WORK_REQUESTS%ROWTYPE
+                             ,p_request_log      IN  VARCHAR2
+                             ,p_user_id          IN  NUMBER
+                             ,x_work_request_id  OUT NOCOPY NUMBER
+                             ,x_return_status    OUT NOCOPY VARCHAR2
+                             ,x_msg_count        OUT NOCOPY NUMBER
+                             ,x_msg_data         OUT NOCOPY VARCHAR2);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE process_wo(p_api_version        IN  NUMBER := 1.0
+                    ,p_gen_object_id      IN  NUMBER
+                    ,p_asset_group_id     IN  NUMBER
+                    ,p_asset_number       IN  VARCHAR2
+                    ,p_org_id             IN  NUMBER
+                    ,p_dept_id            IN  NUMBER
+                    ,p_defect_id          IN  NUMBER
+                    ,p_descr              IN  VARCHAR2
+                    ,p_priority           IN  VARCHAR2
+                    ,p_target_date        IN  DATE
+                    ,p_service_request_no IN VARCHAR2
+                    ,p_user_id            IN  NUMBER
+                    ,x_wip_entity_name    OUT VARCHAR2
+                    ,x_wip_entity_id      OUT NUMBER
+                    ,x_return_status      OUT VARCHAR2
+                    ,x_msg_count          OUT NUMBER
+                    ,x_msg_data           OUT VARCHAR2);
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_work_request_status(p_work_request_id IN NUMBER) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_work_request_wo_name(p_work_request_id IN NUMBER) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_work_order_status(p_wip_entity_id IN NUMBER) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+END fnd_api_exor;
+/
