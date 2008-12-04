@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.5   Mar 25 2008 10:47:16   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.6   Dec 04 2008 11:18:40   smarshall  $
 --       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
---       Date into SCCS   : $Date:   Mar 25 2008 10:47:16  $
---       Date fetched Out : $Modtime:   Mar 25 2008 08:29:44  $
---       PVCS Version     : $Revision:   2.5  $
+--       Date into SCCS   : $Date:   Dec 04 2008 11:18:40  $
+--       Date fetched Out : $Modtime:   Dec 04 2008 11:17:06  $
+--       PVCS Version     : $Revision:   2.6  $
 --       Originally based on SCCS version 1.6
 --
 --
@@ -60,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.5  $';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.6  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -87,7 +87,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   c_vat_rate_opt               CONSTANT hig_options.hop_id%TYPE := 'NCCVATRATE';
   c_vat_rate                   CONSTANT hig_options.hop_value%TYPE := hig.get_sysopt(p_option_id => c_vat_rate_opt);
     
-  c_vat_tax_code               CONSTANT varchar2(11) := 'NCC P' || c_ampersand || 'T CAR';
+  c_vat_tax_code               CONSTANT varchar2(13) := 'NCC P' || c_ampersand || 'T CAR15';
     
   c_sep                        CONSTANT varchar2(1) := ',';
   
