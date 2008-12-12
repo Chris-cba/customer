@@ -5,11 +5,11 @@ CREATE OR REPLACE PACKAGE mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkh-arc   1.0   Jul 17 2008 16:16:26   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkh-arc   1.1   Dec 12 2008 11:53:42   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkh  $
---       Date into PVCS   : $Date:   Jul 17 2008 16:16:26  $
---       Date fetched Out : $Modtime:   Jul 17 2008 15:41:56  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Dec 12 2008 11:53:42  $
+--       Date fetched Out : $Modtime:   Dec 05 2008 16:08:10  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 -----------------------------------------------------------------------------
 --      Copyright (c) exor corporation ltd, 2007
@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE mai_web_service AS
 --</PACKAGE>
 --
 --<GLOBVAR>
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.1  $';
   g_application_owner  VARCHAR2(30);
 --</GLOBVAR>
 --
@@ -96,7 +96,7 @@ FUNCTION get_asset_type_attribs
 --<PROC NAME="get_exor_assets">
 --FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
 --  RETURN get_asset_ids_out;
-FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
+FUNCTION get_asset_ids(pi_xml IN XMLTYPE)
   RETURN xmltype;
 --FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
 --  RETURN clob;
@@ -105,15 +105,14 @@ FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="get_exor_assets">
-FUNCTION get_modified_asset_ids(pi_asset_type    IN nm_inv_types_all.nit_inv_type%TYPE
-                               ,pi_modified_date IN VARCHAR2)
+FUNCTION get_modified_asset_ids(pi_xml IN XMLTYPE)
   RETURN xmltype;
 --</PROC>
 --
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="get_exor_assets">
-FUNCTION get_asset_details(pi_asset_id IN nm_inv_items_all.iit_ne_id%TYPE)
+FUNCTION get_asset_details(pi_xml IN XMLTYPE)
   RETURN xmltype;
 --</PROC>
 --
@@ -203,18 +202,50 @@ FUNCTION get_recharge_orgs
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="get_def_attributes_list">
---FUNCTION get_def_attributes_list(sys_flag       IN VARCHAR2
---                                ,activity       IN VARCHAR2
---                                ,defect_type    IN VARCHAR2
---                                ,effective_date IN VARCHAR2)
---  RETURN code_meaning_error_type;
+--<PROC NAME="get_contracts">
+FUNCTION get_contracts
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_scheme_types">
+FUNCTION get_scheme_types
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_current_budgets">
+FUNCTION get_current_budgets
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_road_group_section_ids">
+FUNCTION get_road_group_section_ids(pi_xml IN XMLTYPE)
+  RETURN xmltype;
 --</PROC>
 --
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="create_adhoc_defect">
 FUNCTION create_adhoc_defect(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_defect_work_order">
+FUNCTION create_defect_work_order(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="instruct_work_order">
+FUNCTION instruct_work_order(pi_xml IN xmltype)
   RETURN xmltype;
 --</PROC>
 --

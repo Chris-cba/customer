@@ -5,27 +5,30 @@ CREATE OR REPLACE PACKAGE BODY mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.3   Sep 01 2008 18:41:52   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.4   Dec 12 2008 11:53:42   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkb  $
---       Date into PVCS   : $Date:   Sep 01 2008 18:41:52  $
---       Date fetched Out : $Modtime:   Sep 01 2008 18:27:46  $
---       PVCS Version     : $Revision:   1.3  $
+--       Date into PVCS   : $Date:   Dec 12 2008 11:53:42  $
+--       Date fetched Out : $Modtime:   Dec 12 2008 11:07:36  $
+--       PVCS Version     : $Revision:   1.4  $
 --
 -----------------------------------------------------------------------------
 --  Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
-  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.3  $';
-  g_package_name  CONSTANT  varchar2(30)   := 'mai_web_service';
-  c_date_format   CONSTANT  varchar2(20)   := 'DD-MON-YYYY';
-  c_xmlns         CONSTANT  varchar2(50)   := ' xmlns="http://exor_mai_ws/exor_mai_ws"';
+  g_body_sccsid   CONSTANT  VARCHAR2(2000) := '$Revision:   1.4  $';
+  g_package_name  CONSTANT  VARCHAR2(30)   := 'mai_web_service';
+  c_date_format   CONSTANT  VARCHAR2(20)   := 'DD-MON-YYYY';
+  c_xmlns         CONSTANT  VARCHAR2(50)   := ' xmlns="http://exor_mai_ws/exor_mai_ws"';
+  c_xsd_uri       CONSTANT  VARCHAR2(50)   := 'Exor_mai_ws-v2-0.xsd';
   --
   date_format_error EXCEPTION;
 /*
 || Errors Raised.
 ||
+||-20000,'Invalid Input XML Supplied.'
 ||-20010,'Invalid User Id Specified For Inspector.'
 ||-20043,'Invalid Organisation Specified.'
+||-20046,'No Defects Added To The Work Order.'
 */
 --
 -----------------------------------------------------------------------------
@@ -59,10 +62,52 @@ END xml_extract;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION build_error_xml(pi_sqlerrm IN VARCHAR2)
-  RETURN xmltype IS
+FUNCTION valid_xml(pi_xml     IN XMLType
+                  ,pi_xsd_uri IN VARCHAR2)
+  RETURN BOOLEAN IS
+  --
+  lv_xml    XMLType;
+  --
 BEGIN
-  RETURN xmltype('<error>'||dbms_xmlgen.convert(pi_sqlerrm)||'</error>');
+  /*
+  ||Associate The Given Schema
+  ||With The XMLType Object.
+  */
+  lv_xml := pi_xml.createSchemaBasedXML(pi_xsd_uri);
+  /*
+  ||Validate The XMLType Object
+  ||Against The Schema.
+  */
+  xmltype.schemaValidate(lv_xml);
+  /*
+  ||No Errors Occured So Return TRUE.
+  */
+  RETURN TRUE;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN FALSE;
+END;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION build_error_xml(pi_wrapper IN VARCHAR2 DEFAULT NULL
+                        ,pi_sqlerrm IN VARCHAR2)
+  RETURN xmltype IS
+  --
+  lv_retval xmltype;
+  --
+BEGIN
+  IF pi_wrapper IS NOT NULL
+   THEN
+      lv_retval := xmltype('<'||pi_wrapper||' '||c_xmlns||'><error>'||dbms_xmlgen.convert(pi_sqlerrm)||'</error></'||pi_wrapper||'>');
+  ELSE
+      lv_retval := xmltype('<error>'||dbms_xmlgen.convert(pi_sqlerrm)||'</error>');
+  END IF;
+  --
+  RETURN lv_retval;
+  --
 END;
 --
 -----------------------------------------------------------------------------
@@ -191,47 +236,6 @@ END gen_tags;
 --
 -----------------------------------------------------------------------------
 --
---FUNCTION get_auto_defect_priority(section_id    IN NUMBER
---                                 ,sys_flag      IN VARCHAR2
---                                 ,activity      IN VARCHAR2
---                                 ,defect_code   IN VARCHAR2)
---  RETURN get_auto_def_priority_out IS
---  --
---  lv_defautopri hig_option_values.hov_value%TYPE
---                := hig.get_user_or_sys_opt('DEFAUTOPRI');
---  lv_priority   defects.def_priority%TYPE;
---  --
---  po_params  get_auto_def_priority_out
---             := get_auto_def_priority_out(NULL,error_out(NULL));
---  --
---BEGIN
---  --
---  IF lv_defautopri IN ('A','B')
---   THEN
---      lv_priority := mai.get_auto_def_priority(p_rse_he_id     => section_id
---                                              ,p_network_type  => sys_flag
---                                              ,p_activity_code => activity
---                                              ,p_defect_code   => defect_code);
---      --
---      po_params.priority := lv_priority;
---      --
---  ELSE
---      --
---      po_params.error := error_out('Automatic Defect Priority Is Not In Use.');
---      --
---  END IF;
---  --
---  RETURN po_params;
---  --
---EXCEPTION
---  WHEN others
---   THEN
---      po_params.error := error_out(SQLERRM);
---      RETURN po_params;
---END get_auto_defect_priority;
---
------------------------------------------------------------------------------
---
 FUNCTION get_sd_flags
   RETURN xmltype IS
   --
@@ -240,16 +244,16 @@ FUNCTION get_sd_flags
   --
 BEGIN
   --
-  lv_str := '<SD_Flags'||c_xmlns||'>'
-          ||'<SD_Flag>'
-          ||'<Safety_Detailed_Flag>S</Safety_Detailed_Flag>'
-          ||'<Description>Safety</Description>'
-          ||'</SD_Flag>'
-          ||'<SD_Flag>'
-          ||'<Safety_Detailed_Flag>D</Safety_Detailed_Flag>'
-          ||'<Description>Detailed</Description>'
-          ||'</SD_Flag>'
-          ||'</SD_Flags>'
+  lv_str := '<GetSDFlagsResponse'||c_xmlns||'><SD_Flags>'
+            ||'<SD_Flag>'
+              ||'<Safety_Detailed_Flag>S</Safety_Detailed_Flag>'
+              ||'<Description>Safety</Description>'
+            ||'</SD_Flag>'
+            ||'<SD_Flag>'
+              ||'<Safety_Detailed_Flag>D</Safety_Detailed_Flag>'
+              ||'<Description>Detailed</Description>'
+            ||'</SD_Flag>'
+          ||'</SD_Flags></GetSDFlagsResponse>'
           ;
   --
   lv_retval := xmltype(lv_str);
@@ -259,7 +263,7 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_sqlerrm => SQLERRM);
 END get_sd_flags;
 --
 -----------------------------------------------------------------------------
@@ -277,7 +281,7 @@ FUNCTION get_users
   lt_retval   retval_tab;
   lv_retval   XMLType;
   lv_str      nm3type.max_varchar2;
-  lv_clob     CLOB := '<Users'||c_xmlns||'>';
+  lv_clob     CLOB := '<GetUsersResponse '||c_xmlns||'><Users>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
   --
 BEGIN
@@ -319,7 +323,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||lv_str||'</Users>';
+  lv_clob := lv_clob||lv_str||'</Users></GetUsersResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -328,7 +332,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetUsersResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_users;
 --
 -----------------------------------------------------------------------------
@@ -346,7 +351,7 @@ FUNCTION get_admin_units
   lt_retval   retval_tab;
   lv_retval   XMLType;
   lv_str      nm3type.max_varchar2;
-  lv_clob     CLOB := '<Admin_Units'||c_xmlns||'>';
+  lv_clob     CLOB := '<GetAdminUnitsResponse'||c_xmlns||'><Admin_Units>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
   --
 BEGIN
@@ -387,7 +392,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||lv_str||'</Admin_Units>';
+  lv_clob := lv_clob||lv_str||'</Admin_Units></GetAdminUnitsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -396,7 +401,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetAdminUnitsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_admin_units;
 --
 -----------------------------------------------------------------------------
@@ -411,7 +417,7 @@ FUNCTION get_admin_groups
   lt_retval   retval_tab;
   lv_retval   XMLType;
   lv_str      nm3type.max_varchar2;
-  lv_clob     CLOB := '<Admin_Groups'||c_xmlns||'>';
+  lv_clob     CLOB := '<GetAdminGroupsResponse'||c_xmlns||'><Admin_Groups>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
   --
 BEGIN
@@ -450,7 +456,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||lv_str||'</Admin_Groups>';
+  lv_clob := lv_clob||lv_str||'</Admin_Groups></GetAdminGroupsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -459,7 +465,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetAdminGroupsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_admin_groups;
 --
 -----------------------------------------------------------------------------
@@ -479,7 +486,7 @@ FUNCTION get_road_sections
   lt_retval   retval_tab;
   lv_retval   XMLType;
   lv_str      nm3type.max_varchar2;
-  lv_clob     CLOB := '<Road_Sections'||c_xmlns||'>';
+  lv_clob     CLOB := '<GetRoadSectionsResponse'||c_xmlns||'><Road_Sections>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
   --
 BEGIN
@@ -525,7 +532,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||lv_str||'</Road_Sections>';
+  lv_clob := lv_clob||lv_str||'</Road_Sections></GetRoadSectionsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -534,7 +541,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetRoadSectionsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_road_sections;
 --
 -----------------------------------------------------------------------------
@@ -552,7 +560,7 @@ FUNCTION get_asset_types
   lt_retval retval_tab;
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Asset_Types'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetAssetTypesResponse'||c_xmlns||'><Asset_Types>';
   --
 BEGIN
   --
@@ -594,7 +602,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Asset_Types>';
+  lv_clob := lv_clob||'</Asset_Types></GetAssetTypesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -603,7 +611,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetAssetTypesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_asset_types;
 --
 -----------------------------------------------------------------------------
@@ -622,7 +631,7 @@ FUNCTION get_asset_type_attribs
   lt_retval retval_tab;
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Asset_Attributes'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetAssetTypeAttribsResponse'||c_xmlns||'><Asset_Attributes>';
   --
 BEGIN
   --
@@ -663,7 +672,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Asset_Attributes>';
+  lv_clob := lv_clob||'</Asset_Attributes></GetAssetTypeAttribsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -672,119 +681,214 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetAssetTypeAttribsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_asset_type_attribs;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
+FUNCTION get_asset_ids(pi_xml IN XMLTYPE)
   RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'Asset_Type_Code',cp_xmlns) asset_type
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  lv_asset_type nm_inv_types_all.nit_inv_type%TYPE;
   --
   TYPE retval_tab IS TABLE OF nm_inv_items_all.iit_ne_id%TYPE;
   lt_retval retval_tab;
-  lv_retval XMLType;
+  lv_retval XMLTYPE;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Assets'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetAssetIDsResponse'||c_xmlns||'><Assets>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 50;
   --
 BEGIN
   --
-  SELECT iit_ne_id
-    BULK COLLECT
-    INTO lt_retval
-    FROM nm_inv_items_all
-   WHERE iit_inv_type = pi_asset_type
-       ;
-  --
-  IF lt_retval.count = 0
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
    THEN
-      raise no_data_found;
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/GetAssetIDs/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_asset_type := lr_params.asset_type;
+      --
+      SELECT iit_ne_id
+        BULK COLLECT
+        INTO lt_retval
+        FROM nm_inv_items_all
+       WHERE iit_inv_type = lv_asset_type
+           ;
+      --
+      IF lt_retval.count = 0
+       THEN
+          raise no_data_found;
+      END IF;
+      --
+      FOR i IN 1..lt_retval.count LOOP
+        --
+        lv_str := lv_str||'<Id>'||TO_CHAR(lt_retval(i))||'</Id>';
+        --
+        IF length(lv_str) > lv_max_size
+         THEN
+            lv_clob := lv_clob||lv_str;
+            lv_str := NULL;
+        END IF;
+        --
+      END LOOP;
+      --
+      lv_clob := lv_clob||lv_str||'</Assets></GetAssetIDsResponse>';
+      --
+      lv_retval := xmltype(lv_clob);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
   END IF;
   --
-  FOR i IN 1..lt_retval.count LOOP
-    --
-    lv_str := lv_str||'<Id>'||TO_CHAR(lt_retval(i))||'</Id>';
-    --
-    IF length(lv_str) > lv_max_size
-     THEN
-        lv_clob := lv_clob||lv_str;
-        lv_str := NULL;
-    END IF;
-    --
-  END LOOP;
-  --
-  lv_clob := lv_clob||lv_str||'</Assets>';
-  --
-  lv_retval := xmltype(lv_clob);
-  --
+  nm_debug.debug_off;
   RETURN lv_retval;
   --
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetAssetIDsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_asset_ids;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_modified_asset_ids(pi_asset_type    IN nm_inv_types_all.nit_inv_type%TYPE
-                               ,pi_modified_date IN VARCHAR2)
+FUNCTION get_modified_asset_ids(pi_xml IN XMLTYPE)
   RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'Asset_Type_Code',cp_xmlns) asset_type
+        ,EXTRACTVALUE(cp_xml,cp_root||'Modified_Date',cp_xmlns) modified_date
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  lv_asset_type  nm_inv_types_all.nit_inv_type%TYPE;
   --
   TYPE retval_tab IS TABLE OF nm_inv_items_all.iit_ne_id%TYPE;
   --
   lt_retval   retval_tab;
   lv_retval   XMLType;
   lv_str      nm3type.max_varchar2;
-  lv_clob     CLOB := '<Assets'||c_xmlns||'>';
+  lv_clob     CLOB := '<GetModifiedAssetIDsResponse'||c_xmlns||'><Assets>';
   lv_mod_date DATE;
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 50;
   --
 BEGIN
   --
-  lv_mod_date := varchar_to_date(pi_modified_date);
-  --
-  SELECT iit_ne_id
-    BULK COLLECT
-    INTO lt_retval
-    FROM nm_inv_items_all
-   WHERE iit_inv_type = pi_asset_type
-     AND iit_date_modified >= lv_mod_date
-       ;
-  --
-  IF lt_retval.count = 0
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  nm_debug.debug('Getting params');
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
    THEN
-      raise no_data_found;
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/GetModifiedAssetIDs/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      nm_debug.debug('Asset Type = '||lr_params.asset_type);
+      nm_debug.debug('Date = '||lr_params.modified_date);
+      lv_asset_type := lr_params.asset_type;
+      lv_mod_date := varchar_to_date(lr_params.modified_date);
+      --
+      SELECT iit_ne_id
+        BULK COLLECT
+        INTO lt_retval
+        FROM nm_inv_items_all
+       WHERE iit_inv_type = lv_asset_type
+         AND iit_date_modified >= lv_mod_date
+           ;
+      --
+      IF lt_retval.count = 0
+       THEN
+          raise no_data_found;
+      END IF;
+      --
+      FOR i IN 1..lt_retval.count LOOP
+        --
+        lv_str := lv_str||'<Id>'||TO_CHAR(lt_retval(i))||'</Id>';
+        --
+        IF length(lv_str) > lv_max_size
+         THEN
+            lv_clob := lv_clob||lv_str;
+            lv_str := NULL;
+        END IF;
+        --
+      END LOOP;
+      --
+      lv_clob := lv_clob||lv_str||'</Assets></GetModifiedAssetIDsResponse>';
+      --
+      lv_retval := xmltype(lv_clob);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
   END IF;
   --
-  FOR i IN 1..lt_retval.count LOOP
-    --
-    lv_str := lv_str||'<Id>'||TO_CHAR(lt_retval(i))||'</Id>';
-    --
-    IF length(lv_str) > lv_max_size
-     THEN
-        lv_clob := lv_clob||lv_str;
-        lv_str := NULL;
-    END IF;
-    --
-  END LOOP;
-  --
-  lv_clob := lv_clob||lv_str||'</Assets>';
-  --
-  lv_retval := xmltype(lv_clob);
-  --
+  nm_debug.debug_off;
   RETURN lv_retval;
   --
 EXCEPTION
+  WHEN date_format_error
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetModifiedAssetIDsResponse'
+                            ,pi_sqlerrm => 'Invalid Date Format');
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetModifiedAssetIDsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_modified_asset_ids;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_asset_details(pi_asset_id IN nm_inv_items_all.iit_ne_id%TYPE)
+FUNCTION get_asset_details(pi_xml IN XMLTYPE)
   RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'Id',cp_xmlns) asset_id
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  lv_asset_id  nm_inv_items_all.iit_ne_id%TYPE;
   --
   lr_retval nm_inv_items_all%ROWTYPE;
   lv_str    CLOB;
@@ -792,191 +896,220 @@ FUNCTION get_asset_details(pi_asset_id IN nm_inv_items_all.iit_ne_id%TYPE)
   --
 BEGIN
   --
-  SELECT *
-    INTO lr_retval
-    FROM nm_inv_items_all
-   WHERE iit_ne_id = pi_asset_id
-       ;
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
   --
-  lv_str := lv_str||'  <AssetDetails'||c_xmlns||'>'
-                  ||gen_tags(4,'iit_ne_id',TO_CHAR(lr_retval.iit_ne_id))
-                  ||gen_tags(4,'iit_inv_type',TO_CHAR(lr_retval.iit_inv_type))
-                  ||gen_tags(4,'iit_primary_key',lr_retval.iit_primary_key)
-                  ||gen_tags(4,'iit_start_date',date_to_varchar(lr_retval.iit_start_date))
-                  ||gen_tags(4,'iit_date_created',datetime_to_varchar(lr_retval.iit_date_created))
-                  ||gen_tags(4,'iit_date_modified',datetime_to_varchar(lr_retval.iit_date_modified))
-                  ||gen_tags(4,'iit_created_by',lr_retval.iit_created_by)
-                  ||gen_tags(4,'iit_modified_by',lr_retval.iit_modified_by)
-                  ||gen_tags(4,'iit_admin_unit',TO_CHAR(lr_retval.iit_admin_unit))
-                  ||gen_tags(4,'iit_descr',lr_retval.iit_descr)
-                  ||gen_tags(4,'iit_end_date',date_to_varchar(lr_retval.iit_end_date))
-                  ||gen_tags(4,'iit_foreign_key',lr_retval.iit_foreign_key)
-                  ||gen_tags(4,'iit_located_by',TO_CHAR(lr_retval.iit_located_by))
-                  ||gen_tags(4,'iit_position',TO_CHAR(lr_retval.iit_position))
-                  ||gen_tags(4,'iit_x_coord',TO_CHAR(lr_retval.iit_x_coord))
-                  ||gen_tags(4,'iit_y_coord',TO_CHAR(lr_retval.iit_y_coord))
-                  ||gen_tags(4,'iit_num_attrib16',TO_CHAR(lr_retval.iit_num_attrib16))
-                  ||gen_tags(4,'iit_num_attrib17',TO_CHAR(lr_retval.iit_num_attrib17))
-                  ||gen_tags(4,'iit_num_attrib18',TO_CHAR(lr_retval.iit_num_attrib18))
-                  ||gen_tags(4,'iit_num_attrib19',TO_CHAR(lr_retval.iit_num_attrib19))
-                  ||gen_tags(4,'iit_num_attrib20',TO_CHAR(lr_retval.iit_num_attrib20))
-                  ||gen_tags(4,'iit_num_attrib21',TO_CHAR(lr_retval.iit_num_attrib21))
-                  ||gen_tags(4,'iit_num_attrib22',TO_CHAR(lr_retval.iit_num_attrib22))
-                  ||gen_tags(4,'iit_num_attrib23',TO_CHAR(lr_retval.iit_num_attrib23))
-                  ||gen_tags(4,'iit_num_attrib24',TO_CHAR(lr_retval.iit_num_attrib24))
-                  ||gen_tags(4,'iit_num_attrib25',TO_CHAR(lr_retval.iit_num_attrib25))
-                  ||gen_tags(4,'iit_chr_attrib26',lr_retval.iit_chr_attrib26)
-                  ||gen_tags(4,'iit_chr_attrib27',lr_retval.iit_chr_attrib27)
-                  ||gen_tags(4,'iit_chr_attrib28',lr_retval.iit_chr_attrib28)
-                  ||gen_tags(4,'iit_chr_attrib29',lr_retval.iit_chr_attrib29)
-                  ||gen_tags(4,'iit_chr_attrib30',lr_retval.iit_chr_attrib30)
-                  ||gen_tags(4,'iit_chr_attrib31',lr_retval.iit_chr_attrib31)
-                  ||gen_tags(4,'iit_chr_attrib32',lr_retval.iit_chr_attrib32)
-                  ||gen_tags(4,'iit_chr_attrib33',lr_retval.iit_chr_attrib33)
-                  ||gen_tags(4,'iit_chr_attrib34',lr_retval.iit_chr_attrib34)
-                  ||gen_tags(4,'iit_chr_attrib35',lr_retval.iit_chr_attrib35)
-                  ||gen_tags(4,'iit_chr_attrib36',lr_retval.iit_chr_attrib36)
-                  ||gen_tags(4,'iit_chr_attrib37',lr_retval.iit_chr_attrib37)
-                  ||gen_tags(4,'iit_chr_attrib38',lr_retval.iit_chr_attrib38)
-                  ||gen_tags(4,'iit_chr_attrib39',lr_retval.iit_chr_attrib39)
-                  ||gen_tags(4,'iit_chr_attrib40',lr_retval.iit_chr_attrib40)
-                  ||gen_tags(4,'iit_chr_attrib41',lr_retval.iit_chr_attrib41)
-                  ||gen_tags(4,'iit_chr_attrib42',lr_retval.iit_chr_attrib42)
-                  ||gen_tags(4,'iit_chr_attrib43',lr_retval.iit_chr_attrib43)
-                  ||gen_tags(4,'iit_chr_attrib44',lr_retval.iit_chr_attrib44)
-                  ||gen_tags(4,'iit_chr_attrib45',lr_retval.iit_chr_attrib45)
-                  ||gen_tags(4,'iit_chr_attrib46',lr_retval.iit_chr_attrib46)
-                  ||gen_tags(4,'iit_chr_attrib47',lr_retval.iit_chr_attrib47)
-                  ||gen_tags(4,'iit_chr_attrib48',lr_retval.iit_chr_attrib48)
-                  ||gen_tags(4,'iit_chr_attrib49',lr_retval.iit_chr_attrib49)
-                  ||gen_tags(4,'iit_chr_attrib50',lr_retval.iit_chr_attrib50)
-                  ||gen_tags(4,'iit_chr_attrib51',lr_retval.iit_chr_attrib51)
-                  ||gen_tags(4,'iit_chr_attrib52',lr_retval.iit_chr_attrib52)
-                  ||gen_tags(4,'iit_chr_attrib53',lr_retval.iit_chr_attrib53)
-                  ||gen_tags(4,'iit_chr_attrib54',lr_retval.iit_chr_attrib54)
-                  ||gen_tags(4,'iit_chr_attrib55',lr_retval.iit_chr_attrib55)
-                  ||gen_tags(4,'iit_chr_attrib56',lr_retval.iit_chr_attrib56)
-                  ||gen_tags(4,'iit_chr_attrib57',lr_retval.iit_chr_attrib57)
-                  ||gen_tags(4,'iit_chr_attrib58',lr_retval.iit_chr_attrib58)
-                  ||gen_tags(4,'iit_chr_attrib59',lr_retval.iit_chr_attrib59)
-                  ||gen_tags(4,'iit_chr_attrib60',lr_retval.iit_chr_attrib60)
-                  ||gen_tags(4,'iit_chr_attrib61',lr_retval.iit_chr_attrib61)
-                  ||gen_tags(4,'iit_chr_attrib62',lr_retval.iit_chr_attrib62)
-                  ||gen_tags(4,'iit_chr_attrib63',lr_retval.iit_chr_attrib63)
-                  ||gen_tags(4,'iit_chr_attrib64',lr_retval.iit_chr_attrib64)
-                  ||gen_tags(4,'iit_chr_attrib65',lr_retval.iit_chr_attrib65)
-                  ||gen_tags(4,'iit_chr_attrib66',lr_retval.iit_chr_attrib66)
-                  ||gen_tags(4,'iit_chr_attrib67',lr_retval.iit_chr_attrib67)
-                  ||gen_tags(4,'iit_chr_attrib68',lr_retval.iit_chr_attrib68)
-                  ||gen_tags(4,'iit_chr_attrib69',lr_retval.iit_chr_attrib69)
-                  ||gen_tags(4,'iit_chr_attrib70',lr_retval.iit_chr_attrib70)
-                  ||gen_tags(4,'iit_chr_attrib71',lr_retval.iit_chr_attrib71)
-                  ||gen_tags(4,'iit_chr_attrib72',lr_retval.iit_chr_attrib72)
-                  ||gen_tags(4,'iit_chr_attrib73',lr_retval.iit_chr_attrib73)
-                  ||gen_tags(4,'iit_chr_attrib74',lr_retval.iit_chr_attrib74)
-                  ||gen_tags(4,'iit_chr_attrib75',lr_retval.iit_chr_attrib75)
-                  ||gen_tags(4,'iit_num_attrib76',TO_CHAR(lr_retval.iit_num_attrib76))
-                  ||gen_tags(4,'iit_num_attrib77',TO_CHAR(lr_retval.iit_num_attrib77))
-                  ||gen_tags(4,'iit_num_attrib78',TO_CHAR(lr_retval.iit_num_attrib78))
-                  ||gen_tags(4,'iit_num_attrib79',TO_CHAR(lr_retval.iit_num_attrib79))
-                  ||gen_tags(4,'iit_num_attrib80',TO_CHAR(lr_retval.iit_num_attrib80))
-                  ||gen_tags(4,'iit_num_attrib81',TO_CHAR(lr_retval.iit_num_attrib81))
-                  ||gen_tags(4,'iit_num_attrib82',TO_CHAR(lr_retval.iit_num_attrib82))
-                  ||gen_tags(4,'iit_num_attrib83',TO_CHAR(lr_retval.iit_num_attrib83))
-                  ||gen_tags(4,'iit_num_attrib84',TO_CHAR(lr_retval.iit_num_attrib84))
-                  ||gen_tags(4,'iit_num_attrib85',TO_CHAR(lr_retval.iit_num_attrib85))
-                  ||gen_tags(4,'iit_date_attrib86',datetime_to_varchar(lr_retval.iit_date_attrib86))
-                  ||gen_tags(4,'iit_date_attrib87',datetime_to_varchar(lr_retval.iit_date_attrib87))
-                  ||gen_tags(4,'iit_date_attrib88',datetime_to_varchar(lr_retval.iit_date_attrib88))
-                  ||gen_tags(4,'iit_date_attrib89',datetime_to_varchar(lr_retval.iit_date_attrib89))
-                  ||gen_tags(4,'iit_date_attrib90',datetime_to_varchar(lr_retval.iit_date_attrib90))
-                  ||gen_tags(4,'iit_date_attrib91',datetime_to_varchar(lr_retval.iit_date_attrib91))
-                  ||gen_tags(4,'iit_date_attrib92',datetime_to_varchar(lr_retval.iit_date_attrib92))
-                  ||gen_tags(4,'iit_date_attrib93',datetime_to_varchar(lr_retval.iit_date_attrib93))
-                  ||gen_tags(4,'iit_date_attrib94',datetime_to_varchar(lr_retval.iit_date_attrib94))
-                  ||gen_tags(4,'iit_date_attrib95',datetime_to_varchar(lr_retval.iit_date_attrib95))
-                  ||gen_tags(4,'iit_angle',TO_CHAR(lr_retval.iit_angle))
-                  ||gen_tags(4,'iit_angle_txt',lr_retval.iit_angle_txt)
-                  ||gen_tags(4,'iit_class',lr_retval.iit_class)
-                  ||gen_tags(4,'iit_class_txt',lr_retval.iit_class_txt)
-                  ||gen_tags(4,'iit_colour',lr_retval.iit_colour)
-                  ||gen_tags(4,'iit_colour_txt',lr_retval.iit_colour_txt)
-                  ||gen_tags(4,'iit_coord_flag',lr_retval.iit_coord_flag)
-                  ||gen_tags(4,'iit_description',lr_retval.iit_description)
-                  ||gen_tags(4,'iit_diagram',lr_retval.iit_diagram)
-                  ||gen_tags(4,'iit_distance',TO_CHAR(lr_retval.iit_distance))
-                  ||gen_tags(4,'iit_end_chain',TO_CHAR(lr_retval.iit_end_chain))
-                  ||gen_tags(4,'iit_gap',TO_CHAR(lr_retval.iit_gap))
-                  ||gen_tags(4,'iit_height',TO_CHAR(lr_retval.iit_height))
-                  ||gen_tags(4,'iit_height_2',TO_CHAR(lr_retval.iit_height_2))
-                  ||gen_tags(4,'iit_id_code',lr_retval.iit_id_code)
-                  ||gen_tags(4,'iit_instal_date',datetime_to_varchar(lr_retval.iit_instal_date))
-                  ||gen_tags(4,'iit_invent_date',datetime_to_varchar(lr_retval.iit_invent_date))
-                  ||gen_tags(4,'iit_inv_ownership',lr_retval.iit_inv_ownership)
-                  ||gen_tags(4,'iit_itemcode',lr_retval.iit_itemcode)
-                  ||gen_tags(4,'iit_lco_lamp_config_id',TO_CHAR(lr_retval.iit_lco_lamp_config_id))
-                  ||gen_tags(4,'iit_length',TO_CHAR(lr_retval.iit_length))
-                  ||gen_tags(4,'iit_material',lr_retval.iit_material)
-                  ||gen_tags(4,'iit_material_txt',lr_retval.iit_material_txt)
-                  ||gen_tags(4,'iit_method',lr_retval.iit_method)
-                  ||gen_tags(4,'iit_method_txt',lr_retval.iit_method_txt)
-                  ||gen_tags(4,'iit_note',lr_retval.iit_note)
-                  ||gen_tags(4,'iit_no_of_units',TO_CHAR(lr_retval.iit_no_of_units))
-                  ||gen_tags(4,'iit_options',lr_retval.iit_options)
-                  ||gen_tags(4,'iit_options_txt',lr_retval.iit_options_txt)
-                  ||gen_tags(4,'iit_oun_org_id_elec_board',TO_CHAR(lr_retval.iit_oun_org_id_elec_board))
-                  ||gen_tags(4,'iit_owner',lr_retval.iit_owner)
-                  ||gen_tags(4,'iit_owner_txt',lr_retval.iit_owner_txt)
-                  ||gen_tags(4,'iit_peo_invent_by_id',TO_CHAR(lr_retval.iit_peo_invent_by_id))
-                  ||gen_tags(4,'iit_photo',lr_retval.iit_photo)
-                  ||gen_tags(4,'iit_power',TO_CHAR(lr_retval.iit_power))
-                  ||gen_tags(4,'iit_prov_flag',lr_retval.iit_prov_flag)
-                  ||gen_tags(4,'iit_rev_by',lr_retval.iit_rev_by)
-                  ||gen_tags(4,'iit_rev_date',datetime_to_varchar(lr_retval.iit_rev_date))
-                  ||gen_tags(4,'iit_type',lr_retval.iit_type)
-                  ||gen_tags(4,'iit_type_txt',lr_retval.iit_type_txt)
-                  ||gen_tags(4,'iit_width',TO_CHAR(lr_retval.iit_width))
-                  ||gen_tags(4,'iit_xtra_char_1',lr_retval.iit_xtra_char_1)
-                  ||gen_tags(4,'iit_xtra_date_1',datetime_to_varchar(lr_retval.iit_xtra_date_1))
-                  ||gen_tags(4,'iit_xtra_domain_1',lr_retval.iit_xtra_domain_1)
-                  ||gen_tags(4,'iit_xtra_domain_txt_1',lr_retval.iit_xtra_domain_txt_1)
-                  ||gen_tags(4,'iit_xtra_number_1',TO_CHAR(lr_retval.iit_xtra_number_1))
-                  ||gen_tags(4,'iit_x_sect',lr_retval.iit_x_sect)
-                  ||gen_tags(4,'iit_det_xsp',lr_retval.iit_det_xsp)
-                  ||gen_tags(4,'iit_offset',TO_CHAR(lr_retval.iit_offset))
-                  ||gen_tags(4,'iit_x',TO_CHAR(lr_retval.iit_x))
-                  ||gen_tags(4,'iit_y',TO_CHAR(lr_retval.iit_y))
-                  ||gen_tags(4,'iit_z',TO_CHAR(lr_retval.iit_z))
-                  ||gen_tags(4,'iit_num_attrib96',TO_CHAR(lr_retval.iit_num_attrib96))
-                  ||gen_tags(4,'iit_num_attrib97',TO_CHAR(lr_retval.iit_num_attrib97))
-                  ||gen_tags(4,'iit_num_attrib98',TO_CHAR(lr_retval.iit_num_attrib98))
-                  ||gen_tags(4,'iit_num_attrib99',TO_CHAR(lr_retval.iit_num_attrib99))
-                  ||gen_tags(4,'iit_num_attrib100',TO_CHAR(lr_retval.iit_num_attrib100))
-                  ||gen_tags(4,'iit_num_attrib101',TO_CHAR(lr_retval.iit_num_attrib101))
-                  ||gen_tags(4,'iit_num_attrib102',TO_CHAR(lr_retval.iit_num_attrib102))
-                  ||gen_tags(4,'iit_num_attrib103',TO_CHAR(lr_retval.iit_num_attrib103))
-                  ||gen_tags(4,'iit_num_attrib104',TO_CHAR(lr_retval.iit_num_attrib104))
-                  ||gen_tags(4,'iit_num_attrib105',TO_CHAR(lr_retval.iit_num_attrib105))
-                  ||gen_tags(4,'iit_num_attrib106',TO_CHAR(lr_retval.iit_num_attrib106))
-                  ||gen_tags(4,'iit_num_attrib107',TO_CHAR(lr_retval.iit_num_attrib107))
-                  ||gen_tags(4,'iit_num_attrib108',TO_CHAR(lr_retval.iit_num_attrib108))
-                  ||gen_tags(4,'iit_num_attrib109',TO_CHAR(lr_retval.iit_num_attrib109))
-                  ||gen_tags(4,'iit_num_attrib110',TO_CHAR(lr_retval.iit_num_attrib110))
-                  ||gen_tags(4,'iit_num_attrib111',TO_CHAR(lr_retval.iit_num_attrib111))
-                  ||gen_tags(4,'iit_num_attrib112',TO_CHAR(lr_retval.iit_num_attrib112))
-                  ||gen_tags(4,'iit_num_attrib113',TO_CHAR(lr_retval.iit_num_attrib113))
-                  ||gen_tags(4,'iit_num_attrib114',TO_CHAR(lr_retval.iit_num_attrib114))
-                  ||gen_tags(4,'iit_num_attrib115',TO_CHAR(lr_retval.iit_num_attrib115))
-                  ||CHR(10)||'  </AssetDetails>';
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/GetAssetDetails/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_asset_id := lr_params.asset_id;
+      --
+      SELECT *
+        INTO lr_retval
+        FROM nm_inv_items_all
+       WHERE iit_ne_id = lv_asset_id
+           ;
+      --
+      lv_str := lv_str||'<GetAssetDetailsResponse'||c_xmlns||'><AssetDetails>'
+                      ||gen_tags(4,'iit_ne_id',TO_CHAR(lr_retval.iit_ne_id))
+                      ||gen_tags(4,'iit_inv_type',TO_CHAR(lr_retval.iit_inv_type))
+                      ||gen_tags(4,'iit_primary_key',lr_retval.iit_primary_key)
+                      ||gen_tags(4,'iit_start_date',date_to_varchar(lr_retval.iit_start_date))
+                      ||gen_tags(4,'iit_date_created',datetime_to_varchar(lr_retval.iit_date_created))
+                      ||gen_tags(4,'iit_date_modified',datetime_to_varchar(lr_retval.iit_date_modified))
+                      ||gen_tags(4,'iit_created_by',lr_retval.iit_created_by)
+                      ||gen_tags(4,'iit_modified_by',lr_retval.iit_modified_by)
+                      ||gen_tags(4,'iit_admin_unit',TO_CHAR(lr_retval.iit_admin_unit))
+                      ||gen_tags(4,'iit_descr',lr_retval.iit_descr)
+                      ||gen_tags(4,'iit_end_date',date_to_varchar(lr_retval.iit_end_date))
+                      ||gen_tags(4,'iit_foreign_key',lr_retval.iit_foreign_key)
+                      ||gen_tags(4,'iit_located_by',TO_CHAR(lr_retval.iit_located_by))
+                      ||gen_tags(4,'iit_position',TO_CHAR(lr_retval.iit_position))
+                      ||gen_tags(4,'iit_x_coord',TO_CHAR(lr_retval.iit_x_coord))
+                      ||gen_tags(4,'iit_y_coord',TO_CHAR(lr_retval.iit_y_coord))
+                      ||gen_tags(4,'iit_num_attrib16',TO_CHAR(lr_retval.iit_num_attrib16))
+                      ||gen_tags(4,'iit_num_attrib17',TO_CHAR(lr_retval.iit_num_attrib17))
+                      ||gen_tags(4,'iit_num_attrib18',TO_CHAR(lr_retval.iit_num_attrib18))
+                      ||gen_tags(4,'iit_num_attrib19',TO_CHAR(lr_retval.iit_num_attrib19))
+                      ||gen_tags(4,'iit_num_attrib20',TO_CHAR(lr_retval.iit_num_attrib20))
+                      ||gen_tags(4,'iit_num_attrib21',TO_CHAR(lr_retval.iit_num_attrib21))
+                      ||gen_tags(4,'iit_num_attrib22',TO_CHAR(lr_retval.iit_num_attrib22))
+                      ||gen_tags(4,'iit_num_attrib23',TO_CHAR(lr_retval.iit_num_attrib23))
+                      ||gen_tags(4,'iit_num_attrib24',TO_CHAR(lr_retval.iit_num_attrib24))
+                      ||gen_tags(4,'iit_num_attrib25',TO_CHAR(lr_retval.iit_num_attrib25))
+                      ||gen_tags(4,'iit_chr_attrib26',lr_retval.iit_chr_attrib26)
+                      ||gen_tags(4,'iit_chr_attrib27',lr_retval.iit_chr_attrib27)
+                      ||gen_tags(4,'iit_chr_attrib28',lr_retval.iit_chr_attrib28)
+                      ||gen_tags(4,'iit_chr_attrib29',lr_retval.iit_chr_attrib29)
+                      ||gen_tags(4,'iit_chr_attrib30',lr_retval.iit_chr_attrib30)
+                      ||gen_tags(4,'iit_chr_attrib31',lr_retval.iit_chr_attrib31)
+                      ||gen_tags(4,'iit_chr_attrib32',lr_retval.iit_chr_attrib32)
+                      ||gen_tags(4,'iit_chr_attrib33',lr_retval.iit_chr_attrib33)
+                      ||gen_tags(4,'iit_chr_attrib34',lr_retval.iit_chr_attrib34)
+                      ||gen_tags(4,'iit_chr_attrib35',lr_retval.iit_chr_attrib35)
+                      ||gen_tags(4,'iit_chr_attrib36',lr_retval.iit_chr_attrib36)
+                      ||gen_tags(4,'iit_chr_attrib37',lr_retval.iit_chr_attrib37)
+                      ||gen_tags(4,'iit_chr_attrib38',lr_retval.iit_chr_attrib38)
+                      ||gen_tags(4,'iit_chr_attrib39',lr_retval.iit_chr_attrib39)
+                      ||gen_tags(4,'iit_chr_attrib40',lr_retval.iit_chr_attrib40)
+                      ||gen_tags(4,'iit_chr_attrib41',lr_retval.iit_chr_attrib41)
+                      ||gen_tags(4,'iit_chr_attrib42',lr_retval.iit_chr_attrib42)
+                      ||gen_tags(4,'iit_chr_attrib43',lr_retval.iit_chr_attrib43)
+                      ||gen_tags(4,'iit_chr_attrib44',lr_retval.iit_chr_attrib44)
+                      ||gen_tags(4,'iit_chr_attrib45',lr_retval.iit_chr_attrib45)
+                      ||gen_tags(4,'iit_chr_attrib46',lr_retval.iit_chr_attrib46)
+                      ||gen_tags(4,'iit_chr_attrib47',lr_retval.iit_chr_attrib47)
+                      ||gen_tags(4,'iit_chr_attrib48',lr_retval.iit_chr_attrib48)
+                      ||gen_tags(4,'iit_chr_attrib49',lr_retval.iit_chr_attrib49)
+                      ||gen_tags(4,'iit_chr_attrib50',lr_retval.iit_chr_attrib50)
+                      ||gen_tags(4,'iit_chr_attrib51',lr_retval.iit_chr_attrib51)
+                      ||gen_tags(4,'iit_chr_attrib52',lr_retval.iit_chr_attrib52)
+                      ||gen_tags(4,'iit_chr_attrib53',lr_retval.iit_chr_attrib53)
+                      ||gen_tags(4,'iit_chr_attrib54',lr_retval.iit_chr_attrib54)
+                      ||gen_tags(4,'iit_chr_attrib55',lr_retval.iit_chr_attrib55)
+                      ||gen_tags(4,'iit_chr_attrib56',lr_retval.iit_chr_attrib56)
+                      ||gen_tags(4,'iit_chr_attrib57',lr_retval.iit_chr_attrib57)
+                      ||gen_tags(4,'iit_chr_attrib58',lr_retval.iit_chr_attrib58)
+                      ||gen_tags(4,'iit_chr_attrib59',lr_retval.iit_chr_attrib59)
+                      ||gen_tags(4,'iit_chr_attrib60',lr_retval.iit_chr_attrib60)
+                      ||gen_tags(4,'iit_chr_attrib61',lr_retval.iit_chr_attrib61)
+                      ||gen_tags(4,'iit_chr_attrib62',lr_retval.iit_chr_attrib62)
+                      ||gen_tags(4,'iit_chr_attrib63',lr_retval.iit_chr_attrib63)
+                      ||gen_tags(4,'iit_chr_attrib64',lr_retval.iit_chr_attrib64)
+                      ||gen_tags(4,'iit_chr_attrib65',lr_retval.iit_chr_attrib65)
+                      ||gen_tags(4,'iit_chr_attrib66',lr_retval.iit_chr_attrib66)
+                      ||gen_tags(4,'iit_chr_attrib67',lr_retval.iit_chr_attrib67)
+                      ||gen_tags(4,'iit_chr_attrib68',lr_retval.iit_chr_attrib68)
+                      ||gen_tags(4,'iit_chr_attrib69',lr_retval.iit_chr_attrib69)
+                      ||gen_tags(4,'iit_chr_attrib70',lr_retval.iit_chr_attrib70)
+                      ||gen_tags(4,'iit_chr_attrib71',lr_retval.iit_chr_attrib71)
+                      ||gen_tags(4,'iit_chr_attrib72',lr_retval.iit_chr_attrib72)
+                      ||gen_tags(4,'iit_chr_attrib73',lr_retval.iit_chr_attrib73)
+                      ||gen_tags(4,'iit_chr_attrib74',lr_retval.iit_chr_attrib74)
+                      ||gen_tags(4,'iit_chr_attrib75',lr_retval.iit_chr_attrib75)
+                      ||gen_tags(4,'iit_num_attrib76',TO_CHAR(lr_retval.iit_num_attrib76))
+                      ||gen_tags(4,'iit_num_attrib77',TO_CHAR(lr_retval.iit_num_attrib77))
+                      ||gen_tags(4,'iit_num_attrib78',TO_CHAR(lr_retval.iit_num_attrib78))
+                      ||gen_tags(4,'iit_num_attrib79',TO_CHAR(lr_retval.iit_num_attrib79))
+                      ||gen_tags(4,'iit_num_attrib80',TO_CHAR(lr_retval.iit_num_attrib80))
+                      ||gen_tags(4,'iit_num_attrib81',TO_CHAR(lr_retval.iit_num_attrib81))
+                      ||gen_tags(4,'iit_num_attrib82',TO_CHAR(lr_retval.iit_num_attrib82))
+                      ||gen_tags(4,'iit_num_attrib83',TO_CHAR(lr_retval.iit_num_attrib83))
+                      ||gen_tags(4,'iit_num_attrib84',TO_CHAR(lr_retval.iit_num_attrib84))
+                      ||gen_tags(4,'iit_num_attrib85',TO_CHAR(lr_retval.iit_num_attrib85))
+                      ||gen_tags(4,'iit_date_attrib86',datetime_to_varchar(lr_retval.iit_date_attrib86))
+                      ||gen_tags(4,'iit_date_attrib87',datetime_to_varchar(lr_retval.iit_date_attrib87))
+                      ||gen_tags(4,'iit_date_attrib88',datetime_to_varchar(lr_retval.iit_date_attrib88))
+                      ||gen_tags(4,'iit_date_attrib89',datetime_to_varchar(lr_retval.iit_date_attrib89))
+                      ||gen_tags(4,'iit_date_attrib90',datetime_to_varchar(lr_retval.iit_date_attrib90))
+                      ||gen_tags(4,'iit_date_attrib91',datetime_to_varchar(lr_retval.iit_date_attrib91))
+                      ||gen_tags(4,'iit_date_attrib92',datetime_to_varchar(lr_retval.iit_date_attrib92))
+                      ||gen_tags(4,'iit_date_attrib93',datetime_to_varchar(lr_retval.iit_date_attrib93))
+                      ||gen_tags(4,'iit_date_attrib94',datetime_to_varchar(lr_retval.iit_date_attrib94))
+                      ||gen_tags(4,'iit_date_attrib95',datetime_to_varchar(lr_retval.iit_date_attrib95))
+                      ||gen_tags(4,'iit_angle',TO_CHAR(lr_retval.iit_angle))
+                      ||gen_tags(4,'iit_angle_txt',lr_retval.iit_angle_txt)
+                      ||gen_tags(4,'iit_class',lr_retval.iit_class)
+                      ||gen_tags(4,'iit_class_txt',lr_retval.iit_class_txt)
+                      ||gen_tags(4,'iit_colour',lr_retval.iit_colour)
+                      ||gen_tags(4,'iit_colour_txt',lr_retval.iit_colour_txt)
+                      ||gen_tags(4,'iit_coord_flag',lr_retval.iit_coord_flag)
+                      ||gen_tags(4,'iit_description',lr_retval.iit_description)
+                      ||gen_tags(4,'iit_diagram',lr_retval.iit_diagram)
+                      ||gen_tags(4,'iit_distance',TO_CHAR(lr_retval.iit_distance))
+                      ||gen_tags(4,'iit_end_chain',TO_CHAR(lr_retval.iit_end_chain))
+                      ||gen_tags(4,'iit_gap',TO_CHAR(lr_retval.iit_gap))
+                      ||gen_tags(4,'iit_height',TO_CHAR(lr_retval.iit_height))
+                      ||gen_tags(4,'iit_height_2',TO_CHAR(lr_retval.iit_height_2))
+                      ||gen_tags(4,'iit_id_code',lr_retval.iit_id_code)
+                      ||gen_tags(4,'iit_instal_date',datetime_to_varchar(lr_retval.iit_instal_date))
+                      ||gen_tags(4,'iit_invent_date',datetime_to_varchar(lr_retval.iit_invent_date))
+                      ||gen_tags(4,'iit_inv_ownership',lr_retval.iit_inv_ownership)
+                      ||gen_tags(4,'iit_itemcode',lr_retval.iit_itemcode)
+                      ||gen_tags(4,'iit_lco_lamp_config_id',TO_CHAR(lr_retval.iit_lco_lamp_config_id))
+                      ||gen_tags(4,'iit_length',TO_CHAR(lr_retval.iit_length))
+                      ||gen_tags(4,'iit_material',lr_retval.iit_material)
+                      ||gen_tags(4,'iit_material_txt',lr_retval.iit_material_txt)
+                      ||gen_tags(4,'iit_method',lr_retval.iit_method)
+                      ||gen_tags(4,'iit_method_txt',lr_retval.iit_method_txt)
+                      ||gen_tags(4,'iit_note',lr_retval.iit_note)
+                      ||gen_tags(4,'iit_no_of_units',TO_CHAR(lr_retval.iit_no_of_units))
+                      ||gen_tags(4,'iit_options',lr_retval.iit_options)
+                      ||gen_tags(4,'iit_options_txt',lr_retval.iit_options_txt)
+                      ||gen_tags(4,'iit_oun_org_id_elec_board',TO_CHAR(lr_retval.iit_oun_org_id_elec_board))
+                      ||gen_tags(4,'iit_owner',lr_retval.iit_owner)
+                      ||gen_tags(4,'iit_owner_txt',lr_retval.iit_owner_txt)
+                      ||gen_tags(4,'iit_peo_invent_by_id',TO_CHAR(lr_retval.iit_peo_invent_by_id))
+                      ||gen_tags(4,'iit_photo',lr_retval.iit_photo)
+                      ||gen_tags(4,'iit_power',TO_CHAR(lr_retval.iit_power))
+                      ||gen_tags(4,'iit_prov_flag',lr_retval.iit_prov_flag)
+                      ||gen_tags(4,'iit_rev_by',lr_retval.iit_rev_by)
+                      ||gen_tags(4,'iit_rev_date',datetime_to_varchar(lr_retval.iit_rev_date))
+                      ||gen_tags(4,'iit_type',lr_retval.iit_type)
+                      ||gen_tags(4,'iit_type_txt',lr_retval.iit_type_txt)
+                      ||gen_tags(4,'iit_width',TO_CHAR(lr_retval.iit_width))
+                      ||gen_tags(4,'iit_xtra_char_1',lr_retval.iit_xtra_char_1)
+                      ||gen_tags(4,'iit_xtra_date_1',datetime_to_varchar(lr_retval.iit_xtra_date_1))
+                      ||gen_tags(4,'iit_xtra_domain_1',lr_retval.iit_xtra_domain_1)
+                      ||gen_tags(4,'iit_xtra_domain_txt_1',lr_retval.iit_xtra_domain_txt_1)
+                      ||gen_tags(4,'iit_xtra_number_1',TO_CHAR(lr_retval.iit_xtra_number_1))
+                      ||gen_tags(4,'iit_x_sect',lr_retval.iit_x_sect)
+                      ||gen_tags(4,'iit_det_xsp',lr_retval.iit_det_xsp)
+                      ||gen_tags(4,'iit_offset',TO_CHAR(lr_retval.iit_offset))
+                      ||gen_tags(4,'iit_x',TO_CHAR(lr_retval.iit_x))
+                      ||gen_tags(4,'iit_y',TO_CHAR(lr_retval.iit_y))
+                      ||gen_tags(4,'iit_z',TO_CHAR(lr_retval.iit_z))
+                      ||gen_tags(4,'iit_num_attrib96',TO_CHAR(lr_retval.iit_num_attrib96))
+                      ||gen_tags(4,'iit_num_attrib97',TO_CHAR(lr_retval.iit_num_attrib97))
+                      ||gen_tags(4,'iit_num_attrib98',TO_CHAR(lr_retval.iit_num_attrib98))
+                      ||gen_tags(4,'iit_num_attrib99',TO_CHAR(lr_retval.iit_num_attrib99))
+                      ||gen_tags(4,'iit_num_attrib100',TO_CHAR(lr_retval.iit_num_attrib100))
+                      ||gen_tags(4,'iit_num_attrib101',TO_CHAR(lr_retval.iit_num_attrib101))
+                      ||gen_tags(4,'iit_num_attrib102',TO_CHAR(lr_retval.iit_num_attrib102))
+                      ||gen_tags(4,'iit_num_attrib103',TO_CHAR(lr_retval.iit_num_attrib103))
+                      ||gen_tags(4,'iit_num_attrib104',TO_CHAR(lr_retval.iit_num_attrib104))
+                      ||gen_tags(4,'iit_num_attrib105',TO_CHAR(lr_retval.iit_num_attrib105))
+                      ||gen_tags(4,'iit_num_attrib106',TO_CHAR(lr_retval.iit_num_attrib106))
+                      ||gen_tags(4,'iit_num_attrib107',TO_CHAR(lr_retval.iit_num_attrib107))
+                      ||gen_tags(4,'iit_num_attrib108',TO_CHAR(lr_retval.iit_num_attrib108))
+                      ||gen_tags(4,'iit_num_attrib109',TO_CHAR(lr_retval.iit_num_attrib109))
+                      ||gen_tags(4,'iit_num_attrib110',TO_CHAR(lr_retval.iit_num_attrib110))
+                      ||gen_tags(4,'iit_num_attrib111',TO_CHAR(lr_retval.iit_num_attrib111))
+                      ||gen_tags(4,'iit_num_attrib112',TO_CHAR(lr_retval.iit_num_attrib112))
+                      ||gen_tags(4,'iit_num_attrib113',TO_CHAR(lr_retval.iit_num_attrib113))
+                      ||gen_tags(4,'iit_num_attrib114',TO_CHAR(lr_retval.iit_num_attrib114))
+                      ||gen_tags(4,'iit_num_attrib115',TO_CHAR(lr_retval.iit_num_attrib115))
+                      ||CHR(10)||'  </AssetDetails></GetAssetDetailsResponse>';
+      --
+      lv_retval := xmltype(lv_str);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
   --
-  lv_retval := xmltype(lv_str);
-  --
+  nm_debug.debug_off;
   RETURN lv_retval;
   --
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetAssetDetailsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_asset_details;
 --
 -----------------------------------------------------------------------------
@@ -993,7 +1126,7 @@ FUNCTION get_initiation_types
   lt_retval retval_tab;
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Initiation_Types'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetInitiationTypesResponse'||c_xmlns||'><Initiation_Types>';
   --
 BEGIN
   --
@@ -1030,7 +1163,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Initiation_Types>';
+  lv_clob := lv_clob||'</Initiation_Types></GetInitiationTypesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1039,7 +1172,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetInitiationTypesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_initiation_types;
 --
 -----------------------------------------------------------------------------
@@ -1056,7 +1190,7 @@ FUNCTION get_repair_types
   lt_retval retval_tab;
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Repair_Types'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetRepairTypesResponse'||c_xmlns||'><Repair_Types>';
   --
 BEGIN
   --
@@ -1093,7 +1227,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Repair_Types>';
+  lv_clob := lv_clob||'</Repair_Types></GetRepairTypesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1102,7 +1236,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetRepairTypesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_repair_types;
 --
 -----------------------------------------------------------------------------
@@ -1122,7 +1257,7 @@ FUNCTION get_nw_activities
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<NWActivities'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetNWActivitiesResponse'||c_xmlns||'><NWActivities>';
   --
 BEGIN
   --
@@ -1136,6 +1271,7 @@ BEGIN
     BULK COLLECT
     INTO lt_retval
     FROM activities
+   WHERE atv_maint_insp_flag IN('S','D')
        ;
   --
   IF lt_retval.count = 0
@@ -1162,7 +1298,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</NWActivities>';
+  lv_clob := lv_clob||'</NWActivities></GetNWActivitiesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1171,7 +1307,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetNWActivitiesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_nw_activities;
 --
 -----------------------------------------------------------------------------
@@ -1192,7 +1329,7 @@ FUNCTION get_asset_activities
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<AssetActivities'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetAssetActivitiesResponse'||c_xmlns||'><AssetActivities>';
   --
 BEGIN
   --
@@ -1210,6 +1347,7 @@ BEGIN
         ,mai_inv_activities
    WHERE mia_sys_flag           = atv_dtp_flag
      AND mia_atv_acty_area_code = atv_acty_area_code
+     AND atv_maint_insp_flag IN('S','D')
        ;
   --
   IF lt_retval.count = 0
@@ -1237,7 +1375,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</AssetActivities>';
+  lv_clob := lv_clob||'</AssetActivities></GetAssetActivitiesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1246,7 +1384,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetAssetActivitiesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_asset_activities;
 --
 -----------------------------------------------------------------------------
@@ -1265,7 +1404,7 @@ FUNCTION get_priorities
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Priorities'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetPrioritiesResponse'||c_xmlns||'><Priorities>';
   --
 BEGIN
   --
@@ -1307,7 +1446,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Priorities>';
+  lv_clob := lv_clob||'</Priorities></GetPrioritiesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1316,7 +1455,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetPrioritiesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_priorities;
 --
 -----------------------------------------------------------------------------
@@ -1337,7 +1477,7 @@ FUNCTION get_treatments
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Treatments'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetTreatmentsResponse'||c_xmlns||'><Treatments>';
   --
 BEGIN
   --
@@ -1381,7 +1521,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Treatments>';
+  lv_clob := lv_clob||'</Treatments></GetTreatmentsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1390,7 +1530,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetTreatmentsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_treatments;
 --
 -----------------------------------------------------------------------------
@@ -1417,7 +1558,7 @@ FUNCTION get_defect_codes
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Defect_Types'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetDefectTypesResponse'||c_xmlns||'><Defect_Types>';
   --
   TYPE attr_detail_rec IS RECORD(attr_datatype    all_tab_columns.data_type%TYPE
                                 ,attr_length      NUMBER
@@ -1563,7 +1704,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Defect_Types>';
+  lv_clob := lv_clob||'</Defect_Types></GetDefectTypesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1572,7 +1713,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetDefectTypesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_defect_codes;
 --
 -----------------------------------------------------------------------------
@@ -1591,7 +1733,7 @@ FUNCTION get_siss_codes
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Siss_Codes'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetSISSCodesResponse'||c_xmlns||'><Siss_Codes>';
   --
 BEGIN
   --
@@ -1625,7 +1767,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||'</Siss_Codes>';
+  lv_clob := lv_clob||'</Siss_Codes></GetSISSCodesResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1634,7 +1776,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetSISSCodesResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_siss_codes;
 --
 -----------------------------------------------------------------------------
@@ -1661,7 +1804,7 @@ FUNCTION get_standard_items
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Standard_Items'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetStandardItemsResponse'||c_xmlns||'><Standard_Items>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
   --
 BEGIN
@@ -1715,7 +1858,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||lv_str||'</Standard_Items>';
+  lv_clob := lv_clob||lv_str||'</Standard_Items></GetStandardItemsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1724,7 +1867,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetStandardItemsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_standard_items;
 --
 -----------------------------------------------------------------------------
@@ -1743,7 +1887,7 @@ FUNCTION get_notify_orgs
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Notify_Orgs'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetNotifyOrgsResponse'||c_xmlns||'><Notify_Orgs>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
   --
 BEGIN
@@ -1797,7 +1941,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||lv_str||'</Notify_Orgs>';
+  lv_clob := lv_clob||lv_str||'</Notify_Orgs></GetNotifyOrgsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1806,7 +1950,8 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetNotifyOrgsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_notify_orgs;
 --
 -----------------------------------------------------------------------------
@@ -1825,7 +1970,7 @@ FUNCTION get_recharge_orgs
   --
   lv_retval XMLType;
   lv_str    nm3type.max_varchar2;
-  lv_clob   CLOB := '<Recharge_Orgs'||c_xmlns||'>';
+  lv_clob   CLOB := '<GetRechargeOrgsResponse'||c_xmlns||'><Recharge_Orgs>';
   lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
   --
 BEGIN
@@ -1867,7 +2012,7 @@ BEGIN
     --
   END LOOP;
   --
-  lv_clob := lv_clob||lv_str||'</Recharge_Orgs>';
+  lv_clob := lv_clob||lv_str||'</Recharge_Orgs></GetRechargeOrgsResponse>';
   --
   lv_retval := xmltype(lv_clob);
   --
@@ -1876,8 +2021,378 @@ BEGIN
 EXCEPTION
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'GetRechargeOrgsResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END get_recharge_orgs;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_contracts
+  RETURN xmltype IS
+  --
+  TYPE retval_rec IS RECORD(con_id           contracts.con_id%TYPE
+                           ,con_code         contracts.con_code%TYPE
+                           ,con_name         contracts.con_name%TYPE
+                           ,con_admin_org_id contracts.con_admin_org_id%TYPE
+                           ,con_status_code  contracts.con_status_code%TYPE
+                           ,con_start_date   contracts.con_start_date%TYPE
+                           ,con_end_date     contracts.con_end_date%TYPE);
+  TYPE retval_tab IS TABLE OF retval_rec;
+  lt_retval retval_tab;
+  --
+  lv_retval XMLType;
+  lv_str    nm3type.max_varchar2;
+  lv_clob   CLOB := '<GetContractsResponse'||c_xmlns||'><Contracts>';
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
+  --
+BEGIN
+  --
+  SELECT con_id
+        ,con_code
+        ,con_name
+        ,con_admin_org_id
+        ,con_status_code
+        ,con_start_date
+        ,con_end_date
+    BULK COLLECT
+    INTO lt_retval
+    FROM contracts
+       ;
+  --
+  IF lt_retval.count = 0
+   THEN
+      raise no_data_found;
+  END IF;
+  --
+  FOR i IN 1..lt_retval.count LOOP
+    --
+    lv_str := lv_str||'<Contract>'
+                      ||'<Contract_Id>'||TO_CHAR(lt_retval(i).con_id)||'</Contract_Id>'
+                      ||'<Contract_Code>'||lt_retval(i).con_code||'</Contract_Code>'
+                      ||'<Contract_Name>'||dbms_xmlgen.convert(lt_retval(i).con_name)||'</Contract_Name>'
+                      ||'<Admin_Unit_Id>'||TO_CHAR(lt_retval(i).con_admin_org_id)||'</Admin_Unit_Id>'
+                      ||'<Contract_Status>'||lt_retval(i).con_status_code||'</Contract_Status>'
+                      ||'<Startdate>'||date_to_varchar(lt_retval(i).con_start_date)||'</Startdate>'
+                      ||'<Enddate>'||date_to_varchar(lt_retval(i).con_end_date)||'</Enddate>'
+                    ||'</Contract>'
+                    ;
+    --
+    IF length(lv_str) > lv_max_size
+     THEN
+        lv_clob := lv_clob||lv_str;
+        lv_str := NULL;
+    END IF;
+    --
+  END LOOP;
+  --
+  lv_clob := lv_clob||lv_str||'</Contracts></GetContractsResponse>';
+  --
+  lv_retval := xmltype(lv_clob);
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetContractsResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END get_contracts;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_scheme_types
+  RETURN xmltype IS
+  --
+  TYPE retval_rec IS RECORD(hco_code        hig_codes.hco_code%TYPE
+                           ,hco_meaning     hig_codes.hco_meaning%TYPE
+                           ,icb_dtp_flag    item_code_breakdowns.icb_dtp_flag%TYPE
+                           ,hco_start_date  hig_codes.hco_start_date%TYPE
+                           ,hco_end_date    hig_codes.hco_end_date%TYPE);
+  TYPE retval_tab IS TABLE OF retval_rec;
+  lt_retval retval_tab;
+  --
+  lv_retval XMLType;
+  lv_str    nm3type.max_varchar2;
+  lv_clob   CLOB := '<GetSchemeTypesResponse'||c_xmlns||'><Scheme_Types>';
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
+  --
+BEGIN
+  --
+  SELECT DISTINCT hco_code
+        ,hco_meaning
+        ,icb_dtp_flag
+        ,hco_start_date
+        ,hco_end_date
+    BULK COLLECT
+    INTO lt_retval
+    FROM hig_codes
+        ,item_code_breakdowns
+   WHERE hco_domain = 'SCHEME_TYPES'
+     AND hco_code = icb_type_of_scheme
+       ;
+  --
+  IF lt_retval.count = 0
+   THEN
+      raise no_data_found;
+  END IF;
+  --
+  FOR i IN 1..lt_retval.count LOOP
+    --
+    lv_str := lv_str||'<Scheme_Type>'
+                      ||'<Scheme_Type_Code>'||lt_retval(i).hco_code||'</Scheme_Type_Code>'
+                      ||'<Description>'||dbms_xmlgen.convert(lt_retval(i).hco_meaning)||'</Description>'
+                      ||'<Sys_Flag>'||lt_retval(i).icb_dtp_flag||'</Sys_Flag>'
+                      ||'<Startdate>'||date_to_varchar(lt_retval(i).hco_start_date)||'</Startdate>'
+                      ||'<Enddate>'||date_to_varchar(lt_retval(i).hco_end_date)||'</Enddate>'
+                    ||'</Scheme_Type>'
+                    ;
+    --
+    IF length(lv_str) > lv_max_size
+     THEN
+        lv_clob := lv_clob||lv_str;
+        lv_str := NULL;
+    END IF;
+    --
+  END LOOP;
+  --
+  lv_clob := lv_clob||lv_str||'</Scheme_Types></GetSchemeTypesResponse>';
+  --
+  lv_retval := xmltype(lv_clob);
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetSchemeTypesResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END get_scheme_types;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_current_budgets
+  RETURN xmltype IS
+  --
+  TYPE retval_rec IS RECORD(bud_id                  budgets.bud_id%TYPE
+                           ,bud_fyr_id              budgets.bud_fyr_id%TYPE
+                           ,bud_comment             budgets.bud_comment%TYPE
+                           ,icb_id                  item_code_breakdowns.icb_id%TYPE
+                           ,icb_work_code           item_code_breakdowns.icb_work_code%TYPE
+                           ,icb_work_category_name  item_code_breakdowns.icb_work_category_name%TYPE
+                           ,icb_type_of_scheme      item_code_breakdowns.icb_type_of_scheme%TYPE
+                           ,bud_sys_flag            budgets.bud_sys_flag%TYPE
+                           ,bud_rse_he_id           budgets.bud_rse_he_id%TYPE
+                           ,fyr_start_date          financial_years.fyr_start_date%TYPE
+                           ,fyr_end_date            financial_years.fyr_end_date%TYPE);
+  TYPE retval_tab IS TABLE OF retval_rec;
+  lt_retval retval_tab;
+  --
+  lv_retval XMLType;
+  lv_str    nm3type.max_varchar2;
+  lv_clob   CLOB := '<GetCurrentBudgetsResponse'||c_xmlns||'><Budgets>';
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
+  --
+  FUNCTION get_budget_activities(pi_icb_id ihms_conversions.ihc_icb_id%TYPE)
+    RETURN varchar2 IS
+    --
+    lv_retval nm3type.max_varchar2;
+    --
+    TYPE activities_tab IS TABLE OF ihms_conversions.ihc_atv_acty_area_code%TYPE;
+    lt_activities activities_tab;
+    --
+  BEGIN
+    --
+    SELECT ihc_atv_acty_area_code
+      BULK COLLECT
+      INTO lt_activities
+      FROM ihms_conversions
+     WHERE ihc_icb_id = pi_icb_id
+         ;
+    --
+    IF lt_activities.count > 0
+     THEN
+        --
+        lv_retval := '<Budget_Activities>';
+        --
+        FOR j IN 1..lt_activities.count LOOP
+          --
+          lv_retval := lv_retval||'<Activity_Code>'||lt_activities(j)||'</Activity_Code>';
+          --
+        END LOOP;
+        --
+        lv_retval := lv_retval||'</Budget_Activities>';
+        --
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END get_budget_activities;
+BEGIN
+  --
+  select bud_id
+        ,bud_fyr_id
+        ,bud_comment
+        ,icb_id
+        ,icb_work_code
+        ,icb_work_category_name
+        ,icb_type_of_scheme
+        ,bud_sys_flag
+        ,bud_rse_he_id
+        ,fyr_start_date
+        ,fyr_end_date
+    BULK COLLECT
+    INTO lt_retval
+    from item_code_breakdowns 
+        ,budgets
+        ,financial_years
+   where fyr_end_date >= sysdate
+     AND fyr_id = bud_fyr_id
+     AND bud_icb_item_code = icb_item_code
+     AND bud_icb_sub_item_code = icb_sub_item_code
+     AND bud_icb_sub_sub_item_code = icb_sub_sub_item_code
+     AND bud_sys_flag = icb_dtp_flag
+       ;
+  --
+  IF lt_retval.count = 0
+   THEN
+      raise no_data_found;
+  END IF;
+  --
+  FOR i IN 1..lt_retval.count LOOP
+    --
+    lv_str := lv_str||'<Budget>'
+                      ||'<Budget_Id>'||TO_CHAR(lt_retval(i).bud_id)||'</Budget_Id>'
+                      ||'<Budget_Year>'||lt_retval(i).bud_fyr_id||'</Budget_Year>'
+                      ||'<Budget_Comment>'||dbms_xmlgen.convert(lt_retval(i).bud_comment)||'</Budget_Comment>'
+                      ||'<Budget_Road_Group_Id>'||TO_CHAR(lt_retval(i).bud_rse_he_id)||'</Budget_Road_Group_Id>'
+                      ||'<Work_Category>'||dbms_xmlgen.convert(lt_retval(i).icb_work_code)||'</Work_Category>'
+                      ||'<Work_Category_Name>'||dbms_xmlgen.convert(lt_retval(i).icb_work_category_name)||'</Work_Category_Name>'
+                      ||'<Scheme_Type_Code>'||lt_retval(i).icb_type_of_scheme||'</Scheme_Type_Code>'
+                      ||'<Sys_Flag>'||lt_retval(i).bud_sys_flag||'</Sys_Flag>'
+                      ||'<Startdate>'||date_to_varchar(lt_retval(i).fyr_start_date)||'</Startdate>'
+                      ||'<Enddate>'||date_to_varchar(lt_retval(i).fyr_end_date)||'</Enddate>'
+                      ||get_budget_activities(pi_icb_id => lt_retval(i).icb_id)
+                    ||'</Budget>'
+                    ;
+    --
+    IF length(lv_str) > lv_max_size
+     THEN
+        lv_clob := lv_clob||lv_str;
+        lv_str := NULL;
+    END IF;
+    --
+  END LOOP;
+  --
+  lv_clob := lv_clob||lv_str||'</Budgets></GetCurrentBudgetsResponse>';
+  --
+  lv_retval := xmltype(lv_clob);
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetCurrentBudgetsResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END get_current_budgets;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_road_group_section_ids(pi_xml IN XMLTYPE)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'Road_Group_Id',cp_xmlns) road_group_id
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  lv_road_group_id  nm_elements.ne_id%TYPE;
+  --
+  TYPE retval_tab IS TABLE OF nm_elements_all.ne_id%TYPE;
+  lt_retval retval_tab;
+  --
+  lv_retval XMLType;
+  lv_str    nm3type.max_varchar2;
+  lv_clob   CLOB := '<GetRoadGroupSectionIDsResponse'||c_xmlns||'><Road_Group_Sections>';
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  --
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/GetRoadGroupSectionIDs/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_road_group_id := lr_params.road_group_id;
+      --
+      SELECT rse_he_id
+        BULK COLLECT
+        INTO lt_retval
+        FROM road_sections_all
+       WHERE rse_sys_flag IN ('L','D')
+         AND rse_he_id IN(SELECT nm_ne_id_of
+                            FROM nm_members
+                           WHERE nm_type = 'G'
+                         CONNECT BY
+                           PRIOR nm_ne_id_of = nm_ne_id_in
+                           START
+                            WITH nm_ne_id_in = lv_road_group_id)
+           ;
+      --
+      IF lt_retval.count = 0
+       THEN
+          raise no_data_found;
+      END IF;
+      --
+      FOR i IN 1..lt_retval.count LOOP
+        --
+        lv_str := lv_str||'<Section_Id>'||TO_CHAR(lt_retval(i))||'</Section_Id>';
+        --
+        IF length(lv_str) > lv_max_size
+         THEN
+            lv_clob := lv_clob||lv_str;
+            lv_str := NULL;
+        END IF;
+        --
+      END LOOP;
+      --
+      lv_clob := lv_clob||lv_str||'</Road_Group_Sections></GetRoadGroupSectionIDsResponse>';
+      --
+      lv_retval := xmltype(lv_clob);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetRoadGroupSectionIDsResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END get_road_group_section_ids;
 --
 -----------------------------------------------------------------------------
 --
@@ -1885,32 +2400,33 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
   RETURN xmltype IS
   --
   CURSOR get_defect(cp_xml         IN XMLTYPE
+                   ,cp_root        IN VARCHAR2
                    ,cp_xmlns       IN VARCHAR2)
       IS
-  SELECT EXTRACTVALUE(cp_xml,'/Adhoc_Defect/User_Id',cp_xmlns)              user_id
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Easting',cp_xmlns)              easting
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Northing',cp_xmlns)             northing
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Section_Id',cp_xmlns)           section_id
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Chainage',cp_xmlns)             chainage
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Asset_Type_Code',cp_xmlns)      asset_type
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Asset_Id',cp_xmlns)             asset_id
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Datetime',cp_xmlns)      defect_datetime
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Initiation_Code',cp_xmlns)      initiation_code
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Safety_Detailed_Flag',cp_xmlns) safety_detailed_flag
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Activity_Code',cp_xmlns)        activity_code
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Code',cp_xmlns)          defect_code
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Siss_Id',cp_xmlns)              siss_id
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Location_Description',cp_xmlns) location_description
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Description',cp_xmlns)   defect_description
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Special_Instructions',cp_xmlns) special_instructions
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Priority_Code',cp_xmlns)        priority_code
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Notify_Org',cp_xmlns)           notify_org
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Recharge_Org',cp_xmlns)         recharge_org
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute1',cp_xmlns)    attribute1
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute2',cp_xmlns)    attribute2
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute3',cp_xmlns)    attribute3
-        ,EXTRACTVALUE(cp_xml,'/Adhoc_Defect/Defect_Attribute4',cp_xmlns)    attribute4
-        ,EXTRACT(cp_xml,'/Adhoc_Defect/Repair',cp_xmlns)                    repair_xml
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)              user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Easting',cp_xmlns)              easting
+        ,EXTRACTVALUE(cp_xml,cp_root||'Northing',cp_xmlns)             northing
+        ,EXTRACTVALUE(cp_xml,cp_root||'Section_Id',cp_xmlns)           section_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Chainage',cp_xmlns)             chainage
+        ,EXTRACTVALUE(cp_xml,cp_root||'Asset_Type_Code',cp_xmlns)      asset_type
+        ,EXTRACTVALUE(cp_xml,cp_root||'Asset_Id',cp_xmlns)             asset_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Defect_Datetime',cp_xmlns)      defect_datetime
+        ,EXTRACTVALUE(cp_xml,cp_root||'Initiation_Code',cp_xmlns)      initiation_code
+        ,EXTRACTVALUE(cp_xml,cp_root||'Safety_Detailed_Flag',cp_xmlns) safety_detailed_flag
+        ,EXTRACTVALUE(cp_xml,cp_root||'Activity_Code',cp_xmlns)        activity_code
+        ,EXTRACTVALUE(cp_xml,cp_root||'Defect_Code',cp_xmlns)          defect_code
+        ,EXTRACTVALUE(cp_xml,cp_root||'Siss_Id',cp_xmlns)              siss_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Location_Description',cp_xmlns) location_description
+        ,EXTRACTVALUE(cp_xml,cp_root||'Defect_Description',cp_xmlns)   defect_description
+        ,EXTRACTVALUE(cp_xml,cp_root||'Special_Instructions',cp_xmlns) special_instructions
+        ,EXTRACTVALUE(cp_xml,cp_root||'Priority_Code',cp_xmlns)        priority_code
+        ,EXTRACTVALUE(cp_xml,cp_root||'Notify_Org',cp_xmlns)           notify_org
+        ,EXTRACTVALUE(cp_xml,cp_root||'Recharge_Org',cp_xmlns)         recharge_org
+        ,EXTRACTVALUE(cp_xml,cp_root||'Defect_Attribute1',cp_xmlns)    attribute1
+        ,EXTRACTVALUE(cp_xml,cp_root||'Defect_Attribute2',cp_xmlns)    attribute2
+        ,EXTRACTVALUE(cp_xml,cp_root||'Defect_Attribute3',cp_xmlns)    attribute3
+        ,EXTRACTVALUE(cp_xml,cp_root||'Defect_Attribute4',cp_xmlns)    attribute4
+        ,EXTRACT(cp_xml,cp_root||'Repair',cp_xmlns)                    repair_xml
    FROM dual
       ;
   --
@@ -1941,7 +2457,8 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
   lt_get_boqs get_boqs_tab;
   --
   lv_defect_id  defects.def_defect_id%TYPE :=0;
-  lv_retval     CLOB;
+  lv_response   CLOB;
+  lv_retval     XMLTYPE;
   --
   lr_insp       activities_report%ROWTYPE;
   lr_defect     defects%ROWTYPE;
@@ -1993,129 +2510,425 @@ BEGIN
   nm_debug.debug_on;
   nm_debug.debug('XML : '||pi_xml.getstringval);
   --
-  nm_debug.debug('Getting Insp and Defect params');
-  OPEN  get_defect(pi_xml
-                  ,c_xmlns);
-  FETCH get_defect
-   INTO lr_get_defect;
-  CLOSE get_defect;
-  --
-  nm_debug.debug('Assigning Insp params');
-  lr_insp.are_peo_person_id_actioned := TO_NUMBER(lr_get_defect.user_id);--get_user_id(pi_params.defect.inspector);
-  lr_insp.are_created_date           := varchar_to_datetime(lr_get_defect.defect_datetime);
-  lr_insp.are_last_updated_date      := lr_insp.are_created_date;
-  lr_insp.are_maint_insp_flag        := lr_get_defect.safety_detailed_flag;
-  lr_insp.are_date_work_done         := TRUNC(lr_insp.are_created_date);
-  lr_insp.are_initiation_type        := lr_get_defect.initiation_code;
-  lr_insp.are_rse_he_id              := lr_get_defect.section_id;
-  --
-  nm_debug.debug('Assigning Defect params');
-  lr_defect.def_easting            := lr_get_defect.easting;
-  lr_defect.def_northing           := lr_get_defect.northing;
-  lr_defect.def_rse_he_id          := lr_get_defect.section_id;
-  lr_defect.def_st_chain           := lr_get_defect.chainage;
-  IF lr_get_defect.asset_type IS NOT NULL
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
    THEN
-      lr_defect.def_ity_inv_code       := mai.translate_nm_inv_type(p_inv_type => lr_get_defect.asset_type);
-  END IF;
-  lr_defect.def_iit_item_id        := lr_get_defect.asset_id;
-  lr_defect.def_siss_id            := lr_get_defect.siss_id;
-  lr_defect.def_atv_acty_area_code := lr_get_defect.activity_code;
-  lr_defect.def_defect_code        := lr_get_defect.defect_code;
-  lr_defect.def_created_date       := TRUNC(lr_insp.are_created_date);
-  lr_defect.def_last_updated_date  := TRUNC(lr_insp.are_created_date);
-  lr_defect.def_time_hrs           := TO_CHAR(lr_insp.are_created_date,'HH24');
-  lr_defect.def_time_mins          := TO_CHAR(lr_insp.are_created_date,'MI');
-  lr_defect.def_priority           := lr_get_defect.priority_code;
-  lr_defect.def_orig_priority      := lr_get_defect.priority_code;
-  lr_defect.def_locn_descr         := lr_get_defect.location_description;
-  lr_defect.def_defect_descr       := lr_get_defect.defect_description;
-  lr_defect.def_special_instr      := lr_get_defect.special_instructions;
-  IF lr_get_defect.notify_org IS NOT NULL
-   THEN
-      lr_defect.def_notify_org_id      := get_org_id(lr_get_defect.notify_org);
-  END IF;
-  IF lr_get_defect.recharge_org IS NOT NULL
-   THEN
-      lr_defect.def_rechar_org_id      := get_org_id(lr_get_defect.recharge_org);
-  END IF;
-  /*
-  || Set Defect Attributes.
-  */
-  lt_def_attr(1) := lr_get_defect.attribute1;
-  lt_def_attr(2) := lr_get_defect.attribute2;
-  lt_def_attr(3) := lr_get_defect.attribute3;
-  lt_def_attr(4) := lr_get_defect.attribute4;
-  --
-  nm_debug.debug('Getting Repair params for :'||lr_get_defect.repair_xml.getstringval);
-  OPEN  get_repairs(lr_get_defect.repair_xml
-                   ,c_xmlns);
-  FETCH get_repairs
-   BULK COLLECT
-   INTO lt_get_repairs;
-  CLOSE get_repairs;
-  --
-  FOR i IN 1..lt_get_repairs.count LOOP
-    --
-    rep_ind := rep_ind+1;
-    --
-    nm_debug.debug('Assigning Repair params');
-    lt_repairs(rep_ind).rep_rse_he_id          := lr_defect.def_rse_he_id;
-    lt_repairs(rep_ind).rep_action_cat         := lt_get_repairs(i).repair_type;
-    lt_repairs(rep_ind).rep_atv_acty_area_code := lr_defect.def_atv_acty_area_code;
-    lt_repairs(rep_ind).rep_tre_treat_code     := lt_get_repairs(i).treatment_code;
-    lt_repairs(rep_ind).rep_descr              := lt_get_repairs(i).repair_description;
-    --
-    nm_debug.debug('Getting BOQ params for :'||lt_get_repairs(i).boq_xml.getstringval);
-    OPEN  get_boqs(lt_get_repairs(i).boq_xml
-                  ,c_xmlns);
-    FETCH get_boqs
-     BULK COLLECT
-     INTO lt_get_boqs;
-    CLOSE get_boqs;
-    --
-    FOR j IN 1..lt_get_boqs.count LOOP
+      nm_debug.debug('Getting Insp and Defect params');
+      OPEN  get_defect(pi_xml
+                      ,'/CreateAdhocDefect/Adhoc_Defect/'
+                      ,c_xmlns);
+      FETCH get_defect
+       INTO lr_get_defect;
+      CLOSE get_defect;
       --
-      boq_ind := boq_ind+1;
+      nm_debug.debug('Assigning Insp params');
+      lr_insp.are_peo_person_id_actioned := TO_NUMBER(lr_get_defect.user_id);--get_user_id(pi_params.defect.inspector);
+      lr_insp.are_created_date           := varchar_to_datetime(lr_get_defect.defect_datetime);
+      lr_insp.are_last_updated_date      := lr_insp.are_created_date;
+      lr_insp.are_maint_insp_flag        := lr_get_defect.safety_detailed_flag;
+      lr_insp.are_date_work_done         := TRUNC(lr_insp.are_created_date);
+      lr_insp.are_initiation_type        := lr_get_defect.initiation_code;
+      lr_insp.are_rse_he_id              := lr_get_defect.section_id;
       --
-      nm_debug.debug('Assigning BOQ params');
-      lt_boqs(boq_ind).boq_rep_action_cat := lt_repairs(rep_ind).rep_action_cat;
-      lt_boqs(boq_ind).boq_sta_item_code  := lt_get_boqs(j).item_code;
-      lt_boqs(boq_ind).boq_est_dim1       := lt_get_boqs(j).dimension1;
-      lt_boqs(boq_ind).boq_est_dim2       := lt_get_boqs(j).dimension2;
-      lt_boqs(boq_ind).boq_est_dim3       := lt_get_boqs(j).dimension3;
+      nm_debug.debug('Assigning Defect params');
+      lr_defect.def_easting            := lr_get_defect.easting;
+      lr_defect.def_northing           := lr_get_defect.northing;
+      lr_defect.def_rse_he_id          := lr_get_defect.section_id;
+      lr_defect.def_st_chain           := lr_get_defect.chainage;
+      IF lr_get_defect.asset_type IS NOT NULL
+       THEN
+          lr_defect.def_ity_inv_code       := mai.translate_nm_inv_type(p_inv_type => lr_get_defect.asset_type);
+      END IF;
+      lr_defect.def_iit_item_id        := lr_get_defect.asset_id;
+      lr_defect.def_siss_id            := lr_get_defect.siss_id;
+      lr_defect.def_atv_acty_area_code := lr_get_defect.activity_code;
+      lr_defect.def_defect_code        := lr_get_defect.defect_code;
+      lr_defect.def_created_date       := TRUNC(lr_insp.are_created_date);
+      lr_defect.def_last_updated_date  := TRUNC(lr_insp.are_created_date);
+      lr_defect.def_time_hrs           := TO_CHAR(lr_insp.are_created_date,'HH24');
+      lr_defect.def_time_mins          := TO_CHAR(lr_insp.are_created_date,'MI');
+      lr_defect.def_priority           := lr_get_defect.priority_code;
+      lr_defect.def_orig_priority      := lr_get_defect.priority_code;
+      lr_defect.def_locn_descr         := lr_get_defect.location_description;
+      lr_defect.def_defect_descr       := lr_get_defect.defect_description;
+      lr_defect.def_special_instr      := lr_get_defect.special_instructions;
+      IF lr_get_defect.notify_org IS NOT NULL
+       THEN
+          lr_defect.def_notify_org_id      := get_org_id(lr_get_defect.notify_org);
+      END IF;
+      IF lr_get_defect.recharge_org IS NOT NULL
+       THEN
+          lr_defect.def_rechar_org_id      := get_org_id(lr_get_defect.recharge_org);
+      END IF;
+      /*
+      || Set Defect Attributes.
+      */
+      lt_def_attr(1) := lr_get_defect.attribute1;
+      lt_def_attr(2) := lr_get_defect.attribute2;
+      lt_def_attr(3) := lr_get_defect.attribute3;
+      lt_def_attr(4) := lr_get_defect.attribute4;
       --
-    END LOOP;
-    --
-  END LOOP;
-  nm_debug.debug('All input params Assigned');
-  --
-  lv_defect_id := mai_api.create_defect(pi_insp_rec     => lr_insp
-                                       ,pi_defect_rec   => lr_defect
-                                       ,pi_def_attr_tab => lt_def_attr
-                                       ,pi_repair_tab   => lt_repairs
-                                       ,pi_boq_tab      => lt_boqs
-                                       ,pi_commit       => 'Y');
-  --
-  nm_debug.debug('Building Output XML');
-  lv_retval := '<Defect_Created>'
-               ||'<Defect_ID>'||TO_CHAR(lv_defect_id)||'</Defect_ID>'
-             ||'</Defect_Created>'
-             ;
+      nm_debug.debug('Getting Repair params for :'||lr_get_defect.repair_xml.getstringval);
+      OPEN  get_repairs(lr_get_defect.repair_xml
+                       ,c_xmlns);
+      FETCH get_repairs
+       BULK COLLECT
+       INTO lt_get_repairs;
+      CLOSE get_repairs;
+      --
+      FOR i IN 1..lt_get_repairs.count LOOP
+        --
+        rep_ind := rep_ind+1;
+        --
+        nm_debug.debug('Assigning Repair params');
+        lt_repairs(rep_ind).rep_rse_he_id          := lr_defect.def_rse_he_id;
+        lt_repairs(rep_ind).rep_action_cat         := lt_get_repairs(i).repair_type;
+        lt_repairs(rep_ind).rep_atv_acty_area_code := lr_defect.def_atv_acty_area_code;
+        lt_repairs(rep_ind).rep_tre_treat_code     := lt_get_repairs(i).treatment_code;
+        lt_repairs(rep_ind).rep_descr              := lt_get_repairs(i).repair_description;
+        --
+        nm_debug.debug('Getting BOQ params for :'||lt_get_repairs(i).boq_xml.getstringval);
+        OPEN  get_boqs(lt_get_repairs(i).boq_xml
+                      ,c_xmlns);
+        FETCH get_boqs
+         BULK COLLECT
+         INTO lt_get_boqs;
+        CLOSE get_boqs;
+        --
+        FOR j IN 1..lt_get_boqs.count LOOP
+          --
+          boq_ind := boq_ind+1;
+          --
+          nm_debug.debug('Assigning BOQ params');
+          lt_boqs(boq_ind).boq_rep_action_cat := lt_repairs(rep_ind).rep_action_cat;
+          lt_boqs(boq_ind).boq_sta_item_code  := lt_get_boqs(j).item_code;
+          lt_boqs(boq_ind).boq_est_dim1       := lt_get_boqs(j).dimension1;
+          lt_boqs(boq_ind).boq_est_dim2       := lt_get_boqs(j).dimension2;
+          lt_boqs(boq_ind).boq_est_dim3       := lt_get_boqs(j).dimension3;
+          --
+        END LOOP;
+        --
+      END LOOP;
+      nm_debug.debug('All input params Assigned');
+      --
+      lv_defect_id := mai_api.create_defect(pi_insp_rec     => lr_insp
+                                           ,pi_defect_rec   => lr_defect
+                                           ,pi_def_attr_tab => lt_def_attr
+                                           ,pi_repair_tab   => lt_repairs
+                                           ,pi_boq_tab      => lt_boqs
+                                           ,pi_commit       => 'Y');
+      --
+      nm_debug.debug('Building Output XML');
+      lv_response := '<CreateAdhocDefectResponse'||c_xmlns||'><Defect_Created>'
+                     ||'<Defect_ID>'||TO_CHAR(lv_defect_id)||'</Defect_ID>'
+                   ||'</Defect_Created></CreateAdhocDefectResponse>'
+                 ;
+      --
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
   --
   nm_debug.debug_off;
-  RETURN xmltype(lv_retval);
+  RETURN lv_retval;
   --
 EXCEPTION
   WHEN date_format_error
    THEN
-      RETURN build_error_xml('Invalid Date Format');
+      RETURN build_error_xml(pi_wrapper => 'CreateAdhocDefectResponse'
+                            ,pi_sqlerrm => 'Invalid Date Format');
   WHEN others
    THEN
-      RETURN build_error_xml(SQLERRM);
+      RETURN build_error_xml(pi_wrapper => 'CreateAdhocDefectResponse'
+                            ,pi_sqlerrm => SQLERRM);
 END create_adhoc_defect;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION create_defect_work_order(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml   IN XMLTYPE
+                   ,cp_root  IN VARCHAR2
+                   ,cp_xmlns IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)          user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_Description',cp_xmlns)      wo_descr
+        ,EXTRACTVALUE(cp_xml,cp_root||'Scheme_Type_Code',cp_xmlns) scheme_type
+        ,EXTRACTVALUE(cp_xml,cp_root||'Contract_Id',cp_xmlns)      con_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Budget_Id',cp_xmlns)        bud_id
+        ,EXTRACT(cp_xml,cp_root||'Selected_Defects',cp_xmlns)      defects_in_xml
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  CURSOR get_defect_list(cp_xml   IN XMLTYPE
+                        ,cp_xmlns IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(VALUE(x),'/Defect_ID',cp_xmlns) Defect_Id
+    FROM TABLE(xmlsequence(EXTRACT(cp_xml,'/Selected_Defects/Defect_ID',cp_xmlns))) x
+      ;
+  --
+  TYPE get_defect_list_tab IS TABLE OF get_defect_list%ROWTYPE;
+  lt_get_defect_list get_defect_list_tab;
+  --
+  lv_user_id      hig_users.hus_user_id%TYPE;
+  lv_wo_descr     work_orders.wor_descr%TYPE;
+  lv_scheme_type  work_orders.wor_scheme_type%TYPE;
+  lv_con_id       contracts.con_id%TYPE;
+  lv_bud_id       budgets.bud_id%TYPE;
+  lv_commit       VARCHAR2(1) := 'Y';
+  --
+  lt_defects_in  nm3type.tab_number;
+  def_ind        PLS_INTEGER := 0;
+  --
+  lv_work_order_no      work_orders.wor_works_order_no%TYPE;
+  lt_defects_on_wo      nm3type.tab_number;
+  lt_defects_not_on_wo  nm3type.tab_number;
+  --
+  lv_response CLOB;
+  lv_retval   XMLTYPE;
+  lv_str      nm3type.max_varchar2;
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  --
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/CreateDefectWorkOrder/Defect_Work_Order/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id     := lr_params.user_id;
+      lv_wo_descr    := lr_params.wo_descr;
+      lv_scheme_type := lr_params.scheme_type;
+      lv_con_id      := lr_params.con_id;
+      lv_bud_id      := lr_params.bud_id;
+      --
+      nm_debug.debug('Getting Defect List :'||lr_params.defects_in_xml.getstringval);
+      /*
+      ||Transform The List Of Defects.
+      */
+      OPEN  get_defect_list(lr_params.defects_in_xml
+                           ,c_xmlns);
+      FETCH get_defect_list
+       BULK COLLECT
+       INTO lt_get_defect_list;
+      CLOSE get_defect_list;
+      --
+      FOR i IN 1..lt_get_defect_list.count LOOP
+        --
+        def_ind := def_ind+1;
+        --
+        nm_debug.debug('Assigning Repair params');
+        lt_defects_in(def_ind) := lt_get_defect_list(i).defect_id;
+        --
+      END LOOP;
+      nm_debug.debug('All input params Assigned');
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      mai_api.create_defect_work_order(pi_user_id           => lv_user_id
+                                      ,pi_wo_descr          => lv_wo_descr
+                                      ,pi_scheme_type       => lv_scheme_type
+                                      ,pi_con_id            => lv_con_id
+                                      ,pi_bud_id            => lv_bud_id
+                                      ,pi_defects           => lt_defects_in
+                                      ,pi_commit            => lv_commit
+                                      ,po_work_order_no     => lv_work_order_no
+                                      ,po_defects_on_wo     => lt_defects_on_wo
+                                      ,po_defects_not_on_wo => lt_defects_not_on_wo);
+      /*
+      ||If No Defects Were Added To The Work Order Raise An Error.
+      */
+      IF lt_defects_on_wo.count = 0
+       THEN
+          raise_application_error(-20046,'No Defects Added To The Work Order.');
+      END IF;
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<CreateDefectWorkOrderResponse'||c_xmlns||'><Defect_Work_Order_Created>'
+                 ||'<Work_Order_No>'||lv_work_order_no||'</Work_Order_No>';
+      /*
+      ||Add The List Of Defects On The Work Order.
+      */
+      lv_str := '<Defects_On_Work_Order>';
+      --
+      FOR i IN 1..lt_defects_on_wo.count LOOP
+        --
+        lv_str := lv_str||'<Defect_ID>'||TO_CHAR(lt_defects_on_wo(i))||'</Defect_ID>';
+        --
+        IF length(lv_str) > lv_max_size
+         THEN
+            lv_response := lv_response||lv_str;
+            lv_str := NULL;
+        END IF;
+        --
+      END LOOP;               
+      --
+      lv_response := lv_response||lv_str||'</Defects_On_Work_Order>';
+      lv_str := NULL;
+      /*
+      ||Add The List Of Defects Not On The Work Order.
+      */
+      IF lt_defects_not_on_wo.count > 0
+       THEN
+          lv_str := '<Defects_Not_On_Work_Order>';
+      END IF;
+      --
+      FOR i IN 1..lt_defects_not_on_wo.count LOOP
+        --
+        lv_str := lv_str||'<Defect_ID>'||TO_CHAR(lt_defects_not_on_wo(i))||'</Defect_ID>';
+        --
+        IF length(lv_str) > lv_max_size
+         THEN
+            lv_response := lv_response||lv_str;
+            lv_str := NULL;
+        END IF;
+        --
+      END LOOP;               
+      --
+      IF lt_defects_on_wo.count > 0
+       THEN
+          lv_response := lv_response||lv_str||'</Defects_Not_On_Work_Order>';
+      END IF;
+      /*
+      ||Close The Root Element.
+      */
+      lv_response := lv_response||'</Defect_Work_Order_Created></CreateDefectWorkOrderResponse>';
+      --
+      lv_retval := xmltype(lv_response);
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'CreateDefectWorkOrderResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END create_defect_work_order;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION instruct_work_order(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)       user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_No',cp_xmlns) wo_no
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  lv_user_id         hig_users.hus_user_id%TYPE;
+  lv_works_order_no  work_orders.wor_works_order_no%TYPE;
+  lv_date_confirmed  work_orders.wor_date_confirmed%TYPE := TRUNC(SYSDATE);
+  lv_commit          VARCHAR2(1) := 'Y';
+  --
+  lv_response  CLOB;
+  lv_retval    XMLTYPE;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/InstructWorkOrder/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id        := lr_params.user_id;
+      lv_works_order_no := lr_params.wo_no;
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      nm_debug.debug('Calling instruct_work_order');
+      mai_api.instruct_work_order(pi_user_id         => lv_user_id
+                                 ,pi_works_order_no  => lv_works_order_no
+                                 ,pi_date_instructed => lv_date_confirmed
+                                 ,pi_commit          => lv_commit);
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<InstructWorkOrderResponse'||c_xmlns||'><Work_Order_Instructed>'
+                     ||'<Work_Order_No>'||lv_works_order_no||'</Work_Order_No>'
+                   ||'</Work_Order_Instructed></InstructWorkOrderResponse>';
+      --       
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'InstructWorkOrderResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END instruct_work_order;
+--
+-----------------------------------------------------------------------------
+--
 END mai_web_service;
+
 /
