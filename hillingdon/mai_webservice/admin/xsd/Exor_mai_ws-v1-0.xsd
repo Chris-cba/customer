@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://exor_mai_ws/exor_mai_ws"
+                     xmlns="http://exor_mai_ws/exor_mai_ws"
+                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+      attributeFormDefault="unqualified"
+                   version="1.0"
+                        id="exor_mai_ws">
+  <xs:include schemaLocation="Exor_mai_wsCore-v1-0.xsd" />
+  <xs:element name="Road_Sections"    type="Road_SectionsType" />
+  <xs:element name="Asset_Types"      type="Asset_TypesType" />
+  <xs:element name="Asset_Attributes" type="Asset_AttributesType" />
+  <xs:element name="SD_Flags"         type="SD_FlagsType" />
+  <xs:element name="Users"            type="UsersType" />
+  <xs:element name="Admin_Units"      type="Admin_UnitsType" />
+  <xs:element name="Admin_Groups"     type="Admin_GroupsType" />
+  <xs:element name="Assets"           type="AssetsType" />
+  <xs:element name="AssetDetails"     type="AssetDetailsType" />
+  <xs:element name="Initiation_Types" type="Initiation_TypesType" />
+  <xs:element name="Repair_Types"     type="Repair_TypesType" />
+  <xs:element name="NWActivities"     type="NWActivitiesType" />
+  <xs:element name="AssetActivities"  type="AssetActivitiesType" />
+  <xs:element name="Priorities"       type="PrioritiesType" />
+  <xs:element name="Treatments"       type="TreatmentsType" />
+  <xs:element name="Defect_Types"     type="Defect_TypesType" />
+  <xs:element name="Siss_Codes"       type="Siss_CodesType" />
+  <xs:element name="Standard_Items"   type="Standard_ItemsType" />
+  <xs:element name="Notify_Orgs"      type="Notify_OrgsType" />
+  <xs:element name="Recharge_Orgs"    type="Recharge_OrgsType" />
+  <xs:element name="Adhoc_Defect"     type="AdhocDefectType" />
+  <xs:element name="Defect_Created"   type="Defect_CreatedType" />
+</xs:schema>
