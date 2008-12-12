@@ -5,11 +5,11 @@ CREATE OR REPLACE PACKAGE mai_api AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.1   Aug 05 2008 15:25:14   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.2   Dec 12 2008 11:53:40   mhuitson  $
 --       Module Name      : $Workfile:   mai_api.pkh  $
---       Date into PVCS   : $Date:   Aug 05 2008 15:25:14  $
---       Date fetched Out : $Modtime:   Aug 04 2008 17:41:24  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Dec 12 2008 11:53:40  $
+--       Date fetched Out : $Modtime:   Oct 20 2008 16:03:30  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 -----------------------------------------------------------------------------
 --      Copyright (c) exor corporation ltd, 2007
@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE mai_api AS
 --</PACKAGE>
 --
 --<GLOBVAR>
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.1  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.2  $';
   g_application_owner  VARCHAR2(30);
   gr_defect_rec   defects%ROWTYPE;
 --</GLOBVAR>
@@ -85,13 +85,37 @@ FUNCTION validate_defect_status(pi_defect_rec     IN defects%ROWTYPE
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="CREATE_DEFECT">
-FUNCTION create_defect(pi_insp_rec           IN activities_report%ROWTYPE
-                      ,pi_defect_rec         IN defects%ROWTYPE
-                      ,pi_def_attr_tab       IN def_attr_tab
-                      ,pi_repair_tab         IN rep_tab
-                      ,pi_boq_tab            IN boq_tab
-                      ,pi_commit             IN VARCHAR2)
+FUNCTION create_defect(pi_insp_rec     IN activities_report%ROWTYPE
+                      ,pi_defect_rec   IN defects%ROWTYPE
+                      ,pi_def_attr_tab IN def_attr_tab
+                      ,pi_repair_tab   IN rep_tab
+                      ,pi_boq_tab      IN boq_tab
+                      ,pi_commit       IN VARCHAR2)
   RETURN defects.def_defect_id%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="CREATE_DEFECT_WORK_ORDER">
+PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_id%TYPE
+                                  ,pi_wo_descr          IN  work_orders.wor_descr%TYPE
+                                  ,pi_scheme_type       IN  work_orders.wor_scheme_type%TYPE
+                                  ,pi_con_id            IN  contracts.con_id%TYPE
+                                  ,pi_bud_id            IN  budgets.bud_id%TYPE
+                                  ,pi_defects           IN  nm3type.tab_number
+                                  ,pi_commit            IN  VARCHAR2                                  
+                                  ,po_work_order_no     OUT work_orders.wor_works_order_no%TYPE
+                                  ,po_defects_on_wo     OUT nm3type.tab_number
+                                  ,po_defects_not_on_wo OUT nm3type.tab_number);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="INSTRUCT_WORK_ORDER">
+PROCEDURE instruct_work_order(pi_user_id        IN hig_users.hus_user_id%TYPE
+                             ,pi_works_order_no IN work_orders.wor_works_order_no%TYPE
+                             ,pi_date_instructed IN work_orders.wor_date_confirmed%TYPE
+                             ,pi_commit         IN VARCHAR2);
 --</PROC>
 --
 -----------------------------------------------------------------------------
