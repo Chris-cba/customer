@@ -6,22 +6,6 @@
        attributeFormDefault="unqualified"
                     version="2.0"
                          id="Exor_mai_wsCore">
-  <xsd:annotation>
-    <xsd:documentation xml:lang="en">
-      Schema used to provide the core xml types used in the definition of the xml
-      input and output from the Exor MAI Web Service.
- 
---   PVCS Identifiers :-
---
---       pvcsid           : $Header:$
---       Module Name      : $Workfile:$
---       Date into PVCS   : $Date:$
---       Date fetched Out : $Modtime:$
---       PVCS Version     : $Revision:$
-
-
-    </xsd:documentation>
-  </xsd:annotation>
 
   <xsd:simpleType name="str_1">
     <xsd:restriction base="xsd:string">
