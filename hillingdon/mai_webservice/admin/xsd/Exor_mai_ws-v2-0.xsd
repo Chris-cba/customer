@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://exor_mai_ws/exor_mai_ws"
+                      xmlns="http://exor_mai_ws/exor_mai_ws"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         elementFormDefault="qualified"
+       attributeFormDefault="unqualified"
+                    version="2.0"
+                         id="exor_mai_ws">
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+      Schema used to validate the xml input and output from the Exor MAI Web Service.
+        PVCS Version     : "$Revision::            $"
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:include schemaLocation="Exor_mai_wsCore-v2-0.xsd" />
+
+  <xsd:complexType name="dummyType">
+    <xsd:sequence>
+      <xsd:element name="Dummy" type="xsd:string" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="GetRoadSections" type="dummyType" />
+  <xsd:complexType name="GetRoadSectionsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Road_Sections" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetRoadSectionsResponse" type="GetRoadSectionsResponseType" />
+
+  <xsd:element name="GetAssetTypes" type="dummyType" />
+  <xsd:complexType name="GetAssetTypesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Asset_Types" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAssetTypesResponse" type="GetAssetTypesResponseType" />
+
+  <xsd:element name="GetAssetTypeAttribs" type="dummyType" />
+  <xsd:complexType name="GetAssetTypeAttribsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Asset_Attributes" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAssetTypeAttribsResponse" type="GetAssetTypeAttribsResponseType" />
+
+  <xsd:element name="GetSDFlags" type="dummyType" />
+  <xsd:complexType name="GetSDFlagsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="SD_Flags" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetSDFlagsResponse" type="GetSDFlagsResponseType" />
+
+  <xsd:element name="GetUsers" type="dummyType" />
+  <xsd:complexType name="GetUsersResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Users" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetUsersResponse" type="GetUsersResponseType" />
+
+  <xsd:element name="GetAdminUnits" type="dummyType" />
+  <xsd:complexType name="GetAdminUnitsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Admin_Units" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAdminUnitsResponse" type="GetAdminUnitsResponseType" />
+
+  <xsd:element name="GetAdminGroups" type="dummyType" />
+  <xsd:complexType name="GetAdminGroupsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Admin_Groups" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAdminGroupsResponse" type="GetAdminGroupsResponseType" />
+
+  <xsd:complexType name="GetAssetIDsType">
+    <xsd:sequence>
+      <xsd:element ref="Asset_Type_Code" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAssetIDs" type="GetAssetIDsType" />
+  <xsd:complexType name="GetAssetIDsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Assets" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAssetIDsResponse" type="GetAssetIDsResponseType" />
+
+  <xsd:complexType name="GetModifiedAssetIDsType">
+    <xsd:sequence>
+      <xsd:element  ref="Asset_Type_Code" />
+      <xsd:element  ref="Modified_Date"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetModifiedAssetIDs" type="GetModifiedAssetIDsType" />
+  <xsd:element name="GetModifiedAssetIDsResponse" type="GetAssetIDsResponseType" />
+
+  <xsd:complexType name="GetAssetDetailsType">
+    <xsd:sequence>
+      <xsd:element ref="Id" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAssetDetails" type="GetAssetDetailsType" />
+  <xsd:complexType name="GetAssetDetailsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="AssetDetails" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAssetDetailsResponse" type="GetAssetDetailsResponseType" />
+
+  <xsd:element name="GetInitiationTypes" type="dummyType" />
+  <xsd:complexType name="GetInitiationTypesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Initiation_Types" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetInitiationTypesResponse" type="GetInitiationTypesResponseType" />
+
+  <xsd:element name="GetRepairTypes" type="dummyType" />
+  <xsd:complexType name="GetRepairTypesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Repair_Types" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetRepairTypesResponse" type="GetRepairTypesResponseType" />
+
+  <xsd:element name="GetNWActivities" type="dummyType" />
+  <xsd:complexType name="GetNWActivitiesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="NWActivities" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetNWActivitiesResponse" type="GetNWActivitiesResponseType" />
+
+  <xsd:element name="GetAssetActivities" type="dummyType" />
+  <xsd:complexType name="GetAssetActivitiesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="AssetActivities" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetAssetActivitiesResponse" type="GetAssetActivitiesResponseType" />
+
+  <xsd:element name="GetPriorities" type="dummyType" />
+  <xsd:complexType name="GetPrioritiesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Priorities" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetPrioritiesResponse" type="GetPrioritiesResponseType" />
+
+  <xsd:element name="GetTreatments" type="dummyType" />
+  <xsd:complexType name="GetTreatmentsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Treatments" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetTreatmentsResponse" type="GetTreatmentsResponseType" />
+
+  <xsd:element name="GetDefectTypes" type="dummyType" />
+  <xsd:complexType name="GetDefectTypesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Defect_Types" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetDefectTypesResponse" type="GetDefectTypesResponseType" />
+
+  <xsd:element name="GetSISSCodes" type="dummyType" />
+  <xsd:complexType name="GetSISSCodesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Siss_Codes" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetSISSCodesResponse" type="GetSISSCodesResponseType" />
+
+  <xsd:element name="GetStandardItems" type="dummyType" />
+  <xsd:complexType name="GetStandardItemsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Standard_Items" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetStandardItemsResponse" type="GetStandardItemsResponseType" />
+
+  <xsd:element name="GetNotifyOrgs" type="dummyType" />
+  <xsd:complexType name="GetNotifyOrgsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Notify_Orgs" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetNotifyOrgsResponse" type="GetNotifyOrgsResponseType" />
+
+  <xsd:element name="GetRechargeOrgs" type="dummyType" />
+  <xsd:complexType name="GetRechargeOrgsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Recharge_Orgs" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetRechargeOrgsResponse" type="GetRechargeOrgsResponseType" />
+
+  <xsd:element name="GetContracts" type="dummyType" />
+  <xsd:complexType name="GetContractsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Contracts" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetContractsResponse" type="GetContractsResponseType" />
+
+  <xsd:element name="GetSchemeTypes" type="dummyType" />
+  <xsd:complexType name="GetSchemeTypesResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Scheme_Types" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetSchemeTypesResponse" type="GetSchemeTypesResponseType" />
+
+  <xsd:element name="GetCurrentBudgets" type="dummyType" />
+  <xsd:complexType name="GetCurrentBudgetsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Budgets" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetCurrentBudgetsResponse" type="GetCurrentBudgetsResponseType" />
+
+  <xsd:complexType name="GetRoadGroupSectionsType">
+    <xsd:sequence>
+      <xsd:element ref="Road_Group_Id"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetRoadGroupSectionIDs" type="GetRoadGroupSectionsType" />
+  <xsd:complexType name="GetRoadGroupSectionsResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Road_Group_Sections" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="GetRoadGroupSectionIDsResponse" type="GetRoadGroupSectionsResponseType" />
+
+  <xsd:complexType name="CreateAdhocDefectType">
+    <xsd:sequence>
+      <xsd:element ref="Adhoc_Defect" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="CreateAdhocDefect" type="CreateAdhocDefectType" />
+  <xsd:complexType name="CreateAdhocDefectResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Defect_Created" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="CreateAdhocDefectResponse" type="CreateAdhocDefectResponseType" />
+
+  <xsd:complexType name="CreateDefectWorkOrderType">
+    <xsd:sequence>
+      <xsd:element ref="Defect_Work_Order" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="CreateDefectWorkOrder" type="CreateDefectWorkOrderType" />
+  <xsd:complexType name="CreateDefectWorkOrderResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Defect_Work_Order_Created" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="CreateDefectWorkOrderResponse" type="CreateDefectWorkOrderResponseType" />
+
+  <xsd:complexType name="InstructWorkOrderType">
+    <xsd:sequence>
+      <xsd:element  ref="User_Id" />
+      <xsd:element  ref="Work_Order_No" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="InstructWorkOrder" type="InstructWorkOrderType" />
+  <xsd:complexType name="InstructWorkOrderResponseType">
+    <xsd:sequence>
+      <xsd:element ref="Work_Order_Instructed" minOccurs="0" />
+      <xsd:element ref="error" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="InstructWorkOrderResponse" type="InstructWorkOrderResponseType" />
+
+</xsd:schema>

@@ -1,0 +1,938 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://exor_mai_ws/exor_mai_ws"
+                      xmlns="http://exor_mai_ws/exor_mai_ws"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         elementFormDefault="qualified"
+       attributeFormDefault="unqualified"
+                    version="1.0"
+                         id="Exor_mai_wsCore">
+
+  <!-- Start Of Basic Element Definitions -->
+  <xsd:simpleType name="str_1">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="1" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Sys_Flag" type="str_1" />
+
+  <xsd:element name="Safety_Detailed_Flag" type="str_1" />
+
+  <xsd:element name="Repair_Type_Code" type="str_1" />
+
+  <xsd:element name="Direct_Link" type="str_1" />
+
+  <xsd:simpleType name="str_2">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="2" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="str_3">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="3" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Siss_Id" type="str_3" />
+
+  <xsd:element name="Initials" type="str_3" />
+
+  <xsd:simpleType name="str_4">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="4" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Authority_Code" type="str_4" />
+
+  <xsd:element name="Asset_Type_Code" type="str_4" />
+
+  <xsd:element name="Priority_Code" type="str_4" />
+
+  <xsd:element name="Treatment_Code" type="str_4" />
+
+  <xsd:element name="Defect_Code" type="str_4" />
+
+  <xsd:simpleType name="str_6">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="6" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="str_8">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="8" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="str_10">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="10" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Admin_Unit_Code" type="str_10" />
+
+  <xsd:element name="Datatype" type="str_10" />
+
+  <xsd:element name="Item_Code" type="str_10" />
+
+  <xsd:simpleType name="str_20">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="20" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="str_30">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="30" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Section_Unique" type="str_30" />
+
+  <xsd:element name="Attribute_Name" type="str_30" />
+
+  <xsd:element name="Asset_Column" type="str_30" />
+
+  <xsd:element name="User_Name" type="str_30" />
+
+  <xsd:element name="DB_Username" type="str_30" />
+
+  <xsd:simpleType name="str_40">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="40" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Location_Description" type="str_40" />
+
+  <xsd:simpleType name="str_50">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="50" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="str_200">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="200" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="str_500">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="500" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:element name="Description">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="0" />
+        <xsd:maxLength value="500" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="Initiation_Code">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1" />
+        <xsd:maxLength value="20" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="Activity_Code">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1" />
+        <xsd:maxLength value="2" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element  name="Item_Name">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1" />
+        <xsd:maxLength value="254" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="Unit">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1" />
+        <xsd:maxLength value="8" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:simpleType name="DimensionNameType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="12" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="strDateTime">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="20" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="strDate">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="11" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Startdate" type="strDate"/>
+
+  <xsd:element name="Enddate" type="strDate"/>
+
+  <xsd:simpleType name="id_3">
+    <xsd:restriction base="xsd:nonNegativeInteger">
+        <xsd:minInclusive value="1" />
+        <xsd:maxInclusive value="999" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="id_6">
+    <xsd:restriction base="xsd:nonNegativeInteger">
+        <xsd:minInclusive value="1" />
+        <xsd:maxInclusive value="999999" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="id_8">
+    <xsd:restriction base="xsd:nonNegativeInteger">
+        <xsd:minInclusive value="1" />
+        <xsd:maxInclusive value="99999999" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Section_Id" type="id_8" />
+
+  <xsd:element name="Defect_ID" type="id_8" />
+
+  <xsd:element name="User_Id" type="id_8" />
+
+  <xsd:element name="Org_Id" type="id_8" />
+
+  <xsd:simpleType name="id_9">
+    <xsd:restriction base="xsd:nonNegativeInteger">
+        <xsd:minInclusive value="1" />
+        <xsd:maxInclusive value="999999999" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Admin_Unit_Id" type="id_9" />
+
+  <xsd:element name="Parent_Admin_Unit_Id" type="id_9" />
+
+  <xsd:element name="Child_Admin_Unit_Id" type="id_9" />
+
+  <xsd:element name="Id" type="id_9" />
+
+  <xsd:element name="Asset_Id" type="id_9" />
+
+  <xsd:element name="Display_Sequence">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:nonNegativeInteger">
+        <xsd:minInclusive value="0" />
+        <xsd:maxInclusive value="9999" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:simpleType name="num_6_2">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="-9999.99" />
+      <xsd:maxInclusive value="9999.99" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="num_8_2">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="-999999.99" />
+      <xsd:maxInclusive value="999999.99" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="num_10_2">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:minInclusive value="-99999999.99" />
+      <xsd:maxInclusive value="99999999.99" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Max_Quantity" type="num_10_2" />
+
+  <xsd:element name="Min_Quantity" type="num_10_2" />
+
+  <xsd:element name="Repair_Description">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="0" />
+        <xsd:maxLength value="240" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="Defect_Description">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="0" />
+        <xsd:maxLength value="240" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="Special_Instructions">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="0" />
+        <xsd:maxLength value="254" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:simpleType name="Defect_AttributeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="254" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Org_CodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="10" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="defAttributeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="12" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="defAttributeDatatypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="106" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="defAttributeLengthType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="40" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="defAttributeFormatType">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="0" />
+      <xsd:maxLength value="100" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- End Of Basic Element Definitions -->
+
+  <!-- Start Of Return Type Definitions -->
+  <!-- get_road_sections Return Type -->
+  <xsd:complexType name="Road_SectionType">
+    <xsd:sequence>
+      <xsd:element  ref="Section_Id"/>
+      <xsd:element  ref="Section_Unique"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Admin_Unit_Id"/>
+      <xsd:element  name="Length" type="xsd:decimal"/>
+      <xsd:element  ref="Sys_Flag"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Road_SectionsType">
+    <xsd:sequence>
+      <xsd:element name="Road_Section" type="Road_SectionType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_asset_types Return Type -->
+  <xsd:complexType name="Asset_TypeType">
+    <xsd:sequence>
+      <xsd:element  ref="Asset_Type_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Sys_Flag"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Asset_TypesType">
+    <xsd:sequence>
+      <xsd:element name="Asset_Type" type="Asset_TypeType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_asset_type_attribs Return Type -->
+  <xsd:complexType name="Asset_AttributeType">
+    <xsd:sequence>
+      <xsd:element  ref="Asset_Type_Code"/>
+      <xsd:element  ref="Attribute_Name"/>
+      <xsd:element  ref="Asset_Column"/>
+      <xsd:element  ref="Datatype"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Asset_AttributesType">
+    <xsd:sequence>
+      <xsd:element name="Asset_Attribute" type="Asset_AttributeType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_sd_flags Return Type -->
+  <xsd:complexType name="SD_FlagType">
+    <xsd:sequence>
+      <xsd:element  ref="Safety_Detailed_Flag"/>
+      <xsd:element  ref="Description"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="SD_FlagsType">
+    <xsd:sequence>
+      <xsd:element name="SD_Flag" type="SD_FlagType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_users Return Type -->
+  <xsd:complexType name="UserType">
+    <xsd:sequence>
+      <xsd:element  ref="User_Id"/>
+      <xsd:element  ref="Initials"/>
+      <xsd:element  ref="User_Name"/>
+      <xsd:element  ref="Admin_Unit_Id"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="UsersType">
+    <xsd:sequence>
+      <xsd:element name="User" type="UserType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_admin_units Return Type -->
+  <xsd:complexType name="Admin_UnitType">
+    <xsd:sequence>
+      <xsd:element  ref="Admin_Unit_Id"/>
+      <xsd:element  ref="Admin_Unit_Code"/>
+      <xsd:element  name="Admin_Unit_Name" type="str_40"/>
+      <xsd:element  ref="Authority_Code"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Admin_UnitsType">
+    <xsd:sequence>
+      <xsd:element name="Admin_Unit" type="Admin_UnitType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_admin_groups Return Type -->
+  <xsd:complexType name="Admin_GroupType">
+    <xsd:sequence>
+      <xsd:element  ref="Parent_Admin_Unit_Id"/>
+      <xsd:element  ref="Child_Admin_Unit_Id"/>
+      <xsd:element  ref="Direct_Link"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Admin_GroupsType">
+    <xsd:sequence>
+      <xsd:element name="Admin_Group" type="Admin_GroupType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_asset_ids and get_modified_asset_ids Return Type -->
+  <xsd:complexType name="AssetsType">
+    <xsd:sequence>
+      <xsd:element ref="Id" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_asset_details Return Type -->
+  <xsd:complexType name="AssetDetailsType">
+    <xsd:sequence>
+      <xsd:element name="iit_ne_id" type="id_9" />
+      <xsd:element name="iit_inv_type" type="str_4" />
+      <xsd:element name="iit_primary_key" type="str_50" />
+      <xsd:element name="iit_start_date" type="strDate" />
+      <xsd:element name="iit_date_created" type="strDateTime" />
+      <xsd:element name="iit_date_modified" type="strDateTime" />
+      <xsd:element name="iit_created_by" type="str_30" />
+      <xsd:element name="iit_modified_by" type="str_30" />
+      <xsd:element name="iit_admin_unit" type="id_9" />
+      <xsd:element name="iit_descr" type="str_40" minOccurs="0" />
+      <xsd:element name="iit_end_date" type="strDate" minOccurs="0" />
+      <xsd:element name="iit_foreign_key" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_located_by" type="id_9" minOccurs="0" />
+      <xsd:element name="iit_position" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_x_coord" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_y_coord" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib16" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib17" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib18" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib19" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib20" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib21" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib22" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib23" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib24" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib25" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib26" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib27" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib28" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib29" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib30" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib31" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib32" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib33" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib34" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib35" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib36" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib37" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib38" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib39" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib40" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib41" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib42" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib43" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib44" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib45" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib46" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib47" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib48" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib49" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib50" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib51" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib52" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib53" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib54" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib55" type="str_50" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib56" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib57" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib58" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib59" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib60" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib61" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib62" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib63" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib64" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib65" type="str_200" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib66" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib67" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib68" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib69" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib70" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib71" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib72" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib73" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib74" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_chr_attrib75" type="str_500" minOccurs="0" />
+      <xsd:element name="iit_num_attrib76" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib77" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib78" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib79" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib80" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib81" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib82" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib83" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib84" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib85" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_date_attrib86" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib87" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib88" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib89" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib90" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib91" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib92" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib93" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib94" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_date_attrib95" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_angle" type="num_6_2" minOccurs="0" />
+      <xsd:element name="iit_angle_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_class" type="str_2" minOccurs="0" />
+      <xsd:element name="iit_class_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_colour" type="str_2" minOccurs="0" />
+      <xsd:element name="iit_colour_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_coord_flag" type="str_1" minOccurs="0" />
+      <xsd:element name="iit_description" type="str_40" minOccurs="0" />
+      <xsd:element name="iit_diagram" type="str_6" minOccurs="0" />
+      <xsd:element name="iit_distance" minOccurs="0">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:decimal">
+            <xsd:minInclusive value="-99999.99" />
+            <xsd:maxInclusive value="99999.99" />
+          </xsd:restriction>
+        </xsd:simpleType>      
+      </xsd:element>
+      <xsd:element name="iit_end_chain" type="id_6" minOccurs="0" />
+      <xsd:element name="iit_gap" type="num_6_2" minOccurs="0" />
+      <xsd:element name="iit_height" type="num_6_2" minOccurs="0" />
+      <xsd:element name="iit_height_2" type="num_6_2" minOccurs="0" />
+      <xsd:element name="iit_id_code" type="str_8" minOccurs="0" />
+      <xsd:element name="iit_instal_date" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_invent_date" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_inv_ownership" type="str_4" minOccurs="0" />
+      <xsd:element name="iit_itemcode" type="str_8" minOccurs="0" />
+      <xsd:element name="iit_lco_lamp_config_id" type="id_3" minOccurs="0" />
+      <xsd:element name="iit_length" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_material" type="str_30" minOccurs="0" />
+      <xsd:element name="iit_material_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_method" type="str_2" minOccurs="0" />
+      <xsd:element name="iit_method_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_note" type="str_40" minOccurs="0" />
+      <xsd:element name="iit_no_of_units" type="id_3" minOccurs="0" />
+      <xsd:element name="iit_options" type="str_2" minOccurs="0" />
+      <xsd:element name="iit_options_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_oun_org_id_elec_board" type="id_8" minOccurs="0" />
+      <xsd:element name="iit_owner" type="str_4" minOccurs="0" />
+      <xsd:element name="iit_owner_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_peo_invent_by_id" type="id_8" minOccurs="0" />
+      <xsd:element name="iit_photo" type="str_6" minOccurs="0" />
+      <xsd:element name="iit_power" type="id_6" minOccurs="0" />
+      <xsd:element name="iit_prov_flag" type="str_1" minOccurs="0" />
+      <xsd:element name="iit_rev_by" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_rev_date" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_type" type="str_2" minOccurs="0" />
+      <xsd:element name="iit_type_txt" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_width" type="num_6_2" minOccurs="0" />
+      <xsd:element name="iit_xtra_char_1" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_xtra_date_1" type="strDateTime" minOccurs="0" />
+      <xsd:element name="iit_xtra_domain_1" type="str_2" minOccurs="0" />
+      <xsd:element name="iit_xtra_domain_txt_1" type="str_20" minOccurs="0" />
+      <xsd:element name="iit_xtra_number_1" type="num_10_2" minOccurs="0" />
+      <xsd:element name="iit_x_sect" type="str_4" minOccurs="0" />
+      <xsd:element name="iit_det_xsp" type="str_4" minOccurs="0" />
+      <xsd:element name="iit_offset"        type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_x"             type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_y"             type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_z"             type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib96"  type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib97"  type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib98"  type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib99"  type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib100" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib101" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib102" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib103" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib104" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib105" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib106" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib107" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib108" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib109" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib110" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib111" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib112" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib113" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib114" type="xsd:decimal" minOccurs="0" />
+      <xsd:element name="iit_num_attrib115" type="xsd:decimal" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_initiation_types Return Type -->
+  <xsd:complexType name="Initiation_TypeType">
+    <xsd:sequence>
+      <xsd:element  ref="Initiation_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Initiation_TypesType">
+    <xsd:sequence>
+      <xsd:element name="Initiation_Type" type="Initiation_TypeType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_repair_types Return Type -->
+  <xsd:complexType name="Repair_TypeType">
+    <xsd:sequence>
+      <xsd:element  ref="Repair_Type_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Repair_TypesType">
+    <xsd:sequence>
+      <xsd:element name="Repair_Type" type="Repair_TypeType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_nw_activities Return Type -->
+  <xsd:complexType name="NWActivityType">
+    <xsd:sequence>
+      <xsd:element  ref="Activity_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Sys_Flag"/>
+      <xsd:element  ref="Safety_Detailed_Flag"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="NWActivitiesType">
+    <xsd:sequence>
+      <xsd:element name="NWActivity" type="NWActivityType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_asset_activities Return Type -->
+  <xsd:complexType name="AssetActivityType">
+    <xsd:sequence>
+      <xsd:element  ref="Activity_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Asset_Type_Code"/>
+      <xsd:element  ref="Sys_Flag"/>
+      <xsd:element  ref="Safety_Detailed_Flag"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AssetActivitiesType">
+    <xsd:sequence>
+      <xsd:element name="AssetActivity" type="AssetActivityType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_priorities Return Type -->
+  <xsd:complexType name="PriorityType">
+    <xsd:sequence>
+      <xsd:element  ref="Priority_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Activity_Code"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PrioritiesType">
+    <xsd:sequence>
+      <xsd:element name="Priority" type="PriorityType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_treatments Return Type -->
+  <xsd:complexType name="TreatmentType">
+    <xsd:sequence>
+      <xsd:element  ref="Treatment_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Sys_Flag"/>
+      <xsd:element  ref="Activity_Code"/>
+      <xsd:element  ref="Defect_Code"/>
+      <xsd:element  ref="Display_Sequence"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="TreatmentsType">
+    <xsd:sequence>
+      <xsd:element name="Treatment" type="TreatmentType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_defect_codes Return Type -->
+  <xsd:complexType name="Defect_TypeType">
+    <xsd:sequence>
+      <xsd:element  ref="Defect_Code"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Sys_Flag"/>
+      <xsd:element  ref="Activity_Code"/>
+      <xsd:element  name="Attribute1" type="defAttributeType"/>
+      <xsd:element  name="Attribute1_Datatype" type="defAttributeDatatypeType"/>
+      <xsd:element  name="Attribute1_Length" type="defAttributeLengthType"/>
+      <xsd:element  name="Attribute1_Format" type="defAttributeFormatType"/>
+      <xsd:element  name="Attribute2" type="defAttributeType"/>
+      <xsd:element  name="Attribute2_Datatype" type="defAttributeDatatypeType"/>
+      <xsd:element  name="Attribute2_Length" type="defAttributeLengthType"/>
+      <xsd:element  name="Attribute2_Format" type="defAttributeFormatType"/>
+      <xsd:element  name="Attribute3" type="defAttributeType"/>
+      <xsd:element  name="Attribute3_Datatype" type="defAttributeDatatypeType"/>
+      <xsd:element  name="Attribute3_Length" type="defAttributeLengthType"/>
+      <xsd:element  name="Attribute3_Format" type="defAttributeFormatType"/>
+      <xsd:element  name="Attribute4" type="defAttributeType"/>
+      <xsd:element  name="Attribute4_Datatype" type="defAttributeDatatypeType"/>
+      <xsd:element  name="Attribute4_Length" type="defAttributeLengthType"/>
+      <xsd:element  name="Attribute4_Format" type="defAttributeFormatType"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Defect_TypesType">
+    <xsd:sequence>
+      <xsd:element name="Defect_Type" type="Defect_TypeType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_siss_codes Return Type -->
+  <xsd:complexType name="Siss_CodeType">
+    <xsd:sequence>
+      <xsd:element  ref="Siss_Id"/>
+      <xsd:element  ref="Description"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Siss_CodesType">
+    <xsd:sequence>
+      <xsd:element name="Siss_Code" type="Siss_CodeType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_standard_items Return Type -->
+  <xsd:complexType name="Standard_ItemType">
+    <xsd:sequence>
+      <xsd:element  ref="Item_Code"/>
+      <xsd:element  ref="Item_Name"/>
+      <xsd:element  ref="Unit"/>
+      <xsd:element  name="Rate" type="num_10_2"/>
+      <xsd:element  name="Labour_Units" type="num_8_2"/>
+      <xsd:element  ref="Max_Quantity"/>
+      <xsd:element  ref="Min_Quantity"/>
+      <xsd:element  name="Dimension1_Name" type="DimensionNameType"/>
+      <xsd:element  name="Dimension2_Name" type="DimensionNameType"/>
+      <xsd:element  name="Dimension3_Name" type="DimensionNameType"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Standard_ItemsType">
+    <xsd:sequence>
+      <xsd:element name="Standard_Item" type="Standard_ItemType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- get_notify_orgs Return Type -->
+  <xsd:complexType name="OrgType">
+    <xsd:sequence>
+      <xsd:element  ref="Org_Id"/>
+      <xsd:element  name="Org_Code" type="Org_CodeType"/>
+      <xsd:element  name="Org_Name" type="str_40"/>
+      <xsd:element  ref="Admin_Unit_Id"/>
+      <xsd:element  ref="Startdate"/>
+      <xsd:element  ref="Enddate"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Notify_OrgsType">
+    <xsd:sequence>
+      <xsd:element name="Notify_Org" type="OrgType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- create_recharge_orsg Return Type -->
+  <xsd:complexType name="Recharge_OrgsType">
+    <xsd:sequence>
+      <xsd:element name="Recharge_Org" type="OrgType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- create_adhoc_defect Return Type -->
+  <xsd:complexType name="AdhocItemType">
+    <xsd:sequence>
+      <xsd:element  ref="Item_Code"/>
+      <xsd:element  name="Dimension1" type="num_10_2"/>
+      <xsd:element  name="Dimension2" type="num_10_2" minOccurs="0" />
+      <xsd:element  name="Dimension3" type="num_10_2" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+ <xsd:complexType name="AdhocRepairType">
+    <xsd:sequence>
+      <xsd:element  ref="Repair_Type_Code"/>
+      <xsd:element  ref="Treatment_Code" minOccurs="0"/>
+      <xsd:element  ref="Repair_Description" minOccurs="0"/>
+      <xsd:element  name="Boq" type="AdhocItemType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AdhocDefectType">
+    <xsd:sequence>
+      <xsd:element  ref="User_Id" />
+      <xsd:element  name="Easting" type="xsd:decimal" />
+      <xsd:element  name="Northing" type="xsd:decimal" />
+      <xsd:element  ref="Section_Id" minOccurs="0" />
+      <xsd:element  name="Chainage" type="xsd:decimal" minOccurs="0" />
+      <xsd:element  ref="Asset_Type_Code" minOccurs="0" />
+      <xsd:element  ref="Asset_Id" minOccurs="0" />
+      <xsd:element  name="Defect_Datetime" type="strDateTime" />
+      <xsd:element  ref="Initiation_Code" />
+      <xsd:element  ref="Safety_Detailed_Flag" />
+      <xsd:element  ref="Activity_Code" />
+      <xsd:element  ref="Defect_Code" />
+      <xsd:element  ref="Siss_Id" />
+      <xsd:element  ref="Location_Description" minOccurs="0" />
+      <xsd:element  ref="Defect_Description" minOccurs="0" />
+      <xsd:element  ref="Special_Instructions" minOccurs="0" />
+      <xsd:element  ref="Priority_Code" />
+      <xsd:element  name="Notify_Org" type="Org_CodeType" minOccurs="0" />
+      <xsd:element  name="Recharge_Org" type="Org_CodeType" minOccurs="0" />
+      <xsd:element  name="Defect_Attribute1" type="Defect_AttributeType" minOccurs="0" />
+      <xsd:element  name="Defect_Attribute2" type="Defect_AttributeType" minOccurs="0" />
+      <xsd:element  name="Defect_Attribute3" type="Defect_AttributeType" minOccurs="0" />
+      <xsd:element  name="Defect_Attribute4" type="Defect_AttributeType" minOccurs="0" />
+      <xsd:element name="Repair" type="AdhocRepairType" minOccurs="1" maxOccurs="3" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Defect_CreatedType">
+    <xsd:sequence>
+      <xsd:element ref="Defect_ID"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <!-- End Of Return Type Definitions -->
+</xsd:schema>
