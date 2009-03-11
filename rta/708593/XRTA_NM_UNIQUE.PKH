@@ -1,0 +1,50 @@
+CREATE OR REPLACE PACKAGE XRTA_NM_UNIQUE
+AS
+--<PACKAGE>
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/rta/XRTA_NM_UNIQUE.PKH-arc   1.0   Mar 11 2009 11:58:40   cstrettle  $
+--       Module Name      : $Workfile:   XRTA_NM_UNIQUE.PKH  $
+--       Date into PVCS   : $Date:   Mar 11 2009 11:58:40  $
+--       Date fetched Out : $Modtime:   Mar 11 2009 11:39:42  $
+--       Version          : $Revision:   1.0  $
+--       Based on SCCS version : NA
+-------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="XRTA_NM_UNIQUE_INSERT">
+PROCEDURE XRTA_NM_UNIQUE_INSERT(P_NE_ID NUMBER, P_TYPE VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+end XRTA_NM_UNIQUE;
+/
+
+
