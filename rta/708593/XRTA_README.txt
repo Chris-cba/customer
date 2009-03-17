@@ -3,7 +3,7 @@
 Complete the following steps to install the error tracker.
 
 1. Unzip the folder onto your C drive using extraction software.
-The rest of the example will assume the folder is C:/XTRA_LOG_708593
+The rest of the example will assume the folder is C:/XRTA_LOG_708593
 
 2.Open Command Prompt 
 Start>>All Programs>>Accessories>>Command Prompt
@@ -15,7 +15,7 @@ C:\>cd XRTA_LOG_708593
 C:\XRTA_LOG_708593>
 
 4.Start SQLPLUS
-C:\LOG_708593>sqlplus
+C:\XRTA_LOG_708593>sqlplus
 
 SQL*Plus: Release 10.2.0.1.0 - Production on Mon Mar 9 17:01:39 2009
 Copyright (c) 1982, 2005, Oracle.  All rights reserved.
