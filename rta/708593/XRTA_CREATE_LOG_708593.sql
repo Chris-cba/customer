@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/rta/XRTA_CREATE_LOG_708593.sql-arc   1.0   Mar 11 2009 11:58:40   cstrettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/rta/XRTA_CREATE_LOG_708593.sql-arc   1.1   Mar 18 2009 17:05:20   cstrettle  $
 --       Module Name      : $Workfile:   XRTA_CREATE_LOG_708593.sql  $
---       Date into PVCS   : $Date:   Mar 11 2009 11:58:40  $
---       Date fetched Out : $Modtime:   Mar 11 2009 11:47:16  $
---       Version          : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Mar 18 2009 17:05:20  $
+--       Date fetched Out : $Modtime:   Mar 18 2009 16:29:36  $
+--       Version          : $Revision:   1.1  $
 --       Based on SCCS version : na
 -------------------------------------------------------------------------
 SET DEFINE OFF
@@ -94,6 +94,18 @@ CREATE OR REPLACE TRIGGER X_RTA_NM_UNIQUES_POP_INV_ITEMS
         FOR EACH ROW
 BEGIN
 XRTA_NM_UNIQUE.XRTA_NM_UNIQUE_INSERT(P_NE_ID => :NEW.IIT_NE_ID, P_TYPE => 'I');
+END;
+/
+PROMPT LOADING ITEMS DATA. THIS MAY TAKE SOME TIME...
+
+BEGIN
+XRTA_NM_UNIQUE.XRTA_LOAD_ITEMS;
+END;
+/
+PROMPT LOADING ELEMENTS DATA. THIS MAY TAKE SOME TIME...
+
+BEGIN
+XRTA_NM_UNIQUE.XTRA_LOAD_ELEMENTS;
 END;
 /
 PROMPT **------------ END XRTA CREATE SCRIPT -------------**

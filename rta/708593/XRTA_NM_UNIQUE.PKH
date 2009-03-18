@@ -4,11 +4,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/rta/XRTA_NM_UNIQUE.PKH-arc   1.0   Mar 11 2009 11:58:40   cstrettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/rta/XRTA_NM_UNIQUE.PKH-arc   1.1   Mar 18 2009 17:05:20   cstrettle  $
 --       Module Name      : $Workfile:   XRTA_NM_UNIQUE.PKH  $
---       Date into PVCS   : $Date:   Mar 11 2009 11:58:40  $
---       Date fetched Out : $Modtime:   Mar 11 2009 11:39:42  $
---       Version          : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Mar 18 2009 17:05:20  $
+--       Date fetched Out : $Modtime:   Mar 18 2009 15:56:58  $
+--       Version          : $Revision:   1.1  $
 --       Based on SCCS version : NA
 -------------------------------------------------------------------------
 --</PACKAGE>
@@ -18,7 +18,7 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   1.1  $';
 
 --</GLOBVAR>
 --
@@ -40,6 +40,18 @@ FUNCTION get_body_version RETURN varchar2;
 --
 --<PROC NAME="XRTA_NM_UNIQUE_INSERT">
 PROCEDURE XRTA_NM_UNIQUE_INSERT(P_NE_ID NUMBER, P_TYPE VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="XRTA_LOAD_ITEMS">
+PROCEDURE XRTA_LOAD_ITEMS;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="XTRA_LOAD_ELEMENTS">
+PROCEDURE XTRA_LOAD_ELEMENTS;
 --</PROC>
 --
 -----------------------------------------------------------------------------
