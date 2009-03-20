@@ -5,19 +5,113 @@ CREATE OR REPLACE PACKAGE mai_api AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.2   Dec 12 2008 11:53:40   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.3   Mar 20 2009 16:08:24   mhuitson  $
 --       Module Name      : $Workfile:   mai_api.pkh  $
---       Date into PVCS   : $Date:   Dec 12 2008 11:53:40  $
---       Date fetched Out : $Modtime:   Oct 20 2008 16:03:30  $
---       PVCS Version     : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   Mar 20 2009 16:08:24  $
+--       Date fetched Out : $Modtime:   Mar 19 2009 18:59:46  $
+--       PVCS Version     : $Revision:   1.3  $
 --
 -----------------------------------------------------------------------------
 --      Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --</PACKAGE>
 --
+/*
+|| Errors Raised.
+||
+|| -20001,'Invalid Asset Id Supplied.'
+|| -20002,'No Asset Type Supplied.'
+|| -20003,'Cannot Translate Asset Type.'
+|| -20004,'No Section Supplied.'
+|| -20005,'Invalid Section Specified.'
+|| -20006,'Value Is Less Than Zero.'
+|| -20007,'Value Is Greater Than Section Length.'
+|| -20008,'No Inspection Date Supplied.'
+|| -20009,'Inspection Date May Not Be Later Than Today.'
+|| -20010,'Invalid User Id Specified For Inspector..'
+|| -20011,'Invalid User Id Specified For Second Inspector.'
+|| -20012,'Invalid Initiation Type Specified.'
+|| -20013,'Invalid Safety/Detailed Flag Specified.'
+|| -20014,'Invalid Weather Condition Specified.'
+|| -20015,'Invalid Road Surface Condition Specified.'
+|| -20016,'No Activity Supplied.'
+|| -20017,'Invalid Asset Activity Code Supplied.'
+|| -20018,'Invalid Network Activity Code Supplied.'
+|| -20019,'No Sys Flag Supplied.'
+|| -20020,'Cannot Find Initial Defect Status.'
+|| -20021,'Cannot Find Complete Defect Status.'
+|| -20022,'Invalid Defect Status Specified.'
+|| -20023,'No Effective Date Supplied.'
+|| -20024,'No Defect Type Supplied.'
+|| -20025,'Invalid Defect Type Supplied.'
+|| -20026,'No Priority Specified.'
+|| -20027,'Invalid Priority Specified.'
+|| -20028,'Invalid SISS Id Specified.'
+|| -20029,'No Repair Action Category Specified.'
+|| -20030,'Invalid Repair Action Category Specified.'
+|| -20031,'Invalid Treatment Specified.'
+|| -20032,'No Standard Item Code Specified.'
+|| -20033,'Cannot Find Specfied Standard Item.'
+|| -20034,'No BOQ Repair Action Category Specified.'
+|| -20035,'Estimated Quantity Is Below The Minimum Quantity.'
+|| -20036,'Estimated Quantity Is Above The Maximum Quantity.')
+|| -20037,'Cannot Find Specfied Inspection.'
+|| -20038,'Defect Section Must Match The Inspection Section.'
+|| -20039,'Error occured while Creating Activities Report.'
+|| -20040,'Error Occured While Creating Activities Report Line : '
+|| -20041,'Error Occured While Creating Repair(s) : '
+|| -20042,'Error Occured While Creating BOQs : '
+|| -20044,'Cannot Create More Than One Repair Of Each Repair Type'
+|| -20045,'Invalid Defect Attribute Value Specified. ['||lv_attr||']'
+|| -20047,'Budget Exceeded.'
+|| -20048,'All Work Order Lines Must Be Priced.'
+|| -20049,'Cannot Authorise Works Order, Cost Is Outside User Limits.'
+|| -20050,'Cannot Instruct A Work Order That Is Using The Dummy Contract.'
+|| -20051,'Cannot Instruct A Work Order With No Lines.'
+|| -20052,'Cannot Obtain Value For Defect AVAILABLE Status'
+|| -20053,'Cannot Obtain Value For Defect INSTRUCTED Status'
+|| -20054,'Cannot Obtain Value For Work Order Line INSTRUCTED Status'
+|| -20055,'Cannot Obtain Value For Work Order Line NOT_DONE Status'
+|| -20056,'Too Many Values Defined For Defect AVAILABLE Status'
+|| -20057,'Too Many Values Defined For Defect INSTRUCTED Status'
+|| -20058,'Too Many Values Defined For Work Order Line INSTRUCTED Status'
+|| -20059,'Too Many Values Defined For Work Order Line NOT_DONE Status'
+|| -20060,'Cannot Set Road Group. Please Check Product Options GISGRPTYP, GISGRPL and GISGRPD'
+|| -20061,'Contract On Work Order Is Out Of Date.'
+|| -20062,'Invalid Budget Supplied'
+|| -20063,'Invalid Contract Id Supplied.'
+|| -20064,'Invalid Contract On Work Order.'
+|| -20065,'Invalid Defect Id Supplied.'
+|| -20066,'Invalid Scheme Type'
+|| -20067,'Invalid User Id Supplied ['||TO_CHAR(pi_user_id)||'].'
+|| -20068,'Invalid Work Order Number Supplied'
+|| -20069,'No Contract On Work Order.'
+|| -20070,'Please Specify At Least One Defect For The Work Order.'
+|| -20071,'Supplied List Of Defects Contains Duplicates'
+|| -20072,'Supplied List Of Defects Contains Invalid Ids'
+|| -20073,'This API Does Not Support Cyclic Work Orders. Please Use The Forms Application To Instruct Cyclic Work Orders.'
+|| -20074,'Unable To Obtain sys_flag.'
+|| -20075,'Users Are Not Allowed To Authorise Work Orders They Have Raised.'
+|| -20076,'Value Too Large For Work Order Estimated Cost'
+|| -20077,'Value Too Large For Work Order Line Estimated Cost'
+|| -20078,'Work Order Date Raised Is Outside Users Start/End Dates.'
+|| -20079,'Work Order Has Already Been Instructed'
+|| -20080,'Invalid Cost Centre Supplied.'
+|| -20081,'Invalid Interim Flag Supplied.'
+|| -20082,'Invalid Work Order Priority Supplied.'
+|| -20083,'Work Order Has Been Cancelled.'
+|| -20084,'Date Raised Must Be Less Than Or Equal To Todays Date.'
+|| -20085,'Date Confirmed Must Be On Or Later Than The Date Raised ['||TO_CHAR(lr_wo.wor_date_raised,'DD-MON-RRRR')||'].'
+|| -20086,'Target Complete Date Should Not Be Before The Date Raised.'
+|| -20087,'Invalid Road Group Id Supplied.'
+|| -20088,'Invalid TMA Register Flag Supplied.'
+|| -20089,'Invalid Rechargeable Flag Supplied.'
+|| -20090,'No BOQ Defect Id or Repair Action Category Specified.'
+|| -20091,'BOQ_ID [] Specified Does Not Belong To Defect [] Repair Type [].'
+||
+*/
 --<GLOBVAR>
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.2  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.3  $';
   g_application_owner  VARCHAR2(30);
   gr_defect_rec   defects%ROWTYPE;
 --</GLOBVAR>
@@ -29,6 +123,17 @@ TYPE def_attr_tab IS TABLE OF VARCHAR2(254) INDEX BY BINARY_INTEGER;
 TYPE rep_tab IS TABLE OF repairs%ROWTYPE INDEX BY BINARY_INTEGER;
 --
 TYPE boq_tab IS TABLE OF boq_items%ROWTYPE INDEX BY BINARY_INTEGER;
+--
+TYPE def_rep_list_in_tab IS TABLE OF defect_list_temp%ROWTYPE INDEX BY BINARY_INTEGER;
+--
+TYPE def_rep_list_on_wo_rec IS RECORD(defect_id       defects.def_defect_id%TYPE
+                                     ,rep_action_cat  repairs.rep_action_cat%TYPE);
+TYPE def_rep_list_on_wo_tab IS TABLE OF def_rep_list_on_wo_rec INDEX BY BINARY_INTEGER;
+--
+TYPE def_rep_list_not_on_wo_rec IS RECORD(defect_id       defects.def_defect_id%TYPE
+                                         ,rep_action_cat  repairs.rep_action_cat%TYPE
+                                         ,reason          VARCHAR2(500));
+TYPE def_rep_list_not_on_wo_tab IS TABLE OF def_rep_list_not_on_wo_rec INDEX BY BINARY_INTEGER;
 --
 --</TYPE>
 --
@@ -44,42 +149,6 @@ FUNCTION get_version RETURN varchar2;
 --<PROC NAME="GET_BODY_VERSION">
 -- This function returns the current SCCS version of the package body
 FUNCTION get_body_version RETURN varchar2;
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="VALIDATE_REPAIR_BOQS">
-PROCEDURE validate_repair_boqs(pi_def_defect_id      IN     defects.def_defect_id%TYPE
-                              ,pi_rep_action_cat     IN     repairs.rep_action_cat%TYPE
-                              ,pi_rep_created_date   IN     repairs.rep_created_date%TYPE
-                              ,pi_admin_unit         IN     nm_admin_units.nau_admin_unit%TYPE
-                              ,pi_rep_tre_treat_code IN     treatments.tre_treat_code%TYPE
-                              ,pi_atv_acty_area_code IN     activities.atv_acty_area_code%TYPE
-                              ,pi_def_defect_code    IN     defects.def_defect_code%TYPE
-                              ,pi_sys_flag           IN     VARCHAR2
-                              ,pio_boq_tab           IN OUT boq_tab);
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="GET_INITIAL_DEFECT_STATUS">
-FUNCTION get_initial_defect_status
-  RETURN hig_status_codes.hsc_status_code%TYPE;
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="GET_COMPLETE_DEFECT_STATUS">
-FUNCTION get_complete_defect_status
-  RETURN hig_status_codes.hsc_status_code%TYPE;
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="VALIDATE_DEFECT_STATUS">
-FUNCTION validate_defect_status(pi_defect_rec     IN defects%ROWTYPE
-                               ,pi_effective_date IN DATE)
-  RETURN BOOLEAN;
 --</PROC>
 --
 -----------------------------------------------------------------------------
@@ -101,21 +170,31 @@ PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_i
                                   ,pi_wo_descr          IN  work_orders.wor_descr%TYPE
                                   ,pi_scheme_type       IN  work_orders.wor_scheme_type%TYPE
                                   ,pi_con_id            IN  contracts.con_id%TYPE
-                                  ,pi_bud_id            IN  budgets.bud_id%TYPE
-                                  ,pi_defects           IN  nm3type.tab_number
-                                  ,pi_commit            IN  VARCHAR2                                  
+                                  ,pi_interim_payment   IN  work_orders.wor_interim_payment_flag%TYPE
+                                  ,pi_priority          IN  work_orders.wor_priority%TYPE
+                                  ,pi_cost_centre       IN  work_orders.wor_coc_cost_centre%TYPE
+                                  ,pi_road_group_id     IN  nm_elements_all.ne_id%TYPE
+                                  ,pi_tma_register_flag IN  work_orders.wor_register_flag%TYPE
+                                  ,pi_contact           IN  work_orders.wor_contact%TYPE
+                                  ,pi_job_number        IN  work_orders.wor_job_number%TYPE
+                                  ,pi_rechargeable      IN  work_orders.wor_rechargeable%TYPE
+                                  ,pi_date_raised       IN  work_orders.wor_date_raised%TYPE
+                                  ,pi_target_date       IN  work_orders.wor_est_complete%TYPE
+                                  ,pi_defects           IN  def_rep_list_in_tab
+                                  ,pi_defect_boqs       IN  boq_tab
+                                  ,pi_commit            IN  VARCHAR2
                                   ,po_work_order_no     OUT work_orders.wor_works_order_no%TYPE
-                                  ,po_defects_on_wo     OUT nm3type.tab_number
-                                  ,po_defects_not_on_wo OUT nm3type.tab_number);
+                                  ,po_defects_on_wo     OUT def_rep_list_on_wo_tab
+                                  ,po_defects_not_on_wo OUT def_rep_list_not_on_wo_tab);
 --</PROC>
 --
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="INSTRUCT_WORK_ORDER">
-PROCEDURE instruct_work_order(pi_user_id        IN hig_users.hus_user_id%TYPE
-                             ,pi_works_order_no IN work_orders.wor_works_order_no%TYPE
+PROCEDURE instruct_work_order(pi_user_id         IN hig_users.hus_user_id%TYPE
+                             ,pi_works_order_no  IN work_orders.wor_works_order_no%TYPE
                              ,pi_date_instructed IN work_orders.wor_date_confirmed%TYPE
-                             ,pi_commit         IN VARCHAR2);
+                             ,pi_commit          IN VARCHAR2);
 --</PROC>
 --
 -----------------------------------------------------------------------------
