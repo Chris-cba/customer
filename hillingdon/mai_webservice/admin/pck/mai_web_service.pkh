@@ -5,19 +5,27 @@ CREATE OR REPLACE PACKAGE mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkh-arc   1.1   Dec 12 2008 11:53:42   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkh-arc   1.2   Mar 20 2009 16:08:00   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkh  $
---       Date into PVCS   : $Date:   Dec 12 2008 11:53:42  $
---       Date fetched Out : $Modtime:   Dec 05 2008 16:08:10  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Mar 20 2009 16:08:00  $
+--       Date fetched Out : $Modtime:   Mar 13 2009 15:14:44  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 -----------------------------------------------------------------------------
 --      Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --</PACKAGE>
 --
+/*
+|| Errors Raised.
+||
+||-20000,'Invalid Input XML Supplied.'
+||-20010,'Invalid User Id Specified For Inspector.'
+||-20043,'Invalid Organisation Specified.'
+||-20046,'No Defects Added To The Work Order.'
+*/
 --<GLOBVAR>
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.1  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.2  $';
   g_application_owner  VARCHAR2(30);
 --</GLOBVAR>
 --
@@ -37,16 +45,6 @@ FUNCTION get_version RETURN varchar2;
 --<PROC NAME="GET_BODY_VERSION">
 -- This function returns the current SCCS version of the package body
 FUNCTION get_body_version RETURN varchar2;
---</PROC>
---
------------------------------------------------------------------------------
---
---<PROC NAME="get_auto_defect_priority">
---FUNCTION get_auto_defect_priority(section_id    IN NUMBER
---                                 ,sys_flag      IN VARCHAR2
---                                 ,activity      IN VARCHAR2
---                                 ,defect_code   IN VARCHAR2)
---  RETURN get_auto_def_priority_out;
 --</PROC>
 --
 -----------------------------------------------------------------------------
@@ -94,12 +92,8 @@ FUNCTION get_asset_type_attribs
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="get_exor_assets">
---FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
---  RETURN get_asset_ids_out;
 FUNCTION get_asset_ids(pi_xml IN XMLTYPE)
   RETURN xmltype;
---FUNCTION get_asset_ids(pi_asset_type IN nm_inv_types_all.nit_inv_type%TYPE)
---  RETURN clob;
 --</PROC>
 --
 -----------------------------------------------------------------------------
@@ -209,6 +203,13 @@ FUNCTION get_contracts
 --
 -----------------------------------------------------------------------------
 --
+--<PROC NAME="get_contract_items">
+FUNCTION get_contract_items(pi_xml IN XMLTYPE)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
 --<PROC NAME="get_scheme_types">
 FUNCTION get_scheme_types
   RETURN xmltype;
@@ -230,6 +231,27 @@ FUNCTION get_road_group_section_ids(pi_xml IN XMLTYPE)
 --
 -----------------------------------------------------------------------------
 --
+--<PROC NAME="get_work_order_priorities">
+FUNCTION get_work_order_priorities
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_cost_centres">
+FUNCTION get_cost_centres
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_default_road_groups">
+FUNCTION get_default_road_groups
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
 --<PROC NAME="create_adhoc_defect">
 FUNCTION create_adhoc_defect(pi_xml IN xmltype)
   RETURN xmltype;
@@ -237,8 +259,22 @@ FUNCTION create_adhoc_defect(pi_xml IN xmltype)
 --
 -----------------------------------------------------------------------------
 --
+--<PROC NAME="get_available_defects">
+FUNCTION get_available_defects
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
 --<PROC NAME="create_defect_work_order">
 FUNCTION create_defect_work_order(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_instructable_work_orders">
+FUNCTION get_instructable_work_orders
   RETURN xmltype;
 --</PROC>
 --
