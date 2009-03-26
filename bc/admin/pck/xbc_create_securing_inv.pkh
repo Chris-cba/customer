@@ -1,0 +1,79 @@
+CREATE OR REPLACE PACKAGE XBC_CREATE_SECURING_INV AS
+--<PACKAGE>
+
+-- PVCS Identifiers :-
+--
+-- sccsid : $Header:   //vm_latest/archives/customer/bc/admin/pck/xbc_create_securing_inv.pkh-arc   1.0   Mar 26 2009 09:58:26   smarshall  $
+-- Module Name : $Workfile:   xbc_create_securing_inv.pkh  $
+-- Date into PVCS : $Date:   Mar 26 2009 09:58:26  $
+-- Date fetched Out : $Modtime:   Mar 26 2009 09:58:14  $
+-- PVCS Version : $Revision:   1.0  $
+
+ g_sccsid constant varchar2(30) :='"$Revision:   1.0  $"';
+ g_rec_ne nm_elements_all%ROWTYPE;
+--
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="clear_globals">
+-- This procedure clears out the global variables which are used to avoid
+-- mutation of the triggers
+--
+PROCEDURE clear_globals;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="append_to_globals">
+-- This procedure appends the passed details to the globals
+--
+PROCEDURE append_to_globals (p_ne_id IN nm_elements_all.ne_id%TYPE
+ ,p_ne_nt_type IN nm_elements_all.ne_nt_type%TYPE
+ );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="process_globals">
+-- This procedure processes the entries in the global arrays and creates
+-- the relevent inventory items
+--
+PROCEDURE process_globals;
+--</PROC>
+--
+-----------------------------------------------------------------
+--
+--<PROC NAME="find_corresponding_au">
+FUNCTION find_corresponding_au (p_nau_admin_unit nm_admin_units.nau_admin_unit%TYPE
+ ,p_nat_admin_type nm_au_types.nat_admin_type%TYPE
+ ) RETURN nm_admin_units.nau_admin_unit%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+ FUNCTION get_version RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+ FUNCTION get_body_version
+ RETURN VARCHAR2;
+--</PROC>
+
+--<PRAGMA>
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+END BC_APP_RIM.xbc_create_securing_inv; 
+/
+
