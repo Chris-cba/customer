@@ -5,11 +5,11 @@ CREATE OR REPLACE PACKAGE mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkh-arc   1.2   Mar 20 2009 16:08:00   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkh-arc   1.3   May 07 2009 17:29:48   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkh  $
---       Date into PVCS   : $Date:   Mar 20 2009 16:08:00  $
---       Date fetched Out : $Modtime:   Mar 13 2009 15:14:44  $
---       PVCS Version     : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   May 07 2009 17:29:48  $
+--       Date fetched Out : $Modtime:   May 04 2009 00:53:54  $
+--       PVCS Version     : $Revision:   1.3  $
 --
 -----------------------------------------------------------------------------
 --      Copyright (c) exor corporation ltd, 2007
@@ -25,7 +25,7 @@ CREATE OR REPLACE PACKAGE mai_web_service AS
 ||-20046,'No Defects Added To The Work Order.'
 */
 --<GLOBVAR>
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.2  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.3  $';
   g_application_owner  VARCHAR2(30);
 --</GLOBVAR>
 --
@@ -182,6 +182,13 @@ FUNCTION get_standard_items
 --
 -----------------------------------------------------------------------------
 --
+--<PROC NAME="get_standard_percent_items">
+FUNCTION get_standard_percent_items
+  RETURN xmltype;  
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
 --<PROC NAME="get_notify_orgs">
 FUNCTION get_notify_orgs
   RETURN xmltype;
@@ -280,8 +287,57 @@ FUNCTION get_instructable_work_orders
 --
 -----------------------------------------------------------------------------
 --
+--<PROC NAME="get_work_order_details">
+FUNCTION get_work_order_details(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
 --<PROC NAME="instruct_work_order">
 FUNCTION instruct_work_order(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="receive_work_order">
+FUNCTION receive_work_order(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="set_work_order_line_held">
+FUNCTION set_work_order_line_held(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="set_work_order_line_not_done">
+FUNCTION set_work_order_line_not_done(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_interim_payment">
+FUNCTION create_interim_payment(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="complete_work_order_line">
+FUNCTION complete_work_order_line(pi_xml IN xmltype)
+  RETURN xmltype;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="complete_work_order">
+FUNCTION complete_work_order(pi_xml IN xmltype)
   RETURN xmltype;
 --</PROC>
 --

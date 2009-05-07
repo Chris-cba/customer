@@ -4,17 +4,17 @@ CREATE OR REPLACE PACKAGE BODY mai_api AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkb-arc   1.3   Mar 20 2009 16:08:30   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkb-arc   1.4   May 07 2009 17:29:48   mhuitson  $
 --       Module Name      : $Workfile:   mai_api.pkb  $
---       Date into PVCS   : $Date:   Mar 20 2009 16:08:30  $
---       Date fetched Out : $Modtime:   Mar 19 2009 18:59:38  $
---       PVCS Version     : $Revision:   1.3  $
+--       Date into PVCS   : $Date:   May 07 2009 17:29:48  $
+--       Date fetched Out : $Modtime:   May 06 2009 17:42:08  $
+--       PVCS Version     : $Revision:   1.4  $
 --
 -----------------------------------------------------------------------------
 --  Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
-  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.3  $';
+  g_body_sccsid   CONSTANT  varchar2(2000) := '$Revision:   1.4  $';
   g_package_name  CONSTANT  varchar2(30)   := 'mai_api';
   --
   insert_error  EXCEPTION;
@@ -50,6 +50,182 @@ BEGIN
   RETURN lv_retval;
   --
 END;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_defect(pi_defect_id IN defects.def_defect_id%TYPE)
+  RETURN defects%ROWTYPE IS
+  --
+  lr_retval defects%ROWTYPE;
+  --
+BEGIN
+  /*
+  ||Get Defects Record.
+  */
+  SELECT *
+    INTO lr_retval
+    FROM defects
+   WHERE def_defect_id = pi_defect_id
+       ;
+  --
+  RETURN lr_retval;
+  --
+EXCEPTION
+  WHEN no_data_found
+   THEN
+      raise_application_error(-20065,'Invalid Defect Id Supplied.');
+  WHEN others
+   THEN
+      RAISE;
+END get_defect;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_wol(pi_wol_id IN work_order_lines.wol_id%TYPE)
+  RETURN work_order_lines%ROWTYPE IS
+  --
+  lr_retval  work_order_lines%ROWTYPE;
+  --
+BEGIN
+  /*
+  ||Get Work Order Line Record.
+  */
+  SELECT *
+    INTO lr_retval
+    FROM work_order_lines
+   WHERE wol_id = pi_wol_id
+       ;
+  --
+  RETURN lr_retval;
+  --
+EXCEPTION
+  WHEN no_data_found
+   THEN
+      raise_application_error(-20096,'Invalid Work Order Line Id Supplied.');
+  WHEN others
+   THEN
+      RAISE;
+END get_wol;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_and_lock_wol(pi_wol_id IN work_order_lines.wol_id%TYPE)
+  RETURN work_order_lines%ROWTYPE IS
+  --
+  lr_retval  work_order_lines%ROWTYPE;
+  --
+BEGIN
+  /*
+  ||Get Work Order Line Record.
+  */
+  SELECT *
+    INTO lr_retval
+    FROM work_order_lines
+   WHERE wol_id = pi_wol_id
+     FOR UPDATE NOWAIT
+       ;
+  --
+  RETURN lr_retval;
+  --
+EXCEPTION
+  WHEN no_data_found
+   THEN
+      raise_application_error(-20096,'Invalid Work Order Line Id Supplied.');
+  WHEN others
+   THEN
+      RAISE;
+END get_and_lock_wol;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_wo(pi_works_order_no IN work_orders.wor_works_order_no%TYPE)
+  RETURN work_orders%ROWTYPE IS
+  --
+  lr_retval  work_orders%ROWTYPE;
+  --
+BEGIN
+  /*
+  ||Get The Work Order Record.
+  */
+  SELECT *
+    INTO lr_retval
+    FROM work_orders
+   WHERE wor_works_order_no = pi_works_order_no
+       ;
+  --
+  RETURN lr_retval;
+  --
+EXCEPTION
+  WHEN no_data_found
+   THEN
+      raise_application_error(-20068,'Invalid Work Order Number Supplied');
+  WHEN others
+   THEN
+      RAISE;
+END get_wo;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_and_lock_wo(pi_works_order_no IN work_orders.wor_works_order_no%TYPE)
+  RETURN work_orders%ROWTYPE IS
+  --
+  lr_retval  work_orders%ROWTYPE;
+  --
+BEGIN
+  /*
+  ||Get And Lock The Work Order Record.
+  */
+  SELECT *
+    INTO lr_retval
+    FROM work_orders
+   WHERE wor_works_order_no = pi_works_order_no
+     FOR UPDATE NOWAIT
+       ;
+  --
+  RETURN lr_retval;
+  --
+EXCEPTION
+  WHEN no_data_found
+   THEN
+      raise_application_error(-20068,'Invalid Work Order Number Supplied');
+  WHEN others
+   THEN
+      RAISE;
+END get_and_lock_wo;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION interfaces_used(pi_con_id IN contracts.con_id%TYPE)
+  RETURN BOOLEAN IS
+  --
+  lv_retval BOOLEAN := FALSE;
+  lv_flag   org_units.oun_electronic_orders_flag%TYPE;
+  --
+BEGIN
+  --
+  SELECT NVL(oun_electronic_orders_flag,'N')
+    INTO lv_flag
+    FROM contracts
+        ,org_units
+   WHERE oun_org_id = con_contr_org_id
+     AND con_id = pi_con_id
+       ;
+  --
+  IF lv_flag = 'Y'
+   THEN
+      lv_retval := TRUE;
+  END IF;
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN no_data_found
+   THEN
+      raise_application_error(-20064,'Invalid Contract On Work Order.');
+  WHEN others
+   THEN
+      RAISE;
+END interfaces_used;
 --
 -----------------------------------------------------------------------------
 --
@@ -1326,10 +1502,9 @@ PROCEDURE validate_repair_boqs(pi_def_defect_id      IN     defects.def_defect_i
   lv_usetremodd   hig_options.hop_value%TYPE := hig.GET_SYSOPT('USETREMODD');
   lv_usetremodl   hig_options.hop_value%TYPE := hig.GET_SYSOPT('USETREMODL');
   lv_tremodlev    hig_options.hop_value%TYPE := hig.get_sysopt('TREMODLEV');
+  lv_perc_item    hig_option_values.hov_value%TYPE := hig.get_sysopt('PERC_ITEM');
   --
 BEGIN
-  --
-  lt_boq_tab := pio_boq_tab;
   /*
   ||If BOQs Have Been Provided Then Validate Them
   ||Otherwise If The System Is Configured To Enforce
@@ -1353,8 +1528,12 @@ BEGIN
         IF lt_boq_tab(i).boq_sta_item_code IS NOT NULL
          THEN
             lr_sta := get_sta(pi_sta_item_code => lt_boq_tab(i).boq_sta_item_code);
+            IF lr_sta.sta_unit = lv_perc_item
+             THEN
+                raise_application_error(-20099,'Parent BOQs Based On Percentage Items Codes Are Not Supported.');
+            END IF;
         ELSE
-            raise_application_error(-20032,'No Standard Item Code Specified.');
+            raise_application_error(-20032,'Invalid Standard Item Code Specified.');
         END IF;
         lt_boq_tab(i).boq_item_name := lr_sta.sta_item_name;
         /*
@@ -1387,11 +1566,13 @@ BEGIN
         ||Check Quantity.
         */
         IF lt_boq_tab(i).boq_est_quantity < lr_sta.sta_min_quantity
+         AND lt_boq_tab(i).boq_est_quantity != 0
          THEN
             raise_application_error(-20035,'Estimated Quantity Is Below The Minimum Quantity.');
         END IF;
         --
         IF lt_boq_tab(i).boq_est_quantity > lr_sta.sta_max_quantity
+         AND lt_boq_tab(i).boq_est_quantity != 0
          THEN
             raise_application_error(-20036,'Estimated Quantity Is Above The Maximum Quantity.');
         END IF;
@@ -2004,39 +2185,65 @@ END create_defect;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION get_balancing_sum(pi_con_id IN contracts.con_id%TYPE
+                          ,pi_value  IN work_order_lines.wol_act_cost%TYPE)
+  RETURN NUMBER IS
+  --
+  CURSOR c1(cp_con_id contracts.con_id%TYPE)
+      IS
+  SELECT oun_cng_disc_group
+    FROM org_units
+        ,contracts
+   WHERE con_contr_org_id = oun_org_id
+     AND con_id = cp_con_id
+       ;
+  --
+  lv_retval     NUMBER := 0;
+  lv_disc_group org_units.oun_cng_disc_group%type;
+  --
+BEGIN
+  OPEN  c1(pi_con_id);
+  FETCH c1 into lv_disc_group;
+  CLOSE c1;
+
+  IF lv_disc_group IS NOT NULL
+   AND pi_value != 0
+   THEN
+      IF (pi_value < 0)
+       THEN
+          lv_retval := -maiwo.bal_sum(p_cost           => ABS(pi_value)
+                                     ,p_cng_disc_group => lv_disc_group);
+      ELSE
+          lv_retval := maiwo.bal_sum(p_cost           => ABS(pi_value)
+                                    ,p_cng_disc_group => lv_disc_group);
+      END IF;
+  END IF;
+  --
+  RETURN lv_retval;
+  --
+END get_balancing_sum;
+--
+-----------------------------------------------------------------------------
+--
 FUNCTION apply_balancing_sum(pi_con_id IN contracts.con_id%TYPE
                             ,pi_value  IN work_order_lines.wol_act_cost%TYPE)
   RETURN NUMBER IS
-
-  cursor c1 is
-    select oun_cng_disc_group
-    from   org_units
-          ,contracts
-    where  con_contr_org_id = oun_org_id
-    and    con_id         = pi_con_id
-       ;
-
-  l_disc_group org_units.oun_cng_disc_group%type;
-
+  --
+  lv_retval NUMBER;
+  --
 BEGIN
-  open  c1;
-  fetch c1 into l_disc_group;
-  close c1;
-
-  if l_disc_group is null then
-    return pi_value;
-  else
-    if (pi_value < 0) then
-      return pi_value - maiwo.bal_sum(abs(pi_value), l_disc_group);
-    else
-      return pi_value + maiwo.bal_sum(abs(pi_value), l_disc_group);
-    end if;
-  end if;
+  --
+  lv_retval := pi_value + get_balancing_sum(pi_con_id => pi_con_id
+                                           ,pi_value  => pi_value);
+  --
+  RETURN lv_retval;
+  --
 END apply_balancing_sum;
 --
 -----------------------------------------------------------------------------
 --
 FUNCTION within_budget(pi_bud_id IN work_order_lines.wol_bud_id%TYPE
+                      ,pi_con_id IN contracts.con_id%TYPE
                       ,pi_est    IN work_order_lines.wol_est_cost%TYPE DEFAULT 0
                       ,pi_act    IN work_order_lines.wol_act_cost%TYPE DEFAULT 0
                       ,pi_wol_id IN work_order_lines.wol_id%TYPE DEFAULT NULL)
@@ -2050,8 +2257,8 @@ BEGIN
   ||To The Budget Without Going Over It.
   */
   IF mai_budgets.check_budget(p_bud_id        => pi_bud_id
-                             ,p_bud_committed => NVL(pi_est,0)
-                             ,p_bud_actual    => NVL(pi_act,0)
+                             ,p_bud_committed => apply_balancing_sum(pi_con_id,NVL(pi_est,0))
+                             ,p_bud_actual    => apply_balancing_sum(pi_con_id,NVL(pi_act,0))
                              ,p_wol_id        => pi_wol_id)
    THEN
       /*
@@ -2076,6 +2283,7 @@ END within_budget;
 --
 PROCEDURE add_to_budget(pi_wol_id in work_order_lines.wol_id%TYPE
                        ,pi_bud_id in work_order_lines.wol_bud_id%TYPE
+                       ,pi_con_id in contracts.con_id%TYPE
                        ,pi_est    in work_order_lines.wol_est_cost%TYPE DEFAULT 0
                        ,pi_act    in work_order_lines.wol_act_cost%TYPE DEFAULT 0)
   IS
@@ -2087,17 +2295,19 @@ BEGIN
   IF NVL(pi_est,0) != 0
    THEN
       --
-      lv_success := mai_budgets.update_budget_committed(pi_wol_id
-                                                       ,pi_bud_id
-                                                       ,apply_balancing_sum('',pi_est));
+      lv_success := mai_budgets.update_budget_committed(p_wol_id => pi_wol_id
+                                                       ,p_bud_id => pi_bud_id
+                                                       ,p_bud_committed => apply_balancing_sum(pi_con_id => pi_con_id
+                                                                                              ,pi_value  => pi_est));
   END IF;
   --
   IF NVL(pi_act,0) != 0
    AND lv_success
    THEN
-      lv_success := mai_budgets.update_budget_actual(pi_wol_id
-                                                    ,pi_bud_id
-                                                    ,apply_balancing_sum('',pi_act));
+      lv_success := mai_budgets.update_budget_actual(p_wol_id     => pi_wol_id
+                                                    ,p_bud_id     => pi_bud_id
+                                                    ,p_bud_actual => apply_balancing_sum(pi_con_id => pi_con_id
+                                                                                        ,pi_value  => pi_act));
   END IF;
   --
   IF NOT lv_success
@@ -2156,8 +2366,9 @@ PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_i
   lv_icb_id             item_code_breakdowns.icb_id%TYPE;
   lv_date_raised        work_orders.wor_date_raised%TYPE;
   --
-  lv_wor_est_cost    work_orders.wor_est_cost%TYPE := 0;
-  lv_wor_est_labour  work_orders.wor_est_labour%TYPE := 0;
+  lv_wor_est_cost          work_orders.wor_est_cost%TYPE := 0;
+  lv_wor_est_labour        work_orders.wor_est_labour%TYPE := 0;
+  lv_wor_est_balancing_sum work_orders.wor_est_balancing_sum%TYPE := 0;
   --
   lv_wol_not_done    hig_status_codes.hsc_status_code%TYPE;
   lv_wol_instructed  hig_status_codes.hsc_status_code%TYPE;
@@ -2874,8 +3085,8 @@ PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_i
                 WHEN no_data_found
                  THEN
                     raise_application_error(-20091,'BOQ_ID ['||TO_CHAR(lt_boqs(i).boq_id)
-                                                 ||'] Specified Does Not Belong To Defect ['||TO_CHAR(pi_defect_id)
-                                                 ||'] Repair Type ['||pi_rep_action_cat||'].');
+                                                 ||'] Is Not A Child Of The Specified Parent - Defect ['
+                                                 ||TO_CHAR(pi_defect_id)||'] Repair Type ['||pi_rep_action_cat||'].');
                 WHEN others
                  THEN
                     RAISE;
@@ -2887,7 +3098,7 @@ PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_i
         /*
         ||Validate And Build The New BOQs.
         */
-        validate_repair_boqs(pi_def_defect_id      => pi_defect_id 
+        validate_repair_boqs(pi_def_defect_id      => pi_defect_id
                             ,pi_rep_action_cat     => pi_rep_action_cat
                             ,pi_rep_created_date   => TRUNC(SYSDATE)
                             ,pi_admin_unit         => NULL
@@ -3023,7 +3234,7 @@ PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_i
                 ,rep_action_cat
                 ,pi_budget_id
                 ,pi_work_code
-            INTO lr_selected_repair            
+            INTO lr_selected_repair
             FROM repairs
                 ,defects
            WHERE def_defect_id  = pi_defect_id
@@ -3045,7 +3256,7 @@ PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_i
           */
           po_defects_not_on_wo(po_defects_not_on_wo.count+1).defect_id    := pi_defect_id;
           po_defects_not_on_wo(po_defects_not_on_wo.count).rep_action_cat := pi_repair_type;
-          po_defects_not_on_wo(po_defects_not_on_wo.count).reason         := lv_reason;           
+          po_defects_not_on_wo(po_defects_not_on_wo.count).reason         := lv_reason;
       END IF;
     END check_defect;
     --
@@ -3331,6 +3542,13 @@ BEGIN
   */
   IF lt_wol.count > 0
    THEN
+      /*
+      ||Calaculate The Estmated Balancing Sum.
+      */
+      lv_wor_est_balancing_sum := get_balancing_sum(pi_con_id,lv_wor_est_cost);
+      /*
+      ||Insert The Work Order.
+      */
       INSERT
         INTO work_orders
             (wor_scheme_type
@@ -3355,6 +3573,7 @@ BEGIN
             ,wor_rechargeable
             ,wor_est_cost
             ,wor_est_labour
+            ,wor_est_balancing_sum
             )
       VALUES(lv_scheme_type
             ,lv_work_order_no
@@ -3378,6 +3597,7 @@ BEGIN
             ,pi_rechargeable
             ,lv_wor_est_cost
             ,lv_wor_est_labour
+            ,lv_wor_est_balancing_sum
             )
             ;
       /*
@@ -3472,6 +3692,8 @@ PROCEDURE instruct_work_order(pi_user_id         IN hig_users.hus_user_id%TYPE
   --
   lr_user hig_users%ROWTYPE;
   lr_wo   work_orders%ROWTYPE;
+  lr_con  contracts%ROWTYPE;
+  lr_org  org_units%ROWTYPE;
   --
   TYPE wol_tab IS TABLE OF work_order_lines%ROWTYPE INDEX BY BINARY_INTEGER;
   lt_wols wol_tab;
@@ -3494,30 +3716,6 @@ PROCEDURE instruct_work_order(pi_user_id         IN hig_users.hus_user_id%TYPE
      THEN
         RAISE;
   END get_user;
-  --
-  PROCEDURE get_wo
-    IS
-  BEGIN
-    /*
-    ||Get And Lock The Work Order Record.
-    */
-    SELECT *
-      INTO lr_wo
-      FROM work_orders
-     WHERE wor_works_order_no = pi_works_order_no
-       FOR UPDATE
-        OF wor_date_confirmed
-           NOWAIT
-         ;
-    --
-  EXCEPTION
-    WHEN no_data_found
-     THEN
-        raise_application_error(-20068,'Invalid Work Order Number Supplied');
-    WHEN others
-     THEN
-        RAISE;
-  END get_wo;
   --
   PROCEDURE get_wols
     IS
@@ -3574,9 +3772,6 @@ PROCEDURE instruct_work_order(pi_user_id         IN hig_users.hus_user_id%TYPE
   --
   PROCEDURE check_contract
     IS
-    --
-    lr_con contracts%ROWTYPE;
-    lr_org org_units%ROWTYPE;
     --
     lv_dumconcode  hig_option_values.hov_value%TYPE := NVL(hig.get_sysopt('DUMCONCODE'),'DEFAULT');
     --
@@ -3677,12 +3872,14 @@ PROCEDURE instruct_work_order(pi_user_id         IN hig_users.hus_user_id%TYPE
     FOR i IN 1..lt_wols.count LOOP
       --
       IF within_budget(pi_bud_id => lt_wols(i).wol_bud_id
+                      ,pi_con_id => lr_wo.wor_con_id
                       ,pi_est    => lt_wols(i).wol_est_cost
                       ,pi_act    => lt_wols(i).wol_act_cost
                       ,pi_wol_id => lt_wols(i).wol_id)
        THEN
           add_to_budget(pi_wol_id => lt_wols(i).wol_id
                        ,pi_bud_id => lt_wols(i).wol_bud_id
+                       ,pi_con_id => lr_wo.wor_con_id
                        ,pi_est    => lt_wols(i).wol_est_cost
                        ,pi_act    => lt_wols(i).wol_act_cost);
       ELSE
@@ -3692,6 +3889,58 @@ PROCEDURE instruct_work_order(pi_user_id         IN hig_users.hus_user_id%TYPE
     END LOOP;
     --
   END update_budgets;
+  --
+  PROCEDURE update_interfaces
+    IS
+    --
+    lr_ne nm_elements_all%ROWTYPE;
+    --
+    lv_originator hig_users.hus_name%TYPE;
+    --
+  BEGIN
+    --
+    IF interfaces_used(pi_con_id => lr_wo.wor_con_id)
+     THEN
+        --
+        lv_originator := nm3get.get_hus(pi_hus_user_id => lr_wo.wor_peo_person_id).hus_name;
+        --
+        interfaces.add_wor_to_list(p_trans_type   => 'C'
+                                  ,p_wor_no       => lr_wo.wor_works_order_no                 
+                                  ,p_wor_flag     => lr_wo.wor_flag                           
+                                  ,p_scheme_type  => lr_wo.wor_scheme_type                    
+                                  ,p_con_code     => lr_con.con_code                           
+                                  ,p_originator   => lv_originator                           
+                                  ,p_confirmed    => pi_date_instructed                 
+                                  ,p_est_complete => lr_wo.wor_est_complete                   
+                                  ,p_cost         => lr_wo.wor_est_cost
+                                  ,p_labour       => lr_wo.wor_est_labour                     
+                                  ,p_ip_flag      => lr_wo.wor_interim_payment_flag           
+                                  ,p_ra_flag      => lr_wo.wor_risk_assessment_flag           
+                                  ,p_ms_flag      => lr_wo.wor_method_statement_flag          
+                                  ,p_wp_flag      => lr_wo.wor_works_programme_flag           
+                                  ,p_as_flag      => lr_wo.wor_additional_safety_flag         
+                                  ,p_commence_by  => lr_wo.wor_commence_by                    
+                                  ,p_descr        => lr_wo.wor_descr);
+        --
+        FOR i IN 1..lt_wols.count LOOP
+          --
+          lr_ne := nm3get.get_ne(pi_ne_id => lt_wols(i).wol_rse_he_id);
+          --
+          interfaces.add_wol_to_list(lt_wols(i).wol_id
+                                    ,lt_wols(i).wol_works_order_no
+                                    ,lt_wols(i).wol_def_defect_id
+                                    ,lt_wols(i).wol_schd_id
+                                    ,lt_wols(i).wol_icb_work_code
+                                    ,lr_ne.ne_unique
+                                    ,lr_ne.ne_descr);
+          --
+        END LOOP;
+        --
+        interfaces.copy_data_to_interface;
+        --
+    END IF;
+    --
+  END update_interfaces;
   --
 BEGIN
   --
@@ -3703,7 +3952,7 @@ BEGIN
   /*
   ||Get The Work Order Details.
   */
-  get_wo;
+  lr_wo := get_and_lock_wo(pi_works_order_no => pi_works_order_no);
   get_wols;
   /*
   ||Make Sure This Isn't A Cyclic Work Order
@@ -3767,6 +4016,10 @@ BEGIN
   */
   update_budgets;
   /*
+  ||Update Interfaces If Required.
+  */
+  update_interfaces;
+  /*
   ||Commit If Required.
   */
   IF NVL(pi_commit,'Y') = 'Y'
@@ -3785,6 +4038,1566 @@ EXCEPTION
       --
       RAISE;
 END instruct_work_order;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE receive_work_order(pi_user_id        IN hig_users.hus_user_id%TYPE
+                            ,pi_works_order_no IN work_orders.wor_works_order_no%TYPE
+                            ,pi_date_received  IN work_orders.wor_date_received%TYPE
+                            ,pi_commit         IN VARCHAR2)
+  IS
+  --
+  lr_wo  work_orders%ROWTYPE;
+  --
+BEGIN
+  nm_debug.debug_on;
+  /*
+  ||Validate The User ID.
+  */
+  IF NOT validate_user_id(pi_user_id        => pi_user_id
+                         ,pi_effective_date => TRUNC(SYSDATE))
+   THEN
+      raise_application_error(-20067,'Invalid User Id Supplied ['||TO_CHAR(pi_user_id)||'].');
+  END IF;
+  /*
+  ||Get The Work Order Details
+  ||And Lock The Record For Update.
+  */
+  lr_wo := get_and_lock_wo(pi_works_order_no => pi_works_order_no);
+  /*
+  ||Make Sure The WO Can Be Received.
+  */
+  IF lr_wo.wor_date_confirmed IS NULL
+   THEN
+      raise_application_error(-20092,'Cannot Set A Works Order That Has Not Been Instructed As Received.');
+  END IF;
+  /*
+  ||Check The Date Received.
+  */
+  IF pi_date_received < lr_wo.wor_date_confirmed
+   THEN
+      raise_application_error(-20093,'Date Received ['||TO_CHAR(pi_date_received,'DD-MON-RRRR')
+                                   ||']Must Not Be Less Than The Date Instructed ['||TO_CHAR(lr_wo.wor_date_confirmed,'DD-MON-RRRR')||'].');
+  END IF;
+  /*
+  ||Update The Work Order.
+  */
+  UPDATE work_orders
+     SET wor_received_by = pi_user_id
+        ,wor_date_received = pi_date_received
+   WHERE wor_works_order_no = pi_works_order_no
+       ;
+  /*
+  ||Commit If Required.
+  */
+  IF NVL(pi_commit,'Y') = 'Y'
+   THEN
+      nm_debug.debug('Commit.');
+      COMMIT;
+  END IF;
+  --
+EXCEPTION
+  WHEN OTHERS
+   THEN
+      ROLLBACK;
+      --
+      nm_debug.debug(SUBSTR('receive_work_order raised : '||SQLERRM,1,4000));
+      nm_debug.debug_off;
+      --
+      RAISE;
+END receive_work_order;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_wol_status_flags(pi_status_code work_order_lines.wol_status_code%TYPE
+                             ,pi_date_raised work_orders.wor_date_raised%TYPE)
+  RETURN flags_rec IS
+  --
+  lr_retval flags_rec;
+  --
+BEGIN
+  /*
+  ||Get The Flags.
+  */
+  SELECT hsc_allow_feature1 feature1
+        ,hsc_allow_feature2 feature2
+        ,hsc_allow_feature3 feature3
+        ,hsc_allow_feature4 feature4
+        ,hsc_allow_feature5 feature5
+        ,hsc_allow_feature6 feature6
+        ,hsc_allow_feature7 feature7
+        ,hsc_allow_feature8 feature8
+        ,hsc_allow_feature9 feature9
+   INTO lr_retval
+   FROM hig_status_codes
+  WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+    AND hsc_status_code = pi_status_code
+    AND (pi_date_raised BETWEEN NVL(hsc_start_date,pi_date_raised)
+                            AND NVL(hsc_end_date, pi_date_raised)
+         OR pi_date_raised IS NULL)
+      ;
+  /*
+  ||Return The Flags.
+  */
+  RETURN lr_retval;
+  --
+END get_wol_status_flags;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION wol_status_is_actual(pi_flags IN flags_rec)
+  RETURN BOOLEAN IS
+  --
+  lv_retval BOOLEAN := FALSE;
+  --
+BEGIN
+  /*
+  ||Get The Status Code Flags.
+  */
+  IF (pi_flags.feature3 = 'Y'
+      OR pi_flags.feature8 = 'Y'
+      OR pi_flags.feature9 = 'Y')
+   THEN
+      lv_retval := TRUE;
+  END IF;
+  --
+  RETURN lv_retval;
+  --
+END wol_status_is_actual;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE update_wol_status(pi_user_id       IN hig_users.hus_user_id%TYPE
+                           ,pi_wol_id        IN work_order_lines.wol_id%TYPE
+                           ,pi_new_status    IN work_order_lines.wol_status_code%TYPE
+                           ,pi_date_complete IN work_order_lines.wol_date_complete%TYPE
+                           ,pi_boq_tab       IN act_boq_tab
+                           ,pi_commit        IN VARCHAR2)
+  IS
+  --
+  lr_old_status flags_rec;
+  lr_new_status flags_rec;
+  --
+  lr_wo     work_orders%ROWTYPE;
+  lr_wol    work_order_lines%ROWTYPE;
+  lr_defect defects%ROWTYPE;
+  --
+  lv_complete_status  BOOLEAN := FALSE;
+  lv_interim_status   BOOLEAN := FALSE;
+  lv_not_done_status  BOOLEAN := FALSE;
+  lv_valid_transition BOOLEAN := TRUE;
+  lv_reason           VARCHAR2(200);
+  lv_actual_costs     BOOLEAN := FALSE;
+  --
+  lv_wor_est_cost           work_orders.wor_est_cost%TYPE;
+  lv_wor_est_balancing_sum  work_orders.wor_est_balancing_sum%TYPE;
+  lv_wor_est_labour         work_orders.wor_est_labour%TYPE;
+  lv_wor_act_cost           work_orders.wor_act_cost%TYPE;
+  lv_wor_act_balancing_sum  work_orders.wor_act_balancing_sum%TYPE;
+  lv_wor_act_labour         work_orders.wor_act_labour%TYPE;
+  lv_wor_date_closed        work_orders.wor_date_closed%TYPE;
+  --
+  lv_def_status_code  defects.def_status_code%TYPE;
+  --
+  PROCEDURE validate_date_complete
+    IS
+  BEGIN
+    --
+    IF pi_date_complete IS NOT NULL
+     THEN
+        --
+        IF pi_date_complete > SYSDATE
+         THEN
+            raise_application_error(-20105,'Date Complete Must Be Less Than Or Equal To Todays Date.');
+        END IF;
+        --
+        IF pi_date_complete < lr_wo.wor_date_confirmed
+         OR lr_wo.wor_date_confirmed IS NULL
+         THEN
+            raise_application_error(-20106,'Date Complete Must Be On Or Later Than The Date Raised ['
+                                           ||TO_CHAR(lr_wo.wor_date_raised,'DD-MON-RRRR')||'].');
+        END IF;
+        --
+    END IF;
+    --
+  END validate_date_complete;
+  --
+  PROCEDURE validate_wol_status_change
+    IS
+    --
+    PROCEDURE set_defect_status
+      IS
+      --
+      lv_def_feature2 hig_status_codes.hsc_allow_feature2%TYPE := 'N';
+      lv_def_feature3 hig_status_codes.hsc_allow_feature3%TYPE := 'N';
+      lv_def_feature4 hig_status_codes.hsc_allow_feature4%TYPE := 'N';
+      lv_dummy        NUMBER;
+      --
+      PROCEDURE get_def_status
+        IS
+      BEGIN
+        --
+        SELECT hsc_status_code
+          INTO lv_def_status_code
+          FROM hig_status_codes
+         WHERE hsc_domain_code = 'DEFECTS'
+           AND hsc_allow_feature2 = lv_def_feature2
+           AND hsc_allow_feature3 = lv_def_feature3
+           AND hsc_allow_feature4 = lv_def_feature4
+             ;
+        --
+      EXCEPTION
+        WHEN too_many_rows
+         THEN
+            raise_application_error(-20108,'Too Many Values Defined For Defect Status.');
+        WHEN no_data_found
+         THEN
+            raise_application_error(-20109,'Cannot Obtain Value For Defect Status.');
+        WHEN others
+         THEN
+            RAISE;
+      END get_def_status;
+      --
+      FUNCTION other_repair_assigned
+        RETURN BOOLEAN IS
+        --
+        lv_dummy  NUMBER;
+        lv_retval BOOLEAN := FALSE;
+        --
+        CURSOR chk_reps(cp_defect_id  defects.def_defect_id%TYPE
+                       ,cp_wol_id     work_order_lines.wol_id%TYPE)
+            IS
+        SELECT 1
+          FROM work_order_lines
+              ,hig_status_codes
+         WHERE wol_def_defect_id = cp_defect_id
+           AND wol_status_code != hsc_status_code
+           AND wol_id != cp_wol_id
+           AND hsc_domain_code = 'WORK_ORDER_LINES'
+           AND hsc_allow_feature5 = 'Y'
+             ;
+      BEGIN
+        --
+        OPEN  chk_reps(lr_wol.wol_def_defect_id
+                      ,lr_wol.wol_id);
+        FETCH chk_reps
+         INTO lv_dummy;
+        lv_retval := chk_reps%FOUND;
+        CLOSE chk_reps;
+        --
+        RETURN lv_retval;
+        --
+      EXCEPTION
+        WHEN no_data_found
+         THEN
+            RETURN FALSE;
+        WHEN others
+         THEN
+            RAISE;
+      END other_repair_assigned;
+    BEGIN
+      --
+      IF lr_new_status.feature2 = 'Y'
+       OR lr_new_status.feature3 = 'Y'
+       THEN
+          /*
+          ||WOL Is Held Or Complete
+          ||So Defect Is Complete.
+          */
+          lv_def_feature4 := 'Y';
+          --
+      ELSIF lr_new_status.feature5 = 'Y'
+       THEN
+          /*
+          ||WOL Is Not Done.
+          */
+          IF other_repair_assigned
+           THEN
+              /*
+              ||Defect Is Instructed.
+              */
+              lv_def_feature3 := 'Y';
+              --
+          ELSE
+              /*
+              ||Defect Is Available.
+              */
+              lv_def_feature2 := 'Y';
+              --
+          END IF;
+          --
+      ELSE
+          /*
+          ||Defect Is Instructed.
+          */
+          lv_def_feature3 := 'Y';
+          --
+      END IF;
+      /*
+      ||Now Get Defect Status Code
+      ||Based On The Flags Set.
+      */
+      get_def_status;
+      --
+    END set_defect_status;
+    --
+  BEGIN
+    /*
+    ||Make Sure Status Change Is Allowed.
+    */
+--    IF NVL(lr_wol.wol_status_code,'@') = NVL(pi_new_status, '@')
+--     THEN
+--        /*
+--        ||No Change In Status So No Need To Do Anything.
+--        */
+--        lv_valid_transition := FALSE;
+--        lv_reason := 'Works Order Line Status Is Already Set To '||pi_new_status;
+--    END IF;
+    --
+    IF lr_wo.wor_date_confirmed IS NULL
+     THEN
+        /*
+        ||Cannot Amend Status On Unconfirmed Works Order.
+        */
+        lv_valid_transition := FALSE;
+        lv_reason := 'Cannot Amend Status On Unconfirmed Works Order.';
+    END IF;
+    /*
+    ||Check That The Transition From The
+    ||Old Status To The New Status Is Valid.
+    */
+    IF lv_valid_transition
+     THEN
+        /*
+        ||Get The Flags.
+        */
+        BEGIN
+          lr_old_status := get_wol_status_flags(pi_status_code => lr_wol.wol_status_code
+                                               ,pi_date_raised => NULL);
+        EXCEPTION
+          WHEN no_data_found
+           THEN
+              lv_valid_transition:= FALSE;
+              lv_reason := 'Old Status Code Does Not Exist.';
+          WHEN others
+           THEN
+              RAISE;
+        END;
+        --
+        BEGIN
+          lr_new_status := get_wol_status_flags(pi_status_code => pi_new_status
+                                               ,pi_date_raised => lr_wo.wor_date_raised);
+        EXCEPTION
+          WHEN no_data_found
+           THEN
+              lv_valid_transition:= FALSE;
+              lv_reason := 'New Status Code Does Not Exist.';
+          WHEN others
+           THEN
+              RAISE;
+        END;
+        --
+        IF lv_valid_transition
+         THEN
+            CASE
+              WHEN lr_new_status.feature4 = 'Y'
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'User Cannot Set Status To PAID or PART PAID.';
+              WHEN lr_new_status.feature2 = 'Y'
+               AND lr_old_status.feature2 = 'Y'
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Status Is Already At HELD.';                  
+              WHEN lr_new_status.feature5 = 'Y'
+               AND lr_old_status.feature5 = 'Y'
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Status Is Already At NOT_DONE.';                  
+              WHEN lr_new_status.feature1 = 'Y'
+               AND lr_old_status.feature1 = 'Y'
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Status Is Already At INSTRUCTED.';                  
+              WHEN (lr_new_status.feature3 = 'Y'
+                    AND lr_old_status.feature3 = 'Y')
+               OR (lr_new_status.feature5 = 'Y'
+                   AND lr_wol.wol_date_complete IS NOT NULL)
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Work Order Line Has Already Been Completed.';
+              WHEN lr_new_status.feature3 = 'Y'
+               AND NOT mai.contract_still_in_date(p_wo_no => lr_wol.wol_id)
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Work Order Line Cannot Be Completed, Contract Is Out Of Date.';               
+              WHEN (lr_old_status.feature2 = 'Y'
+                    OR lr_old_status.feature3 = 'Y')
+               AND lr_new_status.feature9 = 'Y'
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Status Change From HELD Or COMPLETE To INTERIM Is Not Allowed.';
+              --WHEN lr_old_status.feature8 != 'Y'
+              -- AND lr_new_status.feature9 = 'Y'
+              -- THEN
+              --    lv_valid_transition := FALSE;
+              --    lv_reason := 'Status Can Only Be Changed To INTERIM From VALUATION.';
+              WHEN lr_old_status.feature4 = 'Y'
+               AND (lr_new_status.feature2 = 'Y'
+                    OR lr_new_status.feature5 = 'Y')
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Status Cannot Be Changed From PAID Or PART PAID To HELD Or NOT DONE.';
+              WHEN lr_new_status.feature3 = 'Y'
+               AND maiwo.can_complete_wol(p_works_order_no => lr_wo.wor_works_order_no) = 'FALSE'
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'User Is Not Allowed To Complete The Line When The Contractor Interface Is In Use.';
+              WHEN NVL(lr_wo.wor_interim_payment_flag,'N') != 'Y'
+               AND (lr_new_status.feature8 = 'Y'
+                    OR lr_new_status.feature9  = 'Y')
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Works Order Interim Payment Flag Must Be Set Before INTERIM and VALUATION Are Allowed.';
+              WHEN ((lr_new_status.feature9 = 'Y' and lr_new_status.feature4 != 'Y')
+                    OR lr_new_status.feature8 = 'Y')
+               AND maiwo.final_claim_exists(p_wol_id => lr_wol.wol_id)
+               THEN
+                  lv_valid_transition := FALSE;
+                  lv_reason := 'Status Of INTERIM Or VALUATION Is Not Allowed Once A Final Claim Has Been Made.';
+              ELSE
+                  NULL;
+            END CASE;
+            --
+        END IF;
+    END IF;
+    --
+    IF lv_valid_transition
+     THEN
+        /*
+        ||Determine Whether Any Boq Calculations
+        ||Should Be Estimates Or Actuals.
+        */
+        lv_actual_costs := wol_status_is_actual(pi_flags => lr_new_status);
+        /*
+        ||Determine Whether New Status
+        ||Requires An Interim Payment.
+        */
+        IF lr_new_status.feature9 = 'Y'
+         AND lr_new_status.feature4 != 'Y'
+         THEN
+            lv_interim_status := TRUE;
+        END IF;
+        /*
+        ||Determine Whether The New Status
+        ||Is Completing The Work Order Line.
+        */
+        lv_complete_status := maiwo.complete_status(p_status => pi_new_status);
+        /*
+        ||Determine Whether The New Status
+        ||Is Marking The Work Order Line As Not Done.
+        */
+        IF lr_new_status.feature5 = 'Y'
+         THEN
+            lv_not_done_status := TRUE;
+        END IF;
+        /*
+        ||If The Work Order Line Has A Defect
+        ||Associated Determine The Defect Status.
+        */
+        set_defect_status;
+        --
+    END IF;
+    --
+  END validate_wol_status_change;
+  --
+  PROCEDURE process_boqs
+    IS
+    --
+    lr_sta            standard_items%ROWTYPE;
+    lr_blank_boq      boq_items%ROWTYPE;
+    lr_new_boq        boq_items%ROWTYPE;
+    lr_upd_boq        boq_items%ROWTYPE;
+    lr_new_perc_item  boq_items%ROWTYPE;
+    --
+    lv_perc_item_unit hig_option_values.hov_value%TYPE := hig.get_sysopt('PERC_ITEM');
+    --
+    PROCEDURE insert_new_perc_item(pi_parent_id IN boq_items.boq_parent_id%TYPE
+                                  ,pi_item_code IN standard_items.sta_item_code%TYPE)
+      IS
+      --
+      lr_sta_perc   standard_items%ROWTYPE;
+      lr_perc_item  boq_items%ROWTYPE;
+      --
+      lv_rate  boq_items.boq_act_rate%TYPE;
+      --
+    BEGIN
+      --
+      lr_sta_perc := get_sta(pi_sta_item_code => pi_item_code);
+      --
+      lv_rate := maiwo.reprice_item(p_item_code => pi_item_code
+                                   ,p_con_id    => lr_wo.wor_con_id
+                                   ,p_rse_he_id => lr_wol.wol_rse_he_id
+                                   ,p_priority  => lr_defect.def_priority);
+      IF lv_rate IS NULL
+       THEN
+          raise_application_error(-20101,'Item Code ['||lr_new_boq.boq_sta_item_code||'] Is Not A Valid Contract Item.');
+      END IF;
+      --
+      lr_perc_item.boq_id             := get_next_id('BOQ_ID_SEQ');
+      lr_perc_item.boq_parent_id      := pi_parent_id;
+      lr_perc_item.boq_sta_item_code  := pi_item_code;
+      lr_perc_item.boq_item_name      := lr_sta_perc.sta_item_name;
+      lr_perc_item.boq_work_flag      := lr_wol.wol_flag;
+      lr_perc_item.boq_defect_id      := NVL(lr_wol.wol_def_defect_id,0);
+      lr_perc_item.boq_rep_action_cat := NVL(lr_wol.wol_rep_action_cat,'X');
+      lr_perc_item.boq_wol_id         := lr_wol.wol_id;
+      lr_perc_item.boq_date_created   := sysdate;
+      lr_perc_item.boq_est_dim1       := 0;
+      lr_perc_item.boq_est_dim2       := NULL;
+      lr_perc_item.boq_est_dim3       := NULL;
+      lr_perc_item.boq_est_quantity   := 0;
+      lr_perc_item.boq_est_cost       := 0;
+      lr_perc_item.boq_est_rate       := 0;
+      lr_perc_item.boq_act_dim1       := 1;
+      lr_perc_item.boq_act_dim2       := NULL;
+      lr_perc_item.boq_act_dim3       := NULL;
+      lr_perc_item.boq_act_quantity   := 1;
+      lr_perc_item.boq_act_rate       := lv_rate;
+      lr_perc_item.boq_act_cost       := 0;
+      --
+      INSERT
+        INTO boq_items
+      VALUES lr_perc_item
+           ;
+      --
+    END insert_new_perc_item;
+    --
+    PROCEDURE recalc_percent_items
+      IS
+      --
+      TYPE perc_item_rec IS RECORD(child_id  boq_items.boq_id%TYPE
+                                  ,parent_id boq_items.boq_id%TYPE);
+      TYPE perc_item_tab IS TABLE OF perc_item_rec INDEX BY BINARY_INTEGER;
+      lt_perc_items perc_item_tab;
+      --
+      lv_dummy NUMBER;
+      --
+      PROCEDURE get_perc_items
+        IS
+      BEGIN
+        SELECT boq_id        child_id
+              ,boq_parent_id parent_id
+          BULK COLLECT
+          INTO lt_perc_items
+          FROM boq_items
+         WHERE boq_wol_id = lr_wol.wol_id
+           AND boq_parent_id IS NOT NULL
+             ;
+      EXCEPTION
+        WHEN no_data_found
+         THEN
+            NULL;
+        WHEN others
+         THEN
+            RAISE;
+      END get_perc_items;
+      --
+    BEGIN
+      get_perc_items;
+      FOR i IN 1..lt_perc_items.count LOOP
+        lv_dummy := maiwo.recalc_percent_item(p_boq_item    => lt_perc_items(i).parent_id
+                                             ,p_comp_method => lr_wo.wor_perc_item_comp);
+        IF lv_dummy != -1
+         THEN
+            raise_application_error(-20103,'An Error Occured Whilst Recalculating Percent Items.');
+        END IF;
+      END LOOP;
+    END recalc_percent_items;
+    --
+  BEGIN
+    /*
+    ||Process Any BOQs Passed In.
+    */
+    IF pi_boq_tab.count > 0
+     THEN
+        IF NOT lv_actual_costs
+         THEN
+            raise_application_error(-20100,'Update Of BOQs Is Only Supported For Actual Costs.');
+        END IF;
+        --
+        FOR i IN 1..pi_boq_tab.count LOOP
+          /*
+          ||Validate Standard Item Code.
+          */
+          IF pi_boq_tab(i).boq_sta_item_code IS NOT NULL
+           THEN
+              lr_sta := get_sta(pi_sta_item_code => pi_boq_tab(i).boq_sta_item_code);
+              IF lr_sta.sta_unit = lv_perc_item_unit
+               THEN
+                  raise_application_error(-20099,'Parent BOQs Based On Percentage Items Codes Are Not Supported.');
+              END IF;
+          ELSE
+              raise_application_error(-20032,'Invalid Standard Item Code Specified.');
+          END IF;
+          --
+          IF pi_boq_tab(i).boq_id IS NOT NULL
+           THEN
+              /*
+              ||Existing BOQ So Get The Record From The Database.
+              */
+              lr_upd_boq := lr_blank_boq;
+              --
+              BEGIN
+                SELECT *
+                  INTO lr_upd_boq
+                  FROM boq_items
+                 WHERE boq_id = pi_boq_tab(i).boq_id
+                   AND boq_wol_id = lr_wol.wol_id
+                     ;
+              EXCEPTION
+                WHEN no_data_found
+                 THEN
+                    raise_application_error(-20091,'BOQ_ID ['||TO_CHAR(pi_boq_tab(i).boq_id)
+                                                 ||'] Is Not A Child Of The Specified Parent - Work Order Line ['
+                                                 ||TO_CHAR(lr_wol.wol_id)||'].');
+                WHEN others
+                 THEN
+                    RAISE;
+              END;
+              /*
+              ||Update Actual Dimensions etc.
+              */
+              lr_upd_boq.boq_act_dim1 := NVL(pi_boq_tab(i).boq_act_dim1,NVL(lr_upd_boq.boq_act_dim1,0));
+              --
+              IF lr_sta.sta_dim2_text IS NOT NULL
+               THEN
+                  lr_upd_boq.boq_act_dim2 := NVL(pi_boq_tab(i).boq_act_dim2,NVL(lr_upd_boq.boq_act_dim2,1));
+              END IF;
+              --
+              IF lr_sta.sta_dim3_text IS NOT NULL
+               THEN
+                  lr_upd_boq.boq_act_dim3 := NVL(pi_boq_tab(i).boq_act_dim3,NVL(lr_upd_boq.boq_act_dim3,1));
+              END IF;
+              /*
+              ||Set Actual Quantity.
+              */
+              lr_upd_boq.boq_act_quantity := lr_upd_boq.boq_act_dim1
+                                             * NVL(lr_upd_boq.boq_act_dim2,1)
+                                             * NVL(lr_upd_boq.boq_act_dim3,1);
+              /*
+              ||Check Quantity.
+              */
+              IF lr_upd_boq.boq_act_quantity < lr_sta.sta_min_quantity
+               AND lr_upd_boq.boq_act_quantity != 0
+               THEN
+                  raise_application_error(-20035,'Actual Quantity Is Below The Minimum Quantity.');
+              END IF;
+              --
+              IF lr_upd_boq.boq_act_quantity > lr_sta.sta_max_quantity
+               AND lr_upd_boq.boq_act_quantity != 0
+               THEN
+                  raise_application_error(-20036,'Actual Quantity Is Above The Maximum Quantity.');
+              END IF;
+              /*
+              ||Set Actual Labour
+              */
+              lr_upd_boq.boq_act_labour := lr_upd_boq.boq_act_quantity * NVL(lr_sta.sta_labour_units,0);
+              /*
+              ||Set Actual Rate.
+              */
+              IF lr_upd_boq.boq_sta_item_code != pi_boq_tab(i).boq_sta_item_code
+               OR lr_upd_boq.boq_act_rate IS NULL
+               THEN
+                  lr_upd_boq.boq_sta_item_code := pi_boq_tab(i).boq_sta_item_code;
+                  lr_upd_boq.boq_act_rate := maiwo.reprice_item(p_item_code => lr_upd_boq.boq_sta_item_code
+                                                               ,p_con_id    => lr_wo.wor_con_id
+                                                               ,p_rse_he_id => lr_wol.wol_rse_he_id
+                                                               ,p_priority  => lr_defect.def_priority);
+                  IF lr_upd_boq.boq_act_rate IS NULL
+                   THEN
+                      raise_application_error(-20101,'Item Code ['||lr_new_boq.boq_sta_item_code||'] Is Not A Valid Contract Item.');
+                  END IF;
+                  --
+              END IF;
+              /*
+              ||Set Actual Cost.
+              */
+              lr_upd_boq.boq_act_cost := ROUND((lr_upd_boq.boq_act_rate * lr_upd_boq.boq_act_quantity),2);
+              --
+              UPDATE boq_items
+                 SET ROW = lr_upd_boq
+               WHERE boq_id = pi_boq_tab(i).boq_id
+                   ;
+              /*
+              ||Check To See If A New Percent Item Has Been Specified.
+              */
+              IF pi_boq_tab(i).add_percent_item = 'Y'
+               AND pi_boq_tab(i).percent_item_code IS NOT NULL
+               THEN
+                  /*
+                  ||Check The Parent Is Allowed To Have A Child.
+                  */
+                  IF lr_sta.sta_allow_percent = 'Y'
+                   THEN
+                      insert_new_perc_item(pi_parent_id => lr_upd_boq.boq_id
+                                          ,pi_item_code => pi_boq_tab(i).percent_item_code);
+                  ELSE
+                      raise_application_error(-20102,'Percent Items Cannot Be Added To Item Code ['||lr_sta.sta_item_code||'].');
+                  END IF;
+              END IF;
+              --
+          ELSE
+              lr_new_boq := lr_blank_boq;
+              /*
+              ||New Boq So Set Some Default Fields.
+              */
+              lr_new_boq.boq_id             := get_next_id('BOQ_ID_SEQ');
+              lr_new_boq.boq_sta_item_code  := pi_boq_tab(i).boq_sta_item_code;
+              lr_new_boq.boq_work_flag      := lr_wol.wol_flag;
+              lr_new_boq.boq_defect_id      := NVL(lr_wol.wol_def_defect_id,0);
+              lr_new_boq.boq_rep_action_cat := NVL(lr_wol.wol_rep_action_cat,'X');
+              lr_new_boq.boq_wol_id         := lr_wol.wol_id;
+              lr_new_boq.boq_date_created   := SYSDATE;
+              lr_new_boq.boq_item_name      := lr_sta.sta_item_name;
+              lr_new_boq.boq_est_dim1       := 0;
+              lr_new_boq.boq_est_dim2       := NULL;
+              lr_new_boq.boq_est_dim3       := NULL;
+              lr_new_boq.boq_est_quantity   := 0;
+              lr_new_boq.boq_est_cost       := 0;
+              lr_new_boq.boq_est_rate       := 0;
+              /*
+              ||Check/Default Dimentions.
+              */
+              lr_new_boq.boq_act_dim1 := NVL(pi_boq_tab(i).boq_act_dim1,0);
+              --
+              IF lr_sta.sta_dim2_text IS NOT NULL
+               THEN
+                  lr_new_boq.boq_act_dim2 := NVL(pi_boq_tab(i).boq_act_dim2,1);
+              END IF;
+              --
+              IF lr_sta.sta_dim3_text IS NOT NULL
+               THEN
+                  lr_new_boq.boq_act_dim3 := NVL(pi_boq_tab(i).boq_act_dim3,1);
+              END IF;
+              /*
+              ||Set Actual Quantity.
+              */
+              lr_new_boq.boq_act_quantity := lr_new_boq.boq_act_dim1
+                                             * NVL(lr_new_boq.boq_act_dim2,1)
+                                             * NVL(lr_new_boq.boq_act_dim3,1);
+              /*
+              ||Check Quantity.
+              */
+              IF lr_new_boq.boq_act_quantity < lr_sta.sta_min_quantity
+               AND lr_new_boq.boq_act_quantity != 0
+               THEN
+                  raise_application_error(-20035,'Actual Quantity Is Below The Minimum Quantity.');
+              END IF;
+              --
+              IF lr_new_boq.boq_act_quantity > lr_sta.sta_max_quantity
+               AND lr_new_boq.boq_act_quantity != 0
+               THEN
+                  raise_application_error(-20036,'Actual Quantity Is Above The Maximum Quantity.');
+              END IF;
+              /*
+              ||Set Actual Labour
+              */
+              lr_new_boq.boq_act_labour := lr_new_boq.boq_act_quantity * NVL(lr_sta.sta_labour_units,0);
+              /*
+              ||Set Actual Rate.
+              */
+              lr_new_boq.boq_act_rate := maiwo.reprice_item(p_item_code => lr_new_boq.boq_sta_item_code
+                                                           ,p_con_id    => lr_wo.wor_con_id
+                                                           ,p_rse_he_id => lr_wol.wol_rse_he_id
+                                                           ,p_priority  => lr_defect.def_priority);
+              IF lr_new_boq.boq_act_rate IS NULL
+               THEN
+                  raise_application_error(-20101,'Item Code ['||lr_new_boq.boq_sta_item_code||'] Is Not A Valid Contract Item.');
+              END IF;
+              /*
+              ||Set Actual Cost.
+              */
+              lr_new_boq.boq_act_cost := ROUND((lr_new_boq.boq_act_rate * lr_new_boq.boq_act_quantity),2);
+              --
+              INSERT
+                INTO boq_items
+              VALUES lr_new_boq
+                   ;
+              /*
+              ||Check To See If A New Percent Item Has Been Specified.
+              */
+              IF pi_boq_tab(i).add_percent_item = 'Y'
+               AND pi_boq_tab(i).percent_item_code IS NOT NULL
+               THEN
+                  /*
+                  ||Check The Parent Is Allowd To Have A Child.
+                  */
+                  IF lr_sta.sta_allow_percent = 'Y'
+                   THEN
+                      insert_new_perc_item(pi_parent_id => lr_new_boq.boq_id
+                                          ,pi_item_code => pi_boq_tab(i).percent_item_code);
+                  ELSE
+                      raise_application_error(-20102,'Percent Items Cannot Be Added To Item Code ['||lr_sta.sta_item_code||'].');
+                  END IF;
+              END IF;
+          END IF;
+          --
+        END LOOP;
+    END IF;
+    /*
+    ||Set Actuals For Any BOQs That Haven't Been Updated.
+    */
+    IF lv_actual_costs
+     OR lv_complete_status
+     THEN
+        UPDATE boq_items
+           SET boq_act_dim1     = NVL(boq_act_dim1, boq_est_dim1)
+              ,boq_act_dim2     = NVL(boq_act_dim2, boq_est_dim2)
+              ,boq_act_dim3     = NVL(boq_act_dim3, boq_est_dim3)
+              ,boq_act_rate     = NVL(boq_act_rate, boq_est_rate)
+              ,boq_act_quantity = NVL(boq_act_quantity, boq_est_quantity)
+              ,boq_act_cost     = NVL(boq_act_cost, boq_est_cost)
+              ,boq_act_labour   = NVL(boq_act_labour, boq_est_labour)
+              ,boq_act_discount = NVL(boq_act_discount, boq_est_discount)
+         WHERE boq_wol_id = lr_wol.wol_id
+             ;
+    ELSIF lv_not_done_status
+     THEN
+        UPDATE boq_items
+           SET boq_act_dim1     = NULL
+              ,boq_act_dim2     = NULL
+              ,boq_act_dim3     = NULL
+              ,boq_act_rate     = NULL
+              ,boq_act_quantity = NULL
+              ,boq_act_cost     = NULL
+              ,boq_act_labour   = NULL
+              ,boq_act_discount = NULL
+         WHERE boq_wol_id = lr_wol.wol_id
+             ;
+    END IF;
+    /*
+    ||Recalc Perc Items.
+    */
+    recalc_percent_items;
+    /*
+    ||Update Contract Item Usage.
+    */
+    IF lv_complete_status
+     THEN
+        maiwo.adjust_contract_figures(p_wol_id    => lr_wol.wol_id
+                                     ,p_con_id    => lr_wo.wor_con_id
+                                     ,p_operation => '+');
+    ELSIF lv_not_done_status
+     THEN
+        maiwo.adjust_contract_figures(p_wol_id    => lr_wol.wol_id
+                                     ,p_con_id    => lr_wo.wor_con_id
+                                     ,p_operation => '-');
+    END IF;
+    --
+  END process_boqs;
+  --
+  PROCEDURE update_wol
+    IS
+    --
+    lv_wol_est_cost    work_order_lines.wol_est_cost%TYPE;
+    lv_wol_est_labour  work_order_lines.wol_est_labour%TYPE;
+    lv_wol_act_cost    work_order_lines.wol_act_cost%TYPE;
+    lv_wol_act_labour  work_order_lines.wol_act_labour%TYPE;
+    lv_invoice_status  work_order_lines.wol_invoice_status%TYPE;
+    lv_date_complete   work_order_lines.wol_date_complete%TYPE;
+    --
+    PROCEDURE update_defect
+      IS
+      CURSOR c1(cp_defect_id       defects.def_defect_id%TYPE
+               ,cp_rep_action_cat  repairs.rep_action_cat%TYPE)
+          IS
+      SELECT 1
+        FROM repairs
+       WHERE rep_def_defect_id = cp_defect_id
+         AND rep_date_completed IS NULL
+         AND rep_action_cat != cp_rep_action_cat;
+      --
+      lv_defect_complete  BOOLEAN;
+      lv_dummy            NUMBER;
+      --
+    BEGIN
+      /*
+      ||Set The Completion Date On The Repair And The
+      ||Defect (If There Are No Outstanding Repairs).
+      */
+      maiwo.update_defect_date(p_def_id         => lr_wol.wol_def_defect_id
+                              ,p_date_compl     => lv_date_complete
+                              ,p_works_order_no => lr_wol.wol_works_order_no
+                              ,p_wol_id         => lr_wol.wol_id
+                              ,p_hour_compl     => TO_NUMBER(TO_CHAR(lv_date_complete,'HH24'))
+                              ,p_mins_compl     => TO_NUMBER(TO_CHAR(lv_date_complete,'MI')));
+      /*
+      ||Check Whether There Are Other Repairs For
+      ||This Defect That Are Not Yet Complete.
+      ||If All Are Complete Set The Status Of
+      ||The Defect To Complete.
+      */
+      OPEN  c1(lr_wol.wol_def_defect_id
+              ,lr_wol.wol_rep_action_cat);
+      FETCH c1
+       INTO lv_dummy;
+      /*
+      ||If No Other Repairs Found
+      ||The Defect Is Complete.
+      */
+      lv_defect_complete := c1%NOTFOUND;
+      CLOSE c1;
+      --
+      IF (lv_date_complete IS NOT NULL
+          AND lv_defect_complete)
+       OR lv_not_done_status
+       THEN
+          --
+          UPDATE defects
+             SET def_status_code = lv_def_status_code
+                ,def_last_updated_date = SYSDATE
+           WHERE def_defect_id = lr_wol.wol_def_defect_id
+               ;
+          --
+      END IF;
+      --
+    END update_defect;
+    --
+  BEGIN
+    --
+    IF lv_complete_status
+     THEN
+        lv_date_complete := NVL(pi_date_complete,nvl(lr_wol.wol_date_repaired,sysdate));
+    END IF;
+    --
+    SELECT SUM(NVL(boq_est_cost,0))   est_cost
+          ,SUM(NVL(boq_est_labour,0)) est_labour
+          ,SUM(boq_act_cost)   act_cost
+          ,SUM(boq_est_labour) est_labour
+      INTO lv_wol_est_cost
+          ,lv_wol_est_labour
+          ,lv_wol_act_cost
+          ,lv_wol_act_labour
+      FROM boq_items
+     WHERE boq_wol_id = lr_wol.wol_id
+         ;
+    /*
+    ||Update The Work Order Line.
+    */
+    UPDATE work_order_lines
+       SET wol_status_code   = pi_new_status
+          ,wol_est_cost      = lv_wol_est_cost
+          ,wol_est_labour    = lv_wol_est_labour
+          ,wol_act_cost      = lv_wol_act_cost
+          ,wol_act_labour    = lv_wol_est_labour
+          ,wol_date_complete = lv_date_complete
+     WHERE wol_id = lr_wol.wol_id
+         ;
+    /*
+    ||wo claims trigger will fire after this update creating a claim_payment
+    ||record. Now then entry has been made we can set the invoice status
+    */
+    lv_invoice_status := maiwo.wol_invoice_status(p_wol_id => lr_wol.wol_id);
+    --
+    UPDATE work_order_lines
+       SET wol_invoice_status = lv_invoice_status
+     WHERE wol_id = lr_wol.wol_id;
+    /*
+    ||Update The Budget.
+    */
+    IF lv_not_done_status
+     OR (lv_wol_act_cost IS NULL and lr_wol.wol_act_cost IS NOT NULL)
+     THEN
+        /*
+        ||Work Has Not Been Done So Needs
+        ||To Be Removed From The Budget.
+        */
+        IF NOT mai_budgets.budget_reversal(p_wol_id  => lr_wol.wol_id
+                                          ,p_bud_id  => lr_wol.wol_bud_id
+                                          ,p_wol_act => apply_balancing_sum(pi_con_id => lr_wo.wor_con_id
+                                                                           ,pi_value  => (NVL(lv_wol_act_cost,0) - NVL(lr_wol.wol_act_cost,0)))
+                                          ,p_wol_est => 0)
+         THEN
+            raise_application_error(-20047,'Budget Exceeded.');
+        END IF;
+    ELSE
+        IF within_budget(pi_bud_id => lr_wol.wol_bud_id
+                        ,pi_con_id => lr_wo.wor_con_id
+                        ,pi_est    => lv_wol_est_cost - NVL(lr_wol.wol_est_cost,0)
+                        ,pi_act    => lv_wol_act_cost - NVL(lr_wol.wol_act_cost,0)
+                        ,pi_wol_id => lr_wol.wol_id)
+         THEN
+            add_to_budget(pi_wol_id => lr_wol.wol_id
+                         ,pi_bud_id => lr_wol.wol_bud_id
+                         ,pi_con_id => lr_wo.wor_con_id
+                         ,pi_est    => lv_wol_est_cost - NVL(lr_wol.wol_est_cost,0)
+                         ,pi_act    => lv_wol_act_cost - NVL(lr_wol.wol_act_cost,0));
+        ELSE
+            raise_application_error(-20047,'Budget Exceeded.');
+        END IF;
+    END IF;
+    /*
+    ||Create Interim Payment Records If Required.
+    */
+    IF lv_interim_status
+     THEN
+        IF NOT maiwo.create_interim_payment(p_wol_id   => lr_wol.wol_id
+                                           ,p_act_cost => lv_wol_act_cost)
+         THEN
+            raise_application_error(-20107,'Cannot Enter A Valuation Less Than Previously Paid.');
+        END IF;
+    ELSIF lv_not_done_status
+     THEN
+        /*
+        ||Work Not Done So Remove Any Unpaid Iterim Payments.
+        */
+        maiwo.clear_interim_payment(p_wol_id => lr_wol.wol_id);
+    END IF;
+    /*
+    ||Where Appropriate Complete Any Defect/Repair Associated With The Line.
+    */
+    IF lr_wol.wol_def_defect_id IS NOT NULL
+     THEN
+        update_defect;
+    END IF;
+    --
+  EXCEPTION
+    WHEN value_error
+     THEN
+        raise_application_error(-20104,'Value Too Large When Calculating Work Order Line Totals.');
+    WHEN others
+     THEN
+        RAISE;
+  END update_wol;
+  --
+  PROCEDURE update_wor
+    IS
+    --
+    PROCEDURE set_date_wor_closed
+      IS
+    BEGIN
+      --
+      SELECT MAX(wol_date_complete)
+        INTO lv_wor_date_closed
+        FROM work_order_lines
+       WHERE wol_works_order_no = lr_wo.wor_works_order_no
+           ;
+      --
+    END set_date_wor_closed;
+    --
+  BEGIN
+    --
+    SELECT SUM(wol_est_cost)   est_cost
+          ,SUM(wol_est_labour) est_labour
+          ,SUM(wol_act_cost)   act_cost
+          ,SUM(wol_act_labour) act_labour
+      INTO lv_wor_est_cost
+          ,lv_wor_est_labour
+          ,lv_wor_act_cost
+          ,lv_wor_act_labour
+      FROM work_order_lines
+     WHERE wol_works_order_no = lr_wo.wor_works_order_no
+         ;
+    /*
+    ||Get The Balancing Sums.
+    */
+    lv_wor_est_balancing_sum := get_balancing_sum(lr_wo.wor_con_id,lv_wor_est_cost);
+    lv_wor_act_balancing_sum := get_balancing_sum(lr_wo.wor_con_id,lv_wor_act_cost);
+    /*
+    ||If This Is The Last Line On The Work Order
+    ||To Be Completed Then Close The Work Order.
+    */
+    IF (pi_date_complete IS NOT NULL
+        OR lv_not_done_status)
+     AND maiwo.works_order_complete(p_works_order_no => lr_wo.wor_works_order_no) = 'TRUE'
+     THEN
+        set_date_wor_closed;
+    END IF;
+    /*
+    ||Update The Work Order.
+    */
+    UPDATE work_orders
+       SET wor_est_cost          = lv_wor_est_cost
+          ,wor_est_balancing_sum = lv_wor_est_balancing_sum
+          ,wor_est_labour        = lv_wor_est_labour
+          ,wor_act_cost          = lv_wor_act_cost
+          ,wor_act_balancing_sum = lv_wor_act_balancing_sum
+          ,wor_act_labour        = lv_wor_act_labour
+          ,wor_date_closed       = lv_wor_date_closed
+          ,wor_closed_by_id      = DECODE(lv_wor_date_closed,NULL,NULL,pi_user_id)
+     WHERE wor_works_order_no = lr_wo.wor_works_order_no
+         ;
+    --
+  EXCEPTION
+    WHEN value_error
+     THEN
+        raise_application_error(-20104,'Value Too Large When Calculating Work Order Totals.');
+    WHEN others
+     THEN
+        RAISE;
+  END update_wor;
+  --
+  PROCEDURE update_interfaces
+    IS
+    --
+    lr_ne nm_elements_all%ROWTYPE;
+    --
+    lv_originator hig_users.hus_name%TYPE;
+    lv_con_code   contracts.con_code%TYPE;
+    --
+    PROCEDURE get_con_code
+      IS
+    BEGIN
+      SELECT con_code
+        INTO lv_con_code
+        FROM contracts
+       WHERE con_id = lr_wo.wor_con_id
+           ;
+    END get_con_code;
+    --
+  BEGIN
+    --
+    IF interfaces_used(pi_con_id => lr_wo.wor_con_id)
+     THEN
+        --
+        lv_originator := nm3get.get_hus(pi_hus_user_id => lr_wo.wor_peo_person_id).hus_name;
+        --
+        get_con_code;
+        --
+        interfaces.add_wor_to_list(p_trans_type   => 'A'
+                                  ,p_wor_no       => lr_wo.wor_works_order_no                 
+                                  ,p_wor_flag     => lr_wo.wor_flag                           
+                                  ,p_scheme_type  => lr_wo.wor_scheme_type                    
+                                  ,p_con_code     => lv_con_code                           
+                                  ,p_originator   => lv_originator                           
+                                  ,p_confirmed    => lr_wo.wor_date_confirmed                 
+                                  ,p_est_complete => lr_wo.wor_est_complete                   
+                                  ,p_cost         => NVL(lv_wor_act_cost,lv_wor_est_cost)
+                                  ,p_labour       => lr_wo.wor_est_labour                     
+                                  ,p_ip_flag      => lr_wo.wor_interim_payment_flag           
+                                  ,p_ra_flag      => lr_wo.wor_risk_assessment_flag           
+                                  ,p_ms_flag      => lr_wo.wor_method_statement_flag          
+                                  ,p_wp_flag      => lr_wo.wor_works_programme_flag           
+                                  ,p_as_flag      => lr_wo.wor_additional_safety_flag         
+                                  ,p_commence_by  => lr_wo.wor_commence_by                    
+                                  ,p_descr        => lr_wo.wor_descr);
+        --
+        lr_ne := nm3get.get_ne(pi_ne_id => lr_wol.wol_rse_he_id);
+        --
+        interfaces.add_wol_to_list(lr_wol.wol_id
+                                  ,lr_wol.wol_works_order_no
+                                  ,lr_wol.wol_def_defect_id
+                                  ,lr_wol.wol_schd_id
+                                  ,lr_wol.wol_icb_work_code
+                                  ,lr_ne.ne_unique
+                                  ,lr_ne.ne_descr);
+        --
+        interfaces.copy_data_to_interface;
+        --
+    END IF;
+    --
+  END update_interfaces;
+  --
+BEGIN
+  /*
+  ||Get Details Of The Work Order and Work Order Line
+  ||And Lock The Records For Update.
+  */
+  lr_wol := get_and_lock_wol(pi_wol_id => pi_wol_id);
+  lr_wo := get_and_lock_wo(pi_works_order_no => lr_wol.wol_works_order_no);
+  IF lr_wol.wol_def_defect_id IS NOT NULL
+   THEN
+      lr_defect := get_defect(pi_defect_id => lr_wol.wol_def_defect_id);
+  END IF;
+  /*
+  ||For The Moment This Procedure Doesn't
+  ||Support Cyclic Maintenance Work Orders.
+  */
+  IF lr_wo.wor_flag = 'M'
+   THEN
+      raise_application_error(-20073,'This API Does Not Support Cyclic Work Orders. Please Use The Forms Application To Work With Cyclic Work Orders.');
+  END IF;
+  /*
+  ||If pi_date_complete Is Populated Check It.
+  */
+  validate_date_complete;
+  /*
+  ||Validate The Status Transition.
+  */
+  validate_wol_status_change;
+  IF NOT lv_valid_transition
+   THEN
+      raise_application_error(-20097,'Invalid Status Transition : '||lv_reason);
+  END IF;
+  /*
+  ||Process Any BOQs Supplied.
+  */
+  process_boqs;
+  /*
+  ||Update The Work Order Line.
+  */
+  update_wol;
+  /*
+  ||Update The Work Order.
+  */
+  update_wor;
+  /*
+  ||Update Interfaces If Required.
+  */
+  update_interfaces;
+  /*
+  ||Commit If Required.
+  */
+  IF NVL(pi_commit,'Y') = 'Y'
+   THEN
+      nm_debug.debug('Commit.');
+      COMMIT;
+  END IF;
+  --
+EXCEPTION
+  WHEN OTHERS
+   THEN
+      ROLLBACK;
+      RAISE;
+END update_wol_status;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE set_wol_held(pi_user_id       IN hig_users.hus_user_id%TYPE
+                      ,pi_wol_id        IN work_order_lines.wol_id%TYPE
+                      ,pi_date_complete IN work_order_lines.wol_date_complete%TYPE
+                      ,pi_commit        IN VARCHAR2)
+  IS
+  --
+  lv_held_status  hig_status_codes.hsc_status_code%TYPE;
+  --
+  lt_boqs act_boq_tab;
+  --
+  PROCEDURE get_held_status
+    IS
+  BEGIN
+    SELECT hsc_status_code
+      INTO lv_held_status
+      FROM hig_status_codes
+     WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+       AND hsc_allow_feature2 = 'Y'
+       AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                              AND NVL(hsc_end_date  ,TRUNC(SYSDATE))
+         ;
+  EXCEPTION
+    WHEN too_many_rows
+     THEN
+        raise_application_error(-20094,'Too Many Values Defined For Work Order Line HELD Status.');
+    WHEN no_data_found
+     THEN
+        raise_application_error(-20095,'Cannot Obtain Value For Work Order Line HELD Status.');
+    WHEN others
+     THEN
+        RAISE;
+  END get_held_status;
+  --
+BEGIN
+  /*
+  ||Validate The User ID.
+  */
+  IF NOT validate_user_id(pi_user_id        => pi_user_id
+                         ,pi_effective_date => TRUNC(SYSDATE))
+   THEN
+      raise_application_error(-20067,'Invalid User Id Supplied ['||TO_CHAR(pi_user_id)||'].');
+  END IF;
+  /*
+  ||Update The WOL Status To HELD.
+  */
+  get_held_status;
+  --
+  update_wol_status(pi_user_id       => pi_user_id
+                   ,pi_wol_id        => pi_wol_id
+                   ,pi_new_status    => lv_held_status
+                   ,pi_date_complete => pi_date_complete
+                   ,pi_boq_tab       => lt_boqs
+                   ,pi_commit        => pi_commit);
+  --
+EXCEPTION
+  WHEN OTHERS
+   THEN
+      RAISE;
+END set_wol_held;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE set_wol_not_done(pi_user_id       IN hig_users.hus_user_id%TYPE
+                          ,pi_wol_id        IN work_order_lines.wol_id%TYPE
+                          ,pi_commit        IN VARCHAR2)
+  IS
+  --
+  lv_not_done_status  hig_status_codes.hsc_status_code%TYPE;
+  --
+  lt_boqs act_boq_tab;
+  --
+  PROCEDURE get_not_done_status
+    IS
+  BEGIN
+    SELECT hsc_status_code
+      INTO lv_not_done_status
+      FROM hig_status_codes
+     WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+       AND hsc_allow_feature5 = 'Y'
+       AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                              AND NVL(hsc_end_date  ,TRUNC(SYSDATE))
+         ;
+  EXCEPTION
+    WHEN too_many_rows
+     THEN
+        raise_application_error(-20094,'Too Many Values Defined For Work Order Line NOT_DONE Status.');
+    WHEN no_data_found
+     THEN
+        raise_application_error(-20095,'Cannot Obtain Value For Work Order Line NOT_DONE Status.');
+    WHEN others
+     THEN
+        RAISE;
+  END get_not_done_status;
+  --
+BEGIN
+  /*
+  ||Validate The User ID.
+  */
+  IF NOT validate_user_id(pi_user_id        => pi_user_id
+                         ,pi_effective_date => TRUNC(SYSDATE))
+   THEN
+      raise_application_error(-20067,'Invalid User Id Supplied ['||TO_CHAR(pi_user_id)||'].');
+  END IF;
+  /*
+  ||Update The WOL Status To NOT_DONE.
+  */
+  get_not_done_status;
+  --
+  update_wol_status(pi_user_id       => pi_user_id
+                   ,pi_wol_id        => pi_wol_id
+                   ,pi_new_status    => lv_not_done_status
+                   ,pi_date_complete => NULL
+                   ,pi_boq_tab       => lt_boqs
+                   ,pi_commit        => pi_commit);
+  --
+EXCEPTION
+  WHEN OTHERS
+   THEN
+      RAISE;
+END set_wol_not_done;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE create_interim_payment(pi_user_id       IN hig_users.hus_user_id%TYPE
+                                ,pi_wol_id  IN work_order_lines.wol_id%TYPE
+                                ,pi_boq_tab IN act_boq_tab
+                                ,pi_commit  IN VARCHAR2)
+  IS
+  --
+  lv_interim_status  hig_status_codes.hsc_status_code%TYPE;
+  --
+  PROCEDURE get_interim_status
+    IS
+  BEGIN
+    SELECT hsc_status_code
+      INTO lv_interim_status
+      FROM hig_status_codes
+     WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+       AND hsc_allow_feature9 = 'Y'
+       AND hsc_allow_feature4 != 'Y'
+       AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                              AND NVL(hsc_end_date  ,TRUNC(SYSDATE))
+         ;
+  EXCEPTION
+    WHEN too_many_rows
+     THEN
+        raise_application_error(-20094,'Too Many Values Defined For Work Order Line INTERIM Status.');
+    WHEN no_data_found
+     THEN
+        raise_application_error(-20095,'Cannot Obtain Value For Work Order Line INTERIM Status.');
+    WHEN others
+     THEN
+        RAISE;
+  END get_interim_status;
+  --
+BEGIN
+  /*
+  ||Validate The User ID.
+  */
+  IF NOT validate_user_id(pi_user_id        => pi_user_id
+                         ,pi_effective_date => TRUNC(SYSDATE))
+   THEN
+      raise_application_error(-20067,'Invalid User Id Supplied ['||TO_CHAR(pi_user_id)||'].');
+  END IF;
+  /*
+  ||Update The WOL Status To INTERIM.
+  */
+  get_interim_status;
+  --
+  update_wol_status(pi_user_id       => pi_user_id
+                   ,pi_wol_id        => pi_wol_id
+                   ,pi_new_status    => lv_interim_status
+                   ,pi_date_complete => NULL
+                   ,pi_boq_tab       => pi_boq_tab
+                   ,pi_commit        => pi_commit);
+  --
+EXCEPTION
+  WHEN OTHERS
+   THEN
+      RAISE;
+END create_interim_payment;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE complete_wol(pi_user_id       IN hig_users.hus_user_id%TYPE
+                      ,pi_wol_id        IN work_order_lines.wol_id%TYPE
+                      ,pi_date_complete IN work_order_lines.wol_date_complete%TYPE
+                      ,pi_boq_tab       IN act_boq_tab
+                      ,pi_commit        IN VARCHAR2)
+  IS
+  --
+  lv_complete_status  hig_status_codes.hsc_status_code%TYPE;
+  --
+  PROCEDURE get_complete_status
+    IS
+  BEGIN
+    SELECT hsc_status_code
+      INTO lv_complete_status
+      FROM hig_status_codes
+     WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+       AND hsc_allow_feature3 = 'Y'
+       AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                              AND NVL(hsc_end_date  ,TRUNC(SYSDATE))
+         ;
+  EXCEPTION
+    WHEN too_many_rows
+     THEN
+        raise_application_error(-20094,'Too Many Values Defined For Work Order Line COMPLETE Status.');
+    WHEN no_data_found
+     THEN
+        raise_application_error(-20095,'Cannot Obtain Value For Work Order Line COMPLETE Status.');
+    WHEN others
+     THEN
+        RAISE;
+  END get_complete_status;
+  --
+BEGIN
+  /*
+  ||Validate The User ID.
+  */
+  IF NOT validate_user_id(pi_user_id        => pi_user_id
+                         ,pi_effective_date => TRUNC(SYSDATE))
+   THEN
+      raise_application_error(-20067,'Invalid User Id Supplied ['||TO_CHAR(pi_user_id)||'].');
+  END IF;
+  /*
+  ||Update The WOL Status To INTERIM.
+  */
+  get_complete_status;
+  --
+  update_wol_status(pi_user_id       => pi_user_id
+                   ,pi_wol_id        => pi_wol_id
+                   ,pi_new_status    => lv_complete_status
+                   ,pi_date_complete => NVL(pi_date_complete,SYSDATE)
+                   ,pi_boq_tab       => pi_boq_tab
+                   ,pi_commit        => pi_commit);
+  --
+EXCEPTION
+  WHEN OTHERS
+   THEN
+      RAISE;
+END complete_wol;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE complete_wor(pi_user_id       IN hig_users.hus_user_id%TYPE
+                      ,pi_works_order_no IN work_orders.wor_works_order_no%TYPE
+                      ,pi_date_complete  IN work_order_lines.wol_date_complete%TYPE
+                      ,pi_commit         IN VARCHAR2)
+  IS
+  --
+  TYPE wol_id_tab IS TABLE OF work_order_lines.wol_id%TYPE;
+  lt_wols wol_id_tab;
+  --
+  lt_boqs act_boq_tab;
+  --
+  PROCEDURE get_wols
+    IS
+  BEGIN
+    SELECT wol_id
+      BULK COLLECT
+      INTO lt_wols
+      FROM work_order_lines w
+     WHERE w.wol_works_order_no = pi_works_order_no
+       AND NOT EXISTS(SELECT 'x'
+                        FROM hig_status_codes h
+                       WHERE h.hsc_domain_code = 'WORK_ORDER_LINES'
+                         AND (h.hsc_allow_feature2 = 'Y'
+                              OR h.hsc_allow_feature3 = 'Y'
+                              OR (h.hsc_allow_feature4 = 'Y' AND h.hsc_allow_feature9 = 'N')
+                              OR h.hsc_allow_feature5 = 'Y')
+                         AND h.hsc_status_code = w.wol_status_code
+                         AND SYSDATE BETWEEN NVL(h.hsc_start_date, SYSDATE)
+                                         AND NVL(h.hsc_end_date, SYSDATE))
+         ;
+  EXCEPTION
+    WHEN no_data_found
+     THEN
+        raise_application_error(-20110,'Work Order Is Already Complete.');
+    WHEN others
+     THEN
+        RAISE;
+  END get_wols;
+  --
+BEGIN
+  /*
+  ||Validate The User ID.
+  */
+  IF NOT validate_user_id(pi_user_id        => pi_user_id
+                         ,pi_effective_date => TRUNC(SYSDATE))
+   THEN
+      raise_application_error(-20067,'Invalid User Id Supplied ['||TO_CHAR(pi_user_id)||'].');
+  END IF;
+  /*
+  ||Make Sure Work Order Is
+  ||Not Already Complete.
+  */
+  IF maiwo.works_order_complete(p_works_order_no => pi_works_order_no) = 'TRUE'
+   THEN
+      raise_application_error(-20110,'Work Order Is Already Complete.');
+  END IF;
+  /*
+  ||Get WOLs To Complete.
+  */
+  get_wols;
+  /*
+  ||Complete The WOLs.
+  ||Completion Of The Last WOL Will Complete The Work Order.
+  */
+  FOR i IN 1..lt_wols.count LOOP
+    --
+    complete_wol(pi_user_id       => pi_user_id
+                ,pi_wol_id        => lt_wols(i)
+                ,pi_date_complete => pi_date_complete
+                ,pi_boq_tab       => lt_boqs
+                ,pi_commit        => 'N');
+    --
+  END LOOP;
+  /*
+  ||Now That All WOLs Have
+  ||Been Completed Without
+  ||Error Commit If Required
+  */
+  IF NVL(pi_commit,'Y') = 'Y'
+   THEN
+      COMMIT;
+  END IF;
+  --
+EXCEPTION
+  WHEN OTHERS
+   THEN
+      ROLLBACK;
+      RAISE;
+END complete_wor;
 --
 -----------------------------------------------------------------------------
 --

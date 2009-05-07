@@ -5,21 +5,21 @@ CREATE OR REPLACE PACKAGE BODY mai_web_service AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.5   Mar 20 2009 16:08:08   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_web_service.pkb-arc   1.6   May 07 2009 17:29:48   mhuitson  $
 --       Module Name      : $Workfile:   mai_web_service.pkb  $
---       Date into PVCS   : $Date:   Mar 20 2009 16:08:08  $
---       Date fetched Out : $Modtime:   Mar 19 2009 16:09:54  $
---       PVCS Version     : $Revision:   1.5  $
+--       Date into PVCS   : $Date:   May 07 2009 17:29:48  $
+--       Date fetched Out : $Modtime:   May 06 2009 17:59:50  $
+--       PVCS Version     : $Revision:   1.6  $
 --
 -----------------------------------------------------------------------------
 --  Copyright (c) exor corporation ltd, 2007
 -----------------------------------------------------------------------------
 --
-  g_body_sccsid   CONSTANT  VARCHAR2(2000) := '$Revision:   1.5  $';
+  g_body_sccsid   CONSTANT  VARCHAR2(2000) := '$Revision:   1.6  $';
   g_package_name  CONSTANT  VARCHAR2(30)   := 'mai_web_service';
   c_date_format   CONSTANT  VARCHAR2(20)   := 'DD-MON-YYYY';
   c_xmlns         CONSTANT  VARCHAR2(50)   := ' xmlns="http://exor_mai_ws/exor_mai_ws"';
-  c_xsd_uri       CONSTANT  VARCHAR2(50)   := 'Exor_mai_ws-v2-1.xsd';
+  c_xsd_uri       CONSTANT  VARCHAR2(50)   := 'Exor_mai_ws-v2-2.xsd';
   --
   date_format_error EXCEPTION;
 --
@@ -1797,18 +1797,19 @@ FUNCTION get_standard_items
   --
   lv_perc_item  hig_option_values.hov_value%TYPE := hig.get_sysopt('PERC_ITEM');
   --
-  TYPE retval_rec IS RECORD(sta_item_code    standard_items.sta_item_code%TYPE
-                           ,sta_item_name    standard_items.sta_item_name%TYPE
-                           ,sta_unit         standard_items.sta_unit%TYPE
-                           ,sta_rate         standard_items.sta_rate%TYPE
-                           ,sta_labour_units standard_items.sta_labour_units%TYPE
-                           ,sta_max_quantity standard_items.sta_max_quantity%TYPE
-                           ,sta_min_quantity standard_items.sta_min_quantity%TYPE
-                           ,sta_dim1_text    standard_items.sta_dim1_text%TYPE
-                           ,sta_dim2_text    standard_items.sta_dim2_text%TYPE
-                           ,sta_dim3_text    standard_items.sta_dim3_text%TYPE
-                           ,sta_start_date   standard_items.sta_start_date%TYPE
-                           ,sta_end_date     standard_items.sta_end_date%TYPE);
+  TYPE retval_rec IS RECORD(sta_item_code     standard_items.sta_item_code%TYPE
+                           ,sta_item_name     standard_items.sta_item_name%TYPE
+                           ,sta_unit          standard_items.sta_unit%TYPE
+                           ,sta_rate          standard_items.sta_rate%TYPE
+                           ,sta_labour_units  standard_items.sta_labour_units%TYPE
+                           ,sta_max_quantity  standard_items.sta_max_quantity%TYPE
+                           ,sta_min_quantity  standard_items.sta_min_quantity%TYPE
+                           ,sta_dim1_text     standard_items.sta_dim1_text%TYPE
+                           ,sta_dim2_text     standard_items.sta_dim2_text%TYPE
+                           ,sta_dim3_text     standard_items.sta_dim3_text%TYPE
+                           ,sta_allow_percent standard_items.sta_allow_percent%TYPE
+                           ,sta_start_date    standard_items.sta_start_date%TYPE
+                           ,sta_end_date      standard_items.sta_end_date%TYPE);
   TYPE retval_tab IS TABLE OF retval_rec;
   lt_retval retval_tab;
   --
@@ -1829,6 +1830,7 @@ BEGIN
         ,sta_dim1_text
         ,sta_dim2_text
         ,sta_dim3_text
+        ,NVL(sta_allow_percent,'N')
         ,sta_start_date
         ,sta_end_date
     BULK COLLECT
@@ -1855,6 +1857,7 @@ BEGIN
                       ||'<Dimension1_Name>'||escape_xml(lt_retval(i).sta_dim1_text)||'</Dimension1_Name>'
                       ||'<Dimension2_Name>'||escape_xml(lt_retval(i).sta_dim2_text)||'</Dimension2_Name>'
                       ||'<Dimension3_Name>'||escape_xml(lt_retval(i).sta_dim3_text)||'</Dimension3_Name>'
+                      ||'<Allow_Percent_Item>'||lt_retval(i).sta_allow_percent||'</Allow_Percent_Item>'
                       ||'<Startdate>'||date_to_varchar(lt_retval(i).sta_start_date)||'</Startdate>'
                       ||'<Enddate>'||date_to_varchar(lt_retval(i).sta_end_date)||'</Enddate>'
                     ||'</Standard_Item>'
@@ -1880,6 +1883,85 @@ EXCEPTION
       RETURN build_error_xml(pi_wrapper => 'GetStandardItemsResponse'
                             ,pi_sqlerrm => SQLERRM);
 END get_standard_items;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_standard_percent_items
+  RETURN xmltype IS
+  --
+  lv_perc_item  hig_option_values.hov_value%TYPE := hig.get_sysopt('PERC_ITEM');
+  --
+  TYPE retval_rec IS RECORD(sta_item_code     standard_items.sta_item_code%TYPE
+                           ,sta_item_name     standard_items.sta_item_name%TYPE
+                           ,sta_unit          standard_items.sta_unit%TYPE
+                           ,sta_rate          standard_items.sta_rate%TYPE
+                           ,sta_dim1_text     standard_items.sta_dim1_text%TYPE
+                           ,sta_start_date    standard_items.sta_start_date%TYPE
+                           ,sta_end_date      standard_items.sta_end_date%TYPE);
+  TYPE retval_tab IS TABLE OF retval_rec;
+  lt_retval retval_tab;
+  --
+  lv_retval XMLType;
+  lv_str    nm3type.max_varchar2;
+  lv_clob   CLOB := '<GetStandardPercentItemsResponse'||c_xmlns||'><Standard_Percent_Items>';
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 1000;
+  --
+BEGIN
+  --
+  SELECT sta_item_code
+        ,sta_item_name
+        ,sta_unit
+        ,NVL(sta_rate, 0) sta_rate
+        ,sta_dim1_text
+        ,sta_start_date
+        ,sta_end_date
+    BULK COLLECT
+    INTO lt_retval
+    FROM standard_items
+   WHERE sta_unit = lv_perc_item
+       ;
+  --
+  IF lt_retval.count = 0
+   THEN
+      raise no_data_found;
+  END IF;
+  --
+  FOR i IN 1..lt_retval.count LOOP
+    --
+    lv_str := lv_str||'<Standard_Percent_Item>'
+                      ||'<Item_Code>'||escape_xml(lt_retval(i).sta_item_code)||'</Item_Code>'
+                      ||'<Item_Name>'||escape_xml(lt_retval(i).sta_item_name)||'</Item_Name>'
+                      ||'<Unit>'||escape_xml(lt_retval(i).sta_unit)||'</Unit>'
+                      ||'<Rate>'||TO_CHAR(lt_retval(i).sta_rate)||'</Rate>'
+                      ||'<Max_Quantity>1</Max_Quantity>'
+                      ||'<Min_Quantity>1</Min_Quantity>'
+                      ||'<Dimension1_Name>'||escape_xml(lt_retval(i).sta_dim1_text)||'</Dimension1_Name>'
+                      ||'<Allow_Percent_Item>N</Allow_Percent_Item>'
+                      ||'<Startdate>'||date_to_varchar(lt_retval(i).sta_start_date)||'</Startdate>'
+                      ||'<Enddate>'||date_to_varchar(lt_retval(i).sta_end_date)||'</Enddate>'
+                    ||'</Standard_Percent_Item>'
+                    ;
+    --
+    IF length(lv_str) > lv_max_size
+     THEN
+        lv_clob := lv_clob||lv_str;
+        lv_str := NULL;
+    END IF;
+    --
+  END LOOP;
+  --
+  lv_clob := lv_clob||lv_str||'</Standard_Percent_Items></GetStandardPercentItemsResponse>';
+  --
+  lv_retval := xmltype(lv_clob);
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetStandardPercentItemsResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END get_standard_percent_items;
 --
 -----------------------------------------------------------------------------
 --
@@ -3031,7 +3113,7 @@ FUNCTION get_available_defects
           --
           lv_retval := lv_retval||'<BoqItem>'
                                   ||gen_tags(0,'Boq_Id',TO_CHAR(lt_boqs(j).boq_id),'N')
-                                  ||gen_tags(0,'Item_Code',lt_boqs(j).boq_sta_item_code,'N')
+                                  ||gen_tags(0,'Item_Code',escape_xml(lt_boqs(j).boq_sta_item_code),'N')
                                   ||gen_tags(0,'Dimension1',TO_CHAR(lt_boqs(j).boq_est_dim1),'N')
                                   ||gen_tags(0,'Dimension2',TO_CHAR(lt_boqs(j).boq_est_dim2),'N')
                                   ||gen_tags(0,'Dimension3',TO_CHAR(lt_boqs(j).boq_est_dim3),'N')
@@ -3611,6 +3693,1019 @@ END instruct_work_order;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION get_instructed_work_orders
+  RETURN xmltype IS
+  --
+  TYPE retval_rec IS RECORD(wor_works_order_no work_orders.wor_works_order_no%TYPE
+                           ,wor_descr          work_orders.wor_descr%TYPE
+                           ,wor_con_id         work_orders.wor_con_id%TYPE);
+  TYPE retval_tab IS TABLE OF retval_rec;
+  lt_retval retval_tab;
+  --
+  lv_retval XMLTYPE;
+  lv_str    nm3type.max_varchar2;
+  lv_clob   CLOB := '<GetInstructedWorkOrdersResponse'||c_xmlns||'><Instructed_Work_Orders>';
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 500;
+  --
+BEGIN
+  /*
+  ||Get the Work Orders that are available to be Instructed.
+  */
+  SELECT wor_works_order_no
+        ,wor_descr
+        ,wor_con_id
+    BULK COLLECT
+    INTO lt_retval
+    FROM work_orders
+   WHERE wor_flag != 'M'
+     AND wor_date_confirmed IS NOT NULL
+     AND wor_date_closed IS NULL
+     AND wor_con_id IS NOT NULL
+   ORDER
+      BY wor_date_raised
+           ;
+  --
+  IF lt_retval.count = 0
+   THEN
+      raise no_data_found;
+  END IF;
+  --
+  FOR i IN 1..lt_retval.count LOOP
+    --
+    lv_str := lv_str||'<Instructed_Work_Order>'
+                    ||'<Work_Order_No>'||escape_xml(lt_retval(i).wor_works_order_no)||'</Work_Order_No>'
+                    ||'<Work_Order_Description>'||escape_xml(lt_retval(i).wor_descr)||'</Work_Order_Description>'
+                    ||'<Contract_Id>'||lt_retval(i).wor_con_id||'</Contract_Id>'
+                    ||'</Instructed_Work_Order>'
+    ;
+    --
+    IF length(lv_str) > lv_max_size
+     THEN
+        lv_clob := lv_clob||lv_str;
+        lv_str := NULL;
+    END IF;
+    --
+  END LOOP;
+  --
+  lv_clob := lv_clob||lv_str||'</Instructed_Work_Orders></GetInstructedWorkOrdersResponse>';
+  --
+  lv_retval := xmltype(lv_clob);
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetInstructedWorkOrdersResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END get_instructed_work_orders;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_work_order_details(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'Work_Order_No',cp_xmlns) wo_no
+    FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  TYPE work_order_rec IS RECORD(works_order_no     work_orders.wor_works_order_no%TYPE
+                               ,road_group_id      work_orders.wor_rse_he_id_group%TYPE
+                               ,road_group_type    nm_elements.ne_gty_group_type%TYPE
+                               ,road_group_unique  nm_elements.ne_unique%TYPE
+                               ,con_id             work_orders.wor_con_id%TYPE
+                               ,date_confirmed     work_orders.wor_date_confirmed%TYPE
+                               ,date_closed        work_orders.wor_date_closed%TYPE
+                               ,actual_cost        NUMBER
+                               ,wor_status         VARCHAR2(20)
+                               ,received           VARCHAR2(1));
+  lr_work_order work_order_rec;
+  --
+  lv_works_order_no work_orders.wor_works_order_no%TYPE;
+  --
+  lv_retval XMLTYPE;
+  lv_str    nm3type.max_varchar2;
+  lv_clob   CLOB := '<GetWorkOrderDetailsResponse'||c_xmlns||'><Work_Order>';
+  lv_max_size PLS_INTEGER := nm3type.c_max_varchar2_size - 500;
+  --
+  FUNCTION get_boqs(pi_wol_id IN work_order_lines.wol_id%TYPE)
+    RETURN CLOB IS
+    --
+    lv_retval CLOB;
+    lv_str    nm3type.max_varchar2;
+    --
+    TYPE boq_tab IS TABLE OF boq_items%ROWTYPE;
+    lt_boqs boq_tab;
+    --
+  BEGIN
+    --
+    SELECT *
+      BULK COLLECT
+      INTO lt_boqs
+      FROM boq_items
+     WHERE boq_wol_id = pi_wol_id
+         ;
+    --
+    IF lt_boqs.count > 0
+     THEN
+        --
+        FOR j IN 1..lt_boqs.count LOOP
+          --
+          lv_str := '<Boq_Item>'
+                    ||gen_tags(0,'Boq_Id',TO_CHAR(lt_boqs(j).boq_id),'N')
+                    ||gen_tags(0,'Parent_Boq_Id',TO_CHAR(lt_boqs(j).boq_id),'N')
+                    ||gen_tags(0,'Item_Code',escape_xml(lt_boqs(j).boq_sta_item_code),'N')
+                    ||gen_tags(0,'EstimatedDimension1',TO_CHAR(lt_boqs(j).boq_est_dim1),'N')
+                    ||gen_tags(0,'EstimatedDimension2',TO_CHAR(lt_boqs(j).boq_est_dim2),'N')
+                    ||gen_tags(0,'EstimatedDimension3',TO_CHAR(lt_boqs(j).boq_est_dim3),'N')
+                    ||gen_tags(0,'EstimatedQuantity',TO_CHAR(lt_boqs(j).boq_est_quantity),'N')
+                    ||gen_tags(0,'EstimatedRate',TO_CHAR(lt_boqs(j).boq_est_rate),'N')
+                    ||gen_tags(0,'EstimatedCost',TO_CHAR(lt_boqs(j).boq_est_cost),'N')
+                    ||gen_tags(0,'ActualDimension1',TO_CHAR(lt_boqs(j).boq_act_dim1),'N')
+                    ||gen_tags(0,'ActualDimension2',TO_CHAR(lt_boqs(j).boq_act_dim2),'N')
+                    ||gen_tags(0,'ActualDimension3',TO_CHAR(lt_boqs(j).boq_act_dim3),'N')
+                    ||gen_tags(0,'ActualQuantity',TO_CHAR(lt_boqs(j).boq_act_quantity),'N')
+                    ||gen_tags(0,'ActualRate',TO_CHAR(lt_boqs(j).boq_act_rate),'N')
+                    ||gen_tags(0,'ActualCost',TO_CHAR(lt_boqs(j).boq_act_cost),'N')
+                  ||'</Boq_Item>'
+                  ;
+          --
+          lv_retval := lv_retval||lv_str;
+          --
+        END LOOP;
+        --
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END get_boqs;
+  --
+  FUNCTION get_wols(pi_work_order_no IN work_orders.wor_works_order_no%TYPE)
+    RETURN CLOB IS
+    --
+    lv_retval CLOB;
+    lv_str    nm3type.max_varchar2;
+    --
+    TYPE wol_tab IS TABLE OF work_order_lines%ROWTYPE;
+    lt_wols wol_tab;
+    --
+    lv_defect_code defects.def_defect_code%TYPE;
+    lv_priority    defects.def_priority%TYPE;
+    lv_treatment   repairs.rep_tre_treat_code%TYPE;
+    --
+    PROCEDURE get_defect_repair(pi_defect_id  IN defects.def_defect_id%TYPE
+                               ,pi_action_cat IN repairs.rep_action_cat%TYPE)
+      IS
+    BEGIN
+      SELECT def_defect_code
+            ,def_priority
+            ,rep_tre_treat_code
+        INTO lv_defect_code
+            ,lv_priority
+            ,lv_treatment
+        FROM repairs
+            ,defects
+       WHERE def_defect_id = pi_defect_id
+         AND def_defect_id = rep_def_defect_id
+         AND rep_action_cat = pi_action_cat
+           ;
+    EXCEPTION
+      WHEN no_data_found
+       THEN
+          lv_defect_code := NULL;
+          lv_priority    := NULL;
+          lv_treatment   := NULL;
+      WHEN others
+       THEN
+          RAISE;
+    END get_defect_repair;
+    --
+  BEGIN
+    --
+    SELECT *
+      BULK COLLECT
+      INTO lt_wols
+      FROM work_order_lines
+     WHERE wol_works_order_no = pi_work_order_no
+         ;
+    --
+    IF lt_wols.count > 0
+     THEN
+        --
+        FOR i IN 1..lt_wols.count LOOP
+          --
+          get_defect_repair(pi_defect_id  => lt_wols(i).wol_def_defect_id
+                           ,pi_action_cat => lt_wols(i).wol_rep_action_cat);
+          --
+          lv_str := lv_str||'<Work_Order_Line>'
+                          ||gen_tags(0,'Work_Order_Line_Id',TO_CHAR(lt_wols(i).wol_id),'N')
+                          ||gen_tags(0,'Defect_ID',TO_CHAR(lt_wols(i).wol_def_defect_id),'N')
+                          ||gen_tags(0,'Section_Id',TO_CHAR(lt_wols(i).wol_rse_he_id),'N')
+                          ||gen_tags(0,'Section_Unique',nm3get.get_ne(pi_ne_id => lt_wols(i).wol_rse_he_id).ne_unique,'N')
+                          ||gen_tags(0,'Work_Order_Line_Status',lt_wols(i).wol_status_code,'N')
+                          ||gen_tags(0,'Defect_Code',lv_defect_code,'N')
+                          ||gen_tags(0,'Priority_Code',lv_priority,'N')
+                          ||gen_tags(0,'Date_Complete',datetime_to_varchar(lt_wols(i).wol_date_complete),'N')
+                          ||gen_tags(0,'Treatment_Code',lv_treatment,'N')
+                          ||gen_tags(0,'EstimatedCost',TO_CHAR(lt_wols(i).wol_est_cost),'N')
+                          ||gen_tags(0,'ActualCost',TO_CHAR(lt_wols(i).wol_act_cost),'N')
+                  ;
+          --
+          lv_retval := lv_retval||lv_str;
+          lv_retval := lv_retval||get_boqs(pi_wol_id => lt_wols(i).wol_id)||'</Work_Order_Line>';
+          lv_str := NULL;
+          --
+        END LOOP;
+        --
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END get_wols;
+  --
+BEGIN
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/GetWorkOrderDetails/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_works_order_no := lr_params.wo_no;
+      /*
+      ||Get the Work Order Details.
+      */
+      SELECT wor.wor_works_order_no
+            ,wor.wor_rse_he_id_group
+            ,ne.ne_gty_group_type
+            ,ne.ne_unique
+            ,wor.wor_con_id
+            ,wor.wor_date_confirmed
+            ,wor.wor_date_closed
+            ,wor.wor_act_cost + wor_act_balancing_sum actual_cost
+            ,wos.wor_status
+            ,DECODE(wor.wor_date_received,NULL,'N','Y') received
+        INTO lr_work_order
+        FROM nm_elements ne
+            ,work_orders wor
+            ,(SELECT wol_works_order_no
+                    ,CASE WHEN paid = wols
+                           THEN (SELECT hsc_status_code
+                                   FROM hig_status_codes
+                                  WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+                                    AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                                                           AND NVL(hsc_end_date,TRUNC(SYSDATE))
+                                    AND hsc_allow_feature4 = 'Y'
+                                    AND hsc_allow_feature9 != 'Y'
+                                    AND rownum = 1) -- PAID 
+                          WHEN paid > 0
+                           THEN (SELECT hsc_status_code
+                                   FROM hig_status_codes
+                                  WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+                                    AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                                                           AND NVL(hsc_end_date,TRUNC(SYSDATE))
+                                    AND hsc_allow_feature4 = 'Y'
+                                    AND hsc_allow_feature9 = 'Y'
+                                    AND rownum = 1) --PART PAID 
+                          WHEN completed = wols
+                           THEN (SELECT hsc_status_code
+                                   FROM hig_status_codes
+                                  WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+                                    AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                                                           AND NVL(hsc_end_date,TRUNC(SYSDATE))
+                                    AND hsc_allow_feature3 = 'Y'
+                                    AND rownum = 1) --COMPLETED 
+                          WHEN completed > 0
+                            OR part_complete > 0
+                           THEN (SELECT hsc_status_code
+                                   FROM hig_status_codes
+                                  WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+                                    AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                                                           AND NVL(hsc_end_date,TRUNC(SYSDATE))
+                                    AND hsc_allow_feature6 = 'Y'
+                                    AND rownum = 1)  --PART COMPL 
+                          WHEN instructed = wols
+                           THEN (SELECT hsc_status_code
+                                   FROM hig_status_codes
+                                  WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+                                    AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                                                           AND NVL(hsc_end_date,TRUNC(SYSDATE))
+                                    AND hsc_allow_feature1 = 'Y'
+                                    AND rownum = 1) --INSTRUCTED 
+                          WHEN actioned > 0
+                           THEN (SELECT hsc_status_code
+                                   FROM hig_status_codes
+                                  WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+                                    AND TRUNC(SYSDATE) BETWEEN NVL(hsc_start_date,TRUNC(SYSDATE))
+                                                           AND NVL(hsc_end_date,TRUNC(SYSDATE))
+                                    AND hsc_allow_feature7 = 'Y'
+                                    AND rownum = 1) --ACTIONED 
+                          ELSE 'UNKNOWN'
+                     END wor_status
+                FROM (SELECT wol_works_order_no
+                            ,COUNT(wol_id) wols
+                            ,SUM(DECODE(hsc_allow_feature1, 'Y', 1, 0)) instructed
+                            ,SUM(DECODE(hsc_allow_feature2, 'Y', 1, 0)) + SUM(DECODE(hsc_allow_feature3, 'Y', 1, 0)) completed
+                            ,SUM(DECODE(hsc_allow_feature4, 'Y', DECODE(hsc_allow_feature9, 'Y', 0, 1), 0)) paid
+                            ,SUM(DECODE(hsc_allow_feature8, 'Y', 1, 0)) + SUM(DECODE(hsc_allow_feature9, 'Y', 1,0)) part_complete
+                            ,SUM(DECODE(hsc_allow_feature7, 'Y', 1,0)) actioned
+                        FROM work_order_lines
+                            ,hig_status_codes
+                       WHERE hsc_domain_code = 'WORK_ORDER_LINES'
+                         AND hsc_allow_feature5 != 'Y'
+                         AND hsc_status_code = wol_status_code 
+                       GROUP
+                          BY wol_works_order_no)) wos
+      WHERE wos.wol_works_order_no = wor.wor_works_order_no
+        AND wor.wor_works_order_no = lr_params.wo_no
+        AND wor.wor_rse_he_id_group = ne.ne_id
+          ;
+      --
+      IF lr_work_order.works_order_no IS NULL
+       THEN
+          raise no_data_found;
+      END IF;
+      --
+      lv_str := lv_str||gen_tags(0,'Work_Order_No',lr_work_order.works_order_no,'N')
+                      ||gen_tags(0,'Contract_Id',TO_CHAR(lr_work_order.con_id),'N') 
+                      ||gen_tags(0,'Road_Group_Id',TO_CHAR(lr_work_order.road_group_id),'N') 
+                      ||gen_tags(0,'Road_Group_Type',lr_work_order.road_group_type,'N') 
+                      ||gen_tags(0,'Road_Group_Unique',lr_work_order.road_group_unique,'N') 
+                      ||gen_tags(0,'Date_Instructed',date_to_varchar(lr_work_order.date_confirmed),'N') 
+                      ||gen_tags(0,'Date_Complete',date_to_varchar(lr_work_order.date_closed),'N') 
+                      ||gen_tags(0,'ActualCost',TO_CHAR(lr_work_order.actual_cost),'N') 
+                      ||gen_tags(0,'Work_Order_Status',lr_work_order.wor_status,'N') 
+                      ||gen_tags(0,'Received',lr_work_order.received,'N') 
+        ;
+      --
+      lv_clob := lv_clob||lv_str;
+      --
+      lv_clob := lv_clob||get_wols(pi_work_order_no => lr_params.wo_no)||'</Work_Order></GetWorkOrderDetailsResponse>';
+      --
+      lv_retval := xmltype(lv_clob);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'GetWorkOrderDetailsResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END get_work_order_details;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION receive_work_order(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)       user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_No',cp_xmlns) wo_no
+        ,EXTRACTVALUE(cp_xml,cp_root||'Date_Received',cp_xmlns) date_received
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  lv_user_id         hig_users.hus_user_id%TYPE;
+  lv_works_order_no  work_orders.wor_works_order_no%TYPE;
+  lv_date_received   work_orders.wor_date_received%TYPE;
+  lv_commit          VARCHAR2(1) := 'Y';
+  --
+  lv_response  CLOB;
+  lv_retval    XMLTYPE;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/SetWorkOrderReceived/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id        := lr_params.user_id;
+      lv_works_order_no := lr_params.wo_no;
+      IF lr_params.date_received IS NOT NULL
+       THEN
+          lv_date_received  := varchar_to_datetime(lr_params.date_received);
+      END IF;
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      nm_debug.debug('Calling receive_work_order');
+      mai_api.receive_work_order(pi_user_id        => lv_user_id
+                                ,pi_works_order_no => lv_works_order_no
+                                ,pi_date_received  => NVL(lv_date_received,SYSDATE)
+                                ,pi_commit         => lv_commit);
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<SetWorkOrderReceivedResponse'||c_xmlns||'><Work_Order_Received>'
+                     ||'<Work_Order_No>'||lv_works_order_no||'</Work_Order_No>'
+                   ||'</Work_Order_Received></SetWorkOrderReceivedResponse>';
+      --
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN date_format_error
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'SetWorkOrderReceivedResponse'
+                            ,pi_sqlerrm => 'Invalid Date Format');
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'SetWorkOrderReceivedResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END receive_work_order;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION set_work_order_line_held(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)            user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_Line_Id',cp_xmlns) wol_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Date_Held',cp_xmlns)          date_held
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  lv_user_id    hig_users.hus_user_id%TYPE;
+  lv_wol_id     work_order_lines.wol_id%TYPE;
+  lv_date_held  work_order_lines.wol_date_complete%TYPE;
+  lv_commit     VARCHAR2(1) := 'Y';
+  --
+  lv_response  CLOB;
+  lv_retval    XMLTYPE;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/SetWorkOrderLineHeld/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id   := lr_params.user_id;
+      lv_wol_id    := lr_params.wol_id;
+      IF lr_params.date_held IS NOT NULL
+       THEN
+          lv_date_held := varchar_to_datetime(lr_params.date_held);
+      END IF;
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      nm_debug.debug('Calling set_wol_held');
+      mai_api.set_wol_held(pi_user_id       => lv_user_id
+                          ,pi_wol_id        => lv_wol_id
+                          ,pi_date_complete => lv_date_held
+                          ,pi_commit        => lv_commit);
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<SetWorkOrderLineHeldResponse'||c_xmlns||'><WorkOrderLineHeld>'
+                     ||'<Work_Order_Line_Id>'||lv_wol_id||'</Work_Order_Line_Id>'
+                   ||'</WorkOrderLineHeld></SetWorkOrderLineHeldResponse>';
+      --
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN date_format_error
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'SetWorkOrderLineHeldResponse'
+                            ,pi_sqlerrm => 'Invalid Date Format');
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'SetWorkOrderLineHeldResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END set_work_order_line_held;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION set_work_order_line_not_done(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)            user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_Line_Id',cp_xmlns) wol_id
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  lv_user_id  hig_users.hus_user_id%TYPE;
+  lv_wol_id   work_order_lines.wol_id%TYPE;
+  lv_commit   VARCHAR2(1) := 'Y';
+  --
+  lv_response  CLOB;
+  lv_retval    XMLTYPE;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/SetWorkOrderLineNotDone/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id := lr_params.user_id;
+      lv_wol_id  := lr_params.wol_id;
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      nm_debug.debug('Calling set_wol_not_done');
+      mai_api.set_wol_not_done(pi_user_id => lv_user_id
+                              ,pi_wol_id  => lv_wol_id
+                              ,pi_commit  => lv_commit);
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<SetWorkOrderLineNotDoneResponse'||c_xmlns||'><WorkOrderLineNotDone>'
+                     ||'<Work_Order_Line_Id>'||lv_wol_id||'</Work_Order_Line_Id>'
+                   ||'</WorkOrderLineNotDone></SetWorkOrderLineNotDoneResponse>';
+      --
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'SetWorkOrderLineNotDoneResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END set_work_order_line_not_done;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION create_interim_payment(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)            user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_Line_Id',cp_xmlns) wol_id
+        ,EXTRACT(cp_xml,cp_root||'ActualBoqs',cp_xmlns)              boqs_in_xml
+    FROM dual
+       ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  CURSOR get_boq_list(cp_xml   IN XMLTYPE
+                     ,cp_xmlns IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(VALUE(x),'ActualBoq/Boq_Id',cp_xmlns)            boq_id
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Item_Code',cp_xmlns)         item_code
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Dimension1',cp_xmlns)        dim1
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Dimension2',cp_xmlns)        dim2
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Dimension3',cp_xmlns)        dim3
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Add_Percent_Item',cp_xmlns)  add_percent
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Percent_Item_Code',cp_xmlns) perc_item_code
+    FROM TABLE(xmlsequence(EXTRACT(cp_xml,'/ActualBoqs/ActualBoq',cp_xmlns))) x
+      ;
+  --
+  TYPE get_boq_list_tab IS TABLE OF get_boq_list%ROWTYPE;
+  lt_get_boq_list get_boq_list_tab;
+  --
+  lv_user_id  hig_users.hus_user_id%TYPE;
+  lv_wol_id   work_order_lines.wol_id%TYPE;
+  lt_boq_tab  mai_api.act_boq_tab;
+  lv_commit   VARCHAR2(1) := 'Y';
+  --
+  lv_response  CLOB;
+  lv_retval    XMLTYPE;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/CreateInterimPayment/InterimPayment/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id := lr_params.user_id;
+      lv_wol_id  := lr_params.wol_id;
+      /*
+      ||Transform The List Of Defects.
+      */
+      OPEN  get_boq_list(lr_params.boqs_in_xml
+                        ,c_xmlns);
+      FETCH get_boq_list
+       BULK COLLECT
+       INTO lt_get_boq_list;
+      CLOSE get_boq_list;
+      --
+      FOR i IN 1..lt_get_boq_list.count LOOP
+        --
+        nm_debug.debug('Assigning BOQ params');
+        lt_boq_tab(i).boq_id            := lt_get_boq_list(i).boq_id;
+        lt_boq_tab(i).boq_sta_item_code := lt_get_boq_list(i).item_code;
+        lt_boq_tab(i).boq_act_dim1      := lt_get_boq_list(i).dim1;
+        lt_boq_tab(i).boq_act_dim2      := lt_get_boq_list(i).dim2;
+        lt_boq_tab(i).boq_act_dim3      := lt_get_boq_list(i).dim3;
+        lt_boq_tab(i).add_percent_item  := lt_get_boq_list(i).add_percent;
+        lt_boq_tab(i).percent_item_code := lt_get_boq_list(i).perc_item_code;
+        --
+      END LOOP;
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      nm_debug.debug('Calling create_interim_payment');
+      mai_api.create_interim_payment(pi_user_id => lv_user_id
+                                    ,pi_wol_id  => lv_wol_id
+                                    ,pi_boq_tab => lt_boq_tab
+                                    ,pi_commit  => lv_commit);
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<CreateInterimPaymentResponse'||c_xmlns||'><InterimPaymentCreated>'
+                     ||'<Work_Order_Line_Id>'||lv_wol_id||'</Work_Order_Line_Id>'
+                   ||'</InterimPaymentCreated></CreateInterimPaymentResponse>';
+      --
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'CreateInterimPaymentResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END create_interim_payment;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION complete_work_order_line(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)            user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_Line_Id',cp_xmlns) wol_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Date_Complete',cp_xmlns)      date_complete
+        ,EXTRACT(cp_xml,cp_root||'ActualBoqs',cp_xmlns)              boqs_in_xml
+    FROM dual
+       ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  CURSOR get_boq_list(cp_xml   IN XMLTYPE
+                     ,cp_xmlns IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(VALUE(x),'ActualBoq/Boq_Id',cp_xmlns)            boq_id
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Item_Code',cp_xmlns)         item_code
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Dimension1',cp_xmlns)        dim1
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Dimension2',cp_xmlns)        dim2
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Dimension3',cp_xmlns)        dim3
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Add_Percent_Item',cp_xmlns)  add_percent
+        ,EXTRACTVALUE(VALUE(x),'ActualBoq/Percent_Item_Code',cp_xmlns) perc_item_code
+    FROM TABLE(xmlsequence(EXTRACT(cp_xml,'/ActualBoqs/ActualBoq',cp_xmlns))) x
+      ;
+  --
+  TYPE get_boq_list_tab IS TABLE OF get_boq_list%ROWTYPE;
+  lt_get_boq_list get_boq_list_tab;
+  --
+  lv_user_id        hig_users.hus_user_id%TYPE;
+  lv_wol_id         work_order_lines.wol_id%TYPE;
+  lv_date_complete  work_order_lines.wol_date_complete%TYPE;
+  lt_boq_tab        mai_api.act_boq_tab;
+  lv_commit         VARCHAR2(1) := 'Y';
+  --
+  lv_response  CLOB;
+  lv_retval    XMLTYPE;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/CompleteWorkOrderLine/WorkOrderLineToComplete/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id       := lr_params.user_id;
+      lv_wol_id        := lr_params.wol_id;
+      IF lr_params.date_complete IS NOT NULL
+       THEN
+          lv_date_complete := varchar_to_datetime(lr_params.date_complete);
+      END IF;
+      /*
+      ||Transform The List Of BOQs.
+      */
+      OPEN  get_boq_list(lr_params.boqs_in_xml
+                        ,c_xmlns);
+      FETCH get_boq_list
+       BULK COLLECT
+       INTO lt_get_boq_list;
+      CLOSE get_boq_list;
+      --
+      FOR i IN 1..lt_get_boq_list.count LOOP
+        --
+        nm_debug.debug('Assigning BOQ params');
+        lt_boq_tab(i).boq_id            := lt_get_boq_list(i).boq_id;
+        lt_boq_tab(i).boq_sta_item_code := lt_get_boq_list(i).item_code;
+        lt_boq_tab(i).boq_act_dim1      := lt_get_boq_list(i).dim1;
+        lt_boq_tab(i).boq_act_dim2      := lt_get_boq_list(i).dim2;
+        lt_boq_tab(i).boq_act_dim3      := lt_get_boq_list(i).dim3;
+        lt_boq_tab(i).add_percent_item  := lt_get_boq_list(i).add_percent;
+        lt_boq_tab(i).percent_item_code := lt_get_boq_list(i).perc_item_code;
+        --
+      END LOOP;
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      nm_debug.debug('Calling complete_wol');
+      mai_api.complete_wol(pi_user_id       => lv_user_id
+                          ,pi_wol_id        => lv_wol_id
+                          ,pi_date_complete => lv_date_complete
+                          ,pi_boq_tab       => lt_boq_tab
+                          ,pi_commit        => lv_commit);
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<CompleteWorkOrderLineResponse'||c_xmlns||'><WorkOrderLineCompleted>'
+                     ||'<Work_Order_Line_Id>'||lv_wol_id||'</Work_Order_Line_Id>'
+                   ||'</WorkOrderLineCompleted></CompleteWorkOrderLineResponse>';
+      --
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  --
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN date_format_error
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'CompleteWorkOrderLineResponse'
+                            ,pi_sqlerrm => 'Invalid Date Format');
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'CompleteWorkOrderLineResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END complete_work_order_line;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION complete_work_order(pi_xml IN xmltype)
+  RETURN xmltype IS
+  --
+  CURSOR get_params(cp_xml    IN XMLTYPE
+                   ,cp_root   IN VARCHAR2
+                   ,cp_xmlns  IN VARCHAR2)
+      IS
+  SELECT EXTRACTVALUE(cp_xml,cp_root||'User_Id',cp_xmlns)       user_id
+        ,EXTRACTVALUE(cp_xml,cp_root||'Work_Order_No',cp_xmlns) wo_no
+        ,EXTRACTVALUE(cp_xml,cp_root||'Date_Complete',cp_xmlns) date_complete
+   FROM dual
+      ;
+  --
+  lr_params get_params%ROWTYPE;
+  --
+  lv_user_id         hig_users.hus_user_id%TYPE;
+  lv_works_order_no  work_orders.wor_works_order_no%TYPE;
+  lv_date_complete   work_order_lines.wol_date_complete%TYPE;
+  lv_commit          VARCHAR2(1) := 'Y';
+  --
+  lv_response  CLOB;
+  lv_retval    XMLTYPE;
+  --
+BEGIN
+  --
+  nm_debug.debug_on;
+  nm_debug.debug('XML : '||pi_xml.getstringval);
+  IF valid_xml(pi_xml     => pi_xml
+              ,pi_xsd_uri => c_xsd_uri)
+   THEN
+      nm_debug.debug('Getting params');
+      /*
+      ||Transform The Input XML
+      */
+      OPEN  get_params(pi_xml
+                      ,'/CompleteWorkOrder/'
+                      ,c_xmlns);
+      FETCH get_params
+       INTO lr_params;
+      CLOSE get_params;
+      --
+      lv_user_id        := lr_params.user_id;
+      lv_works_order_no := lr_params.wo_no;
+      IF lr_params.date_complete IS NOT NULL
+       THEN
+          lv_date_complete  := varchar_to_datetime(lr_params.date_complete);
+      END IF;
+      /*
+      ||Call The API To Create The Work Order.
+      */
+      nm_debug.debug('Calling complete_wor');
+      mai_api.complete_wor(pi_user_id        => lv_user_id
+                          ,pi_works_order_no => lv_works_order_no
+                          ,pi_date_complete  => NVL(lv_date_complete,SYSDATE)
+                          ,pi_commit         => lv_commit);
+      /*
+      ||Build The Output XML.
+      */
+      nm_debug.debug('Building Output XML');
+      /*
+      ||Add The Root Element And The Work Order Number.
+      */
+      lv_response := '<CompleteWorkOrderResponse'||c_xmlns||'><Work_Order_Completed>'
+                     ||'<Work_Order_No>'||lv_works_order_no||'</Work_Order_No>'
+                   ||'</Work_Order_Completed></CompleteWorkOrderResponse>';
+      --
+      lv_retval := xmltype(lv_response);
+      --
+  ELSE
+      /*
+      ||Invalid XML error.
+      */
+      raise_application_error(-20000,'Invalid input XML supplied.');
+      --
+  END IF;
+  /*
+  ||Return The Output XML.
+  */
+  nm_debug.debug_off;
+  RETURN lv_retval;
+  --
+EXCEPTION
+  WHEN date_format_error
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'CompleteWorkOrderResponse'
+                            ,pi_sqlerrm => 'Invalid Date Format');
+  WHEN others
+   THEN
+      RETURN build_error_xml(pi_wrapper => 'CompleteWorkOrderResponse'
+                            ,pi_sqlerrm => SQLERRM);
+END complete_work_order;
+--
+-----------------------------------------------------------------------------
+--
 END mai_web_service;
-
 /

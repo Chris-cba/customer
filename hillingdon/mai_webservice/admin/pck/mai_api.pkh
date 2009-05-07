@@ -5,11 +5,11 @@ CREATE OR REPLACE PACKAGE mai_api AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.3   Mar 20 2009 16:08:24   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/pck/pck/mai_api.pkh-arc   1.4   May 07 2009 17:29:48   mhuitson  $
 --       Module Name      : $Workfile:   mai_api.pkh  $
---       Date into PVCS   : $Date:   Mar 20 2009 16:08:24  $
---       Date fetched Out : $Modtime:   Mar 19 2009 18:59:46  $
---       PVCS Version     : $Revision:   1.3  $
+--       Date into PVCS   : $Date:   May 07 2009 17:29:48  $
+--       Date fetched Out : $Modtime:   May 06 2009 14:18:24  $
+--       PVCS Version     : $Revision:   1.4  $
 --
 -----------------------------------------------------------------------------
 --      Copyright (c) exor corporation ltd, 2007
@@ -50,7 +50,7 @@ CREATE OR REPLACE PACKAGE mai_api AS
 || -20029,'No Repair Action Category Specified.'
 || -20030,'Invalid Repair Action Category Specified.'
 || -20031,'Invalid Treatment Specified.'
-|| -20032,'No Standard Item Code Specified.'
+|| -20032,'Invalid Standard Item Code Specified.'
 || -20033,'Cannot Find Specfied Standard Item.'
 || -20034,'No BOQ Repair Action Category Specified.'
 || -20035,'Estimated Quantity Is Below The Minimum Quantity.'
@@ -107,11 +107,29 @@ CREATE OR REPLACE PACKAGE mai_api AS
 || -20088,'Invalid TMA Register Flag Supplied.'
 || -20089,'Invalid Rechargeable Flag Supplied.'
 || -20090,'No BOQ Defect Id or Repair Action Category Specified.'
-|| -20091,'BOQ_ID [] Specified Does Not Belong To Defect [] Repair Type [].'
-||
+|| -20091,'BOQ_ID [] Is Not A Child Of The Specified Parent.'
+|| -20092,'Cannot Set A Works Order That Has Not Been Instructed As Received.'
+|| -20093,'Date Received Must Not Be Less Then The Date Instructed.'
+|| -20094,'Too Many Values Defined For Work Order Line HELD Status.'
+|| -20095,'Cannot Obtain Value For Work Order Line HELD Status.'
+|| -20096,'Invalid Work Order Line Id Number Supplied.'
+|| -20097,'Invalid Status Transition : <reason>'
+|| -20098,'No BOQ Work Order Line Id Specified.'
+|| -20099,'Parent BOQs Based On Percentage Items Codes Are Not Supported.'
+|| -20100,'Update Of BOQs Is Only Supported For Actual Costs.'
+|| -20101,'Item Code [] Is Not A Valid Contract Item.'
+|| -20102,'Percent Items Cannot Be Added To Item Code ['||lr_sta.sta_item_code||'].'
+|| -20103,'An Error Occured Whilst Recalculating Percent Items.'
+|| -20104,'Value Too Large When Calculating <>.'
+|| -20105,'Date Complete Must Be Less Than Or Equal To Todays Date.'
+|| -20106,'Date Complete Must Be On Or Later Than The Date Raised ['||TO_CHAR(lr_wo.wor_date_raised,'DD-MON-RRRR')||'].'
+|| -20107,'Cannot Enter A Valuation Less Than Previously Paid.'
+|| -20108,'Too Many Values Defined For Defect Status.'
+|| -20109,'Cannot Obtain Value For Defect Status.'
+|| -20110,'Work Order Is Already Complete.'
 */
 --<GLOBVAR>
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.3  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   1.4  $';
   g_application_owner  VARCHAR2(30);
   gr_defect_rec   defects%ROWTYPE;
 --</GLOBVAR>
@@ -124,6 +142,15 @@ TYPE rep_tab IS TABLE OF repairs%ROWTYPE INDEX BY BINARY_INTEGER;
 --
 TYPE boq_tab IS TABLE OF boq_items%ROWTYPE INDEX BY BINARY_INTEGER;
 --
+TYPE act_boq_rec IS RECORD(boq_id             boq_items.boq_id%TYPE
+                          ,boq_sta_item_code  boq_items.boq_sta_item_code%TYPE
+                          ,boq_act_dim1       boq_items.boq_act_dim1%TYPE
+                          ,boq_act_dim2       boq_items.boq_act_dim2%TYPE
+                          ,boq_act_dim3       boq_items.boq_act_dim3%TYPE
+                          ,add_percent_item   VARCHAR2(1)
+                          ,percent_item_code  boq_items.boq_sta_item_code%TYPE);
+TYPE act_boq_tab IS TABLE OF act_boq_rec INDEX BY BINARY_INTEGER;
+--
 TYPE def_rep_list_in_tab IS TABLE OF defect_list_temp%ROWTYPE INDEX BY BINARY_INTEGER;
 --
 TYPE def_rep_list_on_wo_rec IS RECORD(defect_id       defects.def_defect_id%TYPE
@@ -135,25 +162,35 @@ TYPE def_rep_list_not_on_wo_rec IS RECORD(defect_id       defects.def_defect_id%
                                          ,reason          VARCHAR2(500));
 TYPE def_rep_list_not_on_wo_tab IS TABLE OF def_rep_list_not_on_wo_rec INDEX BY BINARY_INTEGER;
 --
+TYPE flags_rec IS RECORD(feature1  hig_status_codes.hsc_allow_feature1%TYPE
+                        ,feature2  hig_status_codes.hsc_allow_feature2%TYPE
+                        ,feature3  hig_status_codes.hsc_allow_feature3%TYPE
+                        ,feature4  hig_status_codes.hsc_allow_feature4%TYPE
+                        ,feature5  hig_status_codes.hsc_allow_feature5%TYPE
+                        ,feature6  hig_status_codes.hsc_allow_feature6%TYPE
+                        ,feature7  hig_status_codes.hsc_allow_feature7%TYPE
+                        ,feature8  hig_status_codes.hsc_allow_feature8%TYPE
+                        ,feature9  hig_status_codes.hsc_allow_feature9%TYPE);
+--
 --</TYPE>
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="GET_VERSION">
+--<PROC NAME="get_version">
 -- This function returns the current SCCS version
 FUNCTION get_version RETURN varchar2;
 --</PROC>
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="GET_BODY_VERSION">
+--<PROC NAME="get_body_version">
 -- This function returns the current SCCS version of the package body
 FUNCTION get_body_version RETURN varchar2;
 --</PROC>
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="CREATE_DEFECT">
+--<PROC NAME="create_defect">
 FUNCTION create_defect(pi_insp_rec     IN activities_report%ROWTYPE
                       ,pi_defect_rec   IN defects%ROWTYPE
                       ,pi_def_attr_tab IN def_attr_tab
@@ -165,7 +202,7 @@ FUNCTION create_defect(pi_insp_rec     IN activities_report%ROWTYPE
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="CREATE_DEFECT_WORK_ORDER">
+--<PROC NAME="create_defect_work_order">
 PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_id%TYPE
                                   ,pi_wo_descr          IN  work_orders.wor_descr%TYPE
                                   ,pi_scheme_type       IN  work_orders.wor_scheme_type%TYPE
@@ -190,11 +227,65 @@ PROCEDURE create_defect_work_order(pi_user_id           IN  hig_users.hus_user_i
 --
 -----------------------------------------------------------------------------
 --
---<PROC NAME="INSTRUCT_WORK_ORDER">
+--<PROC NAME="instruct_work_order">
 PROCEDURE instruct_work_order(pi_user_id         IN hig_users.hus_user_id%TYPE
                              ,pi_works_order_no  IN work_orders.wor_works_order_no%TYPE
                              ,pi_date_instructed IN work_orders.wor_date_confirmed%TYPE
                              ,pi_commit          IN VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="receive_work_order">
+PROCEDURE receive_work_order(pi_user_id        IN hig_users.hus_user_id%TYPE
+                            ,pi_works_order_no IN work_orders.wor_works_order_no%TYPE
+                            ,pi_date_received  IN work_orders.wor_date_received%TYPE
+                            ,pi_commit         IN VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="set_wol_held">
+PROCEDURE set_wol_held(pi_user_id       IN hig_users.hus_user_id%TYPE
+                      ,pi_wol_id        IN work_order_lines.wol_id%TYPE
+                      ,pi_date_complete IN work_order_lines.wol_date_complete%TYPE
+                      ,pi_commit        IN VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="set_wol_not_done">
+PROCEDURE set_wol_not_done(pi_user_id       IN hig_users.hus_user_id%TYPE
+                          ,pi_wol_id        IN work_order_lines.wol_id%TYPE
+                          ,pi_commit        IN VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_interim_payment">
+PROCEDURE create_interim_payment(pi_user_id       IN hig_users.hus_user_id%TYPE
+                                ,pi_wol_id  IN work_order_lines.wol_id%TYPE
+                                ,pi_boq_tab IN act_boq_tab
+                                ,pi_commit  IN VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="complete_wol">
+PROCEDURE complete_wol(pi_user_id       IN hig_users.hus_user_id%TYPE
+                      ,pi_wol_id        IN work_order_lines.wol_id%TYPE
+                      ,pi_date_complete IN work_order_lines.wol_date_complete%TYPE
+                      ,pi_boq_tab       IN act_boq_tab
+                      ,pi_commit        IN VARCHAR2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="complete_wor">
+PROCEDURE complete_wor(pi_user_id       IN hig_users.hus_user_id%TYPE
+                      ,pi_works_order_no IN work_orders.wor_works_order_no%TYPE
+                      ,pi_date_complete  IN work_order_lines.wol_date_complete%TYPE
+                      ,pi_commit         IN VARCHAR2);
 --</PROC>
 --
 -----------------------------------------------------------------------------
