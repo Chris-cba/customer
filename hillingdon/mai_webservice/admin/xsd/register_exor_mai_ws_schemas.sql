@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/admin/xsd/register_exor_mai_ws_schemas.sql-arc   1.1   Mar 20 2009 16:01:26   mhuitson  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/admin/xsd/register_exor_mai_ws_schemas.sql-arc   1.2   May 07 2009 17:37:28   mhuitson  $
 --       Module Name      : $Workfile:   register_exor_mai_ws_schemas.sql  $
---       Date into PVCS   : $Date:   Mar 20 2009 16:01:26  $
---       Date fetched Out : $Modtime:   Mar 06 2009 11:05:26  $
---       Version          : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   May 07 2009 17:37:28  $
+--       Date fetched Out : $Modtime:   Apr 07 2009 22:40:40  $
+--       Version          : $Revision:   1.2  $
 --       Based on SCCS version : 
 -------------------------------------------------------------------------
 
@@ -77,14 +77,14 @@ BEGIN
   */
   create_directory;
   --
-  register_xsd_from_file(pi_schemaurl => 'Exor_mai_wsCore-v2-1.xsd'
+  register_xsd_from_file(pi_schemaurl => 'Exor_mai_wsCore-v2-2.xsd'
                         ,pi_oradir    => 'MAI_XSD_DIRECTORY'
-                        ,pi_filename  => 'Exor_mai_wsCore-v2-1.xsd');
+                        ,pi_filename  => 'Exor_mai_wsCore-v2-2.xsd');
                           
   --
-  register_xsd_from_file(pi_schemaurl => 'Exor_mai_ws-v2-1.xsd'
+  register_xsd_from_file(pi_schemaurl => 'Exor_mai_ws-v2-2.xsd'
                         ,pi_oradir    => 'MAI_XSD_DIRECTORY'
-                        ,pi_filename  => 'Exor_mai_ws-v2-1.xsd');
+                        ,pi_filename  => 'Exor_mai_ws-v2-2.xsd');
   --
 END;
 /

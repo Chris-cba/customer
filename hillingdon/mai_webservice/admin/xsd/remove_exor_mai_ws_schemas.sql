@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/admin/xsd/remove_exor_mai_ws_schemas.sql-arc   1.1   Mar 20 2009 16:01:40   mhuitson  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/hillingdon/mai_webservice/admin/xsd/remove_exor_mai_ws_schemas.sql-arc   1.2   May 07 2009 17:37:28   mhuitson  $
 --       Module Name      : $Workfile:   remove_exor_mai_ws_schemas.sql  $
---       Date into PVCS   : $Date:   Mar 20 2009 16:01:40  $
---       Date fetched Out : $Modtime:   Mar 06 2009 11:26:04  $
---       Version          : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   May 07 2009 17:37:28  $
+--       Date fetched Out : $Modtime:   Apr 07 2009 22:41:08  $
+--       Version          : $Revision:   1.2  $
 --       Based on SCCS version : 
 -------------------------------------------------------------------------
 /*
@@ -38,6 +38,10 @@ BEGIN
   delete_schema(pi_schemaurl => 'Exor_mai_ws-v2-1.xsd');
   --
   delete_schema(pi_schemaurl => 'Exor_mai_wsCore-v2-1.xsd');
+  --
+  delete_schema(pi_schemaurl => 'Exor_mai_ws-v2-2.xsd');
+  --
+  delete_schema(pi_schemaurl => 'Exor_mai_wsCore-v2-2.xsd');
   --
 END;
 /
