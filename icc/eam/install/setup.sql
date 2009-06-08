@@ -1,10 +1,10 @@
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/setup.sql-arc   1.0   Nov 28 2008 11:22:52   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/setup.sql-arc   1.1   Jun 08 2009 13:41:42   mhuitson  $
 --       Module Name      : $Workfile:   setup.sql  $
---       Date into PVCS   : $Date:   Nov 28 2008 11:22:52  $
---       Date fetched Out : $Modtime:   Nov 28 2008 11:21:12  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 08 2009 13:41:42  $
+--       Date fetched Out : $Modtime:   Jun 08 2009 13:31:20  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 
 /*
@@ -68,6 +68,78 @@ ALTER TRIGGER def_due_date_time DISABLE;
 /*
 ||Metadata.
 */
+Insert into HIG_PRODUCTS
+   (HPR_PRODUCT, HPR_PRODUCT_NAME, HPR_VERSION, HPR_PATH_NAME, HPR_KEY, 
+    HPR_SEQUENCE, HPR_IMAGE, HPR_USER_MENU, HPR_LAUNCHPAD_ICON, HPR_IMAGE_TYPE)
+ Values
+   ('EAM', 'Oracle EAM Interface', '4.0.1.0', NULL, 69, 
+    NULL, NULL, NULL, NULL, NULL);
+
+prompt Creating EAM Error Messages.
+
+Insert into NM_ERRORS
+   (NER_APPL, NER_ID, NER_HER_NO, NER_DESCR, NER_CAUSE)
+ Values
+   ('EAM'
+   ,1
+   ,NULL
+   ,'EAM Organization Does Not Exist'
+   ,NULL);
+
+Insert into NM_ERRORS
+   (NER_APPL, NER_ID, NER_HER_NO, NER_DESCR, NER_CAUSE)
+ Values
+   ('EAM'
+   ,2
+   ,NULL
+   ,'EAM Department Does Not Exist'
+   ,NULL);
+
+Insert into NM_ERRORS
+   (NER_APPL, NER_ID, NER_HER_NO, NER_DESCR, NER_CAUSE)
+ Values
+   ('EAM'
+   ,3
+   ,NULL
+   ,'EAM Asset Group Does Not Exist'
+   ,NULL);
+
+Insert into NM_ERRORS
+   (NER_APPL, NER_ID, NER_HER_NO, NER_DESCR, NER_CAUSE)
+ Values
+   ('EAM'
+   ,4
+   ,NULL
+   ,'An Error Occured'
+   ,NULL);
+
+Insert into NM_ERRORS
+   (NER_APPL, NER_ID, NER_HER_NO, NER_DESCR, NER_CAUSE)
+ Values
+   ('EAM'
+   ,5
+   ,NULL
+   ,'Defect Id Does Not Exist'
+   ,NULL);
+
+Insert into NM_ERRORS
+   (NER_APPL, NER_ID, NER_HER_NO, NER_DESCR, NER_CAUSE)
+ Values
+   ('EAM'
+   ,6
+   ,NULL
+   ,'Repair Does Not Exist'
+   ,NULL);
+
+Insert into NM_ERRORS
+   (NER_APPL, NER_ID, NER_HER_NO, NER_DESCR, NER_CAUSE)
+ Values
+   ('EAM'
+   ,7
+   ,NULL
+   ,'Cannot Create A Work Request For A Defect With No Associated Asset.'
+   ,NULL);
+
 
 INSERT INTO nm_errors
             (ner_appl, ner_id, ner_her_no, ner_descr, ner_cause
@@ -80,7 +152,70 @@ INSERT INTO nm_errors
             )
      VALUES ('EAM', 9, NULL, 'One and only one asset must be selected', NULL
             );
-            
+
+Insert
+  into HIG_OPTION_LIST
+      (HOL_ID
+      ,HOL_PRODUCT
+      ,HOL_NAME
+      ,HOL_REMARKS
+      ,HOL_DOMAIN
+      ,HOL_DATATYPE
+      ,HOL_MIXED_CASE
+      ,HOL_USER_OPTION
+      )
+Values('EAMIDATTR'
+      ,'EAM'
+      ,'EAM ID Attribute'
+      ,'This Option Defines Which Asset Attribute Column Should Be Used To Store The EAM Asset Id'
+      ,NULL
+      ,'VARCHAR2'
+      ,'N'
+      ,'N'
+      );
+
+Insert
+  into HIG_OPTION_LIST
+      (HOL_ID
+      ,HOL_PRODUCT
+      ,HOL_NAME
+      ,HOL_REMARKS
+      ,HOL_DOMAIN
+      ,HOL_DATATYPE
+      ,HOL_MIXED_CASE
+      ,HOL_USER_OPTION
+      )
+Values('EAMORGCODE'
+      ,'EAM'
+      ,'EAM Organization Code'
+      ,'This Option Defines The EAM Organization Code To Be Used When Creating Objects In EAM'
+      ,NULL
+      ,'VARCHAR2'
+      ,'N'
+      ,'N'
+      );
+
+Insert
+  into HIG_OPTION_LIST
+      (HOL_ID
+      ,HOL_PRODUCT
+      ,HOL_NAME
+      ,HOL_REMARKS
+      ,HOL_DOMAIN
+      ,HOL_DATATYPE
+      ,HOL_MIXED_CASE
+      ,HOL_USER_OPTION
+      )
+Values('EAMUSER'
+      ,'EAM'
+      ,'EAM USERNAME'
+      ,'This Option Defines The EAM Username To Be Used When Creating Objects In EAM.'
+      ,NULL
+      ,'VARCHAR2'
+      ,'N'
+      ,'N'
+      );
+                  
 INSERT INTO hig_modules
             (hmo_module
             ,hmo_title
