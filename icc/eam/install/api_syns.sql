@@ -1,10 +1,10 @@
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/api_syns.sql-arc   1.0   Nov 28 2008 11:22:50   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/api_syns.sql-arc   1.1   Jun 11 2009 13:30:48   mhuitson  $
 --       Module Name      : $Workfile:   api_syns.sql  $
---       Date into PVCS   : $Date:   Nov 28 2008 11:22:50  $
---       Date fetched Out : $Modtime:   Nov 28 2008 11:22:02  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 11 2009 13:30:48  $
+--       Date fetched Out : $Modtime:   Jun 11 2009 13:30:16  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --For Create WR
@@ -15,6 +15,9 @@ CREATE SYNONYM CS_INCIDENTS_ALL_B FOR APPS.CS_INCIDENTS_ALL_B@TRNICC_EAM
 /
 
 CREATE SYNONYM cs_incidents_all_tl FOR cs.cs_incidents_all_tl@TRNICC_EAM
+/
+
+CREATE SYNONYM cs_incident_statuses_vl FOR apps.cs_incident_statuses_vl@TRNICC_EAM
 /
 
 CREATE SYNONYM WIP_EAM_WORK_REQUESTS FOR APPS.WIP_EAM_WORK_REQUESTS@TRNICC_EAM
