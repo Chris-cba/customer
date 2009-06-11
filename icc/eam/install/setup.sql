@@ -1,15 +1,17 @@
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/setup.sql-arc   1.1   Jun 08 2009 13:41:42   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/setup.sql-arc   1.2   Jun 11 2009 16:01:00   mhuitson  $
 --       Module Name      : $Workfile:   setup.sql  $
---       Date into PVCS   : $Date:   Jun 08 2009 13:41:42  $
---       Date fetched Out : $Modtime:   Jun 08 2009 13:31:20  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Jun 11 2009 16:01:00  $
+--       Date fetched Out : $Modtime:   Jun 11 2009 16:00:00  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 
 /*
 ||DDL
 */
+propmt Creating EAM Database Objects.
+
 CREATE SEQUENCE EDO_ID_SEQ;
 
 CREATE TABLE EAM_DEFECT_OBJECTS
@@ -68,6 +70,8 @@ ALTER TRIGGER def_due_date_time DISABLE;
 /*
 ||Metadata.
 */
+prompt Creating EAM Product Data.
+
 Insert into HIG_PRODUCTS
    (HPR_PRODUCT, HPR_PRODUCT_NAME, HPR_VERSION, HPR_PATH_NAME, HPR_KEY, 
     HPR_SEQUENCE, HPR_IMAGE, HPR_USER_MENU, HPR_LAUNCHPAD_ICON, HPR_IMAGE_TYPE)
@@ -153,6 +157,14 @@ INSERT INTO nm_errors
      VALUES ('EAM', 9, NULL, 'One and only one asset must be selected', NULL
             );
 
+INSERT INTO nm_errors
+            (ner_appl, ner_id, ner_her_no, ner_descr, ner_cause
+            )
+     VALUES ('EAM', 10, NULL, 'Service Request is at a Status that prevents creation of a Work Request / Work Order', NULL
+            );
+
+prompt Creating EAM Product Options.
+
 Insert
   into HIG_OPTION_LIST
       (HOL_ID
@@ -215,7 +227,9 @@ Values('EAMUSER'
       ,'N'
       ,'N'
       );
-                  
+
+prompt Creating EAM Module data.
+
 INSERT INTO hig_modules
             (hmo_module
             ,hmo_title
@@ -271,5 +285,246 @@ INSERT INTO hig_module_roles
             )
      VALUES ('EAM3807', 'HIG_USER', 'NORMAL'
             );
+
+prompt Creating Service Request Status Domain.
+
+/*
+||Add The Service Request Status Domain.
+*/
+INSERT
+  INTO hig_status_domains
+      (HSD_DOMAIN_CODE
+      ,HSD_PRODUCT
+      ,HSD_DESCRIPTION
+      ,HSD_FEATURE1
+      ,HSD_FEATURE2
+      ,HSD_FEATURE3
+      ,HSD_FEATURE4
+      ,HSD_FEATURE5
+      ,HSD_FEATURE6
+      ,HSD_FEATURE7
+      ,HSD_FEATURE8
+      ,HSD_FEATURE9)
+VALUES('SERVICE_REQUEST_STATUS'
+      ,'MAI'
+      ,'Work Request / Work Order creation is allowed.'
+      ,'Display a warning before Work Request / Work Order creation.'
+      ,'Not Used'
+      ,'Not Used'
+      ,'Not Used'
+      ,'Not Used'
+      ,'Not Used'
+      ,'Not Used'
+      ,'Not Used'
+      ,'Not Used')
+/
+
+/*
+||Add Status Codes To The Domain.
+*/
+INSERT
+  INTO hig_status_codes
+      (hsc_domain_code
+      ,hsc_status_code
+      ,hsc_status_name
+      ,hsc_seq_no
+      ,hsc_allow_feature1
+      ,hsc_allow_feature2
+      ,hsc_allow_feature3
+      ,hsc_allow_feature4
+      ,hsc_allow_feature5
+      ,hsc_allow_feature6
+      ,hsc_allow_feature7
+      ,hsc_allow_feature8
+      ,hsc_allow_feature9
+      ,hsc_start_date
+      ,hsc_end_date) 
+VALUES('SERVICE_REQUEST_STATUS'
+      ,'NEW'
+      ,'New'
+      ,1
+      ,'Y'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,NULL
+      ,NULL )
+/
+
+INSERT
+  INTO hig_status_codes
+      (hsc_domain_code
+      ,hsc_status_code
+      ,hsc_status_name
+      ,hsc_seq_no
+      ,hsc_allow_feature1
+      ,hsc_allow_feature2
+      ,hsc_allow_feature3
+      ,hsc_allow_feature4
+      ,hsc_allow_feature5
+      ,hsc_allow_feature6
+      ,hsc_allow_feature7
+      ,hsc_allow_feature8
+      ,hsc_allow_feature9
+      ,hsc_start_date
+      ,hsc_end_date) 
+VALUES('SERVICE_REQUEST_STATUS'
+      ,'ASSIGNED'
+      ,'Assigned'
+      ,2
+      ,'Y'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,NULL
+      ,NULL )
+/
+
+INSERT
+  INTO hig_status_codes
+      (hsc_domain_code
+      ,hsc_status_code
+      ,hsc_status_name
+      ,hsc_seq_no
+      ,hsc_allow_feature1
+      ,hsc_allow_feature2
+      ,hsc_allow_feature3
+      ,hsc_allow_feature4
+      ,hsc_allow_feature5
+      ,hsc_allow_feature6
+      ,hsc_allow_feature7
+      ,hsc_allow_feature8
+      ,hsc_allow_feature9
+      ,hsc_start_date
+      ,hsc_end_date) 
+VALUES('SERVICE_REQUEST_STATUS'
+      ,'AWAIT_EXT'
+      ,'Awaiting External Action'
+      ,3
+      ,'Y'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,NULL
+      ,NULL )
+/
+
+INSERT
+  INTO hig_status_codes
+      (hsc_domain_code
+      ,hsc_status_code
+      ,hsc_status_name
+      ,hsc_seq_no
+      ,hsc_allow_feature1
+      ,hsc_allow_feature2
+      ,hsc_allow_feature3
+      ,hsc_allow_feature4
+      ,hsc_allow_feature5
+      ,hsc_allow_feature6
+      ,hsc_allow_feature7
+      ,hsc_allow_feature8
+      ,hsc_allow_feature9
+      ,hsc_start_date
+      ,hsc_end_date) 
+VALUES('SERVICE_REQUEST_STATUS'
+      ,'INPROGRESS'
+      ,'In Progress'
+      ,4
+      ,'Y'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,NULL
+      ,NULL )
+/
+
+INSERT
+  INTO hig_status_codes
+      (hsc_domain_code
+      ,hsc_status_code
+      ,hsc_status_name
+      ,hsc_seq_no
+      ,hsc_allow_feature1
+      ,hsc_allow_feature2
+      ,hsc_allow_feature3
+      ,hsc_allow_feature4
+      ,hsc_allow_feature5
+      ,hsc_allow_feature6
+      ,hsc_allow_feature7
+      ,hsc_allow_feature8
+      ,hsc_allow_feature9
+      ,hsc_start_date
+      ,hsc_end_date) 
+VALUES('SERVICE_REQUEST_STATUS'
+      ,'REASSIGNED'
+      ,'Reassigned'
+      ,5
+      ,'Y'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,NULL
+      ,NULL )
+/
+
+INSERT
+  INTO hig_status_codes
+      (hsc_domain_code
+      ,hsc_status_code
+      ,hsc_status_name
+      ,hsc_seq_no
+      ,hsc_allow_feature1
+      ,hsc_allow_feature2
+      ,hsc_allow_feature3
+      ,hsc_allow_feature4
+      ,hsc_allow_feature5
+      ,hsc_allow_feature6
+      ,hsc_allow_feature7
+      ,hsc_allow_feature8
+      ,hsc_allow_feature9
+      ,hsc_start_date
+      ,hsc_end_date) 
+VALUES('SERVICE_REQUEST_STATUS'
+      ,'COMPNOTCLS'
+      ,'Completed not closed'
+      ,6
+      ,'Y'
+      ,'Y'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,'N'
+      ,NULL
+      ,NULL )
+/
+
 
 COMMIT ;
