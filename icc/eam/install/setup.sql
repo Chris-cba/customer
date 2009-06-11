@@ -1,10 +1,10 @@
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/setup.sql-arc   1.2   Jun 11 2009 16:01:00   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/install/setup.sql-arc   1.3   Jun 11 2009 22:35:18   mhuitson  $
 --       Module Name      : $Workfile:   setup.sql  $
---       Date into PVCS   : $Date:   Jun 11 2009 16:01:00  $
---       Date fetched Out : $Modtime:   Jun 11 2009 16:00:00  $
---       PVCS Version     : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   Jun 11 2009 22:35:18  $
+--       Date fetched Out : $Modtime:   Jun 11 2009 22:34:40  $
+--       PVCS Version     : $Revision:   1.3  $
 --       Based on SCCS version :
 
 /*
@@ -307,9 +307,9 @@ INSERT
       ,HSD_FEATURE9)
 VALUES('SERVICE_REQUEST_STATUS'
       ,'MAI'
+      ,'EAM Service Request Status Names. This Domain allows Service Request Status Codes to be identified as valid for the creation of Work Requests/Work Orders. The EAM Service Request Status Name will be matched with Name given below, this is case sensitive.'
       ,'Work Request / Work Order creation is allowed.'
       ,'Display a warning before Work Request / Work Order creation.'
-      ,'Not Used'
       ,'Not Used'
       ,'Not Used'
       ,'Not Used'
