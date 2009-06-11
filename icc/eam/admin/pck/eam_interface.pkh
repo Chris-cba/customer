@@ -4,11 +4,11 @@ create or replace package eam_interface as
 -----------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/admin/pck/eam_interface.pkh-arc   1.0   Nov 28 2008 11:01:18   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/admin/pck/eam_interface.pkh-arc   1.1   Jun 11 2009 16:04:48   mhuitson  $
 --       Module Name      : $Workfile:   eam_interface.pkh  $
---       Date into PVCS   : $Date:   Nov 28 2008 11:01:18  $
---       Date fetched Out : $Modtime:   Nov 28 2008 10:37:02  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 11 2009 16:04:48  $
+--       Date fetched Out : $Modtime:   May 29 2009 17:37:44  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --    eam_interface
@@ -38,7 +38,8 @@ FUNCTION get_body_version RETURN varchar2;
 --
 PROCEDURE validate_service_request_no(pi_service_request_no IN     VARCHAR2
                                      ,po_description        IN OUT VARCHAR2
-                                     ,po_target_date        IN OUT VARCHAR2);
+                                     ,po_target_date        IN OUT VARCHAR2
+                                     ,po_sr_status          IN OUT VARCHAR2);
 --
 -----------------------------------------------------------------------------
 --

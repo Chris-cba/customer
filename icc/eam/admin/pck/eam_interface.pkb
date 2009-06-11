@@ -4,11 +4,11 @@ create or replace package body eam_interface as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/admin/pck/eam_interface.pkb-arc   1.0   Nov 28 2008 11:01:18   mhuitson  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/icc/eam/admin/pck/eam_interface.pkb-arc   1.1   Jun 11 2009 16:04:48   mhuitson  $
 --       Module Name      : $Workfile:   eam_interface.pkb  $
---       Date into PVCS   : $Date:   Nov 28 2008 11:01:18  $
---       Date fetched Out : $Modtime:   Nov 28 2008 10:37:38  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 11 2009 16:04:48  $
+--       Date fetched Out : $Modtime:   May 29 2009 17:36:30  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   eam_interface body
@@ -63,8 +63,9 @@ end get_body_version;
 --
 PROCEDURE validate_service_request_no(pi_service_request_no IN     VARCHAR2
                                      ,po_description        IN OUT VARCHAR2
-                                     ,po_target_date        IN OUT VARCHAR2) IS
-  --
+                                     ,po_target_date        IN OUT VARCHAR2
+                                     ,po_sr_status          IN OUT VARCHAR2)
+  IS
 BEGIN
   /*
   || Get The Description And Target Date
@@ -72,12 +73,16 @@ BEGIN
   */
   SELECT substr(tl.summary,1,240)
         ,to_char(b.expected_resolution_date,'DD-MON-YYYY HH24:MI:SS')
+        ,cis.name
     INTO po_description
         ,po_target_date
-    FROM cs_incidents_all_b b
+        ,po_sr_status
+    FROM cs_incident_statuses_vl cis
+        ,cs_incidents_all_b b
         ,cs_incidents_all_tl tl
    WHERE tl.incident_id = b.incident_id
      AND b.incident_number = pi_service_request_no
+     AND b.incident_status_id = cis.incident_status_id
        ;
   --
 EXCEPTION
