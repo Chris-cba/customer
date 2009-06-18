@@ -13,7 +13,7 @@ prompt  APPLICATION 624 - wag_planning_v24
 -- Application Export:
 --   Application:     624
 --   Name:            wag_planning_v24
---   Date and Time:   12:54 Thursday June 18, 2009
+--   Date and Time:   15:39 Thursday June 18, 2009
 --   Exported By:     WAG
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -138,14 +138,14 @@ wwv_flow_api.create_flow(
   p_display_id=> 624,
   p_owner => 'WAG',
   p_name  => 'wag_planning_v24',
-  p_alias => 'WAGTPCV15116117118119120121122123124125126127128601602603604605606607608609612613614615616617618619620621622623624',
+  p_alias => 'WAGPLAN',
   p_page_view_logging => 'YES',
   p_default_page_template=> 63118740619599608 + wwv_flow_api.g_id_offset,
   p_printer_friendly_template=> 63119637403599610 + wwv_flow_api.g_id_offset,
   p_default_region_template=> 63125835672599618 + wwv_flow_api.g_id_offset,
   p_error_template    => 63118740619599608 + wwv_flow_api.g_id_offset,
   p_page_protection_enabled_y_n=> 'Y',
-  p_checksum_salt_last_reset => '20090617113207',
+  p_checksum_salt_last_reset => '20090618153837',
   p_max_session_length_sec=> 28800,
   p_home_link         => 'f?p=&APP_ID.:1:&SESSION.',
   p_flow_language     => 'en-gb',
@@ -186,8 +186,12 @@ wwv_flow_api.create_flow(
   p_default_reportr_template   =>63125835672599618 + wwv_flow_api.g_id_offset,
   p_default_menur_template => 63121954153599613 + wwv_flow_api.g_id_offset,
   p_default_listr_template => 63125835672599618 + wwv_flow_api.g_id_offset,
+  p_substitution_string_01 => 'FRAMEWORK_VERSION',
+  p_substitution_value_01  => '$Revision:   3.1  $',
+  p_substitution_string_02 => 'MSG_COPYRIGHT',
+  p_substitution_value_02  => '&copy: copyright exor corporation ltd 2009',
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss=> '20090617113207',
+  p_last_upd_yyyymmddhh24miss=> '20090618153837',
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
  
@@ -4979,11 +4983,17 @@ c1:=c1||'<html lang="&BROWSER_LANGUAGE." xmlns="http://www.w3.org/1999/xhtml" xm
 '</head>'||chr(10)||
 '<body #ONLOAD#><noscript>&MSG_JSCRIPT.</noscript>#FORM_OPEN#<a name="PAGETOP"></a>';
 
-c2:=c2||'<div class="t13NewBottom"><div id="t13User">&USER.</div><div class="t13NewBottom1">&BROWSER_LANGUAGE.</div>'||chr(10)||
+c2:=c2||'<div class="t13NewBottom"><div id="t13User">&USER.</div>'||chr(10)||
+'<div class="t13NewBottom1"><a href="http://www.exorcorp.com">www.exorcorp.com</a></div>'||chr(10)||
+'<div class="t13NewBottom1">&FRAMEWORK_VERSION.</div>'||chr(10)||
+'<div class="t13NewBottom1">Page: &FLOW_STEP_ID.</div>'||chr(10)||
+'<div class="t13NewBottom1">&BROWSER_LANGUAGE.</div>'||chr(10)||
 '<div class="t13NewBottom2">&MSG_COPYRIGHT.</div>'||chr(10)||
 '<br style="clear:both;"/>'||chr(10)||
 '</div>'||chr(10)||
-'#REGION_POSITION_05#'||chr(10)||
+'#REGION_POSITI';
+
+c2:=c2||'ON_05#'||chr(10)||
 '#FORM_CLOSE#'||chr(10)||
 '<a name="END"><br /></a>'||chr(10)||
 '</body>'||chr(10)||
@@ -5061,7 +5071,6 @@ wwv_flow_api.create_template(
 '<br />'||chr(10)||
 '<pre>#MESSAGE#</pre>'||chr(10)||
 '<a href="#BACK_LINK#">#RETURN_TO_APPLICATION#</a>',
-  p_translate_this_template => 'N',
   p_template_comment => '');
 end;
  
