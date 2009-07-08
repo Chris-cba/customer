@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla.sqs-arc   3.0   Jul 08 2009 11:07:56   smarshall  $
+--       Module Name      : $Workfile:   pla.sqs  $
+--       Date into PVCS   : $Date:   Jul 08 2009 11:07:56  $
+--       Date fetched Out : $Modtime:   Jul 08 2009 11:07:40  $
+--       Version          : $Revision:   3.0  $
+-------------------------------------------------------------------------
+--
+
+PROMPT Creating Sequence 'WAG_PLAN_RECORD_CARD_SEQ'
+CREATE SEQUENCE WAG_PLAN_RECORD_CARD_SEQ
+ NOMAXVALUE
+ NOMINVALUE
+ NOCYCLE
+ NOCACHE
+/
+
+PROMPT Creating Sequence 'WAG_PLAN_RECORD_CARD_LINE_SEQ'
+CREATE SEQUENCE WAG_PLAN_RECORD_CARD_LINE_SEQ
+ NOMAXVALUE
+ NOMINVALUE
+ NOCYCLE
+ NOCACHE
+/
