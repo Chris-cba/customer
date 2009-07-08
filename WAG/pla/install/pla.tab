@@ -1,0 +1,40 @@
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla.tab-arc   3.0   Jul 08 2009 10:54:56   smarshall  $
+--       Module Name      : $Workfile:   pla.tab  $
+--       Date into PVCS   : $Date:   Jul 08 2009 10:54:56  $
+--       Date fetched Out : $Modtime:   Jul 08 2009 10:54:32  $
+--       Version          : $Revision:   3.0  $
+-------------------------------------------------------------------------
+--
+
+PROMPT Creating Table 'WAG_PLAN_RECORD_CARD'
+CREATE TABLE WAG_PLAN_RECORD_CARD
+ (WPRC_UPRN		VARCHAR2(20) NOT NULL
+ ,WPRC_LPA		VARCHAR2(50)
+ ,WPRC_LOCATION	VARCHAR2(255)
+ ,WPRC_FILE_REF	VARCHAR2(20)
+ ,WPRC_OSGR_X		NUMBER(12)
+ ,WPRC_OSGR_Y		NUMBER(12)
+ )
+/
+
+COMMENT ON TABLE WAG_PLAN_RECORD_CARD IS 'Utilised by WAG planning tool'
+/
+
+PROMPT Creating Table 'WAG_PLAN_RECORD_CARD_LINES'
+CREATE TABLE WAG_PLAN_RECORD_CARD_LINES
+ (WPRCL_WPRC_UPRN	VARCHAR2(20) NOT NULL
+ ,WPRCL_SEQ		NUMBER(8) NOT NULL
+ ,WPRCL_DOC_ID		NUMBER(8) NOT NULL
+ ,WPRCL_DATE_RECEIVED	DATE
+ ,WPRCL_LA_REF		VARCHAR2(100)
+ ,WPRCL_APPLICANT	VARCHAR2(200)
+ ,WPRCL_DESC		VARCHAR2(200)
+ ,WPRCL_REGISTRY_FILE	VARCHAR2(200)
+ )
+/
+
+COMMENT ON TABLE WAG_PLAN_RECORD_CARD_LINES IS 'Utilised by WAG planning tool'
+/
