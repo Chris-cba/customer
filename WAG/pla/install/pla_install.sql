@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.0   Jul 08 2009 14:21:02   smarshall  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.1   Jul 08 2009 15:58:28   smarshall  $
 --       Module Name      : $Workfile:   pla_install.sql  $
---       Date into PVCS   : $Date:   Jul 08 2009 14:21:02  $
---       Date fetched Out : $Modtime:   Jul 08 2009 14:20:48  $
---       Version          : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jul 08 2009 15:58:28  $
+--       Date fetched Out : $Modtime:   Jul 08 2009 15:57:40  $
+--       Version          : $Revision:   3.1  $
 -------------------------------------------------------------------------
 --
 set echo off
@@ -26,6 +26,7 @@ select  TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.LOG' log_extension from dual
 set term on
 
 define logfile1='pla_install_1_&log_extension'
+define logfile2='pla_install_2_&log_extension'
 spool &logfile1
 --
 ---------------------------------------------------------------------------------------------------
