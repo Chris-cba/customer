@@ -13,7 +13,7 @@ prompt  APPLICATION 624 - wag_planning_v24
 -- Application Export:
 --   Application:     624
 --   Name:            wag_planning_v24
---   Date and Time:   15:39 Thursday June 18, 2009
+--   Date and Time:   14:27 Wednesday July 8, 2009
 --   Exported By:     WAG
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -26,16 +26,16 @@ prompt  APPLICATION 624 - wag_planning_v24
  
 -- Application Statistics:
 --   Pages:                 6
---     Items:              30
+--     Items:              37
 --     Computations:        0
 --     Validations:         0
---     Processes:          12
+--     Processes:          13
 --     Regions:             8
---     Buttons:             2
+--     Buttons:             4
 --   Shared Components
 --     Breadcrumbs:         1
 --        Entries           0
---     Items:               1
+--     Items:               2
 --     Computations:        0
 --     Processes:           0
 --     Parent Tabs:         0
@@ -145,7 +145,7 @@ wwv_flow_api.create_flow(
   p_default_region_template=> 63125835672599618 + wwv_flow_api.g_id_offset,
   p_error_template    => 63118740619599608 + wwv_flow_api.g_id_offset,
   p_page_protection_enabled_y_n=> 'Y',
-  p_checksum_salt_last_reset => '20090618153837',
+  p_checksum_salt_last_reset => '20090707145321',
   p_max_session_length_sec=> 28800,
   p_home_link         => 'f?p=&APP_ID.:1:&SESSION.',
   p_flow_language     => 'en-gb',
@@ -187,11 +187,11 @@ wwv_flow_api.create_flow(
   p_default_menur_template => 63121954153599613 + wwv_flow_api.g_id_offset,
   p_default_listr_template => 63125835672599618 + wwv_flow_api.g_id_offset,
   p_substitution_string_01 => 'FRAMEWORK_VERSION',
-  p_substitution_value_01  => '$Revision:   3.1  $',
+  p_substitution_value_01  => '$Revision:   3.2  $',
   p_substitution_string_02 => 'MSG_COPYRIGHT',
   p_substitution_value_02  => '&copy: copyright exor corporation ltd 2009',
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss=> '20090618153837',
+  p_last_upd_yyyymmddhh24miss=> '20090707145321',
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
  
@@ -260,6 +260,25 @@ null;
 end;
 /
 
+--application/shared_components/logic/application_items/fsp_process_state_1279329827464923
+ 
+begin
+ 
+wwv_flow_api.create_flow_item(
+  p_id=> 1281828011483376 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_name=> 'FSP_PROCESS_STATE_1279329827464923',
+  p_data_type=> 'VARCHAR',
+  p_is_persistent=> 'Y',
+  p_protection_level=> '',
+  p_required_patch=> null + wwv_flow_api.g_id_offset,
+  p_item_comment=> '');
+ 
+null;
+ 
+end;
+/
+
 prompt  ...application level computations
 --
  
@@ -309,8 +328,8 @@ wwv_flow_api.create_tab (
   p_flow_id=> wwv_flow.g_flow_id,
   p_tab_set=> 'TPC',
   p_tab_sequence=> 310,
-  p_tab_name=> 'Associated Documents',
-  p_tab_text => 'Associated Documents',
+  p_tab_name=> 'Associated Documents ',
+  p_tab_text => 'Associated Documents (&P0_DOC_ASSOC_COUNT.)',
   p_tab_step => 3,
   p_tab_also_current_for_pages => '',
   p_tab_parent_tabset=>'',
@@ -392,7 +411,7 @@ wwv_flow_api.create_page(
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20090609160439',
+  p_last_upd_yyyymmddhh24miss => '20090706145042',
   p_page_is_public_y_n=> 'N',
   p_protection_level=> 'N',
   p_page_comment  => '');
@@ -482,6 +501,80 @@ wwv_flow_api.create_page_branch(
   p_branch_sequence=> 99,
   p_save_state_before_branch_yn=>'N',
   p_branch_comment=> '');
+ 
+ 
+end;
+/
+
+declare
+    h varchar2(32767) := null;
+begin
+wwv_flow_api.create_page_item(
+  p_id=>1270929051433314 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 0,
+  p_name=>'P0_WPRC_UPRN',
+  p_data_type=> 'VARCHAR',
+  p_accept_processing=> 'REPLACE_EXISTING',
+  p_item_sequence=> 420,
+  p_item_plug_id => 78963422633904346+wwv_flow_api.g_id_offset,
+  p_use_cache_before_default=> 'YES',
+  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
+  p_source_type=> 'STATIC',
+  p_display_as=> 'HIDDEN',
+  p_lov_columns=> 1,
+  p_lov_display_null=> 'NO',
+  p_lov_translated=> 'N',
+  p_cSize=> null,
+  p_cMaxlength=> 2000,
+  p_cHeight=> null,
+  p_cAttributes=> 'nowrap="nowrap"',
+  p_begin_on_new_line => 'NO',
+  p_begin_on_new_field=> 'YES',
+  p_colspan => 1,
+  p_rowspan => 1,
+  p_label_alignment  => 'LEFT',
+  p_field_alignment  => 'LEFT',
+  p_is_persistent=> 'Y',
+  p_item_comment => '');
+ 
+ 
+end;
+/
+
+declare
+    h varchar2(32767) := null;
+begin
+wwv_flow_api.create_page_item(
+  p_id=>1309402477749237 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 0,
+  p_name=>'P0_DOC_ASSOC_COUNT',
+  p_data_type=> 'VARCHAR',
+  p_accept_processing=> 'REPLACE_EXISTING',
+  p_item_sequence=> 430,
+  p_item_plug_id => 78963422633904346+wwv_flow_api.g_id_offset,
+  p_use_cache_before_default=> 'YES',
+  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
+  p_prompt=>'Doc Assoc Count',
+  p_source_type=> 'STATIC',
+  p_display_as=> 'HIDDEN_PROTECTED',
+  p_lov_columns=> 1,
+  p_lov_display_null=> 'NO',
+  p_lov_translated=> 'N',
+  p_cSize=> 30,
+  p_cMaxlength=> 2000,
+  p_cHeight=> 5,
+  p_cAttributes=> 'nowrap="nowrap"',
+  p_begin_on_new_line => 'YES',
+  p_begin_on_new_field=> 'YES',
+  p_colspan => 1,
+  p_rowspan => 1,
+  p_label_alignment  => 'RIGHT',
+  p_field_alignment  => 'LEFT',
+  p_field_template => 63136755972599641+wwv_flow_api.g_id_offset,
+  p_is_persistent=> 'Y',
+  p_item_comment => '');
  
  
 end;
@@ -742,7 +835,7 @@ wwv_flow_api.create_page(
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20090609150455',
+  p_last_upd_yyyymmddhh24miss => '20090707100456',
   p_page_comment  => '');
  
 wwv_flow_api.set_page_help_text(p_flow_id=>wwv_flow.g_flow_id,p_flow_step_id=>1,p_text=>h);
@@ -971,6 +1064,8 @@ wwv_flow_api.create_report_columns (
   p_column_alias=> 'WPRCL_DOC_ID',
   p_column_display_sequence=> 7,
   p_column_heading=> 'PEM Id',
+  p_column_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.::P2_DOC_ID:#WPRCL_DOC_ID#',
+  p_column_linktext=>'#WPRCL_DOC_ID#',
   p_column_alignment=>'LEFT',
   p_heading_alignment=>'CENTER',
   p_default_sort_column_sequence=>0,
@@ -978,8 +1073,11 @@ wwv_flow_api.create_report_columns (
   p_sum_column=> 'N',
   p_hidden_column=> 'N',
   p_display_as=>'WITHOUT_MODIFICATION',
+  p_lov_show_nulls=> 'NO',
   p_column_width=> '16',
   p_pk_col_source=> s,
+  p_lov_display_extra=> 'YES',
+  p_include_in_export=> 'Y',
   p_ref_schema=> 'WAG',
   p_ref_table_name=> 'WAG_PLAN_RECORD_CARD_LINES',
   p_ref_column_name=> 'WPRCL_DOC_ID',
@@ -1172,6 +1270,20 @@ wwv_flow_api.create_page_button(
   p_button_redirect_url=> '',
   p_required_patch => null + wwv_flow_api.g_id_offset);
  
+wwv_flow_api.create_page_button(
+  p_id             => 1267307524323064 + wwv_flow_api.g_id_offset,
+  p_flow_id        => wwv_flow.g_flow_id,
+  p_flow_step_id   => 1,
+  p_button_sequence=> 40,
+  p_button_plug_id => 17638111032717027+wwv_flow_api.g_id_offset,
+  p_button_name    => 'PRINT',
+  p_button_image   => 'template:'||to_char(63120550297599611+wwv_flow_api.g_id_offset),
+  p_button_image_alt=> 'Print',
+  p_button_position=> 'TOP',
+  p_button_alignment=> 'RIGHT',
+  p_button_redirect_url=> 'f?p=&APP_ID.:1:&SESSION.:PRINT_REPORT=Report%20Card:&DEBUG.:::',
+  p_required_patch => null + wwv_flow_api.g_id_offset);
+ 
  
 end;
 /
@@ -1189,6 +1301,97 @@ wwv_flow_api.create_page_branch(
   p_branch_sequence=> 1,
   p_save_state_before_branch_yn=>'N',
   p_branch_comment=> '');
+ 
+wwv_flow_api.create_page_branch(
+  p_id=>1267622454323064 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 1,
+  p_branch_action=> 'f?p=&FLOW_ID.:0:&SESSION.:PRINT_REPORT='||to_char(1265307197124296+wwv_flow_api.g_id_offset)||':&DEBUG.',
+  p_branch_point=> 'AFTER_PROCESSING',
+  p_branch_type=> 'REDIRECT_URL',
+  p_branch_when_button_id=>1267307524323064+ wwv_flow_api.g_id_offset,
+  p_branch_sequence=> 10,
+  p_save_state_before_branch_yn=>'N',
+  p_branch_comment=> '');
+ 
+ 
+end;
+/
+
+declare
+    h varchar2(32767) := null;
+begin
+wwv_flow_api.create_page_item(
+  p_id=>1304813879125028 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 1,
+  p_name=>'P1_LA_REF',
+  p_data_type=> 'VARCHAR',
+  p_accept_processing=> 'REPLACE_EXISTING',
+  p_item_sequence=> 20,
+  p_item_plug_id => 21099205192790367+wwv_flow_api.g_id_offset,
+  p_use_cache_before_default=> 'YES',
+  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
+  p_prompt=>'LA Ref&nbsp;&nbsp;',
+  p_source_type=> 'STATIC',
+  p_display_as=> 'TEXT_DISABLED',
+  p_lov_columns=> 1,
+  p_lov_display_null=> 'NO',
+  p_lov_translated=> 'N',
+  p_cSize=> 30,
+  p_cMaxlength=> 2000,
+  p_cHeight=> 5,
+  p_cAttributes=> 'nowrap="nowrap"',
+  p_tag_attributes  => 'style="width:160px" ',
+  p_begin_on_new_line => 'NO',
+  p_begin_on_new_field=> 'YES',
+  p_colspan => 1,
+  p_rowspan => 1,
+  p_label_alignment  => 'RIGHT',
+  p_field_alignment  => 'LEFT',
+  p_field_template => 63136755972599641+wwv_flow_api.g_id_offset,
+  p_is_persistent=> 'Y',
+  p_lov_display_extra=>'NO',
+  p_protection_level => 'N',
+  p_item_comment => '');
+ 
+ 
+end;
+/
+
+declare
+    h varchar2(32767) := null;
+begin
+wwv_flow_api.create_page_item(
+  p_id=>1307308177637312 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 1,
+  p_name=>'P1_DOC_ASSOC_SUM',
+  p_data_type=> 'VARCHAR',
+  p_accept_processing=> 'REPLACE_EXISTING',
+  p_item_sequence=> 1019,
+  p_item_plug_id => 21099205192790367+wwv_flow_api.g_id_offset,
+  p_use_cache_before_default=> 'YES',
+  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
+  p_prompt=>'Doc Assoc Sum',
+  p_source_type=> 'STATIC',
+  p_display_as=> 'HIDDEN_PROTECTED',
+  p_lov_columns=> 1,
+  p_lov_display_null=> 'NO',
+  p_lov_translated=> 'N',
+  p_cSize=> 30,
+  p_cMaxlength=> 2000,
+  p_cHeight=> 5,
+  p_cAttributes=> 'nowrap="nowrap"',
+  p_begin_on_new_line => 'YES',
+  p_begin_on_new_field=> 'YES',
+  p_colspan => 1,
+  p_rowspan => 1,
+  p_label_alignment  => 'RIGHT',
+  p_field_alignment  => 'LEFT',
+  p_field_template => 63136755972599641+wwv_flow_api.g_id_offset,
+  p_is_persistent=> 'Y',
+  p_item_comment => '');
  
  
 end;
@@ -1258,7 +1461,7 @@ wwv_flow_api.create_page_item(
   p_cHeight=> 5,
   p_cAttributes=> 'nowrap',
   p_tag_attributes  => 'style="width:65px;text-align:right" ',
-  p_begin_on_new_line => 'NO',
+  p_begin_on_new_line => 'YES',
   p_begin_on_new_field=> 'YES',
   p_colspan => 1,
   p_rowspan => 1,
@@ -1366,7 +1569,7 @@ wwv_flow_api.create_page_item(
   p_item_plug_id => 21099205192790367+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'NO',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_prompt=>'&nbsp;&nbsp;&nbsp;UPRN&nbsp;&nbsp;',
+  p_prompt=>'&nbsp;&nbsp;&nbsp;UPRN&nbsp;&nbsp; ',
   p_source=>'WPRC_UPRN',
   p_source_type=> 'DB_COLUMN',
   p_display_as=> 'TEXT_DISABLED',
@@ -1378,7 +1581,7 @@ wwv_flow_api.create_page_item(
   p_cHeight=> 1,
   p_tag_attributes  => 'style="width:80px" ',
   p_begin_on_new_line => 'NO',
-  p_begin_on_new_field=> 'NO',
+  p_begin_on_new_field=> 'YES',
   p_colspan => 1,
   p_rowspan => 1,
   p_label_alignment  => 'RIGHT',
@@ -1417,7 +1620,7 @@ wwv_flow_api.create_page_item(
   p_cSize=> 32,
   p_cMaxlength=> 50,
   p_cHeight=> 1,
-  p_tag_attributes  => 'style="width:160px" ',
+  p_tag_attributes  => 'style="width:160px"',
   p_begin_on_new_line => 'YES',
   p_begin_on_new_field=> 'YES',
   p_colspan => 1,
@@ -1461,7 +1664,7 @@ wwv_flow_api.create_page_item(
   p_tag_attributes  => 'style="width:451px;"',
   p_begin_on_new_line => 'YES',
   p_begin_on_new_field=> 'YES',
-  p_colspan => 1,
+  p_colspan => 4,
   p_rowspan => 1,
   p_label_alignment  => 'RIGHT',
   p_field_alignment  => 'LEFT',
@@ -1595,6 +1798,10 @@ p:=p||'select :p1_osgr_x,'||chr(10)||
 '       :p1_osgr_y'||chr(10)||
 'into   :p0_osgr_x,'||chr(10)||
 '       :p0_osgr_y'||chr(10)||
+'from dual;'||chr(10)||
+''||chr(10)||
+'select :P1_WPRC_UPRN'||chr(10)||
+'into :P0_WPRC_UPRN'||chr(10)||
 'from dual;';
 
 wwv_flow_api.create_page_process(
@@ -1755,40 +1962,22 @@ p:=p||'begin'||chr(10)||
 '   v_last_seq number;'||chr(10)||
 'begin'||chr(10)||
 ''||chr(10)||
-'--if (:p0_property_ref_parameter is null)'||chr(10)||
-'--then :p0_property_ref_parameter := ''10002516120'';'||chr(10)||
-'--end if;'||chr(10)||
-''||chr(10)||
-'--if (:p0_property_ref_parameter is null)'||chr(10)||
-'--then :p0_property_ref_parameter := ''10013457595'';'||chr(10)||
-'--end if;'||chr(10)||
-''||chr(10)||
 'if (:p101_property_ref_parameter is null)'||chr(10)||
 'then :p101_property_ref_parameter := ''10002516120'';'||chr(10)||
 'end if;'||chr(10)||
 ''||chr(10)||
 'if (:p0_property_ref_parameter is null)'||chr(10)||
-'then';
-
-p:=p||' :p0_property_ref_parameter := :p101_property_ref_parameter;'||chr(10)||
+'then :p0_property_ref_parameter := :p101_property_ref_parameter;'||chr(10)||
 'end if;'||chr(10)||
-''||chr(10)||
-'--if (:p0_doc_id_parameter is null)'||chr(10)||
-'--then :p0_doc_id_parameter := 23478;'||chr(10)||
-'--end if;'||chr(10)||
-''||chr(10)||
-'--if (:p0_doc_id_parameter is null)'||chr(10)||
-'--then :p0_doc_id_parameter := 17902;'||chr(10)||
-'--end if;'||chr(10)||
 ''||chr(10)||
 'if (:p101_doc_id_parameter is null)'||chr(10)||
 'then :p101_doc_id_parameter := 23478;'||chr(10)||
 'end if;'||chr(10)||
 ''||chr(10)||
 'if (:p0_doc_id_parameter is null)'||chr(10)||
-'then :p0_doc_id_parameter := :p101_doc_id_p';
+'then :p0_doc_id_paramet';
 
-p:=p||'arameter;'||chr(10)||
+p:=p||'er := :p101_doc_id_parameter;'||chr(10)||
 'end if;'||chr(10)||
 ''||chr(10)||
 'select nvl(max(wprcl_seq),0)'||chr(10)||
@@ -1796,6 +1985,22 @@ p:=p||'arameter;'||chr(10)||
 'from wag_plan_record_card_lines'||chr(10)||
 'where wprcl_wprc_uprn = :p0_property_ref_parameter;'||chr(10)||
 ''||chr(10)||
+'select dec_ref'||chr(10)||
+'into :p1_la_ref'||chr(10)||
+'from doc_enquiry_contacts'||chr(10)||
+'where dec_doc_id = :p0_doc_id_parameter'||chr(10)||
+'and rownum = 1;'||chr(10)||
+''||chr(10)||
+'select count(1)'||chr(10)||
+'into :p0_doc_assoc_count'||chr(10)||
+'from   docs,'||chr(10)||
+'       doc_assocs,'||chr(10)||
+'       doc_locations'||chr(10)||
+'where  das_rec_i';
+
+p:=p||'d = :P0_DOC_ID_PARAMETER'||chr(10)||
+'and    das_doc_id = doc_id'||chr(10)||
+'and    doc_dlc_id = dlc_id;'||chr(10)||
 ''||chr(10)||
 'insert into wag_plan_record_card'||chr(10)||
 '  (wprc_uprn,'||chr(10)||
@@ -1805,26 +2010,15 @@ p:=p||'arameter;'||chr(10)||
 '   wprc_osgr_x,'||chr(10)||
 '   wprc_osgr_y)'||chr(10)||
 'select :p0_property_ref_parameter,'||chr(10)||
-'       s.administrative_area,'||chr(10)||
-'       ah_nlpg.GET_PAO_SAO(sao_start_number,sao_st';
+'       administrative_area,'||chr(10)||
+'       location,'||chr(10)||
+'       ''CZ-701-''||:p0_doc_id_parameter,'||chr(10)||
+'       x_coordinate,'||chr(10)||
+'       y_coordinate'||chr(10)||
+'from nlpg_properties_v'||chr(10)||
+'where u';
 
-p:=p||'art_suffix,sao_end_number, sao_end_suffix,sao_text) || '', '' ||'||chr(10)||
-'       ah_nlpg.GET_PAO_SAO(pao_start_number,pao_start_suffix,pao_end_number, pao_end_suffix,pao_text) || '||chr(10)||
-'       s.street_descriptor || '', '' ||'||chr(10)||
-'       l.post_town || '', '' ||'||chr(10)||
-'       l.postcode,'||chr(10)||
-'       ''CZ-701-6-18-12345'','||chr(10)||
-'       b.x_coordinate,'||chr(10)||
-'       b.y_coordinate'||chr(10)||
-'from nlpg_lpi l, nlpg_street_descriptor s, nlpg_blpu b  '||chr(10)||
-'where l.uprn =';
-
-p:=p||' :p0_property_ref_parameter'||chr(10)||
-'and l.uprn = b.uprn'||chr(10)||
-'and l.usrn = s.usrn'||chr(10)||
-'and l.language = s.language  '||chr(10)||
-'and l.language = ''ENG'''||chr(10)||
-'and l.logical_status = 1'||chr(10)||
+p:=p||'prn = :p0_property_ref_parameter'||chr(10)||
 'and not exists ('||chr(10)||
 'select ''x'''||chr(10)||
 'from wag_plan_record_card'||chr(10)||
@@ -1834,14 +2028,14 @@ p:=p||' :p0_property_ref_parameter'||chr(10)||
 '   (wprcl_wprc_uprn,'||chr(10)||
 '    wprcl_seq,'||chr(10)||
 '    wprcl_doc_id)'||chr(10)||
-'select :p0_property_ref_parameter,:P1_LAST_LINE_SEQ+1,:p0_d';
-
-p:=p||'oc_id_parameter'||chr(10)||
+'select :p0_property_ref_parameter,:P1_LAST_LINE_SEQ+1,:p0_doc_id_parameter'||chr(10)||
 'from dual'||chr(10)||
 'where not exists ('||chr(10)||
 'select ''x'''||chr(10)||
 'from wag_plan_record_card_lines'||chr(10)||
-'where wprcl_wprc_uprn = :p0_property_ref_parameter'||chr(10)||
+'where wprcl_wprc_uprn = :';
+
+p:=p||'p0_property_ref_parameter'||chr(10)||
 'and wprcl_doc_id = :p0_doc_id_parameter);'||chr(10)||
 'end;'||chr(10)||
 'end;';
@@ -1873,6 +2067,105 @@ begin
 --
  
 begin
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1256826057016153 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 1,
+  p_query_column_name=> 'WPRCL_WPRC_UPRN',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1256928956016154 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 2,
+  p_query_column_name=> 'WPRCL_SEQ',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257026100016154 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 3,
+  p_query_column_name=> 'CHR(WPRCL_SEQ+64)',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257108561016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 4,
+  p_query_column_name=> 'WPRCL_WPRC_UPRN_DISPLAY',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257210820016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 5,
+  p_query_column_name=> 'WPRCL_SEQ_DISPLAY',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257312594016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 6,
+  p_query_column_name=> 'WPRCL_DOC_ID',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257408573016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 7,
+  p_query_column_name=> 'DOC_DATE_ISSUED',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257529256016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 8,
+  p_query_column_name=> 'DOC_REFERENCE_CODE',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257632604016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 9,
+  p_query_column_name=> 'DOC_DESCR',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257712192016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 10,
+  p_query_column_name=> 'HUS_NAME',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
+ 
+wwv_flow_api.create_region_rpt_cols (
+  p_id     => 1257806496016156 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_plug_id=> 17638111032717027 + wwv_flow_api.g_id_offset,
+  p_column_sequence=> 11,
+  p_query_column_name=> 'WPRCL_REGISTRY_FILE',
+  p_display_as=> 'TEXT',
+  p_column_comment=> '');
  
 null;
 end;
@@ -1910,7 +2203,7 @@ wwv_flow_api.create_page(
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20090617113207',
+  p_last_upd_yyyymmddhh24miss => '20090707101358',
   p_page_comment  => '');
  
 end;
@@ -1932,7 +2225,7 @@ s:=s||'select '||chr(10)||
 'DHI_CHANGED_BY'||chr(10)||
 'from DOC_HISTORY,'||chr(10)||
 '     HIG_STATUS_CODES'||chr(10)||
-'where dhi_doc_id = :p0_doc_id_parameter'||chr(10)||
+'where dhi_doc_id = :p2_doc_id'||chr(10)||
 'and   DHI_STATUS_CODE = HSC_STATUS_CODE(+)'||chr(10)||
 'and   HSC_DOMAIN_CODE(+) = ''COMPLAINTS'''||chr(10)||
 'order by 2';
@@ -1941,7 +2234,7 @@ wwv_flow_api.create_report_region (
   p_id=> 10416723003503351 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_page_id=> 2,
-  p_name=> 'Front Sheet Details (UPRN: &P0_PROPERTY_REF_PARAMETER.  -  Incident ID &P0_DOC_ID_PARAMETER.)',
+  p_name=> 'Front Sheet Details (UPRN: &P0_PROPERTY_REF_PARAMETER.  -  Incident ID &P2_DOC_ID.)',
   p_region_name=>'',
   p_template=> 63124335852599616+ wwv_flow_api.g_id_offset,
   p_display_sequence=> 15,
@@ -2190,7 +2483,20 @@ end;
  
 begin
  
-null;
+wwv_flow_api.create_page_button(
+  p_id             => 1284522666021109 + wwv_flow_api.g_id_offset,
+  p_flow_id        => wwv_flow.g_flow_id,
+  p_flow_step_id   => 2,
+  p_button_sequence=> 10,
+  p_button_plug_id => 10416723003503351+wwv_flow_api.g_id_offset,
+  p_button_name    => 'PRINT',
+  p_button_image   => 'template:'||to_char(63120550297599611+wwv_flow_api.g_id_offset),
+  p_button_image_alt=> 'Print',
+  p_button_position=> 'TOP',
+  p_button_alignment=> 'RIGHT',
+  p_button_redirect_url=> 'f?p=&APP_ID.:2:&SESSION.:PRINT_REPORT=Front%20Page:&DEBUG.:::',
+  p_required_patch => null + wwv_flow_api.g_id_offset);
+ 
  
 end;
 /
@@ -2207,13 +2513,133 @@ declare
     h varchar2(32767) := null;
 begin
 wwv_flow_api.create_page_item(
+  p_id=>1279214243460420 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 2,
+  p_name=>'P2_DOC_ID',
+  p_data_type=> 'VARCHAR',
+  p_accept_processing=> 'REPLACE_EXISTING',
+  p_item_sequence=> 12,
+  p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
+  p_use_cache_before_default=> 'YES',
+  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
+  p_prompt=>'Doc Id',
+  p_source_type=> 'STATIC',
+  p_display_as=> 'HIDDEN_PROTECTED',
+  p_lov_columns=> 1,
+  p_lov_display_null=> 'NO',
+  p_lov_translated=> 'N',
+  p_cSize=> 30,
+  p_cMaxlength=> 2000,
+  p_cHeight=> 5,
+  p_cAttributes=> 'nowrap="nowrap"',
+  p_begin_on_new_line => 'YES',
+  p_begin_on_new_field=> 'YES',
+  p_colspan => 1,
+  p_rowspan => 1,
+  p_label_alignment  => 'RIGHT',
+  p_field_alignment  => 'LEFT',
+  p_field_template => 63136755972599641+wwv_flow_api.g_id_offset,
+  p_is_persistent=> 'Y',
+  p_item_comment => '');
+ 
+ 
+end;
+/
+
+declare
+    h varchar2(32767) := null;
+begin
+wwv_flow_api.create_page_item(
+  p_id=>1310611124026118 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 2,
+  p_name=>'P2_TARGET',
+  p_data_type=> 'VARCHAR',
+  p_accept_processing=> 'REPLACE_EXISTING',
+  p_item_sequence=> 5,
+  p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
+  p_use_cache_before_default=> 'YES',
+  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
+  p_prompt=>'Target Date&nbsp;&nbsp;',
+  p_source_type=> 'STATIC',
+  p_display_as=> 'TEXT_DISABLED',
+  p_lov_columns=> 1,
+  p_lov_display_null=> 'NO',
+  p_lov_translated=> 'N',
+  p_cSize=> 30,
+  p_cMaxlength=> 2000,
+  p_cHeight=> 5,
+  p_cAttributes=> 'nowrap="nowrap"',
+  p_tag_attributes  => 'style="width:80px" ',
+  p_begin_on_new_line => 'NO',
+  p_begin_on_new_field=> 'YES',
+  p_colspan => 1,
+  p_rowspan => 1,
+  p_label_alignment  => 'RIGHT',
+  p_field_alignment  => 'LEFT',
+  p_field_template => 63136755972599641+wwv_flow_api.g_id_offset,
+  p_is_persistent=> 'Y',
+  p_lov_display_extra=>'NO',
+  p_protection_level => 'N',
+  p_item_comment => '');
+ 
+ 
+end;
+/
+
+declare
+    h varchar2(32767) := null;
+begin
+wwv_flow_api.create_page_item(
+  p_id=>1313932304554217 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id=> 2,
+  p_name=>'P2_REG_FILE_REF',
+  p_data_type=> 'VARCHAR',
+  p_accept_processing=> 'REPLACE_EXISTING',
+  p_item_sequence=> 7,
+  p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
+  p_use_cache_before_default=> 'YES',
+  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
+  p_prompt=>'Registry File Ref&nbsp;&nbsp;',
+  p_source_type=> 'STATIC',
+  p_display_as=> 'TEXT_DISABLED',
+  p_lov_columns=> 1,
+  p_lov_display_null=> 'NO',
+  p_lov_translated=> 'N',
+  p_cSize=> 30,
+  p_cMaxlength=> 2000,
+  p_cHeight=> 5,
+  p_cAttributes=> 'nowrap="nowrap"',
+  p_tag_attributes  => 'style="width:160px" ',
+  p_begin_on_new_line => 'YES',
+  p_begin_on_new_field=> 'YES',
+  p_colspan => 1,
+  p_rowspan => 1,
+  p_label_alignment  => 'RIGHT',
+  p_field_alignment  => 'LEFT',
+  p_field_template => 63136755972599641+wwv_flow_api.g_id_offset,
+  p_is_persistent=> 'Y',
+  p_lov_display_extra=>'NO',
+  p_protection_level => 'N',
+  p_item_comment => '');
+ 
+ 
+end;
+/
+
+declare
+    h varchar2(32767) := null;
+begin
+wwv_flow_api.create_page_item(
   p_id=>12242939798909138 + wwv_flow_api.g_id_offset,
   p_flow_id=> wwv_flow.g_flow_id,
   p_flow_step_id=> 2,
   p_name=>'P2_LPA',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 10,
+  p_item_sequence=> 1,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2254,11 +2680,12 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_LA_REF',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 20,
+  p_item_sequence=> 2,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
   p_prompt=>'LA Ref&nbsp;&nbsp;',
+  p_source=>':P1_LA_REF',
   p_source_type=> 'STATIC',
   p_display_as=> 'TEXT_DISABLED',
   p_lov_columns=> 1,
@@ -2295,7 +2722,7 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_FILE_REF',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 30,
+  p_item_sequence=> 3,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2336,7 +2763,7 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_DATE',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 40,
+  p_item_sequence=> 4,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2377,7 +2804,7 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_APPLICANT',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 50,
+  p_item_sequence=> 6,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2418,7 +2845,7 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_OSGR_X',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 60,
+  p_item_sequence=> 8,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2459,7 +2886,7 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_OSGR_Y',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 70,
+  p_item_sequence=> 9,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2499,7 +2926,7 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_LOCATION',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 80,
+  p_item_sequence=> 10,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2540,7 +2967,7 @@ wwv_flow_api.create_page_item(
   p_name=>'P2_PROPOSAL',
   p_data_type=> 'VARCHAR',
   p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 90,
+  p_item_sequence=> 11,
   p_item_plug_id => 12242628716905911+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
@@ -2580,45 +3007,41 @@ declare
   l_length number := 1;
 begin
 p:=p||'begin'||chr(10)||
-'select s.administrative_area,'||chr(10)||
-'       doc_reference_code,'||chr(10)||
-'       ''CZ-701-6-18-12345'','||chr(10)||
+'select administrative_area,'||chr(10)||
+'       ''CZ-701-''||:p2_doc_id,'||chr(10)||
 '       doc_date_issued,'||chr(10)||
 '       hus_name,'||chr(10)||
-'       b.x_coordinate,'||chr(10)||
-'       b.y_coordinate,'||chr(10)||
-'       ah_nlpg.GET_PAO_SAO(sao_start_number,sao_start_suffix,sao_end_number, sao_end_suffix,sao_text) || '', '' ||'||chr(10)||
-'       ah_nlpg.GET_PAO_SAO(pao_start_number,pao_start_suffix,pao_end_number, pao_end_suffix,pao_text) || '||chr(10)||
-'   ';
-
-p:=p||'    s.street_descriptor || '', '' ||'||chr(10)||
-'       l.post_town || '', '' || l.postcode location,'||chr(10)||
-'       doc_descr'||chr(10)||
+'       x_coordinate,'||chr(10)||
+'       y_coordinate,'||chr(10)||
+'       location,'||chr(10)||
+'       doc_descr,'||chr(10)||
+'       doc_compl_target'||chr(10)||
 'into'||chr(10)||
 ':P2_LPA,'||chr(10)||
-':P2_LA_REF,'||chr(10)||
 ':P2_FILE_REF,'||chr(10)||
 ':P2_DATE,'||chr(10)||
 ':P2_APPLICANT,'||chr(10)||
 ':P2_OSGR_X,'||chr(10)||
 ':P2_OSGR_Y,'||chr(10)||
 ':P2_LOCATION,'||chr(10)||
-':P2_PROPOSAL'||chr(10)||
-'from nlpg_lpi l, '||chr(10)||
-'     nlpg_street_descriptor s, '||chr(10)||
-'     nlpg_blpu b,'||chr(10)||
+':P2_PROPOSAL,'||chr(10)||
+':P2_TARGET'||chr(10)||
+'from (select * from nlpg_properties_v order by logical_status),'||chr(10)||
 '     docs,'||chr(10)||
-'     hig_users'||chr(10)||
-'where l.uprn = :p0_property_ref_parameter'||chr(10)||
-'and   l.uprn = b.uprn'||chr(10)||
-'and   l.usrn = s.usrn'||chr(10)||
-'a';
+'   ';
 
-p:=p||'nd   l.language = s.language  '||chr(10)||
-'and   l.language = ''ENG'''||chr(10)||
-'and   l.logical_status = 1'||chr(10)||
-'and   doc_id = :p0_doc_id_parameter'||chr(10)||
-'and   doc_compl_user_id = hus_user_id;'||chr(10)||
+p:=p||'  hig_users'||chr(10)||
+'where uprn = :p0_property_ref_parameter'||chr(10)||
+'and   doc_id = :p2_doc_id'||chr(10)||
+'and   doc_compl_user_id = hus_user_id'||chr(10)||
+'and rownum = 1;'||chr(10)||
+''||chr(10)||
+'select wprcl_registry_file'||chr(10)||
+'into :p2_reg_file_ref '||chr(10)||
+'from (select * from WAG_PLAN_RECORD_CARD_LINES order by wprcl_seq)'||chr(10)||
+'where wprcl_doc_id = :p2_doc_id'||chr(10)||
+'and wprcl_wprc_uprn = :p0_property_ref_parameter '||chr(10)||
+'and rownum = 1;'||chr(10)||
 'end;';
 
 wwv_flow_api.create_page_process(
@@ -2633,6 +3056,44 @@ wwv_flow_api.create_page_process(
   p_process_error_message=> '',
   p_process_success_message=> '',
   p_process_is_stateful_y_n=>'N',
+  p_process_comment=>'');
+end;
+null;
+ 
+end;
+/
+
+ 
+begin
+ 
+declare
+  p varchar2(32767) := null;
+  l_clob clob;
+  l_length number := 1;
+begin
+p:=p||'begin'||chr(10)||
+':p2_doc_id := :P0_doc_id_parameter;'||chr(10)||
+''||chr(10)||
+'select dec_ref'||chr(10)||
+'into :p2_la_ref'||chr(10)||
+'from doc_enquiry_contacts'||chr(10)||
+'where dec_doc_id = :p2_doc_id'||chr(10)||
+'and rownum = 1;'||chr(10)||
+''||chr(10)||
+'end;';
+
+wwv_flow_api.create_page_process(
+  p_id     => 1279329827464923 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_flow_step_id => 2,
+  p_process_sequence=> 5,
+  p_process_point=> 'BEFORE_HEADER',
+  p_process_type=> 'PLSQL',
+  p_process_name=> 'set_p2_doc_id',
+  p_process_sql_clob => p, 
+  p_process_error_message=> '',
+  p_process_success_message=> '',
+  p_process_is_stateful_y_n=>'Y',
   p_process_comment=>'');
 end;
 null;
@@ -2740,7 +3201,7 @@ wwv_flow_api.create_page(
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20090609170819',
+  p_last_upd_yyyymmddhh24miss => '20090623125259',
   p_page_comment  => '');
  
 wwv_flow_api.set_page_help_text(p_flow_id=>wwv_flow.g_flow_id,p_flow_step_id=>3,p_text=>h);
@@ -2785,7 +3246,7 @@ wwv_flow_api.create_page_plug (
   p_plug_query_headings_type=> 'COLON_DELMITED_LIST',
   p_plug_query_row_count_max => 500,
   p_plug_display_condition_type => '',
-  p_plug_header=> '<div style="width:800px;overflow:auto">',
+  p_plug_header=> '<div style="width:1000px;overflow:auto">',
   p_plug_footer=> '</div>',
   p_plug_customized=>'0',
   p_plug_caching=> 'NOT_CACHED',
@@ -5071,6 +5532,7 @@ wwv_flow_api.create_template(
 '<br />'||chr(10)||
 '<pre>#MESSAGE#</pre>'||chr(10)||
 '<a href="#BACK_LINK#">#RETURN_TO_APPLICATION#</a>',
+  p_translate_this_template => 'N',
   p_template_comment => '');
 end;
  
@@ -12413,8 +12875,2239 @@ prompt  ...web services (9iR2 or better)
 --
 prompt  ...shared queries
 --
+--application/shared_components/reports/report_queries/front_page
+declare
+    p1 varchar2(32767) := null;
+begin
+p1:=p1||'select * from wag_plan_record_card'||chr(10)||
+'where wprc_uprn = :P1_WPRC_UPRN';
+
+wwv_flow_api.create_shared_query(
+  p_id => 1265307197124296 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_name=>'Front Page',
+  p_query_text => p1,
+  p_xml_structure =>'APEX',
+  p_report_layout_id =>1319710737138107 + wwv_flow_api.g_id_offset,
+  p_format =>'PDF',
+  p_format_item =>'',
+  p_output_file_name =>'Front Page',
+  p_content_disposition =>'ATTACHMENT',
+  p_document_header =>'',
+  p_xml_items =>'P2_DOC_ID');
+end;
+/
+ 
+declare
+    p1 varchar2(32767) := null;
+begin
+p1:=p1||'select administrative_area planning_authority,'||chr(10)||
+'       ''CZ-701-''||:p2_doc_id ref_number,'||chr(10)||
+'       enq.doc_date_issued issue_date,'||chr(10)||
+'       hus_name applicant,'||chr(10)||
+'       x_coordinate,'||chr(10)||
+'       y_coordinate,'||chr(10)||
+'       location,'||chr(10)||
+'       enq.doc_descr proposal,'||chr(10)||
+'       enq.doc_compl_target target_date,'||chr(10)||
+'       dec_ref auth_ref'||chr(10)||
+'from (select * from nlpg_properties_v order by logical_status),'||chr(10)||
+'     docs enq,'||chr(10)||
+'     hig_use';
+
+p1:=p1||'rs,'||chr(10)||
+'     doc_enquiry_contacts'||chr(10)||
+'where uprn = :p0_property_ref_parameter'||chr(10)||
+'and   enq.doc_id = :p2_doc_id'||chr(10)||
+'and   enq.doc_compl_user_id = hus_user_id'||chr(10)||
+'and   enq.doc_id = dec_doc_id'||chr(10)||
+'and rownum = 1';
+
+wwv_flow_api.create_shared_query_stmnt(
+  p_id => 1319926229139101 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_shared_query_id => 1265307197124296 + wwv_flow_api.g_id_offset,
+  p_sql_statement => p1);
+end;
+/
+ 
+declare
+    p1 varchar2(32767) := null;
+begin
+p1:=p1||'select doc_file, doc_reference_code, doc_title'||chr(10)||
+'from   docs,'||chr(10)||
+'       doc_assocs,'||chr(10)||
+'       doc_locations'||chr(10)||
+'where  das_rec_id = :p2_doc_id'||chr(10)||
+'and    das_doc_id = doc_id'||chr(10)||
+'and    doc_dlc_id = dlc_id;';
+
+wwv_flow_api.create_shared_query_stmnt(
+  p_id => 1320108581139101 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_shared_query_id => 1265307197124296 + wwv_flow_api.g_id_offset,
+  p_sql_statement => p1);
+end;
+/
+--application/shared_components/reports/report_queries/report_card
+declare
+    p1 varchar2(32767) := null;
+begin
+p1:=p1||'select * from wag_plan_record_card'||chr(10)||
+'where wprc_uprn = :P0_WPRC_UPRN';
+
+wwv_flow_api.create_shared_query(
+  p_id => 1283708589950820 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_name=>'Report Card',
+  p_query_text => p1,
+  p_xml_structure =>'APEX',
+  p_report_layout_id =>1325207339400801 + wwv_flow_api.g_id_offset,
+  p_format =>'PDF',
+  p_format_item =>'',
+  p_output_file_name =>'Report Card',
+  p_content_disposition =>'ATTACHMENT',
+  p_document_header =>'',
+  p_xml_items =>'P0_PROPERTY_REF_PARAMETER');
+end;
+/
+ 
+declare
+    p1 varchar2(32767) := null;
+begin
+p1:=p1||'select '||chr(10)||
+'"WPRCL_WPRC_UPRN",'||chr(10)||
+'"WPRCL_SEQ",'||chr(10)||
+'chr(wprcl_seq+64) char_seq,'||chr(10)||
+'"WPRCL_WPRC_UPRN" WPRCL_WPRC_UPRN_DISPLAY,'||chr(10)||
+'"WPRCL_SEQ" WPRCL_SEQ_DISPLAY,'||chr(10)||
+'"WPRCL_DOC_ID",'||chr(10)||
+'DOC_DATE_ISSUED,'||chr(10)||
+'DOC_REFERENCE_CODE,'||chr(10)||
+'DOC_DESCR,'||chr(10)||
+'HUS_NAME,'||chr(10)||
+'nvl ("WPRCL_REGISTRY_FILE", '' '') WPRCL_REGISTRY_FILE'||chr(10)||
+'from DOCS,'||chr(10)||
+'     wag_plan_record_card_lines,'||chr(10)||
+'     hig_users'||chr(10)||
+'where doc_id = wprcl_doc_id'||chr(10)||
+'and   doc_compl_user_id = hus_user_id'||chr(10)||
+'and   ';
+
+p1:=p1||'wprcl_wprc_uprn = :p0_property_ref_parameter'||chr(10)||
+'order by wprcl_seq';
+
+wwv_flow_api.create_shared_query_stmnt(
+  p_id => 1325419545405065 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_shared_query_id => 1283708589950820 + wwv_flow_api.g_id_offset,
+  p_sql_statement => p1);
+end;
+/
+ 
+declare
+    p1 varchar2(32767) := null;
+begin
+p1:=p1||'select *'||chr(10)||
+'from wag_plan_record_card'||chr(10)||
+'where wprc_uprn = :p0_property_ref_parameter';
+
+wwv_flow_api.create_shared_query_stmnt(
+  p_id => 1325630834405065 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_shared_query_id => 1283708589950820 + wwv_flow_api.g_id_offset,
+  p_sql_statement => p1);
+end;
+/
 prompt  ...report layouts
 --
+ 
+begin
+ 
+    wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
+    wwv_flow_api.g_varchar2_table(1) := '{\rtf1\adeflang1025\ansi\ansicpg1252\uc1\adeff0\deff0\stshfdbch0\stshfloch37\stshfhich37\stshfbi37\d';
+    wwv_flow_api.g_varchar2_table(2) := 'eflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times Ne';
+    wwv_flow_api.g_varchar2_table(3) := 'w Roman;}{\f37\fswiss\fcharset0\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f43\froman\fcharset2';
+    wwv_flow_api.g_varchar2_table(4) := '38\fprq2 Times New Roman CE;}'||chr(10)||
+'{\f44\froman\fcharset204\fprq2 Times New Roman Cyr;}{\f46\froman\fcha';
+    wwv_flow_api.g_varchar2_table(5) := 'rset161\fprq2 Times New Roman Greek;}{\f47\froman\fcharset162\fprq2 Times New Roman Tur;}{\f48\fbidi';
+    wwv_flow_api.g_varchar2_table(6) := ' \froman\fcharset177\fprq2 Times New Roman (Hebrew);}'||chr(10)||
+'{\f49\fbidi \froman\fcharset178\fprq2 Times N';
+    wwv_flow_api.g_varchar2_table(7) := 'ew Roman (Arabic);}{\f50\froman\fcharset186\fprq2 Times New Roman Baltic;}{\f51\froman\fcharset163\f';
+    wwv_flow_api.g_varchar2_table(8) := 'prq2 Times New Roman (Vietnamese);}{\f413\fswiss\fcharset238\fprq2 Calibri CE;}'||chr(10)||
+'{\f414\fswiss\fchar';
+    wwv_flow_api.g_varchar2_table(9) := 'set204\fprq2 Calibri Cyr;}{\f416\fswiss\fcharset161\fprq2 Calibri Greek;}{\f417\fswiss\fcharset162\f';
+    wwv_flow_api.g_varchar2_table(10) := 'prq2 Calibri Tur;}{\f420\fswiss\fcharset186\fprq2 Calibri Baltic;}}{\colortbl;\red0\green0\blue0;\re';
+    wwv_flow_api.g_varchar2_table(11) := 'd0\green0\blue255;'||chr(10)||
+'\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green';
+    wwv_flow_api.g_varchar2_table(12) := '0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;';
+    wwv_flow_api.g_varchar2_table(13) := '\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;'||chr(10)||
+'\red128\green128\blue0;\red128\gr';
+    wwv_flow_api.g_varchar2_table(14) := 'een128\blue128;\red192\green192\blue192;\red231\green243\blue253;}{\stylesheet{\ql \li0\ri0\sa200\wi';
+    wwv_flow_api.g_varchar2_table(15) := 'dctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af0\afs22\alang1';
+    wwv_flow_api.g_varchar2_table(16) := '025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \snext0 \styrsid124886';
+    wwv_flow_api.g_varchar2_table(17) := '6 Normal;}{\*\cs10 \additive \ssemihidden Default Paragraph Font;}{\*'||chr(10)||
+'\ts11\tsrowd\trftsWidthB3\trp';
+    wwv_flow_api.g_varchar2_table(18) := 'addl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblind0\tblindtype3\tscellwidthfts0\tsver';
+    wwv_flow_api.g_varchar2_table(19) := 'talt\tsbrdrt\tsbrdrl\tsbrdrb\tsbrdrr\tsbrdrdgl\tsbrdrdgr\tsbrdrh\tsbrdrv '||chr(10)||
+'\ql \li0\ri0\widctlpar\wr';
+    wwv_flow_api.g_varchar2_table(20) := 'apdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af37\afs20 \ltrch\fcs0 \f3';
+    wwv_flow_api.g_varchar2_table(21) := '7\fs20\lang1024\langfe1024\cgrid\langnp1024\langfenp1024 \snext11 \ssemihidden Normal Table;}{\*\ts1';
+    wwv_flow_api.g_varchar2_table(22) := '5\tsrowd\trbrdrt'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrc';
+    wwv_flow_api.g_varchar2_table(23) := 'f1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\t';
+    wwv_flow_api.g_varchar2_table(24) := 'rftsWidthB3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblind0\tblindtype3\tscell';
+    wwv_flow_api.g_varchar2_table(25) := 'widthfts0\tsvertalt\tsbrdrt\tsbrdrl\tsbrdrb\tsbrdrr\tsbrdrdgl\tsbrdrdgr\tsbrdrh\tsbrdrv '||chr(10)||
+'\ql \li0\r';
+    wwv_flow_api.g_varchar2_table(26) := 'i0\widctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af0\afs22\a';
+    wwv_flow_api.g_varchar2_table(27) := 'lang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon11 \snext1';
+    wwv_flow_api.g_varchar2_table(28) := '5 \styrsid16665483 Table Grid;}}'||chr(10)||
+'{\*\latentstyles\lsdstimax156\lsdlockeddef0{\lsdlockedexcept Norma';
+    wwv_flow_api.g_varchar2_table(29) := 'l;heading 1;heading 2;heading 3;heading 4;heading 5;heading 6;heading 7;heading 8;heading 9;toc 1;to';
+    wwv_flow_api.g_varchar2_table(30) := 'c 2;toc 3;toc 4;toc 5;toc 6;toc 7;toc 8;toc 9;caption;Title;Default Paragraph Font;Subtitle;Strong;E';
+    wwv_flow_api.g_varchar2_table(31) := 'mphasis;Table Grid;}}'||chr(10)||
+'{\*\rsidtbl \rsid919359\rsid1248866\rsid1512796\rsid2576807\rsid2903609\rsid3';
+    wwv_flow_api.g_varchar2_table(32) := '560942\rsid3809611\rsid4022835\rsid4331195\rsid4933644\rsid5131112\rsid6291715\rsid7225007\rsid74276';
+    wwv_flow_api.g_varchar2_table(33) := '81\rsid8001502\rsid8482629\rsid9640468\rsid10617749\rsid14319519\rsid15601039'||chr(10)||
+'\rsid15625051\rsid156';
+    wwv_flow_api.g_varchar2_table(34) := '64419\rsid16665483}{\*\generator Microsoft Word 11.0.0000;}{\info{\author  Ian Turnbull}{\operator S';
+    wwv_flow_api.g_varchar2_table(35) := 'Marshall}{\creatim\yr2009\mo6\dy23\hr11\min11}{\revtim\yr2009\mo7\dy7\hr11\min20}{\version9}{\edmins';
+    wwv_flow_api.g_varchar2_table(36) := '79}{\nofpages1}{\nofwords142}'||chr(10)||
+'{\nofchars815}{\*\company  }{\nofcharsws956}{\vern24611}{\*\password ';
+    wwv_flow_api.g_varchar2_table(37) := '00000000}}{\*\xmlnstbl {\xmlns1 http://schemas.microsoft.com/office/word/2003/wordml}}\paperw12240\p';
+    wwv_flow_api.g_varchar2_table(38) := 'aperh15840\margl1440\margr1440\margt1440\margb1440\gutter0\ltrsect '||chr(10)||
+'\widowctrl\ftnbj\aenddoc\donote';
+    wwv_flow_api.g_varchar2_table(39) := 'mbedsysfont1\donotembedlingdata0\grfdocevents0\validatexml1\showplaceholdtext0\ignoremixedcontent0\s';
+    wwv_flow_api.g_varchar2_table(40) := 'aveinvalidxml0\showxmlerrors1\noxlattoyen\expshrtn\noultrlspc\dntblnsbdb\nospaceforul\formshade\horz';
+    wwv_flow_api.g_varchar2_table(41) := 'doc\dgmargin\dghspace180'||chr(10)||
+'\dgvspace180\dghorigin1440\dgvorigin1440\dghshow1\dgvshow1'||chr(10)||
+'\jexpand\viewk';
+    wwv_flow_api.g_varchar2_table(42) := 'ind1\viewscale150\pgbrdrhead\pgbrdrfoot\splytwnine\ftnlytwnine\htmautsp\nolnhtadjtbl\useltbaln\alntb';
+    wwv_flow_api.g_varchar2_table(43) := 'lind\lytcalctblwd\lyttblrtgr\lnbrkrule\nobrkwrptbl\snaptogridincell\allowfieldendsel\wrppunct'||chr(10)||
+'\asia';
+    wwv_flow_api.g_varchar2_table(44) := 'nbrkrule\rsidroot16665483\newtblstyruls\nogrowautofit \fet0{\*\wgrffmtfilter 2450}\ilfomacatclnup0\l';
+    wwv_flow_api.g_varchar2_table(45) := 'trpar \sectd \ltrsect\linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\s';
+    wwv_flow_api.g_varchar2_table(46) := 'ectrsid10617749\sftnbj {\*\pnseclvl1'||chr(10)||
+'\pnucrm\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl2\';
+    wwv_flow_api.g_varchar2_table(47) := 'pnucltr\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang {\pn';
+    wwv_flow_api.g_varchar2_table(48) := 'txta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang {\pntxta )}}{\*\pnseclvl5'||chr(10)||
+'\pndec\pnstart1';
+    wwv_flow_api.g_varchar2_table(49) := '\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang {\pntxt';
+    wwv_flow_api.g_varchar2_table(50) := 'b (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl';
+    wwv_flow_api.g_varchar2_table(51) := '8\pnlcltr\pnstart1\pnindent720\pnhang '||chr(10)||
+'{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pninden';
+    wwv_flow_api.g_varchar2_table(52) := 't720\pnhang {\pntxtb (}{\pntxta )}}\pard\plain \ltrpar\qc \li0\ri0\sa200\widctlpar\wrapdefault\aspal';
+    wwv_flow_api.g_varchar2_table(53) := 'pha\aspnum\faauto\adjustright\rin0\lin0\itap0\pararsid6291715 \rtlch\fcs1 \af0\afs22\alang1025 '||chr(10)||
+'\lt';
+    wwv_flow_api.g_varchar2_table(54) := 'rch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\field\fldedit\fldlock{\*\fldi';
+    wwv_flow_api.g_varchar2_table(55) := 'nst {\rtlch\fcs1 \af0\afs28 \ltrch\fcs0 \fs28\cf8\lang2057\langfe1033\langnp2057\insrsid4022835\char';
+    wwv_flow_api.g_varchar2_table(56) := 'rsid4022835  SHAPE  \\* MERGEFORMAT }}{\fldrslt {'||chr(10)||
+'\rtlch\fcs1 \af0\afs28 \ltrch\fcs0 \fs28\cf8\lang';
+    wwv_flow_api.g_varchar2_table(57) := '1024\langfe1024\noproof\insrsid4022835\charrsid4022835 '||chr(10)||
+'{\shpgrp{\*\shpinst\shpleft0\shptop0\shprig';
+    wwv_flow_api.g_varchar2_table(58) := 'ht9360\shpbottom720\shpfhdr0\shpbxcolumn\shpbxignore\shpbypara\shpbyignore\shpwr3\shpwrk0\shpfblwtxt';
+    wwv_flow_api.g_varchar2_table(59) := '0\shpz0\shplockanchor\shplid1030'||chr(10)||
+'{\sp{\sn groupLeft}{\sv 1448}}{\sp{\sn groupTop}{\sv 1448}}{\sp{\s';
+    wwv_flow_api.g_varchar2_table(60) := 'n groupRight}{\sv 10808}}{\sp{\sn groupBottom}{\sv 2168}}{\sp{\sn fFlipH}{\sv 0}}{\sp{\sn fFlipV}{\s';
+    wwv_flow_api.g_varchar2_table(61) := 'v 0}}{\sp{\sn fLockRotation}{\sv 0}}{\sp{\sn fLockAspectRatio}{\sv 1}}'||chr(10)||
+'{\sp{\sn fLockPosition}{\sv ';
+    wwv_flow_api.g_varchar2_table(62) := '0}}{\sp{\sn posh}{\sv 0}}{\sp{\sn posrelh}{\sv 3}}{\sp{\sn posv}{\sv 0}}{\sp{\sn posrelv}{\sv 3}}{\s';
+    wwv_flow_api.g_varchar2_table(63) := 'p{\sn fAllowOverlap}{\sv 1}}{\sp{\sn fBehindDocument}{\sv 0}}{\sp{\sn dgmt}{\sv 0}}{\sp{\sn fPseudoI';
+    wwv_flow_api.g_varchar2_table(64) := 'nline}{\sv 1}}'||chr(10)||
+'{\sp{\sn fLayoutInCell}{\sv 1}}{\sp{\sn fLockPosition}{\sv 1}}{\sp{\sn fLockRotation';
+    wwv_flow_api.g_varchar2_table(65) := '}{\sv 1}}{\shp{\*\shpinst\shplid1029{\sp{\sn relLeft}{\sv 1448}}{\sp{\sn relTop}{\sv 1448}}{\sp{\sn ';
+    wwv_flow_api.g_varchar2_table(66) := 'relRight}{\sv 10808}}'||chr(10)||
+'{\sp{\sn relBottom}{\sv 2168}}{\sp{\sn fRelFlipH}{\sv 0}}{\sp{\sn fRelFlipV}{';
+    wwv_flow_api.g_varchar2_table(67) := '\sv 0}}{\sp{\sn shapeType}{\sv 75}}{\sp{\sn fLockText}{\sv 1}}{\sp{\sn cxk}{\sv 0}}{\sp{\sn fShadowO';
+    wwv_flow_api.g_varchar2_table(68) := 'K}{\sv 1}}{\sp{\sn f3DOK}{\sv 1}}{\sp{\sn fLineOK}{\sv 1}}'||chr(10)||
+'{\sp{\sn fFillOK}{\sv 1}}{\sp{\sn fFille';
+    wwv_flow_api.g_varchar2_table(69) := 'd}{\sv 0}}{\sp{\sn fNoFillHitTest}{\sv 1}}{\sp{\sn fLine}{\sv 0}}{\sp{\sn fPreferRelativeResize}{\sv';
+    wwv_flow_api.g_varchar2_table(70) := ' 0}}{\sp{\sn fLayoutInCell}{\sv 1}}}}'||chr(10)||
+'{\shp{\*\shpinst\shplid1031{\sp{\sn relLeft}{\sv 1448}}{\sp{\';
+    wwv_flow_api.g_varchar2_table(71) := 'sn relTop}{\sv 1448}}{\sp{\sn relRight}{\sv 10808}}{\sp{\sn relBottom}{\sv 2168}}{\sp{\sn fRelFlipH}';
+    wwv_flow_api.g_varchar2_table(72) := '{\sv 0}}{\sp{\sn fRelFlipV}{\sv 0}}{\sp{\sn shapeType}{\sv 1}}{\sp{\sn fillColor}{\sv 0}}'||chr(10)||
+'{\sp{\sn ';
+    wwv_flow_api.g_varchar2_table(73) := 'fFilled}{\sv 1}}{\sp{\sn fLayoutInCell}{\sv 1}}}}{\shp{\*\shpinst\shplid1032{\sp{\sn relLeft}{\sv 23';
+    wwv_flow_api.g_varchar2_table(74) := '48}}{\sp{\sn relTop}{\sv 1628}}{\sp{\sn relRight}{\sv 4523}}{\sp{\sn relBottom}{\sv 1988}}{\sp{\sn f';
+    wwv_flow_api.g_varchar2_table(75) := 'RelFlipH}{\sv 0}}'||chr(10)||
+'{\sp{\sn fRelFlipV}{\sv 0}}{\sp{\sn shapeType}{\sv 136}}{\sp{\sn gtextUNICODE}{\s';
+    wwv_flow_api.g_varchar2_table(76) := 'v Records Service}}{\sp{\sn gtextSize}{\sv 786432}}{\sp{\sn gtextFont}{\sv Arial Black}}{\sp{\sn gte';
+    wwv_flow_api.g_varchar2_table(77) := 'xtFReverseRows}{\sv 0}}{\sp{\sn fGtext}{\sv 1}}'||chr(10)||
+'{\sp{\sn gtextFVertical}{\sv 0}}{\sp{\sn gtextFKern';
+    wwv_flow_api.g_varchar2_table(78) := '}{\sv 1}}{\sp{\sn gtextFTight}{\sv 0}}{\sp{\sn gtextFStretch}{\sv 1}}{\sp{\sn gtextFShrinkFit}{\sv 1';
+    wwv_flow_api.g_varchar2_table(79) := '}}{\sp{\sn gtextFBestFit}{\sv 1}}{\sp{\sn gtextFNormalize}{\sv 0}}{\sp{\sn gtextFDxMeasure}{\sv 0}}';
+    wwv_flow_api.g_varchar2_table(80) := ''||chr(10)||
+'{\sp{\sn gtextFBold}{\sv 0}}{\sp{\sn gtextFItalic}{\sv 0}}{\sp{\sn gtextFUnderline}{\sv 0}}{\sp{\sn';
+    wwv_flow_api.g_varchar2_table(81) := ' gtextFShadow}{\sv 0}}{\sp{\sn gtextFSmallcaps}{\sv 0}}{\sp{\sn gtextFStrikethrough}{\sv 0}}'||chr(10)||
+'{\sp{\';
+    wwv_flow_api.g_varchar2_table(82) := 'sn adjustValue}{\sv 10706}}{\sp{\sn fFilled}{\sv 1}}{\sp{\sn fLine}{\sv 1}}{\sp{\sn shadowColor}{\sv';
+    wwv_flow_api.g_varchar2_table(83) := ' 8816262}}{\sp{\sn fShadow}{\sv 0}}{\sp{\sn fshadowObscured}{\sv 0}}{\sp{\sn fPerspective}{\sv 0}}{\';
+    wwv_flow_api.g_varchar2_table(84) := 'sp{\sn f3D}{\sv 0}}{\sp{\sn fc3DMetallic}{\sv 0}}'||chr(10)||
+'{\sp{\sn fc3DUseExtrusionColor}{\sv 0}}{\sp{\sn f';
+    wwv_flow_api.g_varchar2_table(85) := 'c3DLightFace}{\sv 1}}{\sp{\sn fc3DConstrainRotation}{\sv 1}}{\sp{\sn fc3DRotationCenterAuto}{\sv 0}}';
+    wwv_flow_api.g_varchar2_table(86) := '{\sp{\sn fc3DParallel}{\sv 1}}{\sp{\sn fc3DKeyHarsh}{\sv 1}}{\sp{\sn fc3DFillHarsh}{\sv 0}}'||chr(10)||
+'{\sp{\s';
+    wwv_flow_api.g_varchar2_table(87) := 'n fLayoutInCell}{\sv 1}}}}}{\shprslt{\*\do\dobxcolumn\dobypara\dodhgt8192\dpgroup\dpcount4\dpx0\dpy0';
+    wwv_flow_api.g_varchar2_table(88) := '\dpxsize9360\dpysize720\dppolygon\dppolycount4\dpptx0\dppty0\dpptx0\dppty720\dpptx9360\dppty720\dppt';
+    wwv_flow_api.g_varchar2_table(89) := 'x9360\dppty0\dpx0\dpy0\dpxsize9360\dpysize720'||chr(10)||
+'\dpfillfgcr255\dpfillfgcg255\dpfillfgcb255\dpfillbgcr';
+    wwv_flow_api.g_varchar2_table(90) := '255\dpfillbgcg255\dpfillbgcb255\dpfillpat0\dplinehollow\dprect\dpx0\dpy0\dpxsize9360\dpysize720'||chr(10)||
+'\dp';
+    wwv_flow_api.g_varchar2_table(91) := 'fillfgcr255\dpfillfgcg255\dpfillfgcb255\dpfillbgcr0\dpfillbgcg0\dpfillbgcb0\dpfillpat1\dplinew15\dpl';
+    wwv_flow_api.g_varchar2_table(92) := 'inecor0\dplinecog0\dplinecob0\dprect\dpx900\dpy180\dpxsize2175\dpysize360'||chr(10)||
+'\dpfillfgcr255\dpfillfgcg';
+    wwv_flow_api.g_varchar2_table(93) := '255\dpfillfgcb255\dpfillbgcr255\dpfillbgcg255\dpfillbgcb255\dpfillpat0\dplinehollow\dpendgroup\dpx0\';
+    wwv_flow_api.g_varchar2_table(94) := 'dpy0\dpxsize0\dpysize0}\par\pard\ql \li0\ri0\widctlpar\brdrt\brdrs\brdrw15\brdrcf1 \brdrl\brdrs\brdr';
+    wwv_flow_api.g_varchar2_table(95) := 'w15\brdrcf1 \brdrb'||chr(10)||
+'\brdrs\brdrw15\brdrcf1 \brdrr\brdrs\brdrw15\brdrcf1 \pvpg\abslock1\dxfrtext180\d';
+    wwv_flow_api.g_varchar2_table(96) := 'frmtxtx180\dfrmtxty0\wraparound\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 {\pict\picscalex1';
+    wwv_flow_api.g_varchar2_table(97) := '00\picscaley100\piccropl0\piccropr0\piccropt0\piccropb0'||chr(10)||
+'\picw16540\pich1300\picwgoal9377\pichgoal73';
+    wwv_flow_api.g_varchar2_table(98) := '7\wmetafile8\bliptag2044047665\blipupi133{\*\blipuid 79d5b131b02c73ecda9595666c761516}'||chr(10)||
+'010009000003';
+    wwv_flow_api.g_varchar2_table(99) := '372b000008001610000000001610000026060f002220574d4643010000000000010061bf000000000200000000200000041b';
+    wwv_flow_api.g_varchar2_table(100) := '0000043b00000100'||chr(10)||
+'00006c000000e1ffffffe1ffffff600f0000500100000000000000000000b24000002a05000020454d';
+    wwv_flow_api.g_varchar2_table(101) := '4600000100043b00009301000004000000000000000000'||chr(10)||
+'000000000000971200009e1a0000c90000002001000000000000';
+    wwv_flow_api.g_varchar2_table(102) := '0000000000000000f8120300cb660400160000000c000000180000000a000000100000000000'||chr(10)||
+'0000000000000900000010';
+    wwv_flow_api.g_varchar2_table(103) := '000000430f000033010000250000000c0000000e000080120000000c000000010000005200000070010000010000009cffff';
+    wwv_flow_api.g_varchar2_table(104) := 'ff0000'||chr(10)||
+'00000000000000000000900100000000000004400012540069006d006500730020004e0065007700200052006f00';
+    wwv_flow_api.g_varchar2_table(105) := '6d0061006e00000000000000000000000000'||chr(10)||
+'00000000000000000000000000000000000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(106) := '000000000000000000000000000000000000000000000000000000000000000000'||chr(10)||
+'00000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(107) := '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(108) := '000000000000000000cb30093000000000040000000000ae3008310930000000004716900100000202060305040502030487';
+    wwv_flow_api.g_varchar2_table(109) := '7a002000000080080000000000'||chr(10)||
+'0000ff01000000000000540069006d00650073002000000065007700200052006f006d00';
+    wwv_flow_api.g_varchar2_table(110) := '61006e00000000000000bd2d093050bbae3000331400010000000000'||chr(10)||
+'00003c441100aab402303c4411004c3eaf30544411';
+    wwv_flow_api.g_varchar2_table(111) := '006476000800000000250000000c00000001000000180000000c0000000000000254000000540000000000'||chr(10)||
+'000000000000';
+    wwv_flow_api.g_varchar2_table(112) := '2c00000071000000010000008a2787403f408740000000005a000000010000004c000000040000000000000000000000490f';
+    wwv_flow_api.g_varchar2_table(113) := '0000390100005000'||chr(10)||
+'0000200000002d00000046000000280000001c000000474449430200000003000000030000003f0f00';
+    wwv_flow_api.g_varchar2_table(114) := '002f0100000000000046000000280000001c0000004744'||chr(10)||
+'4943020000000200000002000000400f00003001000000000000';
+    wwv_flow_api.g_varchar2_table(115) := '460000001400000008000000474449430300000046000000280000001c000000474449430200'||chr(10)||
+'0000000000000000000043';
+    wwv_flow_api.g_varchar2_table(116) := '0f000033010000000000002100000008000000620000000c0000000100000024000000240000000000003e00000000000000';
+    wwv_flow_api.g_varchar2_table(117) := '000000'||chr(10)||
+'003e000000000000000002000000270000001800000002000000000000000000000000000000250000000c000000';
+    wwv_flow_api.g_varchar2_table(118) := '02000000250000000c000000080000805600'||chr(10)||
+'00003000000002000000020000003f0f00002f010000050000001700170017';
+    wwv_flow_api.g_varchar2_table(119) := '007709f7797709f779170017001700250000000c00000007000080250000000c00'||chr(10)||
+'00000000008024000000240000000000';
+    wwv_flow_api.g_varchar2_table(120) := '00410000000000000000000000410000000000000000020000003a0000000c0000000800000024000000240000000000'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(121) := '3e00000000000000000000003e0000000000000000020000005f000000380000000300000038000000000000003800000000';
+    wwv_flow_api.g_varchar2_table(122) := '00000000200100320000000000'||chr(10)||
+'000000000000000000000000000000000000250000000c00000003000000250000000c00';
+    wwv_flow_api.g_varchar2_table(123) := '000005000080560000002c000000e1ffffffe1ffffff600f00005001'||chr(10)||
+'0000040000001700170017007709f7797709f77917';
+    wwv_flow_api.g_varchar2_table(124) := '00250000000c00000007000080250000000c00000000000080240000002400000000000041000000000000'||chr(10)||
+'000000000041';
+    wwv_flow_api.g_varchar2_table(125) := '000000000000000002000000280000000c000000030000003a0000000c0000000a000000220000000c000000ffffffff4600';
+    wwv_flow_api.g_varchar2_table(126) := '0000140000000800'||chr(10)||
+'0000474449430300000046000000280000001c0000004744494302000000740100004b000000050500';
+    wwv_flow_api.g_varchar2_table(127) := '00e800000000000000280000000c000000020000002100'||chr(10)||
+'000008000000620000000c000000010000002400000024000000';
+    wwv_flow_api.g_varchar2_table(128) := '0000803d00000000000000000000803d00000000000000000200000027000000180000000200'||chr(10)||
+'000000000000ffffff0000';
+    wwv_flow_api.g_varchar2_table(129) := '000000250000000c00000002000000130000000c000000010000003b000000080000001b00000010000000a0170000150e00';
+    wwv_flow_api.g_varchar2_table(130) := '005800'||chr(10)||
+'0000000100000000000000000000ffffffffffffffff39000000c917100bf1170a081a180505e0180505a7190505';
+    wwv_flow_api.g_varchar2_table(131) := '6e1a0505dc1a0505301b1805681b3e05a01b'||chr(10)||
+'6505cc1baa05ea1b1106071c7806131cf6060c1c8907051c0908f11b7808d1';
+    wwv_flow_api.g_varchar2_table(132) := '1bd508b11b3309861b7e09541bb909331bde09071bfd09d11a150afa1a330a181b'||chr(10)||
+'4f0a2a1b6c0a361b7f0a471ba80a5d1b';
+    wwv_flow_api.g_varchar2_table(133) := 'e60a721b240b811b550b871b760bb41b560ce51b350d111c150e8b1b150e041b150e7d1a150e4b1a280d161a3c0ce419'||chr(10)||
+'50';
+    wwv_flow_api.g_varchar2_table(134) := '0bd119f40abe19b80aad199d0a9519780a7819670a5819670a4d19670a4319670a3819670a2819a10b1719db0c0719150e8f';
+    wwv_flow_api.g_varchar2_table(135) := '18150e1718150ea017150e3d00'||chr(10)||
+'0000080000001b000000100000004f190000b1080000580000007c000000000000000000';
+    wwv_flow_api.g_varchar2_table(136) := '0000ffffffffffffffff180000008219b108b419b108e619b108f719'||chr(10)||
+'b108171aa608461a91085e1a8808741a7008851a49';
+    wwv_flow_api.g_varchar2_table(137) := '08951a21089f1af507a21ac207a61a78079c1a3d07871a1607721aee06471ada06051ada06d119da069c19'||chr(10)||
+'da066819da06';
+    wwv_flow_api.g_varchar2_table(138) := '60197707581914084f19b1083d000000080000003c000000080000003e000000180000007a01000050000000c2010000e200';
+    wwv_flow_api.g_varchar2_table(139) := '0000130000000c00'||chr(10)||
+'000001000000250000000c000000000000802400000024000000000080410000000000000000000080';
+    wwv_flow_api.g_varchar2_table(140) := '4100000000000000000200000024000000240000000000'||chr(10)||
+'803d00000000000000000000803d000000000000000002000000';
+    wwv_flow_api.g_varchar2_table(141) := '250000000c00000002000000130000000c000000010000003b000000080000001b0000001000'||chr(10)||
+'00000c2000006c0b000058';
+    wwv_flow_api.g_varchar2_table(142) := '000000e80000000000000000000000ffffffffffffffff33000000361f6c0b5f1e6c0b881d6c0b881dd30b931d210ca61d53';
+    wwv_flow_api.g_varchar2_table(143) := '0cc11d'||chr(10)||
+'9c0ce81dc10c1a1ec10c391ec10c591eb10c761e910c891e7c0c9e1e5a0cb41e270c1c1f3b0c851f4e0ced1f620c';
+    wwv_flow_api.g_varchar2_table(144) := 'b51f0b0d731f820d2b1fcc0de31e170e7f1e'||chr(10)||
+'3b0eff1d3b0e901d3b0e3a1d1c0efe1cdc0dc21c9d0d921c3a0d701cb10c4e';
+    wwv_flow_api.g_varchar2_table(145) := '1c280c401c890b4a1cd00a581cc9098e1cf608ea1c5208451dae07be1d5e07521e'||chr(10)||
+'5e07ca1e5e07271f8207681fcc07a91f';
+    wwv_flow_api.g_varchar2_table(146) := '1508da1f7e08f61f0809132092091c20460a1020230b0f203c0b0e20540b0c206c0b3d000000080000001b0000001000'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(147) := '00d61e0000380a000058000000580000000000000000000000ffffffffffffffff0f000000d61ebb09ca1e6209b21e2c099a';
+    wwv_flow_api.g_varchar2_table(148) := '1ef608771edc084b1edc08181e'||chr(10)||
+'dc08ed1d0509ca1d5509b51d8809a41dd4099a1d380a031e380a6c1e380ad61e380a3d00';
+    wwv_flow_api.g_varchar2_table(149) := '0000080000003c000000080000003e00000018000000c40100007500'||chr(10)||
+'000002020000e4000000130000000c000000010000';
+    wwv_flow_api.g_varchar2_table(150) := '00250000000c00000000000080240000002400000000008041000000000000000000008041000000000000'||chr(10)||
+'000002000000';
+    wwv_flow_api.g_varchar2_table(151) := '24000000240000000000803d00000000000000000000803d000000000000000002000000250000000c000000020000001300';
+    wwv_flow_api.g_varchar2_table(152) := '00000c0000000100'||chr(10)||
+'00003b0000000800000055000000340100000000000000000000ffffffffffffffff46000000102382';
+    wwv_flow_api.g_varchar2_table(153) := '0b74239a0bd923b00b3d24c80b2624480c0424b50cd923'||chr(10)||
+'130dae23700d7823b80d3b23ed0dfd22220eaf223b0e53223b0e';
+    wwv_flow_api.g_varchar2_table(154) := 'fa213b0eb1212b0e78210a0e3e21e80d0d21b30de720680dc1201e0da320c70c9020630c7e20'||chr(10)||
+'ff0b79207b0b8120d40a8a';
+    wwv_flow_api.g_varchar2_table(155) := '20280aa1209809c4202509dd20d10800218508282141085021fe077b21ce07a321ac07e421770736225e0798225e0721235e';
+    wwv_flow_api.g_varchar2_table(156) := '078823'||chr(10)||
+'8f07ca23f1070b2454083724e4084a24a009e423bb097d23d5091723f1091223a90903237209ec224e09d6222909';
+    wwv_flow_api.g_varchar2_table(157) := 'b42218098a2218095622180928223e090422'||chr(10)||
+'8a09df21d809c8214b0ac021e60ab821700bc421d80be0211f0cfc21670c25';
+    wwv_flow_api.g_varchar2_table(158) := '228b0c57228b0c81228b0ca622750cc5224a0ce3221f0cfd22dd0b1023820b3c00'||chr(10)||
+'0000080000003e000000180000000702';
+    wwv_flow_api.g_varchar2_table(159) := '00007500000045020000e4000000130000000c00000001000000250000000c0000000000008024000000240000000000'||chr(10)||
+'80';
+    wwv_flow_api.g_varchar2_table(160) := '4100000000000000000000804100000000000000000200000024000000240000000000803d00000000000000000000803d00';
+    wwv_flow_api.g_varchar2_table(161) := '00000000000000020000002500'||chr(10)||
+'00000c00000002000000130000000c000000010000003b000000080000001b0000001000';
+    wwv_flow_api.g_varchar2_table(162) := '0000b6240000d10a0000580000007c0000000000000000000000ffff'||chr(10)||
+'ffffffffffff18000000c424d109fb24fe08592557';
+    wwv_flow_api.g_varchar2_table(163) := '08b625b00731265e07c3265e076c275e07e627c007312883086c2820098528e2097928c80a6c28ca0b3528'||chr(10)||
+'9d0cd827420d';
+    wwv_flow_api.g_varchar2_table(164) := '7b27e90dff263b0e68263b0ee1253b0e7625f70d2c256d0dd124c30ca824e50bb624d10a3d000000080000001b0000001000';
+    wwv_flow_api.g_varchar2_table(165) := '0000f8250000d00a'||chr(10)||
+'0000580000007c0000000000000000000000ffffffffffffffff18000000f025660bfa25d40b14261c';
+    wwv_flow_api.g_varchar2_table(166) := '0c2e26630c5326870c8026870caf26870cd726650cf826'||chr(10)||
+'1e0c1927d60b2e27660b3727c90a3e27380a3427cb091b278409';
+    wwv_flow_api.g_varchar2_table(167) := '01273c09dd261a09b1261a0982261a0959263e09372685091526ce0900263c0af825d00a3d00'||chr(10)||
+'0000080000003c00000008';
+    wwv_flow_api.g_varchar2_table(168) := '0000003e000000180000004a0200007500000089020000e4000000130000000c00000001000000250000000c000000000000';
+    wwv_flow_api.g_varchar2_table(169) := '802400'||chr(10)||
+'0000240000000000804100000000000000000000804100000000000000000200000024000000240000000000803d';
+    wwv_flow_api.g_varchar2_table(170) := '00000000000000000000803d000000000000'||chr(10)||
+'000002000000250000000c00000002000000130000000c000000010000003b';
+    wwv_flow_api.g_varchar2_table(171) := '0000000800000055000000b00000000000000000000000ffffffffffffffff2500'||chr(10)||
+'000043298407a72984070b2a8407702a';
+    wwv_flow_api.g_varchar2_table(172) := '84076b2ae007662a3c08612a9808842a2108a72acf07c82aa107e92a7407102b5e073d2b5e076c2b5e07a02b7c07d42b'||chr(10)||
+'b7';
+    wwv_flow_api.g_varchar2_table(173) := '07ab2b5008812be908582b8209342b6209172b5209012b5209d72a5209b42a75099a2abb09742a1d0a592ad40a4b2ae10b41';
+    wwv_flow_api.g_varchar2_table(174) := '2a9d0c372a590d2d2a150ec229'||chr(10)||
+'150e5629150eeb28150e0829e50b2529b409432984073c000000080000003e0000001800';
+    wwv_flow_api.g_varchar2_table(175) := '00008e02000075000000be020000e2000000130000000c0000000100'||chr(10)||
+'0000250000000c0000000000008024000000240000';
+    wwv_flow_api.g_varchar2_table(176) := '000000804100000000000000000000804100000000000000000200000024000000240000000000803d0000'||chr(10)||
+'000000000000';
+    wwv_flow_api.g_varchar2_table(177) := '0000803d000000000000000002000000250000000c00000002000000130000000c000000010000003b000000080000001b00';
+    wwv_flow_api.g_varchar2_table(178) := '000010000000c92f'||chr(10)||
+'00000505000058000000b80000000000000000000000ffffffffffffffff27000000a02f0a08772f10';
+    wwv_flow_api.g_varchar2_table(179) := '0b4f2f150eeb2e150e872e150e222e150e272ec20d2b2e'||chr(10)||
+'6f0d2f2e1c0d012e870dd52dcd0db12df20d802d230e4b2d3b0e';
+    wwv_flow_api.g_varchar2_table(180) := '122d3b0ea02c3b0e4d2ce40d1b2c360de92b870cd52bb40be22bbb0af02ba5091e2cd008682c'||chr(10)||
+'3c08b02ca8070a2d5e0770';
+    wwv_flow_api.g_varchar2_table(181) := '2d5e07a22d5e07cf2d6f07f62d91071c2eb3073f2ee5075a2e2908682e1d07772e1106852e0505f12e05055d2f0505c92f05';
+    wwv_flow_api.g_varchar2_table(182) := '053d00'||chr(10)||
+'0000080000001b000000100000003a2e0000c80a0000580000007c0000000000000000000000ffffffffffffffff';
+    wwv_flow_api.g_varchar2_table(183) := '18000000402e440a372ee1091f2ea009082e'||chr(10)||
+'5f09e52d3f09bb2d3f09952d3f09742d5f09582d9d093c2ddb09292d430a21';
+    wwv_flow_api.g_varchar2_table(184) := '2dd60a1a2d600b232dc30b392d030c4f2d440c6e2d630c942d630cbd2d630ce12d'||chr(10)||
+'440c002e030c1e2ec10b322e590b3a2e';
+    wwv_flow_api.g_varchar2_table(185) := 'c80a3d000000080000003c000000080000003e00000018000000bd02000050000000fd020000e4000000130000000c00'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(186) := '0001000000250000000c00000000000080240000002400000000008041000000000000000000008041000000000000000002';
+    wwv_flow_api.g_varchar2_table(187) := '00000024000000240000000000'||chr(10)||
+'803d00000000000000000000803d000000000000000002000000250000000c0000000200';
+    wwv_flow_api.g_varchar2_table(188) := '0000130000000c000000010000003b00000008000000550000009401'||chr(10)||
+'00000000000000000000ffffffffffffffff5e0000';
+    wwv_flow_api.g_varchar2_table(189) := '00f22f420c5e302d0cc9301a0c3431060c3d31520c4d31870c6331a90c7831ca0c9831da0cbf31da0cea31'||chr(10)||
+'da0c0d32c90c';
+    wwv_flow_api.g_varchar2_table(190) := '2632a40c3932890c4532660c47323d0c49320f0c3f32eb0b2832d20b1832c00beb31aa0ba2318f0b3531670be930440bc030';
+    wwv_flow_api.g_varchar2_table(191) := '220b9630000b7330'||chr(10)||
+'c90a5b307a0a41302b0a3730d1093c306c094230fd0857309e087b304d089f30fc07d030c107093199';
+    wwv_flow_api.g_varchar2_table(192) := '074331710790315e07ef315e0753325e079c326e07ca32'||chr(10)||
+'8c07f732ab071d33da073a331b0855335c086c33b3087b332009';
+    wwv_flow_api.g_varchar2_table(193) := '14333409ae32480947325c09423226093632ff082632e5080f32c408f031b308cd31b308a931'||chr(10)||
+'b3088e31bf087c31d8086a';
+    wwv_flow_api.g_varchar2_table(194) := '31f408603113095e3137095c31610965318009793195098c31aa09ba31bc09ff31ce096832e609b732080ae832330a19335e';
+    wwv_flow_api.g_varchar2_table(195) := '0a3f33'||chr(10)||
+'9b0a5633ec0a6d333d0b7633940b7133f40b6c33550c5833b40c3733100d15336c0de232b40da132ea0d6032200e';
+    wwv_flow_api.g_varchar2_table(196) := '08323b0e9c313b0e03313b0e97300f0e5c30'||chr(10)||
+'b70d2030600dfc2fe30cf22f420c3c000000080000003e00000018000000ff';
+    wwv_flow_api.g_varchar2_table(197) := '0200007500000038030000e4000000130000000c00000001000000250000000c00'||chr(10)||
+'00000000008024000000240000000000';
+    wwv_flow_api.g_varchar2_table(198) := '804100000000000000000000804100000000000000000200000024000000240000000000803d00000000000000000000'||chr(10)||
+'80';
+    wwv_flow_api.g_varchar2_table(199) := '3d000000000000000002000000250000000c00000002000000130000000c000000010000003b00000008000000550000007c';
+    wwv_flow_api.g_varchar2_table(200) := '0100000000000000000000ffff'||chr(10)||
+'ffffffffffff580000000836150b7a36070bec36f90a5e37eb0a5f37590b6a37ad0b7e37';
+    wwv_flow_api.g_varchar2_table(201) := 'e80b9d37450ccf37740c1438740c4738740c70385d0c8e382c0cac38'||chr(10)||
+'fc0bbd38c50bc038860bc3384a0bb838140ba138e4';
+    wwv_flow_api.g_varchar2_table(202) := '0a8a38b50a4e38890af1375e0a5837150aec36ba09b03644097536cf085a363a086336840769360e078136'||chr(10)||
+'9c06a9363206';
+    wwv_flow_api.g_varchar2_table(203) := 'd036c80509377605523738059937fb04f937de047238de040639de0475391405bc398205033af205283aa1062a3a9107ba39';
+    wwv_flow_api.g_varchar2_table(204) := '9f074839ab07d738'||chr(10)||
+'b907d5385007c5380507ab38d5069138a5066b388e0638388e060e388e06ee379f06d737c206c137e6';
+    wwv_flow_api.g_varchar2_table(205) := '06b4371107b1374407af376807b6378907c637a707d537'||chr(10)||
+'c507fc37e1073938fd07d13842083f3984087f39c908bd390f09';
+    wwv_flow_api.g_varchar2_table(206) := 'ec396409053acb091d3a320a273aa30a203a220b183ab70bfc39400ccd39bd0c9e393a0d5e39'||chr(10)||
+'990d1239da0dc6381c0e67';
+    wwv_flow_api.g_varchar2_table(207) := '383c0ef7373c0e32373c0eac36f10d6a36580d2736c00c0536ff0b0836150b3c000000080000003e00000018000000600300';
+    wwv_flow_api.g_varchar2_table(208) := '004d00'||chr(10)||
+'0000a3030000e4000000130000000c00000001000000250000000c00000000000080240000002400000000008041';
+    wwv_flow_api.g_varchar2_table(209) := '000000000000000000008041000000000000'||chr(10)||
+'00000200000024000000240000000000803d00000000000000000000803d00';
+    wwv_flow_api.g_varchar2_table(210) := '0000000000000002000000250000000c00000002000000130000000c0000000100'||chr(10)||
+'00003b000000080000001b0000001000';
+    wwv_flow_api.g_varchar2_table(211) := '00005d3e00006c0b000058000000e80000000000000000000000ffffffffffffffff33000000873d6c0bb03c6c0bd93b'||chr(10)||
+'6c';
+    wwv_flow_api.g_varchar2_table(212) := '0bd93bd30be43b210cf73b530c113c9c0c393cc10c6b3cc10c8a3cc10caa3cb10cc73c910cda3c7c0cef3c5a0c053d270c6d';
+    wwv_flow_api.g_varchar2_table(213) := '3d3b0cd63d4e0c3e3e620c063e'||chr(10)||
+'0b0dc43d820d7c3dcc0d343d170ed03c3b0e503c3b0ee13b3b0e8b3b1c0e4f3bdc0d133b';
+    wwv_flow_api.g_varchar2_table(214) := '9d0de33a3a0dc13ab10c9f3a280c913a890b9b3ad00aa93ac909df3a'||chr(10)||
+'f6083b3b5208963bae070f3c5e07a33c5e071b3d5e';
+    wwv_flow_api.g_varchar2_table(215) := '07783d8207b93dcc07fa3d15082b3e7e08473e0809633e92096d3e460a613e230b603e3c0b5f3e540b5d3e'||chr(10)||
+'6c0b3d000000';
+    wwv_flow_api.g_varchar2_table(216) := '080000001b00000010000000273d0000380a000058000000580000000000000000000000ffffffffffffffff0f000000273d';
+    wwv_flow_api.g_varchar2_table(217) := 'bb091b3d6209033d'||chr(10)||
+'2c09eb3cf608c83cdc089c3cdc08693cdc083e3c05091b3c5509053c8809f53bd409ea3b380a543c38';
+    wwv_flow_api.g_varchar2_table(218) := '0abd3c380a273d380a3d000000080000003c0000000800'||chr(10)||
+'00003e00000018000000a903000075000000e7030000e4000000';
+    wwv_flow_api.g_varchar2_table(219) := '130000000c00000001000000250000000c000000000000802400000024000000000080410000'||chr(10)||
+'0000000000000000804100';
+    wwv_flow_api.g_varchar2_table(220) := '000000000000000200000024000000240000000000803d00000000000000000000803d000000000000000002000000250000';
+    wwv_flow_api.g_varchar2_table(221) := '000c00'||chr(10)||
+'000002000000130000000c000000010000003b0000000800000055000000b00000000000000000000000ffffffff';
+    wwv_flow_api.g_varchar2_table(222) := 'ffffffff25000000293f84078d3f8407f13f'||chr(10)||
+'8407554084075040e0074b403c0847409808694021088d40cf07ae40a107ce';
+    wwv_flow_api.g_varchar2_table(223) := '407407f6405e0723415e0752415e0785417c07b941b707914150086641e9083e41'||chr(10)||
+'82091a416209fc405209e6405209bd40';
+    wwv_flow_api.g_varchar2_table(224) := '5209994075097f40bb0959401d0a3e40d40a3040e10b27409d0c1d40590d1340150ea73f150e3c3f150ed03e150eed3e'||chr(10)||
+'e5';
+    wwv_flow_api.g_varchar2_table(225) := '0b0b3fb409293f84073c000000080000003e00000018000000ed030000750000001c040000e2000000130000000c00000001';
+    wwv_flow_api.g_varchar2_table(226) := '000000250000000c0000000000'||chr(10)||
+'008024000000240000000000804100000000000000000000804100000000000000000200';
+    wwv_flow_api.g_varchar2_table(227) := '000024000000240000000000803d00000000000000000000803d0000'||chr(10)||
+'00000000000002000000250000000c000000020000';
+    wwv_flow_api.g_varchar2_table(228) := '00130000000c000000010000003b0000000800000055000000740000000000000000000000ffffffffffff'||chr(10)||
+'ffff16000000';
+    wwv_flow_api.g_varchar2_table(229) := 'f241840761428407d04284073f4384076243e80887434a0aaa43ad0bf4434a0a4144e8088b448407f744840763458407cf45';
+    wwv_flow_api.g_varchar2_table(230) := '84073d45b509a444'||chr(10)||
+'e40b1244150eb343150e5443150ef542150ea142e40b4642b509f24184073c000000080000003e0000';
+    wwv_flow_api.g_varchar2_table(231) := '00180000001f040000780000005d040000e20000001300'||chr(10)||
+'00000c00000001000000250000000c0000000000008024000000';
+    wwv_flow_api.g_varchar2_table(232) := '2400000000008041000000000000000000008041000000000000000002000000240000002400'||chr(10)||
+'00000000803d0000000000';
+    wwv_flow_api.g_varchar2_table(233) := '0000000000803d000000000000000002000000250000000c00000002000000130000000c000000010000003b000000080000';
+    wwv_flow_api.g_varchar2_table(234) := '001b00'||chr(10)||
+'0000100000005946000005050000580000004c0000000000000000000000ffffffffffffffff0c000000c4460505';
+    wwv_flow_api.g_varchar2_table(235) := '2f4705059a470505924797058a4729068347'||chr(10)||
+'bc061847bc06ad46bc064246bc064946290651469705594605053d00000008';
+    wwv_flow_api.g_varchar2_table(236) := '0000001b000000100000003746000084070000580000004c000000000000000000'||chr(10)||
+'0000ffffffffffffffff0c000000a246';
+    wwv_flow_api.g_varchar2_table(237) := '84070d478407784784075b47b4093d47e50b2047150eb546150e4a46150edf45150efc45e50b1a46b409374684073d00'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(238) := '00080000003c000000080000003e000000180000005d040000500000007a040000e2000000130000000c0000000100000025';
+    wwv_flow_api.g_varchar2_table(239) := '0000000c000000000000802400'||chr(10)||
+'000024000000000080410000000000000000000080410000000000000000020000002400';
+    wwv_flow_api.g_varchar2_table(240) := '0000240000000000803d00000000000000000000803d000000000000'||chr(10)||
+'000002000000250000000c00000002000000130000';
+    wwv_flow_api.g_varchar2_table(241) := '000c000000010000003b0000000800000055000000340100000000000000000000ffffffffffffffff4600'||chr(10)||
+'0000804a820b';
+    wwv_flow_api.g_varchar2_table(242) := 'e54a9a0b4a4bb00bae4bc80b974b480c754bb50c4a4b130d1f4b700de94ab80dac4aed0d6d4a220e204a3b0ec4493b0e6a49';
+    wwv_flow_api.g_varchar2_table(243) := '3b0e22492b0ee848'||chr(10)||
+'0a0eaf48e80d7e48b30d5848680d32481e0d1448c70c0248630cef47ff0be9477b0bf247d40afb4728';
+    wwv_flow_api.g_varchar2_table(244) := '0a12489809354825094e48d1087148850899484108c148'||chr(10)||
+'fe07eb48ce071449ac0755497707a7495e07094a5e07924a5e07';
+    wwv_flow_api.g_varchar2_table(245) := 'f94a8f073b4bf1077c4b5408a84be408bb4ba009554bbb09ee4ad509884af109834aa909744a'||chr(10)||
+'72095e4a4e09474a290925';
+    wwv_flow_api.g_varchar2_table(246) := '4a1809fb491809c649180999493e0975498a095049d80939494b0a3149e60a2a49700b3549d80b51491f0c6d49670c96498b';
+    wwv_flow_api.g_varchar2_table(247) := '0cc849'||chr(10)||
+'8b0cf2498b0c174a750c364a4a0c544a1f0c6e4add0b804a820b3c000000080000003e000000180000007e040000';
+    wwv_flow_api.g_varchar2_table(248) := '75000000bc040000e4000000130000000c00'||chr(10)||
+'000001000000250000000c0000000000008024000000240000000000804100';
+    wwv_flow_api.g_varchar2_table(249) := '000000000000000000804100000000000000000200000024000000240000000000'||chr(10)||
+'803d00000000000000000000803d0000';
+    wwv_flow_api.g_varchar2_table(250) := '00000000000002000000250000000c00000002000000130000000c000000010000003b000000080000001b0000001000'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(251) := '00e94f00006c0b000058000000e80000000000000000000000ffffffffffffffff33000000124f6c0b3b4e6c0b654d6c0b65';
+    wwv_flow_api.g_varchar2_table(252) := '4dd30b6f4d210c824d530c9d4d'||chr(10)||
+'9c0cc54dc10cf64dc10c164ec10c354eb10c534e910c654e7c0c7a4e5a0c904e270cf94e';
+    wwv_flow_api.g_varchar2_table(253) := '3b0c614f4e0cca4f620c914f0b0d4f4f820d074fcc0dbf4e170e5b4e'||chr(10)||
+'3b0edb4d3b0e6c4d3b0e164d1c0eda4cdc0d9e4c9d';
+    wwv_flow_api.g_varchar2_table(254) := '0d6e4c3a0d4c4cb10c2a4c280c1d4c890b264cd00a344cc9096b4cf608c64c5208214dae079b4d5e072e4e'||chr(10)||
+'5e07a64e5e07';
+    wwv_flow_api.g_varchar2_table(255) := '044f8207444fcc07854f1508b64f7e08d24f0809ef4f9209f84f460aec4f230beb4f3c0bea4f540be94f6c0b3d0000000800';
+    wwv_flow_api.g_varchar2_table(256) := '00001b0000001000'||chr(10)||
+'0000b24e0000380a000058000000580000000000000000000000ffffffffffffffff0f000000b34ebb';
+    wwv_flow_api.g_varchar2_table(257) := '09a64e62098f4e2c09764ef608544edc08274edc08f44d'||chr(10)||
+'dc08c94d0509a74d5509914d8809804dd409764d380adf4d380a';
+    wwv_flow_api.g_varchar2_table(258) := '494e380ab24e380a3d000000080000003c000000080000003e00000018000000c10400007500'||chr(10)||
+'000000050000e400000013';
+    wwv_flow_api.g_varchar2_table(259) := '0000000c00000001000000250000000c00000000000080240000002400000000008041000000000000000000008041000000';
+    wwv_flow_api.g_varchar2_table(260) := '000000'||chr(10)||
+'00000200000024000000240000000000803d00000000000000000000803d0000000000000000020000005f000000';
+    wwv_flow_api.g_varchar2_table(261) := '380000000300000038000000000000003800'||chr(10)||
+'00000000000000000100640000000000000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(262) := '000000250000000c00000003000000250000000c000000050000803b0000000800'||chr(10)||
+'00001b00000010000000a0170000150e';
+    wwv_flow_api.g_varchar2_table(263) := '000058000000000100000000000000000000ffffffffffffffff39000000c917100bf1170a081a180505e0180505a719'||chr(10)||
+'05';
+    wwv_flow_api.g_varchar2_table(264) := '056e1a0505dc1a0505301b1805681b3e05a01b6505cc1baa05ea1b1106071c7806131cf6060c1c8907051c0908f11b7808d1';
+    wwv_flow_api.g_varchar2_table(265) := '1bd508b11b3309861b7e09541b'||chr(10)||
+'b909331bde09071bfd09d11a150afa1a330a181b4f0a2a1b6c0a361b7f0a471ba80a5d1b';
+    wwv_flow_api.g_varchar2_table(266) := 'e60a721b240b811b550b871b760bb41b560ce51b350d111c150e980d'||chr(10)||
+'000026060f00261b574d4643010000000000010000';
+    wwv_flow_api.g_varchar2_table(267) := '000000000002000000041b000000000000043b00008b1b150e041b150e7d1a150e4b1a280d161a3c0ce419'||chr(10)||
+'500bd119f40a';
+    wwv_flow_api.g_varchar2_table(268) := 'be19b80aad199d0a9519780a7819670a5819670a4d19670a4319670a3819670a2819a10b1719db0c0719150e8f18150e1718';
+    wwv_flow_api.g_varchar2_table(269) := '150ea017150e3d00'||chr(10)||
+'0000080000001b000000100000004f190000b1080000580000007c0000000000000000000000ffffff';
+    wwv_flow_api.g_varchar2_table(270) := 'ffffffffff180000008219b108b419b108e619b108f719'||chr(10)||
+'b108171aa608461a91085e1a8808741a7008851a4908951a2108';
+    wwv_flow_api.g_varchar2_table(271) := '9f1af507a21ac207a61a78079c1a3d07871a1607721aee06471ada06051ada06d119da069c19'||chr(10)||
+'da066819da066019770758';
+    wwv_flow_api.g_varchar2_table(272) := '1914084f19b1083d000000080000003c000000080000004000000018000000750100004c000000c6010000e6000000250000';
+    wwv_flow_api.g_varchar2_table(273) := '000c00'||chr(10)||
+'000007000080250000000c0000000000008024000000240000000000804100000000000000000000804100000000';
+    wwv_flow_api.g_varchar2_table(274) := '0000000002000000280000000c0000000300'||chr(10)||
+'000024000000240000000000803d00000000000000000000803d0000000000';
+    wwv_flow_api.g_varchar2_table(275) := '000000020000005f00000038000000030000003800000000000000380000000000'||chr(10)||
+'00000000010064000000000000000000';
+    wwv_flow_api.g_varchar2_table(276) := '0000000000000000000000000000250000000c00000003000000250000000c000000050000803b000000080000001b00'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(277) := '00100000000c2000006c0b000058000000e80000000000000000000000ffffffffffffffff33000000361f6c0b5f1e6c0b88';
+    wwv_flow_api.g_varchar2_table(278) := '1d6c0b881dd30b931d210ca61d'||chr(10)||
+'530cc11d9c0ce81dc10c1a1ec10c391ec10c591eb10c761e910c891e7c0c9e1e5a0cb41e';
+    wwv_flow_api.g_varchar2_table(279) := '270c1c1f3b0c851f4e0ced1f620cb51f0b0d731f820d2b1fcc0de31e'||chr(10)||
+'170e7f1e3b0eff1d3b0e901d3b0e3a1d1c0efe1cdc';
+    wwv_flow_api.g_varchar2_table(280) := '0dc21c9d0d921c3a0d701cb10c4e1c280c401c890b4a1cd00a581cc9098e1cf608ea1c5208451dae07be1d'||chr(10)||
+'5e07521e5e07';
+    wwv_flow_api.g_varchar2_table(281) := 'ca1e5e07271f8207681fcc07a91f1508da1f7e08f61f0809132092091c20460a1020230b0f203c0b0e20540b0c206c0b3d00';
+    wwv_flow_api.g_varchar2_table(282) := '0000080000001b00'||chr(10)||
+'000010000000d61e0000380a000058000000580000000000000000000000ffffffffffffffff0f0000';
+    wwv_flow_api.g_varchar2_table(283) := '00d61ebb09ca1e6209b21e2c099a1ef608771edc084b1e'||chr(10)||
+'dc08181edc08ed1d0509ca1d5509b51d8809a41dd4099a1d380a';
+    wwv_flow_api.g_varchar2_table(284) := '031e380a6c1e380ad61e380a3d000000080000003c000000080000004000000018000000bf01'||chr(10)||
+'00007100000006020000e8';
+    wwv_flow_api.g_varchar2_table(285) := '000000250000000c00000007000080250000000c000000000000802400000024000000000080410000000000000000000080';
+    wwv_flow_api.g_varchar2_table(286) := '410000'||chr(10)||
+'00000000000002000000280000000c0000000300000024000000240000000000803d00000000000000000000803d';
+    wwv_flow_api.g_varchar2_table(287) := '0000000000000000020000005f0000003800'||chr(10)||
+'00000300000038000000000000003800000000000000000001006400000000';
+    wwv_flow_api.g_varchar2_table(288) := '00000000000000000000000000000000000000250000000c000000030000002500'||chr(10)||
+'00000c00000005000080550000003401';
+    wwv_flow_api.g_varchar2_table(289) := '0000030200007100000049020000e8000000460000001023820b74239a0bd923b00b3d24c80b2624480c0424b50cd923'||chr(10)||
+'13';
+    wwv_flow_api.g_varchar2_table(290) := '0dae23700d7823b80d3b23ed0dfd22220eaf223b0e53223b0efa213b0eb1212b0e78210a0e3e21e80d0d21b30de720680dc1';
+    wwv_flow_api.g_varchar2_table(291) := '201e0da320c70c9020630c7e20'||chr(10)||
+'ff0b79207b0b8120d40a8a20280aa1209809c4202509dd20d10800218508282141085021';
+    wwv_flow_api.g_varchar2_table(292) := 'fe077b21ce07a321ac07e421770736225e0798225e0721235e078823'||chr(10)||
+'8f07ca23f1070b2454083724e4084a24a009e423bb';
+    wwv_flow_api.g_varchar2_table(293) := '097d23d5091723f1091223a90903237209ec224e09d6222909b42218098a2218095622180928223e090422'||chr(10)||
+'8a09df21d809';
+    wwv_flow_api.g_varchar2_table(294) := 'c8214b0ac021e60ab821700bc421d80be0211f0cfc21670c25228b0c57228b0c81228b0ca622750cc5224a0ce3221f0cfd22';
+    wwv_flow_api.g_varchar2_table(295) := 'dd0b1023820b2500'||chr(10)||
+'00000c00000007000080250000000c0000000000008024000000240000000000804100000000000000';
+    wwv_flow_api.g_varchar2_table(296) := '0000008041000000000000000002000000280000000c00'||chr(10)||
+'00000300000024000000240000000000803d0000000000000000';
+    wwv_flow_api.g_varchar2_table(297) := '0000803d0000000000000000020000005f000000380000000300000038000000000000003800'||chr(10)||
+'0000000000000000010064';
+    wwv_flow_api.g_varchar2_table(298) := '0000000000000000000000000000000000000000000000250000000c00000003000000250000000c000000050000803b0000';
+    wwv_flow_api.g_varchar2_table(299) := '000800'||chr(10)||
+'00001b00000010000000b6240000d10a0000580000007c0000000000000000000000ffffffffffffffff18000000';
+    wwv_flow_api.g_varchar2_table(300) := 'c424d109fb24fe0859255708b625b0073126'||chr(10)||
+'5e07c3265e076c275e07e627c007312883086c2820098528e2097928c80a6c';
+    wwv_flow_api.g_varchar2_table(301) := '28ca0b35289d0cd827420d7b27e90dff263b0e68263b0ee1253b0e7625f70d2c25'||chr(10)||
+'6d0dd124c30ca824e50bb624d10a3d00';
+    wwv_flow_api.g_varchar2_table(302) := '0000080000001b00000010000000f8250000d00a0000580000007c0000000000000000000000ffffffffffffffff1800'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(303) := '00f025660bfa25d40b14261c0c2e26630c5326870c8026870caf26870cd726650cf8261e0c1927d60b2e27660b3727c90a3e';
+    wwv_flow_api.g_varchar2_table(304) := '27380a3427cb091b2784090127'||chr(10)||
+'3c09dd261a09b1261a0982261a0959263e09372685091526ce0900263c0af825d00a3d00';
+    wwv_flow_api.g_varchar2_table(305) := '0000080000003c000000080000004000000018000000460200007100'||chr(10)||
+'00008d020000e8000000250000000c000000070000';
+    wwv_flow_api.g_varchar2_table(306) := '80250000000c00000000000080240000002400000000008041000000000000000000008041000000000000'||chr(10)||
+'000002000000';
+    wwv_flow_api.g_varchar2_table(307) := '280000000c0000000300000024000000240000000000803d00000000000000000000803d0000000000000000020000005f00';
+    wwv_flow_api.g_varchar2_table(308) := '0000380000000300'||chr(10)||
+'0000380000000000000038000000000000000000010064000000000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(309) := '0000000000250000000c00000003000000250000000c00'||chr(10)||
+'00000500008055000000b00000008a02000071000000c2020000';
+    wwv_flow_api.g_varchar2_table(310) := 'e60000002500000043298407a72984070b2a8407702a84076b2ae007662a3c08612a9808842a'||chr(10)||
+'2108a72acf07c82aa107e9';
+    wwv_flow_api.g_varchar2_table(311) := '2a7407102b5e073d2b5e076c2b5e07a02b7c07d42bb707ab2b5008812be908582b8209342b6209172b5209012b5209d72a52';
+    wwv_flow_api.g_varchar2_table(312) := '09b42a'||chr(10)||
+'75099a2abb09742a1d0a592ad40a4b2ae10b412a9d0c372a590d2d2a150ec229150e5629150eeb28150e0829e50b';
+    wwv_flow_api.g_varchar2_table(313) := '2529b40943298407250000000c0000000700'||chr(10)||
+'0080250000000c000000000000802400000024000000000080410000000000';
+    wwv_flow_api.g_varchar2_table(314) := '00000000008041000000000000000002000000280000000c000000030000002400'||chr(10)||
+'0000240000000000803d000000000000';
+    wwv_flow_api.g_varchar2_table(315) := '00000000803d0000000000000000020000005f0000003800000003000000380000000000000038000000000000000000'||chr(10)||
+'01';
+    wwv_flow_api.g_varchar2_table(316) := '00640000000000000000000000000000000000000000000000250000000c00000003000000250000000c000000050000803b';
+    wwv_flow_api.g_varchar2_table(317) := '000000080000001b0000001000'||chr(10)||
+'0000c92f00000505000058000000b80000000000000000000000ffffffffffffffff2700';
+    wwv_flow_api.g_varchar2_table(318) := '0000a02f0a08772f100b4f2f150eeb2e150e872e150e222e150e272e'||chr(10)||
+'c20d2b2e6f0d2f2e1c0d012e870dd52dcd0db12df2';
+    wwv_flow_api.g_varchar2_table(319) := '0d802d230e4b2d3b0e122d3b0ea02c3b0e4d2ce40d1b2c360de92b870cd52bb40be22bbb0af02ba5091e2c'||chr(10)||
+'d008682c3c08';
+    wwv_flow_api.g_varchar2_table(320) := 'b02ca8070a2d5e07702d5e07a22d5e07cf2d6f07f62d91071c2eb3073f2ee5075a2e2908682e1d07772e1106852e0505f12e';
+    wwv_flow_api.g_varchar2_table(321) := '05055d2f0505c92f'||chr(10)||
+'05053d000000080000001b000000100000003a2e0000c80a0000580000007c00000000000000000000';
+    wwv_flow_api.g_varchar2_table(322) := '00ffffffffffffffff18000000402e440a372ee1091f2e'||chr(10)||
+'a009082e5f09e52d3f09bb2d3f09952d3f09742d5f09582d9d09';
+    wwv_flow_api.g_varchar2_table(323) := '3c2ddb09292d430a212dd60a1a2d600b232dc30b392d030c4f2d440c6e2d630c942d630cbd2d'||chr(10)||
+'630ce12d440c002e030c1e';
+    wwv_flow_api.g_varchar2_table(324) := '2ec10b322e590b3a2ec80a3d000000080000003c000000080000004000000018000000b90200004c00000001030000e80000';
+    wwv_flow_api.g_varchar2_table(325) := '002500'||chr(10)||
+'00000c00000007000080250000000c00000000000080240000002400000000008041000000000000000000008041';
+    wwv_flow_api.g_varchar2_table(326) := '000000000000000002000000280000000c00'||chr(10)||
+'00000300000024000000240000000000803d00000000000000000000803d00';
+    wwv_flow_api.g_varchar2_table(327) := '00000000000000020000005f000000380000000300000038000000000000003800'||chr(10)||
+'00000000000000000100640000000000';
+    wwv_flow_api.g_varchar2_table(328) := '000000000000000000000000000000000000250000000c00000003000000250000000c00000005000080550000009401'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(329) := '00fb020000710000003c030000e80000005e000000f22f420c5e302d0cc9301a0c3431060c3d31520c4d31870c6331a90c78';
+    wwv_flow_api.g_varchar2_table(330) := '31ca0c9831da0cbf31da0cea31'||chr(10)||
+'da0c0d32c90c2632a40c3932890c4532660c47323d0c49320f0c3f32eb0b2832d20b1832';
+    wwv_flow_api.g_varchar2_table(331) := 'c00beb31aa0ba2318f0b3531670be930440bc030220b9630000b7330'||chr(10)||
+'c90a5b307a0a41302b0a3730d1093c306c094230fd';
+    wwv_flow_api.g_varchar2_table(332) := '0857309e087b304d089f30fc07d030c107093199074331710790315e07ef315e0753325e079c326e07ca32'||chr(10)||
+'8c07f732ab07';
+    wwv_flow_api.g_varchar2_table(333) := '1d33da073a331b0855335c086c33b3087b33200914333409ae32480947325c09423226093632ff082632e5080f32c408f031';
+    wwv_flow_api.g_varchar2_table(334) := 'b308cd31b308a931'||chr(10)||
+'b3088e31bf087c31d8086a31f408603113095e3137095c31610965318009793195098c31aa09ba31bc';
+    wwv_flow_api.g_varchar2_table(335) := '09ff31ce096832e609b732080ae832330a19335e0a3f33'||chr(10)||
+'9b0a5633ec0a6d333d0b7633940b7133f40b6c33550c5833b40c';
+    wwv_flow_api.g_varchar2_table(336) := '3733100d15336c0de232b40da132ea0d6032200e08323b0e9c313b0e03313b0e97300f0e5c30'||chr(10)||
+'b70d2030600dfc2fe30cf2';
+    wwv_flow_api.g_varchar2_table(337) := '2f420c250000000c00000007000080250000000c000000000000802400000024000000000080410000000000000000000080';
+    wwv_flow_api.g_varchar2_table(338) := '410000'||chr(10)||
+'00000000000002000000280000000c0000000300000024000000240000000000803d00000000000000000000803d';
+    wwv_flow_api.g_varchar2_table(339) := '0000000000000000020000005f0000003800'||chr(10)||
+'00000300000038000000000000003800000000000000000001006400000000';
+    wwv_flow_api.g_varchar2_table(340) := '00000000000000000000000000000000000000250000000c000000030000002500'||chr(10)||
+'00000c00000005000080550000007c01';
+    wwv_flow_api.g_varchar2_table(341) := '00005c03000049000000a7030000e8000000580000000836150b7a36070bec36f90a5e37eb0a5f37590b6a37ad0b7e37'||chr(10)||
+'e8';
+    wwv_flow_api.g_varchar2_table(342) := '0b9d37450ccf37740c1438740c4738740c70385d0c8e382c0cac38fc0bbd38c50bc038860bc3384a0bb838140ba138e40a8a';
+    wwv_flow_api.g_varchar2_table(343) := '38b50a4e38890af1375e0a5837'||chr(10)||
+'150aec36ba09b03644097536cf085a363a086336840769360e0781369c06a9363206d036';
+    wwv_flow_api.g_varchar2_table(344) := 'c80509377605523738059937fb04f937de047238de040639de047539'||chr(10)||
+'1405bc398205033af205283aa1062a3a9107ba399f';
+    wwv_flow_api.g_varchar2_table(345) := '074839ab07d738b907d5385007c5380507ab38d5069138a5066b388e0638388e060e388e06ee379f06d737'||chr(10)||
+'c206c137e606';
+    wwv_flow_api.g_varchar2_table(346) := 'b4371107b1374407af376807b6378907c637a707d537c507fc37e1073938fd07d13842083f3984087f39c908bd390f09ec39';
+    wwv_flow_api.g_varchar2_table(347) := '6409053acb091d3a'||chr(10)||
+'320a273aa30a203a220b183ab70bfc39400ccd39bd0c9e393a0d5e39990d1239da0dc6381c0e67383c';
+    wwv_flow_api.g_varchar2_table(348) := '0ef7373c0e32373c0eac36f10d6a36580d2736c00c0536'||chr(10)||
+'ff0b0836150b250000000c00000007000080250000000c000000';
+    wwv_flow_api.g_varchar2_table(349) := '0000008024000000240000000000804100000000000000000000804100000000000000000200'||chr(10)||
+'0000280000000c00000003';
+    wwv_flow_api.g_varchar2_table(350) := '00000024000000240000000000803d00000000000000000000803d0000000000000000020000005f00000038000000030000';
+    wwv_flow_api.g_varchar2_table(351) := '003800'||chr(10)||
+'00000000000038000000000000000000010064000000000000000000000000000000000000000000000025000000';
+    wwv_flow_api.g_varchar2_table(352) := '0c00000003000000250000000c0000000500'||chr(10)||
+'00803b000000080000001b000000100000005d3e00006c0b000058000000e8';
+    wwv_flow_api.g_varchar2_table(353) := '0000000000000000000000ffffffffffffffff33000000873d6c0bb03c6c0bd93b'||chr(10)||
+'6c0bd93bd30be43b210cf73b530c113c';
+    wwv_flow_api.g_varchar2_table(354) := '9c0c393cc10c6b3cc10c8a3cc10caa3cb10cc73c910cda3c7c0cef3c5a0c053d270c6d3d3b0cd63d4e0c3e3e620c063e'||chr(10)||
+'0b';
+    wwv_flow_api.g_varchar2_table(355) := '0dc43d820d7c3dcc0d343d170ed03c3b0e503c3b0ee13b3b0e8b3b1c0e4f3bdc0d133b9d0de33a3a0dc13ab10c9f3a280c91';
+    wwv_flow_api.g_varchar2_table(356) := '3a890b9b3ad00aa93ac909df3a'||chr(10)||
+'f6083b3b5208963bae070f3c5e07a33c5e071b3d5e07783d8207b93dcc07fa3d15082b3e';
+    wwv_flow_api.g_varchar2_table(357) := '7e08473e0809633e92096d3e460a613e230b603e3c0b5f3e540b5d3e'||chr(10)||
+'6c0b3d000000080000001b00000010000000273d00';
+    wwv_flow_api.g_varchar2_table(358) := '00380a000058000000580000000000000000000000ffffffffffffffff0f000000273dbb091b3d6209033d'||chr(10)||
+'2c09eb3cf608';
+    wwv_flow_api.g_varchar2_table(359) := 'c83cdc089c3cdc08693cdc083e3c05091b3c5509053c8809f53bd409ea3b380a543c380abd3c380a273d380a3d0000000800';
+    wwv_flow_api.g_varchar2_table(360) := '00003c0000000800'||chr(10)||
+'00004000000018000000a403000071000000eb030000e8000000250000000c00000007000080250000';
+    wwv_flow_api.g_varchar2_table(361) := '000c000000000000802400000024000000000080410000'||chr(10)||
+'0000000000000000804100000000000000000200000028000000';
+    wwv_flow_api.g_varchar2_table(362) := '0c0000000300000024000000240000000000803d00000000000000000000803d000000000000'||chr(10)||
+'0000020000005f00000038';
+    wwv_flow_api.g_varchar2_table(363) := '0000000300000038000000000000003800000000000000000001006400000000000000000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(364) := '002500'||chr(10)||
+'00000c00000003000000250000000c0000000500008055000000b0000000e80300007100000020040000e6000000';
+    wwv_flow_api.g_varchar2_table(365) := '25000000293f84078d3f8407f13f84075540'||chr(10)||
+'84075040e0074b403c0847409808694021088d40cf07ae40a107ce407407f6';
+    wwv_flow_api.g_varchar2_table(366) := '405e0723415e0752415e0785417c07b941b707914150086641e9083e4182091a41'||chr(10)||
+'6209fc405209e6405209bd4052099940';
+    wwv_flow_api.g_varchar2_table(367) := '75097f40bb0959401d0a3e40d40a3040e10b27409d0c1d40590d1340150ea73f150e3c3f150ed03e150eed3ee50b0b3f'||chr(10)||
+'b4';
+    wwv_flow_api.g_varchar2_table(368) := '09293f8407250000000c00000007000080250000000c00000000000080240000002400000000008041000000000000000000';
+    wwv_flow_api.g_varchar2_table(369) := '00804100000000000000000200'||chr(10)||
+'0000280000000c0000000300000024000000240000000000803d00000000000000000000';
+    wwv_flow_api.g_varchar2_table(370) := '803d0000000000000000020000005f00000038000000030000003800'||chr(10)||
+'000000000000380000000000000000000100640000';
+    wwv_flow_api.g_varchar2_table(371) := '000000000000000000000000000000000000000000250000000c00000003000000250000000c0000000500'||chr(10)||
+'008055000000';
+    wwv_flow_api.g_varchar2_table(372) := '740000001b0400007400000062040000e600000016000000f241840761428407d04284073f4384076243e80887434a0aaa43';
+    wwv_flow_api.g_varchar2_table(373) := 'ad0bf4434a0a4144'||chr(10)||
+'e8088b448407f744840763458407cf4584073d45b509a444e40b1244150eb343150e5443150ef54215';
+    wwv_flow_api.g_varchar2_table(374) := '0ea142e40b4642b509f2418407250000000c0000000700'||chr(10)||
+'0080250000000c00000000000080240000002400000000008041';
+    wwv_flow_api.g_varchar2_table(375) := '000000000000000000008041000000000000000002000000280000000c000000030000002400'||chr(10)||
+'0000240000000000803d00';
+    wwv_flow_api.g_varchar2_table(376) := '000000000000000000803d0000000000000000020000005f0000003800000003000000380000000000000038000000000000';
+    wwv_flow_api.g_varchar2_table(377) := '000000'||chr(10)||
+'0100640000000000000000000000000000000000000000000000250000000c00000003000000250000000c000000';
+    wwv_flow_api.g_varchar2_table(378) := '050000803b000000080000001b0000001000'||chr(10)||
+'00005946000005050000580000004c0000000000000000000000ffffffffff';
+    wwv_flow_api.g_varchar2_table(379) := 'ffffff0c000000c44605052f4705059a470505924797058a4729068347bc061847'||chr(10)||
+'bc06ad46bc064246bc06494629065146';
+    wwv_flow_api.g_varchar2_table(380) := '9705594605053d000000080000001b000000100000003746000084070000580000004c0000000000000000000000ffff'||chr(10)||
+'ff';
+    wwv_flow_api.g_varchar2_table(381) := 'ffffffffff0c000000a24684070d478407784784075b47b4093d47e50b2047150eb546150e4a46150edf45150efc45e50b1a';
+    wwv_flow_api.g_varchar2_table(382) := '46b409374684073d0000000800'||chr(10)||
+'00003c000000080000004000000018000000590400004c0000007e040000e60000002500';
+    wwv_flow_api.g_varchar2_table(383) := '00000c00000007000080250000000c00000000000080240000002400'||chr(10)||
+'000000008041000000000000000000008041000000';
+    wwv_flow_api.g_varchar2_table(384) := '000000000002000000280000000c0000000300000024000000240000000000803d00000000000000000000'||chr(10)||
+'803d00000000';
+    wwv_flow_api.g_varchar2_table(385) := '00000000020000005f0000003800000003000000380000000000000038000000000000000000010064000000000000000000';
+    wwv_flow_api.g_varchar2_table(386) := '0000000000000000'||chr(10)||
+'000000000000250000000c00000003000000250000000c0000000500008055000000340100007a0400';
+    wwv_flow_api.g_varchar2_table(387) := '0071000000c0040000e800000046000000804a820be54a'||chr(10)||
+'9a0b4a4bb00bae4bc80b974b480c754bb50c4a4b130d1f4b700d';
+    wwv_flow_api.g_varchar2_table(388) := 'e94ab80dac4aed0d6d4a220e204a3b0ec4493b0e6a493b0e22492b0ee8480a0eaf48e80d7e48'||chr(10)||
+'b30d5848680d32481e0d14';
+    wwv_flow_api.g_varchar2_table(389) := '48c70c0248630cef47ff0be9477b0bf247d40afb47280a12489809354825094e48d1087148850899484108c148fe07eb48ce';
+    wwv_flow_api.g_varchar2_table(390) := '071449'||chr(10)||
+'ac0755497707a7495e07094a5e07924a5e07f94a8f073b4bf1077c4b5408a84be408bb4ba009554bbb09ee4ad509';
+    wwv_flow_api.g_varchar2_table(391) := '884af109834aa909744a72095e4a4e09474a'||chr(10)||
+'2909254a1809fb491809c649180999493e0975498a095049d80939494b0a31';
+    wwv_flow_api.g_varchar2_table(392) := '49e60a2a49700b3549d80b51491f0c6d49670c96498b0cc8498b0cf2498b0c174a'||chr(10)||
+'750c364a4a0c544a1f0c6e4add0b804a';
+    wwv_flow_api.g_varchar2_table(393) := '820b250000000c00000007000080250000000c0000000000008024000000240000000000804100000000000000000000'||chr(10)||
+'80';
+    wwv_flow_api.g_varchar2_table(394) := '41000000000000000002000000280000000c0000000300000024000000240000000000803d00000000000000000000803d00';
+    wwv_flow_api.g_varchar2_table(395) := '00000000000000020000005f00'||chr(10)||
+'000038000000030000003800000000000000380000000000000000000100640000000000';
+    wwv_flow_api.g_varchar2_table(396) := '000000000000000000000000000000000000250000000c0000000300'||chr(10)||
+'0000250000000c000000050000803b000000080000';
+    wwv_flow_api.g_varchar2_table(397) := '001b00000010000000e94f00006c0b000058000000e80000000000000000000000ffffffffffffffff3300'||chr(10)||
+'0000124f6c0b';
+    wwv_flow_api.g_varchar2_table(398) := '3b4e6c0b654d6c0b654dd30b6f4d210c824d530c9d4d9c0cc54dc10cf64dc10c164ec10c354eb10c534e910c654e7c0c7a4e';
+    wwv_flow_api.g_varchar2_table(399) := '5a0c904e270cf94e'||chr(10)||
+'3b0c614f4e0cca4f620c914f0b0d4f4f820d074fcc0dbf4e170e5b4e3b0edb4d3b0e6c4d3b0e164d1c';
+    wwv_flow_api.g_varchar2_table(400) := '0eda4cdc0d9e4c9d0d6e4c3a0d4c4cb10c2a4c280c1d4c'||chr(10)||
+'890b264cd00a344cc9096b4cf608c64c5208214dae079b4d5e07';
+    wwv_flow_api.g_varchar2_table(401) := '2e4e5e07a64e5e07044f8207444fcc07854f1508b64f7e08d24f0809ef4f9209f84f460aec4f'||chr(10)||
+'230beb4f3c0bea4f540be9';
+    wwv_flow_api.g_varchar2_table(402) := '4f6c0b3d000000080000001b00000010000000b24e0000380a000058000000580000000000000000000000ffffffffffffff';
+    wwv_flow_api.g_varchar2_table(403) := 'ff0f00'||chr(10)||
+'0000b34ebb09a64e62098f4e2c09764ef608544edc08274edc08f44ddc08c94d0509a74d5509914d8809804dd409';
+    wwv_flow_api.g_varchar2_table(404) := '764d380adf4d380a494e380ab24e380a3d00'||chr(10)||
+'0000080000003c000000080000004000000018000000bd0400007100000004';
+    wwv_flow_api.g_varchar2_table(405) := '050000e8000000250000000c00000007000080250000000c000000000000802400'||chr(10)||
+'00002400000000008041000000000000';
+    wwv_flow_api.g_varchar2_table(406) := '000000008041000000000000000002000000280000000c00000003000000220000000c000000ffffffff460000001400'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(407) := '00080000004744494303000000250000000c0000000e0000800e000000140000000000000010000000140000000400000003';
+    wwv_flow_api.g_varchar2_table(408) := '010800050000000b0200000000'||chr(10)||
+'050000000c0245006603040000002e0118001c000000fb020400020000000000bc020000';
+    wwv_flow_api.g_varchar2_table(409) := '00000102022253797374656d00000000000000000000000000000000'||chr(10)||
+'00000000000000000000040000002d010000040000';
+    wwv_flow_api.g_varchar2_table(410) := '00020101001c000000fb02eaff0000000000009001000000000440001254696d6573204e657720526f6d61'||chr(10)||
+'6e0000000000';
+    wwv_flow_api.g_varchar2_table(411) := '000000000000000000000000040000002d010100050000000902000000020d000000320a1400000001000400000000006403';
+    wwv_flow_api.g_varchar2_table(412) := '450020230a000300'||chr(10)||
+'00001e0007000000fc020000000000000000040000002d01020008000000fa02050000000000ffffff';
+    wwv_flow_api.g_varchar2_table(413) := '00040000002d0103000e00000024030500010001000100'||chr(10)||
+'430061034300610301000100010008000000fa02000000000000';
+    wwv_flow_api.g_varchar2_table(414) := '00000000040000002d01040007000000fc020000ffffff000000040000002d01050008000000'||chr(10)||
+'fa02000001000000000000';
+    wwv_flow_api.g_varchar2_table(415) := '00040000002d01060007000000fc020100000000000000040000002d0107000c000000240304000100010001004300610343';
+    wwv_flow_api.g_varchar2_table(416) := '006103'||chr(10)||
+'0100040000002d010400040000002d01050004000000f0010600040000002701ffff04000000f001020003000000';
+    wwv_flow_api.g_varchar2_table(417) := '1e0007000000fc020000ffffff0000000400'||chr(10)||
+'00002d0102000400000006010100040000002d010300620000003805020020';
+    wwv_flow_api.g_varchar2_table(418) := '000e0054003200560012005e001200600012006100130062001400630016006300'||chr(10)||
+'180064001b0063001d0063001f006200';
+    wwv_flow_api.g_varchar2_table(419) := '210061002300600023005f002400600024006000250061002600610027006100280062002900640032005e0032005c00'||chr(10)||
+'28';
+    wwv_flow_api.g_varchar2_table(420) := '005b0027005b0026005b0025005a002500590025005900320054003200540032005a001f005c001f005c001f005d001e005e';
+    wwv_flow_api.g_varchar2_table(421) := '001e005e001d005e001c005e00'||chr(10)||
+'1a005e0019005d0019005c0018005a0018005a001f005a001f00040000002d0104000400';
+    wwv_flow_api.g_varchar2_table(422) := '000006010100040000002d010500040000002d010200040000000601'||chr(10)||
+'0100040000002d0103006a0000003805020027000b';
+    wwv_flow_api.g_varchar2_table(423) := '00720029006900290069002a0069002c006a002d006b002d006b002d006c002d006c002c006d002b007100'||chr(10)||
+'2c0071002e00';
+    wwv_flow_api.g_varchar2_table(424) := '70002f006f0030006f0031006d0032006a00330068003200670031006600300065002d0064002a0064002600650024006500';
+    wwv_flow_api.g_varchar2_table(425) := '210066001f006700'||chr(10)||
+'1e0068001c0069001b006a001a006c001a006e001b006f001c0071001e007100200072002300720028';
+    wwv_flow_api.g_varchar2_table(426) := '0072002900720029006d0024006d0022006d0021006c00'||chr(10)||
+'20006b001f006b0020006a00210069002200690024006d002400';
+    wwv_flow_api.g_varchar2_table(427) := '6d002400040000002d0104000400000006010100040000002d010500040000002d0102000400'||chr(10)||
+'000006010100040000002d';
+    wwv_flow_api.g_varchar2_table(428) := '010300650000003805010030007c00290081002a0080002c007f002e007e0030007d0031007c0032007a0033007800320077';
+    wwv_flow_api.g_varchar2_table(429) := '003200'||chr(10)||
+'760031007500300074002e0074002c0073002a0073002600740023007400200076001d0076001c0077001b007900';
+    wwv_flow_api.g_varchar2_table(430) := '1a007b001a007c001a007d001b007e001b00'||chr(10)||
+'7f001c0080001d0080001f0080002000810022007c0023007c0022007c0021';
+    wwv_flow_api.g_varchar2_table(431) := '007b0020007b0020007a0021007900220078002400780027007800290078002b00'||chr(10)||
+'79002c007a002d007b002c007b002c00';
+    wwv_flow_api.g_varchar2_table(432) := '7c002a007c002900040000002d0104000400000006010100040000002d010500040000002d0102000400000006010100'||chr(10)||
+'04';
+    wwv_flow_api.g_varchar2_table(433) := '0000002d0103006c000000380502002000130082002600820024008300220084001f0085001e0086001c0087001b0088001a';
+    wwv_flow_api.g_varchar2_table(434) := '008a001a008b001a008d001b00'||chr(10)||
+'8e001c008f001e008f002200900026008f0029008f002b008e002d008d002f008c003100';
+    wwv_flow_api.g_varchar2_table(435) := '8b0032008a0032008800330087003200860032008500310084003000'||chr(10)||
+'83002e0083002c0082002900820026008200260087';
+    wwv_flow_api.g_varchar2_table(436) := '0026008700290087002b0088002c0089002c0089002c008a002b008b0029008b0028008b0026008b002400'||chr(10)||
+'8b0022008a00';
+    wwv_flow_api.g_varchar2_table(437) := '2100890020008800210088002200870024008700260087002600040000002d0104000400000006010100040000002d010500';
+    wwv_flow_api.g_varchar2_table(438) := '040000002d010200'||chr(10)||
+'0400000006010100040000002d0103002f00000038050100150092001b0097001b0096001f0097001c';
+    wwv_flow_api.g_varchar2_table(439) := '0098001b0099001a0099001a009a001a009b001b009a00'||chr(10)||
+'2200990021009900210098002100970023009700240096002500';
+    wwv_flow_api.g_varchar2_table(440) := '9600280096002a00960032009100320092001b00040000002d01040004000000060101000400'||chr(10)||
+'00002d010500040000002d';
+    wwv_flow_api.g_varchar2_table(441) := '0102000400000006010100040000002d01030066000000380502001d001300aa001200a8003200a4003200a4002f00a30030';
+    wwv_flow_api.g_varchar2_table(442) := '00a200'||chr(10)||
+'3200a1003200a00033009f0032009e0032009d0030009c002f009c002b009c0026009c0023009c0021009d001f00';
+    wwv_flow_api.g_varchar2_table(443) := '9e001d009e001c009f001b00a0001a00a100'||chr(10)||
+'1a00a2001a00a3001b00a4001c00a4001d00a5001200aa001200aa001200a4';
+    wwv_flow_api.g_varchar2_table(444) := '002600a4002400a4002200a3002100a2002100a2002100a1002200a0002400a000'||chr(10)||
+'2500a0002600a0002900a0002b00a100';
+    wwv_flow_api.g_varchar2_table(445) := '2c00a2002c00a3002c00a3002b00a4002900a4002600a4002600040000002d0104000400000006010100040000002d01'||chr(10)||
+'05';
+    wwv_flow_api.g_varchar2_table(446) := '00040000002d0102000400000006010100040000002d0103007f000000380501003d00aa002c00af002b00af002c00af002d';
+    wwv_flow_api.g_varchar2_table(447) := '00b0002d00b0002e00b1002d00'||chr(10)||
+'b2002d00b2002b00b2002b00b2002a00b1002a00b0002900ae002800ad002800ac002700';
+    wwv_flow_api.g_varchar2_table(448) := 'ac002500ab002300ab002100ab001f00ac001d00ad001c00ae001b00'||chr(10)||
+'af001a00b1001a00b3001a00b4001b00b5001c00b6';
+    wwv_flow_api.g_varchar2_table(449) := '001d00b6001e00b7002000b2002100b2002000b2002000b1001f00b1001f00b0001f00b0001f00af002100'||chr(10)||
+'af002100b000';
+    wwv_flow_api.g_varchar2_table(450) := '2200b0002200b1002300b3002300b5002400b6002500b6002700b6002900b7002a00b6002c00b6002e00b5003000b4003100';
+    wwv_flow_api.g_varchar2_table(451) := 'b2003200b0003300'||chr(10)||
+'af003200ad003200ac003100ac003100ab002e00aa002c00040000002d010400040000000601010004';
+    wwv_flow_api.g_varchar2_table(452) := '0000002d010500040000002d0102000400000006010100'||chr(10)||
+'040000002d0103008b000000380501004300c0002700c4002700';
+    wwv_flow_api.g_varchar2_table(453) := 'c5002900c5002a00c5002b00c6002c00c6002c00c7002c00c8002c00c9002b00c9002a00c900'||chr(10)||
+'2900c9002800c9002700c8';
+    wwv_flow_api.g_varchar2_table(454) := '002600c6002500c5002400c4002300c3002200c2002100c1001e00c1001b00c1001800c2001600c3001400c4001300c60012';
+    wwv_flow_api.g_varchar2_table(455) := '00c800'||chr(10)||
+'1100ca001100cb001200cc001300cd001400cd001500ce001700ce001900ce001b00ca001b00c9001a00c9001800';
+    wwv_flow_api.g_varchar2_table(456) := 'c8001800c7001700c7001700c6001800c600'||chr(10)||
+'1a00c6001b00c6001c00c7001c00c9001d00ca001e00cb001e00cc001f00cd';
+    wwv_flow_api.g_varchar2_table(457) := '002100ce002300ce002500ce002800ce002b00cd002d00cc003000ca003100c900'||chr(10)||
+'3200c7003300c5003200c3003200c200';
+    wwv_flow_api.g_varchar2_table(458) := '3100c1002f00c0002c00c0002700040000002d0104000400000006010100040000002d010500040000002d0102000400'||chr(10)||
+'00';
+    wwv_flow_api.g_varchar2_table(459) := '0006010100040000002d0103006a0000003805020027000b00dd002900d4002900d4002a00d5002c00d5002d00d6002d00d7';
+    wwv_flow_api.g_varchar2_table(460) := '002d00d8002d00d8002c00d800'||chr(10)||
+'2b00dd002c00dc002e00dc002f00db003000da003100d8003200d6003300d4003200d200';
+    wwv_flow_api.g_varchar2_table(461) := '3100d1003000d0002d00d0002a00d0002600d0002400d1002100d100'||chr(10)||
+'1f00d2001e00d3001c00d4001b00d6001a00d7001a';
+    wwv_flow_api.g_varchar2_table(462) := '00d9001b00db001c00dc001e00dd002000dd002300dd002800dd002900dd002900d9002400d9002200d800'||chr(10)||
+'2100d8002000';
+    wwv_flow_api.g_varchar2_table(463) := 'd7001f00d6002000d5002100d5002200d5002400d9002400d9002400040000002d0104000400000006010100040000002d01';
+    wwv_flow_api.g_varchar2_table(464) := '0500040000002d01'||chr(10)||
+'02000400000006010100040000002d0103002f000000380501001500e0001b00e4001b00e4001f00e5';
+    wwv_flow_api.g_varchar2_table(465) := '001c00e5001b00e6001a00e7001a00e8001a00e9001b00'||chr(10)||
+'e7002200e7002100e6002100e5002100e5002300e4002400e400';
+    wwv_flow_api.g_varchar2_table(466) := '2500e4002800e4002a00e3003200df003200e0001b00040000002d0104000400000006010100'||chr(10)||
+'040000002d010500040000';
+    wwv_flow_api.g_varchar2_table(467) := '002d0102000400000006010100040000002d01030015000000380501000800ea001b00ef001b00f0002900f3001b00f8001b';
+    wwv_flow_api.g_varchar2_table(468) := '00f200'||chr(10)||
+'3200ee003200ea001b00040000002d0104000400000006010100040000002d010500040000002d01020004000000';
+    wwv_flow_api.g_varchar2_table(469) := '06010100040000002d0103001e0000003805'||chr(10)||
+'020006000600fa001200fe001200fe001800f9001800fa001200fa001200f9';
+    wwv_flow_api.g_varchar2_table(470) := '001b00fe001b00fc003200f8003200f9001b00f9001b00040000002d0104000400'||chr(10)||
+'000006010100040000002d0105000400';
+    wwv_flow_api.g_varchar2_table(471) := '00002d0102000400000006010100040000002d01030065000000380501003000080129000c012a000c012c000b012e00'||chr(10)||
+'0a';
+    wwv_flow_api.g_varchar2_table(472) := '0130000901310007013200060133000401320003013200020131000101300000012e00ff002c00ff002a00ff002600000123';
+    wwv_flow_api.g_varchar2_table(473) := '000001200002011d0002011c00'||chr(10)||
+'03011b0005011a0007011a0008011a0009011b000a011b000b011c000c011d000c011f00';
+    wwv_flow_api.g_varchar2_table(474) := '0c0120000d0122000801230008012200080121000701200006012000'||chr(10)||
+'050121000501220004012400040127000401290004';
+    wwv_flow_api.g_varchar2_table(475) := '012b0005012c0006012d0007012c0007012c0008012a0008012900040000002d0104000400000006010100'||chr(10)||
+'040000002d01';
+    wwv_flow_api.g_varchar2_table(476) := '0500040000002d0102000400000006010100040000002d0103006a0000003805020027000b001c0129001301290013012a00';
+    wwv_flow_api.g_varchar2_table(477) := '13012c0014012d00'||chr(10)||
+'15012d0015012d0016012d0016012c0017012b001b012c001a012e001a012f00190130001801310017';
+    wwv_flow_api.g_varchar2_table(478) := '013200140133001201320011013100100130000f012d00'||chr(10)||
+'0e012a000e0126000e0124000f01210010011f0010011e001101';
+    wwv_flow_api.g_varchar2_table(479) := '1c0013011b0014011a0015011a0018011b0019011c001a011e001b0120001c0123001c012800'||chr(10)||
+'1c0129001c012900170124';
+    wwv_flow_api.g_varchar2_table(480) := '0017012200170121001601200015011f00140120001301210013012200130124001701240017012400040000002d01040004';
+    wwv_flow_api.g_varchar2_table(481) := '000000'||chr(10)||
+'06010100040000002d01050008000000fa0200000100000000000000040000002d010600040000002d0107004400';
+    wwv_flow_api.g_varchar2_table(482) := '00002503200054003200560012005e001200'||chr(10)||
+'600012006100130062001400630016006300180064001b0063001d0063001f';
+    wwv_flow_api.g_varchar2_table(483) := '006200210061002300600023005f00240060002400600025006100260061002700'||chr(10)||
+'6100280062002900640032005e003200';
+    wwv_flow_api.g_varchar2_table(484) := '5c0028005b0027005b0026005b0025005a002500590025005900320054003200540032002000000025030e005a001f00'||chr(10)||
+'5c';
+    wwv_flow_api.g_varchar2_table(485) := '001f005c001f005d001e005e001e005e001d005e001c005e001a005e0019005d0019005c0018005a0018005a001f005a001f';
+    wwv_flow_api.g_varchar2_table(486) := '00040000002d01040004000000'||chr(10)||
+'2d01050004000000f001060008000000fa0200000100000000000000040000002d010600';
+    wwv_flow_api.g_varchar2_table(487) := '040000002d0107005200000025032700720029006900290069002a00'||chr(10)||
+'69002c006a002d006b002d006b002d006c002d006c';
+    wwv_flow_api.g_varchar2_table(488) := '002c006d002b0071002c0071002e0070002f006f0030006f0031006d0032006a0033006800320067003100'||chr(10)||
+'660030006500';
+    wwv_flow_api.g_varchar2_table(489) := '2d0064002a0064002600650024006500210066001f0067001e0068001c0069001b006a001a006c001a006e001b006f001c00';
+    wwv_flow_api.g_varchar2_table(490) := '71001e0071002000'||chr(10)||
+'720023007200280072002900720029001a00000025030b006d0024006d0022006d0021006c0020006b';
+    wwv_flow_api.g_varchar2_table(491) := '001f006b0020006a00210069002200690024006d002400'||chr(10)||
+'6d002400040000002d010400040000002d01050004000000f001';
+    wwv_flow_api.g_varchar2_table(492) := '060008000000fa0200000100000000000000040000002d010600040000002d01070064000000'||chr(10)||
+'250330007c00290081002a';
+    wwv_flow_api.g_varchar2_table(493) := '0080002c007f002e007e0030007d0031007c0032007a0033007800320077003200760031007500300074002e0074002c0073';
+    wwv_flow_api.g_varchar2_table(494) := '002a00'||chr(10)||
+'73002600740023007400200076001d0076001c0077001b0079001a007b001a007c001a007d001b007e001b007f00';
+    wwv_flow_api.g_varchar2_table(495) := '1c0080001d0080001f008000200081002200'||chr(10)||
+'7c0023007c0022007c0021007b0020007b0020007a00210079002200780024';
+    wwv_flow_api.g_varchar2_table(496) := '00780027007800290078002b0079002c007a002d007b002c007b002c007c002a00'||chr(10)||
+'7c002900040000002d01040004000000';
+    wwv_flow_api.g_varchar2_table(497) := '2d01050004000000f001060008000000fa0200000100000000000000040000002d010600040000002d01070044000000'||chr(10)||
+'25';
+    wwv_flow_api.g_varchar2_table(498) := '03200082002600820024008300220084001f0085001e0086001c0087001b0088001a008a001a008b001a008d001b008e001c';
+    wwv_flow_api.g_varchar2_table(499) := '008f001e008f00220090002600'||chr(10)||
+'8f0029008f002b008e002d008d002f008c0031008b0032008a0032008800330087003200';
+    wwv_flow_api.g_varchar2_table(500) := '86003200850031008400300083002e0083002c008200290082002600'||chr(10)||
+'820026002a00000025031300870026008700290087';
+ 
+end;
+/
+
+ 
+begin
+ 
+    wwv_flow_api.g_varchar2_table(501) := '002b0088002c0089002c0089002c008a002b008b0029008b0028008b0026008b0024008b0022008a002100'||chr(10)||
+'890020008800';
+    wwv_flow_api.g_varchar2_table(502) := '210088002200870024008700260087002600040000002d010400040000002d01050004000000f001060008000000fa020000';
+    wwv_flow_api.g_varchar2_table(503) := '0100000000000000'||chr(10)||
+'040000002d010600040000002d0107002e0000002503150092001b0097001b0096001f0097001c0098';
+    wwv_flow_api.g_varchar2_table(504) := '001b0099001a0099001a009a001a009b001b009a002200'||chr(10)||
+'9900210099002100980021009700230097002400960025009600';
+    wwv_flow_api.g_varchar2_table(505) := '280096002a00960032009100320092001b00040000002d010400040000002d01050004000000'||chr(10)||
+'f001060008000000fa0200';
+    wwv_flow_api.g_varchar2_table(506) := '000100000000000000040000002d010600040000002d0107003e00000025031d00aa001200a8003200a4003200a4002f00a3';
+    wwv_flow_api.g_varchar2_table(507) := '003000'||chr(10)||
+'a2003200a1003200a00033009f0032009e0032009d0030009c002f009c002b009c0026009c0023009c0021009d00';
+    wwv_flow_api.g_varchar2_table(508) := '1f009e001d009e001c009f001b00a0001a00'||chr(10)||
+'a1001a00a2001a00a3001b00a4001c00a4001d00a5001200aa001200aa0012';
+    wwv_flow_api.g_varchar2_table(509) := '002a00000025031300a4002600a4002400a4002200a3002100a2002100a2002100'||chr(10)||
+'a1002200a0002400a0002500a0002600';
+    wwv_flow_api.g_varchar2_table(510) := 'a0002900a0002b00a1002c00a2002c00a3002c00a3002b00a4002900a4002600a4002600040000002d01040004000000'||chr(10)||
+'2d';
+    wwv_flow_api.g_varchar2_table(511) := '01050004000000f001060008000000fa0200000100000000000000040000002d010600040000002d0107007e00000025033d';
+    wwv_flow_api.g_varchar2_table(512) := '00aa002c00af002b00af002c00'||chr(10)||
+'af002d00b0002d00b0002e00b1002d00b2002d00b2002b00b2002b00b2002a00b1002a00';
+    wwv_flow_api.g_varchar2_table(513) := 'b0002900ae002800ad002800ac002700ac002500ab002300ab002100'||chr(10)||
+'ab001f00ac001d00ad001c00ae001b00af001a00b1';
+    wwv_flow_api.g_varchar2_table(514) := '001a00b3001a00b4001b00b5001c00b6001d00b6001e00b7002000b2002100b2002000b2002000b1001f00'||chr(10)||
+'b1001f00b000';
+    wwv_flow_api.g_varchar2_table(515) := '1f00b0001f00af002100af002100b0002200b0002200b1002300b3002300b5002400b6002500b6002700b6002900b7002a00';
+    wwv_flow_api.g_varchar2_table(516) := 'b6002c00b6002e00'||chr(10)||
+'b5003000b4003100b2003200b0003300af003200ad003200ac003100ac003100ab002e00aa002c0004';
+    wwv_flow_api.g_varchar2_table(517) := '0000002d010400040000002d01050004000000f0010600'||chr(10)||
+'08000000fa0200000100000000000000040000002d0106000400';
+    wwv_flow_api.g_varchar2_table(518) := '00002d0107008a00000025034300c0002700c4002700c5002900c5002a00c5002b00c6002c00'||chr(10)||
+'c6002c00c7002c00c8002c';
+    wwv_flow_api.g_varchar2_table(519) := '00c9002b00c9002a00c9002900c9002800c9002700c8002600c6002500c5002400c4002300c3002200c2002100c1001e00c1';
+    wwv_flow_api.g_varchar2_table(520) := '001b00'||chr(10)||
+'c1001800c2001600c3001400c4001300c6001200c8001100ca001100cb001200cc001300cd001400cd001500ce00';
+    wwv_flow_api.g_varchar2_table(521) := '1700ce001900ce001b00ca001b00c9001a00'||chr(10)||
+'c9001800c8001800c7001700c7001700c6001800c6001a00c6001b00c6001c';
+    wwv_flow_api.g_varchar2_table(522) := '00c7001c00c9001d00ca001e00cb001e00cc001f00cd002100ce002300ce002500'||chr(10)||
+'ce002800ce002b00cd002d00cc003000';
+    wwv_flow_api.g_varchar2_table(523) := 'ca003100c9003200c7003300c5003200c3003200c2003100c1002f00c0002c00c0002700040000002d01040004000000'||chr(10)||
+'2d';
+    wwv_flow_api.g_varchar2_table(524) := '01050004000000f001060008000000fa0200000100000000000000040000002d010600040000002d01070052000000250327';
+    wwv_flow_api.g_varchar2_table(525) := '00dd002900d4002900d4002a00'||chr(10)||
+'d5002c00d5002d00d6002d00d7002d00d8002d00d8002c00d8002b00dd002c00dc002e00';
+    wwv_flow_api.g_varchar2_table(526) := 'dc002f00db003000da003100d8003200d6003300d4003200d2003100'||chr(10)||
+'d1003000d0002d00d0002a00d0002600d0002400d1';
+    wwv_flow_api.g_varchar2_table(527) := '002100d1001f00d2001e00d3001c00d4001b00d6001a00d7001a00d9001b00db001c00dc001e00dd002000'||chr(10)||
+'dd002300dd00';
+    wwv_flow_api.g_varchar2_table(528) := '2800dd002900dd0029001a00000025030b00d9002400d9002200d8002100d8002000d7001f00d6002000d5002100d5002200';
+    wwv_flow_api.g_varchar2_table(529) := 'd5002400d9002400'||chr(10)||
+'d9002400040000002d010400040000002d01050004000000f001060008000000fa0200000100000000';
+    wwv_flow_api.g_varchar2_table(530) := '000000040000002d010600040000002d0107002e000000'||chr(10)||
+'25031500e0001b00e4001b00e4001f00e5001c00e5001b00e600';
+    wwv_flow_api.g_varchar2_table(531) := '1a00e7001a00e8001a00e9001b00e7002200e7002100e6002100e5002100e5002300e4002400'||chr(10)||
+'e4002500e4002800e4002a';
+    wwv_flow_api.g_varchar2_table(532) := '00e3003200df003200e0001b00040000002d010400040000002d01050004000000f001060008000000fa0200000100000000';
+    wwv_flow_api.g_varchar2_table(533) := '000000'||chr(10)||
+'040000002d010600040000002d0107001400000025030800ea001b00ef001b00f0002900f3001b00f8001b00f200';
+    wwv_flow_api.g_varchar2_table(534) := '3200ee003200ea001b00040000002d010400'||chr(10)||
+'040000002d01050004000000f001060008000000fa02000001000000000000';
+    wwv_flow_api.g_varchar2_table(535) := '00040000002d010600040000002d0107001000000025030600fa001200fe001200'||chr(10)||
+'fe001800f9001800fa001200fa001200';
+    wwv_flow_api.g_varchar2_table(536) := '1000000025030600f9001b00fe001b00fc003200f8003200f9001b00f9001b00040000002d010400040000002d010500'||chr(10)||
+'04';
+    wwv_flow_api.g_varchar2_table(537) := '000000f001060008000000fa0200000100000000000000040000002d010600040000002d0107006400000025033000080129';
+    wwv_flow_api.g_varchar2_table(538) := '000c012a000c012c000b012e00'||chr(10)||
+'0a0130000901310007013200060133000401320003013200020131000101300000012e00';
+    wwv_flow_api.g_varchar2_table(539) := 'ff002c00ff002a00ff002600000123000001200002011d0002011c00'||chr(10)||
+'03011b0005011a0007011a0008011a0009011b000a';
+    wwv_flow_api.g_varchar2_table(540) := '011b000b011c000c011d000c011f000c0120000d0122000801230008012200080121000701200006012000'||chr(10)||
+'050121000501';
+    wwv_flow_api.g_varchar2_table(541) := '220004012400040127000401290004012b0005012c0006012d0007012c0007012c0008012a0008012900040000002d010400';
+    wwv_flow_api.g_varchar2_table(542) := '040000002d010500'||chr(10)||
+'04000000f001060008000000fa0200000100000000000000040000002d010600040000002d01070052';
+    wwv_flow_api.g_varchar2_table(543) := '000000250327001c0129001301290013012a0013012c00'||chr(10)||
+'14012d0015012d0015012d0016012d0016012c0017012b001b01';
+    wwv_flow_api.g_varchar2_table(544) := '2c001a012e001a012f0019013000180131001701320014013300120132001101310010013000'||chr(10)||
+'0f012d000e012a000e0126';
+    wwv_flow_api.g_varchar2_table(545) := '000e0124000f01210010011f0010011e0011011c0013011b0014011a0015011a0018011b0019011c001a011e001b0120001c';
+    wwv_flow_api.g_varchar2_table(546) := '012300'||chr(10)||
+'1c0128001c0129001c0129001a00000025030b001701240017012200170121001601200015011f00140120001301';
+    wwv_flow_api.g_varchar2_table(547) := '210013012200130124001701240017012400040000002d010400040000002d01050004000000f0010600040000002701ffff';
+    wwv_flow_api.g_varchar2_table(548) := '040000002d010000030000000000}\par}}}{\rtlch\fcs1 \af0\afs28 '||chr(10)||
+'\ltrch\fcs0 \fs28\cf8\lang2057\langfe1';
+    wwv_flow_api.g_varchar2_table(549) := '033\langnp2057\insrsid4022835\charrsid4022835 {\pict{\*\picprop\defshp\shplid1027{\sp{\sn shapeType}';
+    wwv_flow_api.g_varchar2_table(550) := '{\sv 75}}{\sp{\sn fFlipH}{\sv 0}}'||chr(10)||
+'{\sp{\sn fFlipV}{\sv 0}}{\sp{\sn fPseudoInline}{\sv 1}}{\sp{\sn f';
+    wwv_flow_api.g_varchar2_table(551) := 'LayoutInCell}{\sv 1}}{\sp{\sn fLockPosition}{\sv 1}}{\sp{\sn fLockRotation}{\sv 1}}}\picscalex130\pi';
+    wwv_flow_api.g_varchar2_table(552) := 'cscaley16\piccropl0\piccropr0\piccropt-4319\piccropb4319'||chr(10)||
+'\picw12700\pich7620\picwgoal7200\pichgoal4';
+    wwv_flow_api.g_varchar2_table(553) := '320\wmetafile8\bliptag-1024776911\blipupi133{\*\blipuid c2eb2531d0257a019546f9551720ab09}'||chr(10)||
+'010009000';
+    wwv_flow_api.g_varchar2_table(554) := '0030202000002008a01000000008a01000026060f000a03574d46430100000000000100f5a90000000001000000e80200000';
+    wwv_flow_api.g_varchar2_table(555) := '0000000e80200000100'||chr(10)||
+'00006c00000000000000000000002c0000007100000000000000000000007d400000f5040000204';
+    wwv_flow_api.g_varchar2_table(556) := '54d4600000100e80200000e00000002000000000000000000'||chr(10)||
+'000000000000971200009e1a0000c90000002001000000000';
+    wwv_flow_api.g_varchar2_table(557) := '0000000000000000000f8120300cb660400160000000c000000180000000a000000100000000000'||chr(10)||
+'0000000000000900000';
+    wwv_flow_api.g_varchar2_table(558) := '0100000003c0f00002c010000250000000c0000000e000080120000000c000000010000005200000070010000010000009cf';
+    wwv_flow_api.g_varchar2_table(559) := 'fffff0000'||chr(10)||
+'00000000000000000000900100000000000004400012540069006d006500730020004e0065007700200052006';
+    wwv_flow_api.g_varchar2_table(560) := 'f006d0061006e00000000000000000000000000'||chr(10)||
+'00000000000000000000000000000000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(561) := '000000000000000000000000000000000000000000000000000000000000000000000'||chr(10)||
+'00000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(562) := '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(563) := ''||chr(10)||
+'00000000000000000000cb30093000000000040000000000ae3008310930000000004716900100000202060305040502030';
+    wwv_flow_api.g_varchar2_table(564) := '4877a002000000080080000000000'||chr(10)||
+'0000ff01000000000000540069006d00650073002000000065007700200052006f006';
+    wwv_flow_api.g_varchar2_table(565) := 'd0061006e00000000000000bd2d093050bbae3000331400010000000000'||chr(10)||
+'00003c441100aab402303c4411004c3eaf30544';
+    wwv_flow_api.g_varchar2_table(566) := '411006476000800000000250000000c00000001000000180000000c0000000000000254000000540000000000'||chr(10)||
+'000000000';
+    wwv_flow_api.g_varchar2_table(567) := '0002c00000071000000010000008a2787403f408740000000005a000000010000004c0000000400000000000000000000003';
+    wwv_flow_api.g_varchar2_table(568) := 'c0f00002c0100005000'||chr(10)||
+'0000200000002d00000046000000280000001c0000004744494302000000ffffffffffffffff3d0';
+    wwv_flow_api.g_varchar2_table(569) := 'f00002d010000000000004600000014000000080000004744'||chr(10)||
+'494303000000250000000c0000000e0000800e00000014000';
+    wwv_flow_api.g_varchar2_table(570) := '0000000000010000000140000000400000003010800050000000b0200000000050000000c024300'||chr(10)||
+'6303040000002e01180';
+    wwv_flow_api.g_varchar2_table(571) := '01c000000fb020400020000000000bc02000000000102022253797374656d000000000000000000000000000000000000000';
+    wwv_flow_api.g_varchar2_table(572) := '000000000'||chr(10)||
+'0000040000002d01000004000000020101001c000000fb02eaff0000000000009001000000000440001254696';
+    wwv_flow_api.g_varchar2_table(573) := 'd6573204e657720526f6d616e00000000000000'||chr(10)||
+'00000000000000000000040000002d010100050000000902000000020d0';
+    wwv_flow_api.g_varchar2_table(574) := '00000320a14000000010004000000000061034300200c0a00040000002d010000030000000000}}}}\sectd \linex0\head';
+    wwv_flow_api.g_varchar2_table(575) := 'ery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj '||chr(10)||
+'\sectd \';
+    wwv_flow_api.g_varchar2_table(576) := 'ltrsect\linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid1061774';
+    wwv_flow_api.g_varchar2_table(577) := '9\sftnbj {\*\pnseclvl1\pnucrm\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1';
+    wwv_flow_api.g_varchar2_table(578) := '\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl3'||chr(10)||
+'\pndec\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pn';
+    wwv_flow_api.g_varchar2_table(579) := 'seclvl4\pnlcltr\pnstart1\pnindent720\pnhang {\pntxta )}}{\*\pnseclvl5\pndec\pnstart1\pnindent720\pnh';
+    wwv_flow_api.g_varchar2_table(580) := 'ang {\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}';
+    wwv_flow_api.g_varchar2_table(581) := ''||chr(10)||
+'{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnst';
+    wwv_flow_api.g_varchar2_table(582) := 'art1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang {\pn';
+    wwv_flow_api.g_varchar2_table(583) := 'txtb (}{\pntxta )}}{\rtlch\fcs1 \af0\afs28 \ltrch\fcs0 '||chr(10)||
+'\fs28\lang2057\langfe1033\langnp2057\insrsi';
+    wwv_flow_api.g_varchar2_table(584) := 'd4022835 '||chr(10)||
+'\par }\pard\plain \ltrpar\qc \li0\ri0\sa200\widctlpar\wrapdefault\aspalpha\aspnum\faauto\';
+    wwv_flow_api.g_varchar2_table(585) := 'adjustright\rin0\lin0\itap0\pararsid6291715 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\l';
+    wwv_flow_api.g_varchar2_table(586) := 'ang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 '||chr(10)||
+'\af0\afs28 \ltrch\fcs0 \fs28\lang205';
+    wwv_flow_api.g_varchar2_table(587) := '7\langfe1033\langnp2057\insrsid919359 New Transport & H}{\rtlch\fcs1 \af0\afs28 \ltrch\fcs0 \fs28\la';
+    wwv_flow_api.g_varchar2_table(588) := 'ng2057\langfe1033\langnp2057\insrsid16665483\charrsid6291715 ighways }{\rtlch\fcs1 \af0\afs28 \ltrch';
+    wwv_flow_api.g_varchar2_table(589) := '\fcs0 '||chr(10)||
+'\fs28\lang2057\langfe1033\langnp2057\insrsid919359 F}{\rtlch\fcs1 \af0\afs28 \ltrch\fcs0 \fs';
+    wwv_flow_api.g_varchar2_table(590) := '28\lang2057\langfe1033\langnp2057\insrsid16665483\charrsid6291715 ile Opened'||chr(10)||
+'\par \ltrrow}\trowd \i';
+    wwv_flow_api.g_varchar2_table(591) := 'row0\irowband0\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(592) := '\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf';
+    wwv_flow_api.g_varchar2_table(593) := '1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpa';
+    wwv_flow_api.g_varchar2_table(594) := 'ddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid16665483\tbllkhdrrows\tbllkhdrcols\tblind0\tbl';
+    wwv_flow_api.g_varchar2_table(595) := 'indtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb'||chr(10)||
+'\brdrs\br';
+    wwv_flow_api.g_varchar2_table(596) := 'drw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx46';
+    wwv_flow_api.g_varchar2_table(597) := '80\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brd';
+    wwv_flow_api.g_varchar2_table(598) := 'rcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\pard';
+    wwv_flow_api.g_varchar2_table(599) := '\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\';
+    wwv_flow_api.g_varchar2_table(600) := 'yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\';
+    wwv_flow_api.g_varchar2_table(601) := 'langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 \cell }\p';
+    wwv_flow_api.g_varchar2_table(602) := 'ard \ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\p';
+    wwv_flow_api.g_varchar2_table(603) := 'ararsid16665483\yts15 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 ';
+    wwv_flow_api.g_varchar2_table(604) := 'Reference Number:{\*\bkmkstart Text1} {\*\bkmkend Text1}}'||chr(10)||
+'{\field\flddirty{\*\fldinst {\rtlch\fcs1 ';
+    wwv_flow_api.g_varchar2_table(605) := '\af0 \ltrch\fcs0 \insrsid7427681\charrsid7427681 FORMTEXT}{\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid7427';
+    wwv_flow_api.g_varchar2_table(606) := '681\charrsid7427681 {\*\datafield '||chr(10)||
+'0001000000000000055465787431000a5245465f4e554d42455200000000000e';
+    wwv_flow_api.g_varchar2_table(607) := '3c3f5245465f4e554d4245523f3e0000000000}{\*\formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{';
+    wwv_flow_api.g_varchar2_table(608) := '\*\ffdeftext REF_NUMBER}{\*\ffstattext <?REF_NUMBER?>}}}}}{\fldrslt {\rtlch\fcs1 \af0 '||chr(10)||
+'\ltrch\fcs0 ';
+    wwv_flow_api.g_varchar2_table(609) := '\lang1024\langfe1024\noproof\insrsid7427681\charrsid7427681 REF_NUMBER}}}\sectd \linex0\headery708\f';
+    wwv_flow_api.g_varchar2_table(610) := 'ootery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af0 ';
+    wwv_flow_api.g_varchar2_table(611) := '\ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid16665483 \cell }\pard\plain \ltrpar\ql \li0\ri0';
+    wwv_flow_api.g_varchar2_table(612) := '\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\ala';
+    wwv_flow_api.g_varchar2_table(613) := 'ng1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \';
+    wwv_flow_api.g_varchar2_table(614) := 'ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 \trowd \irow0\irowband0\ltrrow\ts15\trgap';
+    wwv_flow_api.g_varchar2_table(615) := 'h108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw1';
+    wwv_flow_api.g_varchar2_table(616) := '0\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrc';
+    wwv_flow_api.g_varchar2_table(617) := 'f1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trp';
+    wwv_flow_api.g_varchar2_table(618) := 'addfb3\trpaddfr3\tblrsid16665483\tbllkhdrrows\tbllkhdrcols\tblind0\tblindtype3 \clvertalt\clbrdrt\br';
+    wwv_flow_api.g_varchar2_table(619) := 'drs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\b';
+    wwv_flow_api.g_varchar2_table(620) := 'rdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(621) := 'rw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\br';
+    wwv_flow_api.g_varchar2_table(622) := 'drcf1 '||chr(10)||
+'\cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar\ql';
+    wwv_flow_api.g_varchar2_table(623) := ' \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\pararsid16665483\';
+    wwv_flow_api.g_varchar2_table(624) := 'yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\';
+    wwv_flow_api.g_varchar2_table(625) := 'langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 Planning ';
+    wwv_flow_api.g_varchar2_table(626) := 'Authority: }{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid7427681\charrsid742768';
+    wwv_flow_api.g_varchar2_table(627) := '1 '||chr(10)||
+'FORMTEXT}{\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid7427681\charrsid7427681 {\*\datafield 00010000000';
+    wwv_flow_api.g_varchar2_table(628) := '000000554657874310012504c414e4e494e475f415554484f524954590000000000163c3f504c414e4e494e475f415554484';
+    wwv_flow_api.g_varchar2_table(629) := 'f524954593f3e0000000000}'||chr(10)||
+'{\*\formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext ';
+    wwv_flow_api.g_varchar2_table(630) := 'PLANNING_AUTHORITY}{\*\ffstattext <?PLANNING_AUTHORITY?>}}}}}{\fldrslt {\rtlch\fcs1 \af0 \ltrch\fcs0';
+    wwv_flow_api.g_varchar2_table(631) := ' \lang1024\langfe1024\noproof\insrsid7427681\charrsid7427681 PLANNING_AUTHORITY}'||chr(10)||
+'}}\sectd \linex0\h';
+    wwv_flow_api.g_varchar2_table(632) := 'eadery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch';
+    wwv_flow_api.g_varchar2_table(633) := '\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 \cell }\pard\plain \ltrpar'||chr(10)||
+'\';
+    wwv_flow_api.g_varchar2_table(634) := 'ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap2\yts15 \rt';
+    wwv_flow_api.g_varchar2_table(635) := 'lch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp103';
+    wwv_flow_api.g_varchar2_table(636) := '3 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\b\lang2057\langfe1033\langnp2057\insrsid15625051 Files attached o';
+    wwv_flow_api.g_varchar2_table(637) := 'r Related}{\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid15625051\charrsid1562';
+    wwv_flow_api.g_varchar2_table(638) := '5051 \nestcell{\nonesttables'||chr(10)||
+'\par }}\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\asp';
+    wwv_flow_api.g_varchar2_table(639) := 'alpha\aspnum\faauto\adjustright\rin0\lin0\itap2 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs';
+    wwv_flow_api.g_varchar2_table(640) := '22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langf';
+    wwv_flow_api.g_varchar2_table(641) := 'e1033\langnp2057\insrsid15625051 {\*\nesttableprops\trowd \irow0\irowband0\ltrrow\ts15\trgaph108\trl';
+    wwv_flow_api.g_varchar2_table(642) := 'eft5\trhdr\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrc';
+    wwv_flow_api.g_varchar2_table(643) := 'f1 \trbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'';
+    wwv_flow_api.g_varchar2_table(644) := '\trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb';
+    wwv_flow_api.g_varchar2_table(645) := '3\trpaddfr3\tblrsid15625051\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 ';
+    wwv_flow_api.g_varchar2_table(646) := '\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brd';
+    wwv_flow_api.g_varchar2_table(647) := 'rcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \clcbpat17\cltxlrtb\clftsWidth3\clwWidth4557\clcbpatraw17 \cellx';
+    wwv_flow_api.g_varchar2_table(648) := '4562\nestrow}{\nonesttables'||chr(10)||
+'\par }}\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspa';
+    wwv_flow_api.g_varchar2_table(649) := 'lpha\aspnum\faauto\adjustright\rin0\lin0\itap2\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f';
+    wwv_flow_api.g_varchar2_table(650) := '37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\*\bkmkstart Text2}'||chr(10)||
+'{\field\flddirty{\*\';
+    wwv_flow_api.g_varchar2_table(651) := 'fldinst {\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\lang2057\langfe1033\langnp2057\insrsid15625051\charrsid15';
+    wwv_flow_api.g_varchar2_table(652) := '625051  FORMTEXT }{\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\lang2057\langfe1033\langnp2057\insrsid7225007\c';
+    wwv_flow_api.g_varchar2_table(653) := 'harrsid15625051 {\*\datafield '||chr(10)||
+'8001000000000000055465787432000246200000000000183c3f666f722d65616368';
+    wwv_flow_api.g_varchar2_table(654) := '3a524f57534554325f524f573f3e0000000000}{\*\formfield{\fftype0\ffownhelp\ffownstat\fftypetxt0{\*\ffna';
+    wwv_flow_api.g_varchar2_table(655) := 'me Text2}{\*\ffdeftext F }{\*\ffstattext <?for-each:ROWSET2_ROW?>}}}}}{\fldrslt {'||chr(10)||
+'\rtlch\fcs1 \af0 ';
+    wwv_flow_api.g_varchar2_table(656) := '\ltrch\fcs0 \cf9\lang1024\langfe1024\noproof\langnp2057\insrsid15625051\charrsid15625051 F }}}\sectd';
+    wwv_flow_api.g_varchar2_table(657) := ' \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftn';
+    wwv_flow_api.g_varchar2_table(658) := 'bj {\*\bkmkstart Text3}'||chr(10)||
+'{\*\bkmkend Text2}{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af0 \ltrch\fcs0';
+    wwv_flow_api.g_varchar2_table(659) := ' \lang2057\langfe1033\langnp2057\insrsid15625051\charrsid15625051  FORMTEXT }{\rtlch\fcs1 \af0 \ltrc';
+    wwv_flow_api.g_varchar2_table(660) := 'h\fcs0 \lang2057\langfe1033\langnp2057\insrsid7225007\charrsid15625051 '||chr(10)||
+'{\*\datafield 8001000000000';
+    wwv_flow_api.g_varchar2_table(661) := '0000554657874330008444f435f46494c4500000000000c3c3f444f435f46494c453f3e0000000000}{\*\formfield{\fft';
+    wwv_flow_api.g_varchar2_table(662) := 'ype0\ffownhelp\ffownstat\fftypetxt0{\*\ffname Text3}{\*\ffdeftext DOC_FILE}{\*\ffstattext <?DOC_FILE';
+    wwv_flow_api.g_varchar2_table(663) := '?>}}}}}{\fldrslt {'||chr(10)||
+'\rtlch\fcs1 \af0 \ltrch\fcs0 \lang1024\langfe1024\noproof\langnp2057\insrsid1562';
+    wwv_flow_api.g_varchar2_table(664) := '5051\charrsid15625051 DOC_FILE}}}\sectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid';
+    wwv_flow_api.g_varchar2_table(665) := '360\sectdefaultcl\sectrsid10617749\sftnbj {\*\bkmkstart Text4}'||chr(10)||
+'{\*\bkmkend Text3}{\field\flddirty{\';
+    wwv_flow_api.g_varchar2_table(666) := '*\fldinst {\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\lang2057\langfe1033\langnp2057\insrsid15625051\charrsid';
+    wwv_flow_api.g_varchar2_table(667) := '15625051  FORMTEXT }{\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\lang2057\langfe1033\langnp2057\insrsid7225007';
+    wwv_flow_api.g_varchar2_table(668) := '\charrsid15625051 '||chr(10)||
+'{\*\datafield 8001000000000000055465787434000220450000000000103c3f656e6420666f72';
+    wwv_flow_api.g_varchar2_table(669) := '2d656163683f3e0000000000}{\*\formfield{\fftype0\ffownhelp\ffownstat\fftypetxt0{\*\ffname Text4}{\*\f';
+    wwv_flow_api.g_varchar2_table(670) := 'fdeftext  E}{\*\ffstattext <?end for-each?>}}}}}{\fldrslt {\rtlch\fcs1 '||chr(10)||
+'\af0 \ltrch\fcs0 \cf9\lang1';
+    wwv_flow_api.g_varchar2_table(671) := '024\langfe1024\noproof\langnp2057\insrsid15625051\charrsid15625051  E}}}\sectd \linex0\headery708\fo';
+    wwv_flow_api.g_varchar2_table(672) := 'otery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af0 \';
+    wwv_flow_api.g_varchar2_table(673) := 'ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid15625051 {\*\bkmkend Text4}\nestcell{\nonesttabl';
+    wwv_flow_api.g_varchar2_table(674) := 'es'||chr(10)||
+'\par }}\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjust';
+    wwv_flow_api.g_varchar2_table(675) := 'right\rin0\lin0\itap2 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgr';
+    wwv_flow_api.g_varchar2_table(676) := 'id\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid15';
+    wwv_flow_api.g_varchar2_table(677) := '625051 {\*\nesttableprops\trowd \irow1\irowband1\lastrow \ltrrow\ts15\trgaph108\trleft5\trbrdrt\brdr';
+    wwv_flow_api.g_varchar2_table(678) := 's\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw';
+    wwv_flow_api.g_varchar2_table(679) := '10\brdrcf1 '||chr(10)||
+'\trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidth';
+    wwv_flow_api.g_varchar2_table(680) := 'B3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid1562';
+    wwv_flow_api.g_varchar2_table(681) := '5051\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\brdr';
+    wwv_flow_api.g_varchar2_table(682) := 's\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(683) := 'rw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4557\clshdrawnil \cellx4562\nestrow}{\nonesttables'||chr(10)||
+'\par ';
+    wwv_flow_api.g_varchar2_table(684) := '}\ltrrow}\trowd \irow1\irowband1\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trb';
+    wwv_flow_api.g_varchar2_table(685) := 'rdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\br';
+    wwv_flow_api.g_varchar2_table(686) := 'drs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trautofi';
+    wwv_flow_api.g_varchar2_table(687) := 't1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid16665483\tbllkhdrrows\tbllkh';
+    wwv_flow_api.g_varchar2_table(688) := 'drcols\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \';
+    wwv_flow_api.g_varchar2_table(689) := 'clbrdrb'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\cl';
+    wwv_flow_api.g_varchar2_table(690) := 'shdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb';
+    wwv_flow_api.g_varchar2_table(691) := '\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\cltxlrtb\clftsWidth3\clwWidth4788\clshdrawn';
+    wwv_flow_api.g_varchar2_table(692) := 'il \cellx9468\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adju';
+    wwv_flow_api.g_varchar2_table(693) := 'stright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033';
+    wwv_flow_api.g_varchar2_table(694) := '\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid';
+    wwv_flow_api.g_varchar2_table(695) := '7427681 \cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\ad';
+    wwv_flow_api.g_varchar2_table(696) := 'justright\rin0\lin0 '||chr(10)||
+'\rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgr';
+    wwv_flow_api.g_varchar2_table(697) := 'id\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid1666';
+    wwv_flow_api.g_varchar2_table(698) := '5483 \trowd \irow1\irowband1\ltrrow\ts15\trgaph108\trleft-108\trbrdrt'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrd';
+    wwv_flow_api.g_varchar2_table(699) := 'rl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdr';
+    wwv_flow_api.g_varchar2_table(700) := 's\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1';
+    wwv_flow_api.g_varchar2_table(701) := '\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid16665483\tbllkhdrrows\tbllkhdr';
+    wwv_flow_api.g_varchar2_table(702) := 'cols\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \cl';
+    wwv_flow_api.g_varchar2_table(703) := 'brdrb'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clsh';
+    wwv_flow_api.g_varchar2_table(704) := 'drawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\b';
+    wwv_flow_api.g_varchar2_table(705) := 'rdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil';
+    wwv_flow_api.g_varchar2_table(706) := ' \cellx9468\row \ltrrow}\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\';
+    wwv_flow_api.g_varchar2_table(707) := 'faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033';
+    wwv_flow_api.g_varchar2_table(708) := '\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2';
+    wwv_flow_api.g_varchar2_table(709) := '057\insrsid16665483 Authority Ref:}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681  }{\fiel';
+    wwv_flow_api.g_varchar2_table(710) := 'd\flddirty{\*\fldinst {\rtlch\fcs1 '||chr(10)||
+'\af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681\charrsid7427681 FOR';
+    wwv_flow_api.g_varchar2_table(711) := 'MTEXT}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681\charrsid7427681 {\*\datafield 0001000';
+    wwv_flow_api.g_varchar2_table(712) := '0000000000554657874310008415554485f52454600000000000c3c3f415554485f5245463f3e0000000000}'||chr(10)||
+'{\*\formfi';
+    wwv_flow_api.g_varchar2_table(713) := 'eld{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext AUTH_REF}{\*\ffstattext <?AUTH_REF?>';
+    wwv_flow_api.g_varchar2_table(714) := '}}}}}{\fldrslt {\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\lang1024\langfe1024\noproof\insrsid7427681\';
+    wwv_flow_api.g_varchar2_table(715) := 'charrsid7427681 AUTH_REF}}}\sectd '||chr(10)||
+'\linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\';
+    wwv_flow_api.g_varchar2_table(716) := 'sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\';
+    wwv_flow_api.g_varchar2_table(717) := 'insrsid16665483 '||chr(10)||
+'\par Date:}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681  }{\field\fldd';
+    wwv_flow_api.g_varchar2_table(718) := 'irty{\*\fldinst {\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681\charrsid7427681 FORMTEXT}{\';
+    wwv_flow_api.g_varchar2_table(719) := 'rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681\charrsid7427681 '||chr(10)||
+'{\*\datafield 0001000000000';
+    wwv_flow_api.g_varchar2_table(720) := '000055465787431000a49535355455f4441544500000000000e3c3f49535355455f444154453f3e0000000000}{\*\formfi';
+    wwv_flow_api.g_varchar2_table(721) := 'eld{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext ISSUE_DATE}{\*\ffstattext <?ISSUE_DA';
+    wwv_flow_api.g_varchar2_table(722) := 'TE?>}}}}}{\fldrslt {'||chr(10)||
+'\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\lang1024\langfe1024\noproof\insrsid74';
+    wwv_flow_api.g_varchar2_table(723) := '27681\charrsid7427681 ISSUE_DATE}}}\sectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegr';
+    wwv_flow_api.g_varchar2_table(724) := 'id360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\lan';
+    wwv_flow_api.g_varchar2_table(725) := 'gnp2057\insrsid16665483 \cell National Grid Reference'||chr(10)||
+'\par Easting: }{\field\flddirty{\*\fldinst {\';
+    wwv_flow_api.g_varchar2_table(726) := 'rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid7427681\charrsid7427681 FORMTEXT}{\rtlch\fcs1 \af0 \ltrch\fcs0 \';
+    wwv_flow_api.g_varchar2_table(727) := 'insrsid7427681\charrsid7427681 {\*\datafield '||chr(10)||
+'0001000000000000055465787431000c585f434f4f5244494e415';
+    wwv_flow_api.g_varchar2_table(728) := '4450000000000103c3f585f434f4f5244494e4154453f3e0000000000}{\*\formfield{\fftype0\ffownstat\fftypetxt';
+    wwv_flow_api.g_varchar2_table(729) := '0{\*\ffname Text1}{\*\ffdeftext X_COORDINATE}{\*\ffstattext <?X_COORDINATE?>}}}}}{\fldrslt {'||chr(10)||
+'\rtlch';
+    wwv_flow_api.g_varchar2_table(730) := '\fcs1 \af0 \ltrch\fcs0 \lang1024\langfe1024\noproof\insrsid7427681\charrsid7427681 X_COORDINATE}}}\s';
+    wwv_flow_api.g_varchar2_table(731) := 'ectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\';
+    wwv_flow_api.g_varchar2_table(732) := 'sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid16665483 '||chr(10)||
+'\par }\pard';
+    wwv_flow_api.g_varchar2_table(733) := ' \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\parars';
+    wwv_flow_api.g_varchar2_table(734) := 'id16665483\yts15 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 North';
+    wwv_flow_api.g_varchar2_table(735) := 'ing: }{\field\flddirty{\*\fldinst {\rtlch\fcs1 '||chr(10)||
+'\af0 \ltrch\fcs0 \insrsid7427681\charrsid7427681 FO';
+    wwv_flow_api.g_varchar2_table(736) := 'RMTEXT}{\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid7427681\charrsid7427681 {\*\datafield 00010000000000000';
+    wwv_flow_api.g_varchar2_table(737) := '55465787431000c595f434f4f5244494e4154450000000000103c3f595f434f4f5244494e4154453f3e0000000000}'||chr(10)||
+'{\*\';
+    wwv_flow_api.g_varchar2_table(738) := 'formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext Y_COORDINATE}{\*\ffstattext <?';
+    wwv_flow_api.g_varchar2_table(739) := 'Y_COORDINATE?>}}}}}{\fldrslt {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang1024\langfe1024\noproof\insrsid74276';
+    wwv_flow_api.g_varchar2_table(740) := '81\charrsid7427681 Y_COORDINATE}}}\sectd '||chr(10)||
+'\linex0\headery708\footery708\colsx708\endnhere\sectlineg';
+    wwv_flow_api.g_varchar2_table(741) := 'rid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\lang';
+    wwv_flow_api.g_varchar2_table(742) := 'np2057\insrsid16665483 \cell }\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha';
+    wwv_flow_api.g_varchar2_table(743) := '\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033';
+    wwv_flow_api.g_varchar2_table(744) := '\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langn';
+    wwv_flow_api.g_varchar2_table(745) := 'p2057\insrsid16665483 \trowd \irow2\irowband2\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(746) := '\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf';
+    wwv_flow_api.g_varchar2_table(747) := '1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trftsWidthB3\trftsWid';
+    wwv_flow_api.g_varchar2_table(748) := 'thA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid16665483\tbllkh';
+    wwv_flow_api.g_varchar2_table(749) := 'drrows\tbllkhdrcols\tblind0\tblindtype3 \clvertalt\clbrdrt'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\br';
+    wwv_flow_api.g_varchar2_table(750) := 'drw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\cl';
+    wwv_flow_api.g_varchar2_table(751) := 'wWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brd';
+    wwv_flow_api.g_varchar2_table(752) := 'rcf1 \clbrdrb'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4';
+    wwv_flow_api.g_varchar2_table(753) := '788\clshdrawnil \cellx9468\row \ltrrow}\trowd \irow3\irowband3\ltrrow\ts15\trgaph108\trleft-108\trbr';
+    wwv_flow_api.g_varchar2_table(754) := 'drt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrr\b';
+    wwv_flow_api.g_varchar2_table(755) := 'rdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\tr';
+    wwv_flow_api.g_varchar2_table(756) := 'ftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tbl';
+    wwv_flow_api.g_varchar2_table(757) := 'rsid16665483\tbllkhdrrows\tbllkhdrcols\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 ';
+    wwv_flow_api.g_varchar2_table(758) := '\clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltx';
+    wwv_flow_api.g_varchar2_table(759) := 'lrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvmgf\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 ';
+    wwv_flow_api.g_varchar2_table(760) := '\clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\cltx';
+    wwv_flow_api.g_varchar2_table(761) := 'lrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\';
+    wwv_flow_api.g_varchar2_table(762) := 'wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltr';
+    wwv_flow_api.g_varchar2_table(763) := 'ch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 ';
+    wwv_flow_api.g_varchar2_table(764) := '\lang2057\langfe1033\langnp2057\insrsid16665483 Applicant:}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24';
+    wwv_flow_api.g_varchar2_table(765) := '\insrsid7427681  }{\field\flddirty{\*\fldinst {\rtlch\fcs1 '||chr(10)||
+'\af0\afs24 \ltrch\fcs0 \fs24\insrsid742';
+    wwv_flow_api.g_varchar2_table(766) := '7681\charrsid7427681 FORMTEXT}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681\charrsid74276';
+    wwv_flow_api.g_varchar2_table(767) := '81 {\*\datafield 000100000000000005546578743100094150504c4943414e5400000000000d3c3f4150504c4943414e5';
+    wwv_flow_api.g_varchar2_table(768) := '43f3e0000000000}'||chr(10)||
+'{\*\formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext APPLICAN';
+    wwv_flow_api.g_varchar2_table(769) := 'T}{\*\ffstattext <?APPLICANT?>}}}}}{\fldrslt {\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\lang1024\lang';
+    wwv_flow_api.g_varchar2_table(770) := 'fe1024\noproof\insrsid7427681\charrsid7427681 APPLICANT}}}\sectd '||chr(10)||
+'\linex0\headery708\footery708\col';
+    wwv_flow_api.g_varchar2_table(771) := 'sx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 \';
+    wwv_flow_api.g_varchar2_table(772) := 'lang2057\langfe1033\langnp2057\insrsid16665483 \cell Preliminary enquiry/to be determind by\cell }\p';
+    wwv_flow_api.g_varchar2_table(773) := 'ard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\';
+    wwv_flow_api.g_varchar2_table(774) := 'lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\lan';
+    wwv_flow_api.g_varchar2_table(775) := 'gfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid16665483 \trowd \ir';
+    wwv_flow_api.g_varchar2_table(776) := 'ow3\irowband3\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\';
+    wwv_flow_api.g_varchar2_table(777) := 'brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10\brdrc';
+    wwv_flow_api.g_varchar2_table(778) := 'f1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpad';
+    wwv_flow_api.g_varchar2_table(779) := 'dr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid16665483\tbllkhdrrows\tbllkhdrcols\tblind0\tbli';
+    wwv_flow_api.g_varchar2_table(780) := 'ndtype3 \clvertalt\clbrdrt'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(781) := 'rw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx468';
+    wwv_flow_api.g_varchar2_table(782) := '0\clvmgf\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\clbrdrb\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(783) := 'rw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx946';
+    wwv_flow_api.g_varchar2_table(784) := '8\row \ltrrow}\trowd \irow4\irowband4\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1';
+    wwv_flow_api.g_varchar2_table(785) := ' \trbrdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trb';
+    wwv_flow_api.g_varchar2_table(786) := 'rdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\t';
+    wwv_flow_api.g_varchar2_table(787) := 'rautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid16665483\tbllkhdrrows';
+    wwv_flow_api.g_varchar2_table(788) := '\tbllkhdrcols\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\br';
+    wwv_flow_api.g_varchar2_table(789) := 'drcf1 \clbrdrb'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth';
+    wwv_flow_api.g_varchar2_table(790) := '4788\clshdrawnil \cellx4680\clvmrg\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\br';
+    wwv_flow_api.g_varchar2_table(791) := 'drcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\cltxlrtb\clftsWidth3\clwWidth';
+    wwv_flow_api.g_varchar2_table(792) := '4788\clshdrawnil \cellx9468\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspn';
+    wwv_flow_api.g_varchar2_table(793) := 'um\faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1';
+    wwv_flow_api.g_varchar2_table(794) := '033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\lang';
+    wwv_flow_api.g_varchar2_table(795) := 'np2057\insrsid16665483 Location A:}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681  }{\rtlc';
+    wwv_flow_api.g_varchar2_table(796) := 'h\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid16665483 '||chr(10)||
+'\par }\pard \ltrpar\ql \';
+    wwv_flow_api.g_varchar2_table(797) := 'li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\pararsid16665483\yt';
+    wwv_flow_api.g_varchar2_table(798) := 's15 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 At: }{\field\flddi';
+    wwv_flow_api.g_varchar2_table(799) := 'rty{\*\fldinst {\rtlch\fcs1 \af0 '||chr(10)||
+'\ltrch\fcs0 \insrsid7427681\charrsid7427681 FORMTEXT}{\rtlch\fcs1';
+    wwv_flow_api.g_varchar2_table(800) := ' \af0 \ltrch\fcs0 \insrsid7427681\charrsid7427681 {\*\datafield 000100000000000005546578743100084c4f';
+    wwv_flow_api.g_varchar2_table(801) := '434154494f4e00000000000c3c3f4c4f434154494f4e3f3e0000000000}'||chr(10)||
+'{\*\formfield{\fftype0\ffownstat\fftype';
+    wwv_flow_api.g_varchar2_table(802) := 'txt0{\*\ffname Text1}{\*\ffdeftext LOCATION}{\*\ffstattext <?LOCATION?>}}}}}{\fldrslt {\rtlch\fcs1 \';
+    wwv_flow_api.g_varchar2_table(803) := 'af0 \ltrch\fcs0 \lang1024\langfe1024\noproof\insrsid7427681\charrsid7427681 LOCATION}}}\sectd '||chr(10)||
+'\lin';
+    wwv_flow_api.g_varchar2_table(804) := 'ex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\';
+    wwv_flow_api.g_varchar2_table(805) := 'rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 \cell }\pard \ltrpar'||chr(10)||
+'\q';
+    wwv_flow_api.g_varchar2_table(806) := 'l \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 {\rtlch\fc';
+    wwv_flow_api.g_varchar2_table(807) := 's1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid16665483 \cell }\pard\plain \ltrpar'||chr(10)||
+'\ql ';
+    wwv_flow_api.g_varchar2_table(808) := '\li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\a';
+    wwv_flow_api.g_varchar2_table(809) := 'fs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 ';
+    wwv_flow_api.g_varchar2_table(810) := '\af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid16665483 \trowd \irow4\irowband4\ltrrow\ts';
+    wwv_flow_api.g_varchar2_table(811) := '15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\';
+    wwv_flow_api.g_varchar2_table(812) := 'brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw';
+    wwv_flow_api.g_varchar2_table(813) := '10\brdrcf1 \trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddf';
+    wwv_flow_api.g_varchar2_table(814) := 't3\trpaddfb3\trpaddfr3\tblrsid16665483\tbllkhdrrows\tbllkhdrcols\tblind0\tblindtype3 \clvertalt\clbr';
+    wwv_flow_api.g_varchar2_table(815) := 'drt'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\b';
+    wwv_flow_api.g_varchar2_table(816) := 'rdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvmrg\clvertalt\clbr';
+    wwv_flow_api.g_varchar2_table(817) := 'drt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\b';
+    wwv_flow_api.g_varchar2_table(818) := 'rdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\trowd \i';
+    wwv_flow_api.g_varchar2_table(819) := 'row5\irowband5\lastrow \ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl'||chr(10)||
+'\br';
+    wwv_flow_api.g_varchar2_table(820) := 'drs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(821) := 'rw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpa';
+    wwv_flow_api.g_varchar2_table(822) := 'ddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid3560942\tbllkhdrrows\tbllkhdrcols\t';
+    wwv_flow_api.g_varchar2_table(823) := 'blind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb';
+    wwv_flow_api.g_varchar2_table(824) := ''||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth9576\clshdrawni';
+    wwv_flow_api.g_varchar2_table(825) := 'l \cellx9468\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjus';
+    wwv_flow_api.g_varchar2_table(826) := 'tright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1025 '||chr(10)||
+'\ltrch\fcs0 \f37\fs22\lang1033\langfe1033\';
+    wwv_flow_api.g_varchar2_table(827) := 'cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid1';
+    wwv_flow_api.g_varchar2_table(828) := '6665483 Proposal:}{\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681  }{\field\flddirty{\*\fld';
+    wwv_flow_api.g_varchar2_table(829) := 'inst {'||chr(10)||
+'\rtlch\fcs1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681\charrsid7427681 FORMTEXT}{\rtlch\fcs';
+    wwv_flow_api.g_varchar2_table(830) := '1 \af0\afs24 \ltrch\fcs0 \fs24\insrsid7427681\charrsid7427681 {\*\datafield '||chr(10)||
+'0001000000000000055465';
+    wwv_flow_api.g_varchar2_table(831) := '787431000850524f504f53414c00000000000c3c3f50524f504f53414c3f3e0000000000}{\*\formfield{\fftype0\ffow';
+    wwv_flow_api.g_varchar2_table(832) := 'nstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext PROPOSAL}{\*\ffstattext <?PROPOSAL?>}}}}}{\fldrslt {\';
+    wwv_flow_api.g_varchar2_table(833) := 'rtlch\fcs1 \af0\afs24 '||chr(10)||
+'\ltrch\fcs0 \fs24\lang1024\langfe1024\noproof\insrsid7427681\charrsid7427681';
+    wwv_flow_api.g_varchar2_table(834) := ' PROPOSAL}}}\sectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sec';
+    wwv_flow_api.g_varchar2_table(835) := 'trsid10617749\sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid16665483';
+    wwv_flow_api.g_varchar2_table(836) := ' '||chr(10)||
+'\par \cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\ad';
+    wwv_flow_api.g_varchar2_table(837) := 'justright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid';
+    wwv_flow_api.g_varchar2_table(838) := '\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid1666';
+    wwv_flow_api.g_varchar2_table(839) := '5483 \trowd \irow5\irowband5\lastrow \ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1';
+    wwv_flow_api.g_varchar2_table(840) := ' \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrd';
+    wwv_flow_api.g_varchar2_table(841) := 'rh'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trftsWidthB3\trftsWidthA3\tra';
+    wwv_flow_api.g_varchar2_table(842) := 'utofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid3560942\tbllkhdrrows\tb';
+    wwv_flow_api.g_varchar2_table(843) := 'llkhdrcols\tblind0\tblindtype3 \clvertalt\clbrdrt'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brd';
+    wwv_flow_api.g_varchar2_table(844) := 'rcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth957';
+    wwv_flow_api.g_varchar2_table(845) := '6\clshdrawnil \cellx9468\row }\pard \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\wrapdefault\aspalpha\aspnu';
+    wwv_flow_api.g_varchar2_table(846) := 'm\faauto\adjustright\rin0\lin0\itap0 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\i';
+    wwv_flow_api.g_varchar2_table(847) := 'nsrsid16665483 '||chr(10)||
+'\par \ltrrow}\trowd \irow0\irowband0\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs';
+    wwv_flow_api.g_varchar2_table(848) := '\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw1';
+    wwv_flow_api.g_varchar2_table(849) := '0\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\';
+    wwv_flow_api.g_varchar2_table(850) := 'trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6291715';
+    wwv_flow_api.g_varchar2_table(851) := '\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\br';
+    wwv_flow_api.g_varchar2_table(852) := 'drw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(853) := '\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\b';
+    wwv_flow_api.g_varchar2_table(854) := 'rdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr'||chr(10)||
+'\brdrs\brdrw10\brdrcf';
+    wwv_flow_api.g_varchar2_table(855) := '1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\pard\plain \ltrpar\qc \li0\ri0\sa200\wid';
+    wwv_flow_api.g_varchar2_table(856) := 'ctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\pararsid6291715\yts15 \rtlch\f';
+    wwv_flow_api.g_varchar2_table(857) := 'cs1 \af0\afs22\alang1025 '||chr(10)||
+'\ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {';
+    wwv_flow_api.g_varchar2_table(858) := '\rtlch\fcs1 \af0 \ltrch\fcs0 \ul\lang2057\langfe1033\langnp2057\insrsid6291715\charrsid6291715 DESCR';
+    wwv_flow_api.g_varchar2_table(859) := 'IPTION OF DUTIES\cell DATE AND OFFICER\rquote S INITIALS\cell }\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\wid';
+    wwv_flow_api.g_varchar2_table(860) := 'ctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang10';
+    wwv_flow_api.g_varchar2_table(861) := '25 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\';
+    wwv_flow_api.g_varchar2_table(862) := 'fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid6291715 \trowd \irow0\irowband0\ltrrow\ts15\trgaph108\';
+    wwv_flow_api.g_varchar2_table(863) := 'trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrc';
+    wwv_flow_api.g_varchar2_table(864) := 'f1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 \t';
+    wwv_flow_api.g_varchar2_table(865) := 'rftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\';
+    wwv_flow_api.g_varchar2_table(866) := 'trpaddfr3\tblrsid6291715\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 '||chr(10)||
+'\';
+    wwv_flow_api.g_varchar2_table(867) := 'clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf';
+    wwv_flow_api.g_varchar2_table(868) := '1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt';
+    wwv_flow_api.g_varchar2_table(869) := '\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbr';
+    wwv_flow_api.g_varchar2_table(870) := 'drr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\par';
+    wwv_flow_api.g_varchar2_table(871) := 'd\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\r';
+    wwv_flow_api.g_varchar2_table(872) := 'in0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\lang';
+    wwv_flow_api.g_varchar2_table(873) := 'np1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid6291715 A';
+    wwv_flow_api.g_varchar2_table(874) := 'pplication Received in RNM2/RNM6\cell \cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdef';
+    wwv_flow_api.g_varchar2_table(875) := 'ault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f3';
+    wwv_flow_api.g_varchar2_table(876) := '7\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\lan';
+    wwv_flow_api.g_varchar2_table(877) := 'gfe1033\langnp2057\insrsid6291715 \trowd \irow1\irowband1\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\b';
+    wwv_flow_api.g_varchar2_table(878) := 'rdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\';
+    wwv_flow_api.g_varchar2_table(879) := 'brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWi';
+    wwv_flow_api.g_varchar2_table(880) := 'dthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6';
+    wwv_flow_api.g_varchar2_table(881) := '291715\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\br';
+    wwv_flow_api.g_varchar2_table(882) := 'drs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\b';
+    wwv_flow_api.g_varchar2_table(883) := 'rdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(884) := 'rw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr'||chr(10)||
+'\brdrs\brdrw10\';
+    wwv_flow_api.g_varchar2_table(885) := 'brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar\ql';
+    wwv_flow_api.g_varchar2_table(886) := ' \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 \rtlc';
+    wwv_flow_api.g_varchar2_table(887) := 'h\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp103';
+    wwv_flow_api.g_varchar2_table(888) := '3 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid6291715 Passed From RNM2/RNM6';
+    wwv_flow_api.g_varchar2_table(889) := ' To RNM3 (Drawing Office)\cell \cell }\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\wrapdefault\';
+    wwv_flow_api.g_varchar2_table(890) := 'aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\';
+    wwv_flow_api.g_varchar2_table(891) := 'lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe10';
+    wwv_flow_api.g_varchar2_table(892) := '33\langnp2057\insrsid6291715 \trowd \irow2\irowband2\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\';
+    wwv_flow_api.g_varchar2_table(893) := 'brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(894) := '\brdrcf1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trftsWidthB3\t';
+    wwv_flow_api.g_varchar2_table(895) := 'rftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6291715\';
+    wwv_flow_api.g_varchar2_table(896) := 'tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 '||chr(10)||
+'\clvertalt\clbrdrt\brdrs\b';
+    wwv_flow_api.g_varchar2_table(897) := 'rdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\';
+    wwv_flow_api.g_varchar2_table(898) := 'brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\br';
+    wwv_flow_api.g_varchar2_table(899) := 'drcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1';
+    wwv_flow_api.g_varchar2_table(900) := ' \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar'||chr(10)||
+'\ql \li0';
+    wwv_flow_api.g_varchar2_table(901) := '\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs';
+    wwv_flow_api.g_varchar2_table(902) := '1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtl';
+    wwv_flow_api.g_varchar2_table(903) := 'ch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid6291715 Received In RNM3 (Drawing ';
+    wwv_flow_api.g_varchar2_table(904) := 'Office)\cell \cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faau';
+    wwv_flow_api.g_varchar2_table(905) := 'to\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe103';
+    wwv_flow_api.g_varchar2_table(906) := '3\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsi';
+    wwv_flow_api.g_varchar2_table(907) := 'd6291715 \trowd \irow3\irowband3\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trb';
+    wwv_flow_api.g_varchar2_table(908) := 'rdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\';
+    wwv_flow_api.g_varchar2_table(909) := 'brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trauto';
+    wwv_flow_api.g_varchar2_table(910) := 'fit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6291715\tbllkhdrrows\tbllk';
+    wwv_flow_api.g_varchar2_table(911) := 'lastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbr';
+    wwv_flow_api.g_varchar2_table(912) := 'drl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\';
+    wwv_flow_api.g_varchar2_table(913) := 'clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brd';
+    wwv_flow_api.g_varchar2_table(914) := 'rs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWi';
+    wwv_flow_api.g_varchar2_table(915) := 'dth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar\ql \li0\ri0\sa200\widctlpar';
+    wwv_flow_api.g_varchar2_table(916) := '\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang10';
+    wwv_flow_api.g_varchar2_table(917) := '25 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrc';
+    wwv_flow_api.g_varchar2_table(918) := 'h\fcs0 \lang2057\langfe1033\langnp2057\insrsid6291715 Passed By RNM3 (Drawing Office) To RUG\cell \c';
+    wwv_flow_api.g_varchar2_table(919) := 'ell }\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustrigh';
+    wwv_flow_api.g_varchar2_table(920) := 't\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1';
+    wwv_flow_api.g_varchar2_table(921) := '033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid6291715 \tro';
+    wwv_flow_api.g_varchar2_table(922) := 'wd \irow4\irowband4\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\br';
+    wwv_flow_api.g_varchar2_table(923) := 'drw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(924) := '\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108';
+    wwv_flow_api.g_varchar2_table(925) := '\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6291715\tbllkhdrrows\tbllklastrow\tbllkhd';
+    wwv_flow_api.g_varchar2_table(926) := 'rcols\tbllklastcol\tblind0\tblindtype3 '||chr(10)||
+'\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(927) := 'rw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clw';
+    wwv_flow_api.g_varchar2_table(928) := 'Width4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\br';
+    wwv_flow_api.g_varchar2_table(929) := 'drcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth47';
+    wwv_flow_api.g_varchar2_table(930) := '88\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intbl\wrapde';
+    wwv_flow_api.g_varchar2_table(931) := 'fault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs';
+    wwv_flow_api.g_varchar2_table(932) := '0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2';
+    wwv_flow_api.g_varchar2_table(933) := '057\langfe1033\langnp2057\insrsid6291715 Received In RUG\cell \cell }\pard\plain \ltrpar\ql \li0\ri0';
+    wwv_flow_api.g_varchar2_table(934) := '\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\ala';
+    wwv_flow_api.g_varchar2_table(935) := 'ng1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \';
+    wwv_flow_api.g_varchar2_table(936) := 'ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid6291715 \trowd \irow5\irowband5\ltrrow\ts15\trgaph';
+    wwv_flow_api.g_varchar2_table(937) := '108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrb\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(938) := '\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf';
+    wwv_flow_api.g_varchar2_table(939) := '1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpa';
+    wwv_flow_api.g_varchar2_table(940) := 'ddfb3\trpaddfr3\tblrsid6291715\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtyp';
+    wwv_flow_api.g_varchar2_table(941) := 'e3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\';
+    wwv_flow_api.g_varchar2_table(942) := 'brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clv';
+    wwv_flow_api.g_varchar2_table(943) := 'ertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \';
+    wwv_flow_api.g_varchar2_table(944) := 'clbrdrr'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrro';
+    wwv_flow_api.g_varchar2_table(945) := 'w}\pard\plain \ltrpar\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustrig';
+    wwv_flow_api.g_varchar2_table(946) := 'ht\rin0\lin0\pararsid6691967\yts15 \rtlch\fcs1 '||chr(10)||
+'\af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033';
+    wwv_flow_api.g_varchar2_table(947) := '\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2';
+    wwv_flow_api.g_varchar2_table(948) := '057\insrsid6291715 Received to Drawing Office\cell }\pard \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intb';
+    wwv_flow_api.g_varchar2_table(949) := 'l\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang';
+    wwv_flow_api.g_varchar2_table(950) := '2057\langfe1033\langnp2057\insrsid6291715 \cell }\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\w';
+    wwv_flow_api.g_varchar2_table(951) := 'rapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0';
+    wwv_flow_api.g_varchar2_table(952) := ' \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang20';
+    wwv_flow_api.g_varchar2_table(953) := '57\langfe1033\langnp2057\insrsid6291715 \trowd \irow6\irowband6\ltrrow\ts15\trgaph108\trleft-108\trb';
+    wwv_flow_api.g_varchar2_table(954) := 'rdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\br';
+    wwv_flow_api.g_varchar2_table(955) := 'drs\brdrw10\brdrcf1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trf';
+    wwv_flow_api.g_varchar2_table(956) := 'tsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblr';
+    wwv_flow_api.g_varchar2_table(957) := 'sid6291715\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 '||chr(10)||
+'\clvertalt\clbr';
+    wwv_flow_api.g_varchar2_table(958) := 'drt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brd';
+    wwv_flow_api.g_varchar2_table(959) := 'rs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs';
+    wwv_flow_api.g_varchar2_table(960) := '\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdr';
+    wwv_flow_api.g_varchar2_table(961) := 'w10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpa';
+    wwv_flow_api.g_varchar2_table(962) := 'r'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\parar';
+    wwv_flow_api.g_varchar2_table(963) := 'sid6691967\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\la';
+    wwv_flow_api.g_varchar2_table(964) := 'ngnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid6291715';
+    wwv_flow_api.g_varchar2_table(965) := ' Returned From Drawing Office to RNM2/RNM6\cell }\pard \ltrpar\ql \li0\ri0\sa200\widctlpar\intbl\wra';
+    wwv_flow_api.g_varchar2_table(966) := 'pdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang205';
+    wwv_flow_api.g_varchar2_table(967) := '7\langfe1033\langnp2057\insrsid6291715 \cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapde';
+    wwv_flow_api.g_varchar2_table(968) := 'fault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f';
+    wwv_flow_api.g_varchar2_table(969) := '37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\la';
+    wwv_flow_api.g_varchar2_table(970) := 'ngfe1033\langnp2057\insrsid6291715 \trowd \irow7\irowband7\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\';
+    wwv_flow_api.g_varchar2_table(971) := 'brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs';
+    wwv_flow_api.g_varchar2_table(972) := '\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsW';
+    wwv_flow_api.g_varchar2_table(973) := 'idthB3\trftsWidthA3\trautofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid';
+    wwv_flow_api.g_varchar2_table(974) := '6291715\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\b';
+    wwv_flow_api.g_varchar2_table(975) := 'rdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\';
+    wwv_flow_api.g_varchar2_table(976) := 'brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\br';
+    wwv_flow_api.g_varchar2_table(977) := 'drw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr'||chr(10)||
+'\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(978) := '\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar\q';
+    wwv_flow_api.g_varchar2_table(979) := 'l \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\pararsid66';
+    wwv_flow_api.g_varchar2_table(980) := '91967\yts15 \rtlch\fcs1 '||chr(10)||
+'\af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langn';
+    wwv_flow_api.g_varchar2_table(981) := 'p1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid6291715 Rece';
+    wwv_flow_api.g_varchar2_table(982) := 'ived In RNM2/RNM6\cell }\pard \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnu';
+    wwv_flow_api.g_varchar2_table(983) := 'm\faauto\adjustright\rin0\lin0\yts15 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\i';
+    wwv_flow_api.g_varchar2_table(984) := 'nsrsid6291715 \cell }\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\f';
+    wwv_flow_api.g_varchar2_table(985) := 'aauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe10';
+    wwv_flow_api.g_varchar2_table(986) := '33\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\ins';
+    wwv_flow_api.g_varchar2_table(987) := 'rsid6291715 \trowd \irow8\irowband8\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \';
+    wwv_flow_api.g_varchar2_table(988) := 'trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh';
+    wwv_flow_api.g_varchar2_table(989) := ''||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trftsWidthB3\trftsWidthA3\traut';
+    wwv_flow_api.g_varchar2_table(990) := 'ofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6291715\tbllkhdrrows\tbll';
+    wwv_flow_api.g_varchar2_table(991) := 'klastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 '||chr(10)||
+'\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \c';
+    wwv_flow_api.g_varchar2_table(992) := 'lbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb';
+    wwv_flow_api.g_varchar2_table(993) := '\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\';
+    wwv_flow_api.g_varchar2_table(994) := 'brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsW';
+    wwv_flow_api.g_varchar2_table(995) := 'idth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctl';
+    wwv_flow_api.g_varchar2_table(996) := 'par\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alan';
+    wwv_flow_api.g_varchar2_table(997) := 'g1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltr';
+    wwv_flow_api.g_varchar2_table(998) := 'ch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid6291715 Passed By RNM2/RNM6 To relevant Engineer Fo';
+    wwv_flow_api.g_varchar2_table(999) := 'r Action\cell \cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faa';
+    wwv_flow_api.g_varchar2_table(1000) := 'uto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 '||chr(10)||
+'\ltrch\fcs0 \f37\fs22\lang1033\langfe10';
+null;
+ 
+end;
+/
+
+ 
+begin
+ 
+    wwv_flow_api.g_varchar2_table(1001) := '33\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrs';
+    wwv_flow_api.g_varchar2_table(1002) := 'id6291715 \trowd \irow9\irowband9\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \tr';
+    wwv_flow_api.g_varchar2_table(1003) := 'brdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh';
+    wwv_flow_api.g_varchar2_table(1004) := '\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\traut';
+    wwv_flow_api.g_varchar2_table(1005) := 'ofit1\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6291715\tbllkhdrrows\tbll';
+    wwv_flow_api.g_varchar2_table(1006) := 'klastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clb';
+    wwv_flow_api.g_varchar2_table(1007) := 'rdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb';
+    wwv_flow_api.g_varchar2_table(1008) := '\clftsWidth3\clwWidth4788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\br';
+    wwv_flow_api.g_varchar2_table(1009) := 'drs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsW';
+    wwv_flow_api.g_varchar2_table(1010) := 'idth3\clwWidth4788\clshdrawnil \cellx9468\row \ltrrow}\pard\plain \ltrpar\ql \li0\ri0\sa200\widctlpa';
+    wwv_flow_api.g_varchar2_table(1011) := 'r\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\yts15 \rtlch\fcs1 \af0\afs22\alang1';
+    wwv_flow_api.g_varchar2_table(1012) := '025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltr';
+    wwv_flow_api.g_varchar2_table(1013) := 'ch\fcs0 \lang2057\langfe1033\langnp2057\insrsid6291715 Received By Engineer\cell \cell }\pard\plain ';
+    wwv_flow_api.g_varchar2_table(1014) := '\ltrpar'||chr(10)||
+'\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlc';
+    wwv_flow_api.g_varchar2_table(1015) := 'h\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 ';
+    wwv_flow_api.g_varchar2_table(1016) := '{\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid6291715 \trowd \irow10\irowba';
+    wwv_flow_api.g_varchar2_table(1017) := 'nd10\lastrow \ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\';
+    wwv_flow_api.g_varchar2_table(1018) := 'brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh'||chr(10)||
+'\brdrs\brdrw10\brdrc';
+    wwv_flow_api.g_varchar2_table(1019) := 'f1 \trbrdrv\brdrs\brdrw10\brdrcf1 \trftsWidth1\trftsWidthB3\trftsWidthA3\trautofit1\trpaddl108\trpad';
+    wwv_flow_api.g_varchar2_table(1020) := 'dr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6291715\tbllkhdrrows\tbllklastrow\tbllkhdrcols\';
+    wwv_flow_api.g_varchar2_table(1021) := 'tbllklastcol\tblind0\tblindtype3 '||chr(10)||
+'\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\b';
+    wwv_flow_api.g_varchar2_table(1022) := 'rdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4';
+    wwv_flow_api.g_varchar2_table(1023) := '788\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 ';
+    wwv_flow_api.g_varchar2_table(1024) := '\clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth4788\cls';
+    wwv_flow_api.g_varchar2_table(1025) := 'hdrawnil \cellx9468\row }\pard \ltrpar\ql \li0\ri0\sa200\widctlpar\wrapdefault\aspalpha\aspnum\faaut';
+    wwv_flow_api.g_varchar2_table(1026) := 'o\adjustright\rin0\lin0\itap0 {'||chr(10)||
+'\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsi';
+    wwv_flow_api.g_varchar2_table(1027) := 'd6291715\charrsid16665483 '||chr(10)||
+'\par }}';
+null;
+ 
+end;
+/
+
+--application/shared_components/reports/report_layouts/front_page
+begin
+wwv_flow_api.create_report_layout(
+  p_id => 1319710737138107 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_report_layout_name =>'Front Page',
+  p_report_layout_type =>'RTF_FILE',
+  p_varchar2_table => wwv_flow_api.g_varchar2_table,
+  p_xslfo_column_heading =>'',
+  p_xslfo_column_template =>'',
+  p_xslfo_column_template_width =>'',
+  p_reference_id =>null,
+  p_report_layout_comment =>'');
+end;
+/
+ 
+begin
+ 
+    wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
+    wwv_flow_api.g_varchar2_table(1) := '{\rtf1\adeflang1025\ansi\ansicpg1252\uc1\adeff0\deff0\stshfdbch0\stshfloch37\stshfhich37\stshfbi37\d';
+    wwv_flow_api.g_varchar2_table(2) := 'eflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times Ne';
+    wwv_flow_api.g_varchar2_table(3) := 'w Roman;}{\f2\fmodern\fcharset0\fprq1{\*\panose 02070309020205020404}Courier New;}'||chr(10)||
+'{\f37\fswiss\fch';
+    wwv_flow_api.g_varchar2_table(4) := 'arset0\fprq2{\*\panose 020f0502020204030204}Calibri;}{\f255\froman\fcharset238\fprq2 Times New Roman';
+    wwv_flow_api.g_varchar2_table(5) := ' CE;}{\f256\froman\fcharset204\fprq2 Times New Roman Cyr;}{\f258\froman\fcharset161\fprq2 Times New ';
+    wwv_flow_api.g_varchar2_table(6) := 'Roman Greek;}'||chr(10)||
+'{\f259\froman\fcharset162\fprq2 Times New Roman Tur;}{\f260\fbidi \froman\fcharset177';
+    wwv_flow_api.g_varchar2_table(7) := '\fprq2 Times New Roman (Hebrew);}{\f261\fbidi \froman\fcharset178\fprq2 Times New Roman (Arabic);}{\';
+    wwv_flow_api.g_varchar2_table(8) := 'f262\froman\fcharset186\fprq2 Times New Roman Baltic;}'||chr(10)||
+'{\f263\froman\fcharset163\fprq2 Times New Ro';
+    wwv_flow_api.g_varchar2_table(9) := 'man (Vietnamese);}{\f275\fmodern\fcharset238\fprq1 Courier New CE;}{\f276\fmodern\fcharset204\fprq1 ';
+    wwv_flow_api.g_varchar2_table(10) := 'Courier New Cyr;}{\f278\fmodern\fcharset161\fprq1 Courier New Greek;}'||chr(10)||
+'{\f279\fmodern\fcharset162\fp';
+    wwv_flow_api.g_varchar2_table(11) := 'rq1 Courier New Tur;}{\f280\fbidi \fmodern\fcharset177\fprq1 Courier New (Hebrew);}{\f281\fbidi \fmo';
+    wwv_flow_api.g_varchar2_table(12) := 'dern\fcharset178\fprq1 Courier New (Arabic);}{\f282\fmodern\fcharset186\fprq1 Courier New Baltic;}'||chr(10)||
+'';
+    wwv_flow_api.g_varchar2_table(13) := '{\f283\fmodern\fcharset163\fprq1 Courier New (Vietnamese);}{\f625\fswiss\fcharset238\fprq2 Calibri C';
+    wwv_flow_api.g_varchar2_table(14) := 'E;}{\f626\fswiss\fcharset204\fprq2 Calibri Cyr;}{\f628\fswiss\fcharset161\fprq2 Calibri Greek;}{\f62';
+    wwv_flow_api.g_varchar2_table(15) := '9\fswiss\fcharset162\fprq2 Calibri Tur;}'||chr(10)||
+'{\f632\fswiss\fcharset186\fprq2 Calibri Baltic;}}{\colortb';
+    wwv_flow_api.g_varchar2_table(16) := 'l;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0';
+    wwv_flow_api.g_varchar2_table(17) := '\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;'||chr(10)||
+'\red0\green0\blue128';
+    wwv_flow_api.g_varchar2_table(18) := ';\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\gre';
+    wwv_flow_api.g_varchar2_table(19) := 'en128\blue0;\red128\green128\blue128;\red192\green192\blue192;}{\stylesheet{'||chr(10)||
+'\ql \li0\ri0\sa200\wid';
+    wwv_flow_api.g_varchar2_table(20) := 'ctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af0\afs22\alang10';
+    wwv_flow_api.g_varchar2_table(21) := '25 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \snext0 \styrsid1248866 N';
+    wwv_flow_api.g_varchar2_table(22) := 'ormal;}{\*\cs10 \additive '||chr(10)||
+'\ssemihidden Default Paragraph Font;}{\*\ts11\tsrowd\trftsWidthB3\trpadd';
+    wwv_flow_api.g_varchar2_table(23) := 'l108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblind0\tblindtype3\tscellwidthfts0\tsvertal';
+    wwv_flow_api.g_varchar2_table(24) := 't\tsbrdrt\tsbrdrl\tsbrdrb\tsbrdrr\tsbrdrdgl\tsbrdrdgr\tsbrdrh\tsbrdrv '||chr(10)||
+'\ql \li0\ri0\widctlpar\wrapd';
+    wwv_flow_api.g_varchar2_table(25) := 'efault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af37\afs20 \ltrch\fcs0 \f37\f';
+    wwv_flow_api.g_varchar2_table(26) := 's20\lang1024\langfe1024\cgrid\langnp1024\langfenp1024 \snext11 \ssemihidden Normal Table;}{\*\ts15\t';
+    wwv_flow_api.g_varchar2_table(27) := 'srowd\trbrdrt'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 ';
+    wwv_flow_api.g_varchar2_table(28) := '\trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trft';
+    wwv_flow_api.g_varchar2_table(29) := 'sWidthB3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblind0\tblindtype3\tscellwid';
+    wwv_flow_api.g_varchar2_table(30) := 'thfts0\tsvertalt\tsbrdrt\tsbrdrl\tsbrdrb\tsbrdrr\tsbrdrdgl\tsbrdrdgr\tsbrdrh\tsbrdrv '||chr(10)||
+'\ql \li0\ri0\';
+    wwv_flow_api.g_varchar2_table(31) := 'widctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \rtlch\fcs1 \af0\afs22\alan';
+    wwv_flow_api.g_varchar2_table(32) := 'g1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon11 \snext15 \';
+    wwv_flow_api.g_varchar2_table(33) := 'styrsid16665483 Table Grid;}}'||chr(10)||
+'{\*\latentstyles\lsdstimax156\lsdlockeddef0{\lsdlockedexcept Normal;h';
+    wwv_flow_api.g_varchar2_table(34) := 'eading 1;heading 2;heading 3;heading 4;heading 5;heading 6;heading 7;heading 8;heading 9;toc 1;toc 2';
+    wwv_flow_api.g_varchar2_table(35) := ';toc 3;toc 4;toc 5;toc 6;toc 7;toc 8;toc 9;caption;Title;Default Paragraph Font;Subtitle;Strong;Emph';
+    wwv_flow_api.g_varchar2_table(36) := 'asis;Table Grid;}}'||chr(10)||
+'{\*\rsidtbl \rsid607341\rsid1248866\rsid1512796\rsid2170205\rsid2576807\rsid2903';
+    wwv_flow_api.g_varchar2_table(37) := '609\rsid3360042\rsid3560942\rsid4201360\rsid4331195\rsid4933644\rsid5131112\rsid5730614\rsid6451980\';
+    wwv_flow_api.g_varchar2_table(38) := 'rsid6765518\rsid8001502\rsid8482629\rsid9640468\rsid9856348\rsid10358963'||chr(10)||
+'\rsid10617749\rsid11886692';
+    wwv_flow_api.g_varchar2_table(39) := '\rsid12353262\rsid13435002\rsid14238228\rsid14319519\rsid14376119\rsid14896649\rsid15428369\rsid1560';
+    wwv_flow_api.g_varchar2_table(40) := '1039\rsid15664419\rsid16665483}{\*\generator Microsoft Word 11.0.0000;}{\info{\title Records Service';
+    wwv_flow_api.g_varchar2_table(41) := '  }{\author  Ian Turnbull}'||chr(10)||
+'{\operator SMarshall}{\creatim\yr2009\mo6\dy23\hr16\min20}{\revtim\yr200';
+    wwv_flow_api.g_varchar2_table(42) := '9\mo7\dy7\hr14\min52}{\version12}{\edmins180}{\nofpages1}{\nofwords50}{\nofchars289}{\*\company  }{\';
+    wwv_flow_api.g_varchar2_table(43) := 'nofcharsws338}{\vern24611}{\*\password 00000000}}{\*\xmlnstbl {\xmlns1 http://schem'||chr(10)||
+'as.microsoft.co';
+    wwv_flow_api.g_varchar2_table(44) := 'm/office/word/2003/wordml}}\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440\gutter0\';
+    wwv_flow_api.g_varchar2_table(45) := 'ltrsect '||chr(10)||
+'\widowctrl\ftnbj\aenddoc\donotembedsysfont1\donotembedlingdata0\grfdocevents0\validatexml1';
+    wwv_flow_api.g_varchar2_table(46) := '\showplaceholdtext0\ignoremixedcontent0\saveinvalidxml0\showxmlerrors1\noxlattoyen\expshrtn\noultrls';
+    wwv_flow_api.g_varchar2_table(47) := 'pc\dntblnsbdb\nospaceforul\formshade\horzdoc\dgmargin\dghspace180'||chr(10)||
+'\dgvspace180\dghorigin1440\dgvori';
+    wwv_flow_api.g_varchar2_table(48) := 'gin1440\dghshow1\dgvshow1'||chr(10)||
+'\jexpand\viewkind1\viewscale150\pgbrdrhead\pgbrdrfoot\splytwnine\ftnlytwn';
+    wwv_flow_api.g_varchar2_table(49) := 'ine\htmautsp\nolnhtadjtbl\useltbaln\alntblind\lytcalctblwd\lyttblrtgr\lnbrkrule\nobrkwrptbl\snaptogr';
+    wwv_flow_api.g_varchar2_table(50) := 'idincell\allowfieldendsel\wrppunct'||chr(10)||
+'\asianbrkrule\rsidroot16665483\newtblstyruls\nogrowautofit \fet0';
+    wwv_flow_api.g_varchar2_table(51) := '{\*\wgrffmtfilter 2450}\ilfomacatclnup0\ltrpar \sectd \ltrsect\linex0\headery708\footery708\colsx708';
+    wwv_flow_api.g_varchar2_table(52) := '\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\*\pnseclvl1'||chr(10)||
+'\pnucrm\pnstart1\pnin';
+    wwv_flow_api.g_varchar2_table(53) := 'dent720\pnhang {\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclv';
+    wwv_flow_api.g_varchar2_table(54) := 'l3\pndec\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl4\pnlcltr\pnstart1\pnindent720\pnhang {';
+    wwv_flow_api.g_varchar2_table(55) := '\pntxta )}}{\*\pnseclvl5'||chr(10)||
+'\pndec\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pn';
+    wwv_flow_api.g_varchar2_table(56) := 'lcltr\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\p';
+    wwv_flow_api.g_varchar2_table(57) := 'nhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnstart1\pnindent720\pnhang '||chr(10)||
+'{\pntxtb (}{\pntxta';
+    wwv_flow_api.g_varchar2_table(58) := ' )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}\pard\plain \ltrpar\qr \';
+    wwv_flow_api.g_varchar2_table(59) := 'li0\ri0\sa200\widctlpar\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0\pararsid13435';
+    wwv_flow_api.g_varchar2_table(60) := '002 \rtlch\fcs1 '||chr(10)||
+'\af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\langnp1033\la';
+    wwv_flow_api.g_varchar2_table(61) := 'ngfenp1033 {\field\flddirty{\*\fldinst {\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid13435002\charrsid134350';
+    wwv_flow_api.g_varchar2_table(62) := '02 FORMTEXT}{\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\insrsid13435002\charrsid13435002 {\*\datafield 00010000';
+    wwv_flow_api.g_varchar2_table(63) := '00000000055465787431000d575052435f46494c455f5245460000000000113c3f575052435f46494c455f5245463f3e0000';
+    wwv_flow_api.g_varchar2_table(64) := '000000}{\*\formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext WPRC_FILE_REF}'||chr(10)||
+'{\*';
+    wwv_flow_api.g_varchar2_table(65) := '\ffstattext <?WPRC_FILE_REF?>}}}}}{\fldrslt {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang1024\langfe1024\nopro';
+    wwv_flow_api.g_varchar2_table(66) := 'of\insrsid13435002\charrsid13435002 WPRC_FILE_REF}}}\sectd '||chr(10)||
+'\linex0\headery708\footery708\colsx708\';
+    wwv_flow_api.g_varchar2_table(67) := 'endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsi';
+    wwv_flow_api.g_varchar2_table(68) := 'd9856348\charrsid13435002  }{\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid16665483\charrsid13435002 '||chr(10)||
+'\par \';
+    wwv_flow_api.g_varchar2_table(69) := 'ltrrow}\trowd \irow0\irowband0\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrd';
+    wwv_flow_api.g_varchar2_table(70) := 'rl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdr';
+    wwv_flow_api.g_varchar2_table(71) := 's\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl108';
+    wwv_flow_api.g_varchar2_table(72) := '\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid3360042\tbllkhdrrows\tbllklastrow\tbllkhd';
+    wwv_flow_api.g_varchar2_table(73) := 'rcols\tbllklastcol\tblind0\tblindtype3 \clvmgf\clvertalt\clbrdrt\brdrdb\brdrw30 \clbrdrl'||chr(10)||
+'\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(74) := 'rw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clw';
+    wwv_flow_api.g_varchar2_table(75) := 'Width2394\clshdrawnil \cellx2286\clvmgf\clvertalt\clbrdrt\brdrdb\brdrw30 \clbrdrl\brdrs\brdrw10\brdr';
+    wwv_flow_api.g_varchar2_table(76) := 'cf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth23';
+    wwv_flow_api.g_varchar2_table(77) := '94\clshdrawnil \cellx4680\clvertalt\clbrdrt\brdrdb\brdrw30 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\b';
+    wwv_flow_api.g_varchar2_table(78) := 'rdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil ';
+    wwv_flow_api.g_varchar2_table(79) := ''||chr(10)||
+'\cellx7074\clvertalt\clbrdrt\brdrdb\brdrw30 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\b';
+    wwv_flow_api.g_varchar2_table(80) := 'rdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx9468\pard';
+    wwv_flow_api.g_varchar2_table(81) := '\plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\ri';
+    wwv_flow_api.g_varchar2_table(82) := 'n0\lin0\pararsid6691967\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe';
+    wwv_flow_api.g_varchar2_table(83) := '1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\i';
+    wwv_flow_api.g_varchar2_table(84) := 'nsrsid13435002 L.P.A.'||chr(10)||
+'\par }{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid13';
+    wwv_flow_api.g_varchar2_table(85) := '435002\charrsid14896649 FORMTEXT}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid13435002\charrsid14896649 ';
+    wwv_flow_api.g_varchar2_table(86) := '{\*\datafield '||chr(10)||
+'00010000000000000554657874310008575052435f4c504100000000000c3c3f575052435f4c50413f3e';
+    wwv_flow_api.g_varchar2_table(87) := '0000000000}{\*\formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext WPRC_LPA}{\*\ff';
+    wwv_flow_api.g_varchar2_table(88) := 'stattext <?WPRC_LPA?>}}}}}{\fldrslt {\rtlch\fcs1 \af2 \ltrch\fcs0 '||chr(10)||
+'\f2\lang1024\langfe1024\noproof\';
+    wwv_flow_api.g_varchar2_table(89) := 'insrsid13435002\charrsid14896649 WPRC_LPA}}}\sectd \linex0\headery708\footery708\colsx708\endnhere\s';
+    wwv_flow_api.g_varchar2_table(90) := 'ectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af2 \ltrch\fcs0 '||chr(10)||
+'\f2\lang2057\la';
+    wwv_flow_api.g_varchar2_table(91) := 'ngfe1033\langnp2057\insrsid13435002\charrsid14896649 \cell }{\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\';
+    wwv_flow_api.g_varchar2_table(92) := 'langfe1033\langnp2057\insrsid13435002 Address'||chr(10)||
+'\par }{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af2 \';
+    wwv_flow_api.g_varchar2_table(93) := 'ltrch\fcs0 \f2\insrsid13435002\charrsid14896649 FORMTEXT}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid13';
+    wwv_flow_api.g_varchar2_table(94) := '435002\charrsid14896649 {\*\datafield '||chr(10)||
+'0001000000000000055465787431000d575052435f4c4f434154494f4e00';
+    wwv_flow_api.g_varchar2_table(95) := '00000000113c3f575052435f4c4f434154494f4e3f3e0000000000}{\*\formfield{\fftype0\ffownstat\fftypetxt0{\';
+    wwv_flow_api.g_varchar2_table(96) := '*\ffname Text1}{\*\ffdeftext WPRC_LOCATION}{\*\ffstattext <?WPRC_LOCATION?>}}}}}{\fldrslt {'||chr(10)||
+'\rtlch\';
+    wwv_flow_api.g_varchar2_table(97) := 'fcs1 \af2 \ltrch\fcs0 \f2\lang1024\langfe1024\noproof\insrsid13435002\charrsid14896649 WPRC_LOCATION';
+    wwv_flow_api.g_varchar2_table(98) := '}}}\sectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid1061';
+    wwv_flow_api.g_varchar2_table(99) := '7749\sftnbj {\rtlch\fcs1 \af2 \ltrch\fcs0 '||chr(10)||
+'\f2\lang2057\langfe1033\langnp2057\insrsid13435002\charr';
+    wwv_flow_api.g_varchar2_table(100) := 'sid14896649 \cell }{\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid13435002 \ce';
+    wwv_flow_api.g_varchar2_table(101) := 'll Easting'||chr(10)||
+'\par }{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid13435002\char';
+    wwv_flow_api.g_varchar2_table(102) := 'rsid14896649 FORMTEXT}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid13435002\charrsid14896649 {\*\datafie';
+    wwv_flow_api.g_varchar2_table(103) := 'ld '||chr(10)||
+'0001000000000000055465787431000b575052435f4f5347525f5800000000000f3c3f575052435f4f5347525f583f3';
+    wwv_flow_api.g_varchar2_table(104) := 'e0000000000}{\*\formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ffdeftext WPRC_OSGR_X}{\';
+    wwv_flow_api.g_varchar2_table(105) := '*\ffstattext <?WPRC_OSGR_X?>}}}}}{\fldrslt {\rtlch\fcs1 '||chr(10)||
+'\af2 \ltrch\fcs0 \f2\lang1024\langfe1024\n';
+    wwv_flow_api.g_varchar2_table(106) := 'oproof\insrsid13435002\charrsid14896649 WPRC_OSGR_X}}}\sectd \linex0\headery708\footery708\colsx708\';
+    wwv_flow_api.g_varchar2_table(107) := 'endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af2 \ltrch\fcs0 '||chr(10)||
+'\f2\l';
+    wwv_flow_api.g_varchar2_table(108) := 'ang2057\langfe1033\langnp2057\insrsid13435002\charrsid14896649 \cell }\pard\plain \ltrpar\ql \li0\ri';
+    wwv_flow_api.g_varchar2_table(109) := '0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\al';
+    wwv_flow_api.g_varchar2_table(110) := 'ang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 ';
+    wwv_flow_api.g_varchar2_table(111) := '\ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid13435002 \trowd \irow0\irowband0\ltrrow\ts15\trga';
+    wwv_flow_api.g_varchar2_table(112) := 'ph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw';
+    wwv_flow_api.g_varchar2_table(113) := '10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdr';
+    wwv_flow_api.g_varchar2_table(114) := 'cf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trp';
+    wwv_flow_api.g_varchar2_table(115) := 'addfr3\tblrsid3360042\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvmg';
+    wwv_flow_api.g_varchar2_table(116) := 'f\clvertalt\clbrdrt\brdrdb\brdrw30 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \';
+    wwv_flow_api.g_varchar2_table(117) := 'clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx2286\clvmgf\clver';
+    wwv_flow_api.g_varchar2_table(118) := 'talt\clbrdrt\brdrdb\brdrw30 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr'||chr(10)||
+'';
+    wwv_flow_api.g_varchar2_table(119) := '\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx4680\clvertalt\clbrdrt\b';
+    wwv_flow_api.g_varchar2_table(120) := 'rdrdb\brdrw30 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\b';
+    wwv_flow_api.g_varchar2_table(121) := 'rdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil '||chr(10)||
+'\cellx7074\clvertalt\clbrdrt\brdrdb\brdrw30 ';
+    wwv_flow_api.g_varchar2_table(122) := '\clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlr';
+    wwv_flow_api.g_varchar2_table(123) := 'tb\clftsWidth3\clwWidth2394\clshdrawnil \cellx9468\row \ltrrow}\trowd \irow1\irowband1\ltrrow'||chr(10)||
+'\ts15';
+    wwv_flow_api.g_varchar2_table(124) := '\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\br';
+    wwv_flow_api.g_varchar2_table(125) := 'drw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\b';
+    wwv_flow_api.g_varchar2_table(126) := 'rdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\';
+    wwv_flow_api.g_varchar2_table(127) := 'trpaddfr3\tblrsid3360042\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \cl';
+    wwv_flow_api.g_varchar2_table(128) := 'vmrg\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10';
+    wwv_flow_api.g_varchar2_table(129) := '\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx2286\cl';
+    wwv_flow_api.g_varchar2_table(130) := 'vmrg\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\b';
+    wwv_flow_api.g_varchar2_table(131) := 'rdrcf1 '||chr(10)||
+'\clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx4680\cl';
+    wwv_flow_api.g_varchar2_table(132) := 'vertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 ';
+    wwv_flow_api.g_varchar2_table(133) := '\clbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx7074\clvertalt';
+    wwv_flow_api.g_varchar2_table(134) := '\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdr';
+    wwv_flow_api.g_varchar2_table(135) := 'r\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx9468'||chr(10)||
+'\pard\plain \ltrp';
+    wwv_flow_api.g_varchar2_table(136) := 'ar\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\parars';
+    wwv_flow_api.g_varchar2_table(137) := 'id6691967\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid\lan';
+    wwv_flow_api.g_varchar2_table(138) := 'gnp1033\langfenp1033 {\rtlch\fcs1 '||chr(10)||
+'\af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid13435002';
+    wwv_flow_api.g_varchar2_table(139) := ' \cell \cell Cards\cell Northing'||chr(10)||
+'\par }{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af2 \ltrch\fcs0 \f';
+    wwv_flow_api.g_varchar2_table(140) := '2\insrsid13435002\charrsid14896649 FORMTEXT}{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid13435002\charrs';
+    wwv_flow_api.g_varchar2_table(141) := 'id14896649 {\*\datafield '||chr(10)||
+'0001000000000000055465787431000b575052435f4f5347525f5900000000000f3c3f575';
+    wwv_flow_api.g_varchar2_table(142) := '052435f4f5347525f593f3e0000000000}{\*\formfield{\fftype0\ffownstat\fftypetxt0{\*\ffname Text1}{\*\ff';
+    wwv_flow_api.g_varchar2_table(143) := 'deftext WPRC_OSGR_Y}{\*\ffstattext <?WPRC_OSGR_Y?>}}}}}{\fldrslt {\rtlch\fcs1 '||chr(10)||
+'\af2 \ltrch\fcs0 \f2';
+    wwv_flow_api.g_varchar2_table(144) := '\lang1024\langfe1024\noproof\insrsid13435002\charrsid14896649 WPRC_OSGR_Y}}}\sectd \linex0\headery70';
+    wwv_flow_api.g_varchar2_table(145) := '8\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \a';
+    wwv_flow_api.g_varchar2_table(146) := 'f2 \ltrch\fcs0 '||chr(10)||
+'\f2\lang2057\langfe1033\langnp2057\insrsid13435002\charrsid14896649 \cell }\pard\pl';
+    wwv_flow_api.g_varchar2_table(147) := 'ain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0 \rt';
+    wwv_flow_api.g_varchar2_table(148) := 'lch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1033\cgrid\langnp1033\langfenp1';
+    wwv_flow_api.g_varchar2_table(149) := '033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insrsid13435002 \trowd \irow1\irow';
+    wwv_flow_api.g_varchar2_table(150) := 'band1\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf';
+    wwv_flow_api.g_varchar2_table(151) := '1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbr';
+    wwv_flow_api.g_varchar2_table(152) := 'drv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl108\trpaddr108\trpaddfl3\t';
+    wwv_flow_api.g_varchar2_table(153) := 'rpaddft3\trpaddfb3\trpaddfr3\tblrsid3360042\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tbli';
+    wwv_flow_api.g_varchar2_table(154) := 'nd0\tblindtype3 \clvmrg\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \cl';
+    wwv_flow_api.g_varchar2_table(155) := 'brdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdr';
+    wwv_flow_api.g_varchar2_table(156) := 'awnil \cellx2286\clvmrg\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbr';
+    wwv_flow_api.g_varchar2_table(157) := 'drb\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdr';
+    wwv_flow_api.g_varchar2_table(158) := 'awnil \cellx4680\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brd';
+    wwv_flow_api.g_varchar2_table(159) := 'rs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \';
+    wwv_flow_api.g_varchar2_table(160) := 'cellx7074\clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdr';
+    wwv_flow_api.g_varchar2_table(161) := 'w10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth2394\clshdrawnil \cellx9468';
+    wwv_flow_api.g_varchar2_table(162) := '\row '||chr(10)||
+'}\pard\plain \ltrpar\qc \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adj';
+    wwv_flow_api.g_varchar2_table(163) := 'ustright\rin0\lin0\itap2\pararsid6765518\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs2';
+    wwv_flow_api.g_varchar2_table(164) := '2\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 '||chr(10)||
+'{\*\bkmkstart Text3}{\*\bkmkstart Text4}{\fiel';
+    wwv_flow_api.g_varchar2_table(165) := 'd\flddirty{\*\fldinst {\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\insrsid3360042\charrsid3360042  FORMTEXT }{';
+    wwv_flow_api.g_varchar2_table(166) := '\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\insrsid3360042\charrsid3360042 {\*\datafield '||chr(10)||
+'8001000000000000055';
+    wwv_flow_api.g_varchar2_table(167) := '465787434000246200000000000183c3f666f722d656163683a524f57534554315f524f573f3e0000000000}{\*\formfiel';
+    wwv_flow_api.g_varchar2_table(168) := 'd{\fftype0\ffownhelp\ffownstat\fftypetxt0{\*\ffname Text4}{\*\ffdeftext F }{\*\ffstattext <?for-each';
+    wwv_flow_api.g_varchar2_table(169) := ':ROWSET1_ROW?>}}}}}{\fldrslt {'||chr(10)||
+'\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\lang1024\langfe1024\noproof\insrsi';
+    wwv_flow_api.g_varchar2_table(170) := 'd3360042\charrsid3360042 F }}}\sectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360';
+    wwv_flow_api.g_varchar2_table(171) := '\sectdefaultcl\sectrsid10617749\sftnbj {\*\bkmkstart Text5}{\*\bkmkend Text4}'||chr(10)||
+'{\field\flddirty{\*\f';
+    wwv_flow_api.g_varchar2_table(172) := 'ldinst {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid3360042\charrsid6765518  FORMTEXT }{\rtlch\fcs1 \af2';
+    wwv_flow_api.g_varchar2_table(173) := ' \ltrch\fcs0 \f2\insrsid3360042\charrsid6765518 {\*\datafield '||chr(10)||
+'800100000000000005546578743500084348';
+    wwv_flow_api.g_varchar2_table(174) := '41525f53455100000000000c3c3f434841525f5345513f3e0000000000}{\*\formfield{\fftype0\ffownhelp\ffownsta';
+    wwv_flow_api.g_varchar2_table(175) := 't\fftypetxt0{\*\ffname Text5}{\*\ffdeftext CHAR_SEQ}{\*\ffstattext <?CHAR_SEQ?>}}}}}{\fldrslt {\rtlc';
+    wwv_flow_api.g_varchar2_table(176) := 'h\fcs1 \af2 '||chr(10)||
+'\ltrch\fcs0 \f2\lang1024\langfe1024\noproof\insrsid3360042\charrsid6765518 CHAR_SEQ}}}';
+    wwv_flow_api.g_varchar2_table(177) := '\sectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid1061774';
+    wwv_flow_api.g_varchar2_table(178) := '9\sftnbj {\rtlch\fcs1 \af2 \ltrch\fcs0 '||chr(10)||
+'\f2\insrsid3360042\charrsid6765518 {\*\bkmkend Text5}'||chr(10)||
+'\par';
+    wwv_flow_api.g_varchar2_table(179) := ' {\*\bkmkstart Text6}}{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid3360042\c';
+    wwv_flow_api.g_varchar2_table(180) := 'harrsid6765518  FORMTEXT }{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid3360042\charrsid6765518 {\*\dataf';
+    wwv_flow_api.g_varchar2_table(181) := 'ield '||chr(10)||
+'8001000000000000055465787436000f444f435f444154455f4953535545440000000000133c3f444f435f4441544';
+    wwv_flow_api.g_varchar2_table(182) := '55f4953535545443f3e0000000000}{\*\formfield{\fftype0\ffownhelp\ffownstat\fftypetxt0{\*\ffname Text6}';
+    wwv_flow_api.g_varchar2_table(183) := '{\*\ffdeftext DOC_DATE_ISSUED}{\*\ffstattext '||chr(10)||
+'<?DOC_DATE_ISSUED?>}}}}}{\fldrslt {\rtlch\fcs1 \af2 \';
+    wwv_flow_api.g_varchar2_table(184) := 'ltrch\fcs0 \f2\lang1024\langfe1024\noproof\insrsid3360042\charrsid6765518 DOC_DATE_ISSUED}}}\sectd \';
+    wwv_flow_api.g_varchar2_table(185) := 'linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj';
+    wwv_flow_api.g_varchar2_table(186) := ' {'||chr(10)||
+'\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid3360042 {\*\bkmkend Text6}\nestcell{\nonesttables'||chr(10)||
+'\par }}\';
+    wwv_flow_api.g_varchar2_table(187) := 'pard \ltrpar\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\l';
+    wwv_flow_api.g_varchar2_table(188) := 'in0\itap2\pararsid14376119\yts15 {\*\bkmkstart Text7}{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af2 \';
+    wwv_flow_api.g_varchar2_table(189) := 'ltrch\fcs0 \f2\insrsid3360042\charrsid6765518  '||chr(10)||
+'FORMTEXT }{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid';
+    wwv_flow_api.g_varchar2_table(190) := '3360042\charrsid6765518 {\*\datafield 80010000000000000554657874370013575052434c5f52454749535452595f';
+    wwv_flow_api.g_varchar2_table(191) := '46494c450000000000173c3f575052434c5f52454749535452595f46494c453f3e0000000000}'||chr(10)||
+'{\*\formfield{\fftype';
+    wwv_flow_api.g_varchar2_table(192) := '0\ffownhelp\ffownstat\fftypetxt0{\*\ffname Text7}{\*\ffdeftext WPRCL_REGISTRY_FILE}{\*\ffstattext <?';
+    wwv_flow_api.g_varchar2_table(193) := 'WPRCL_REGISTRY_FILE?>}}}}}{\fldrslt {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\lang1024\langfe1024\noproof\in';
+    wwv_flow_api.g_varchar2_table(194) := 'srsid3360042\charrsid6765518 '||chr(10)||
+'WPRCL_REGISTRY_FILE}}}\sectd \linex0\headery708\footery708\colsx708\e';
+    wwv_flow_api.g_varchar2_table(195) := 'ndnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insr';
+    wwv_flow_api.g_varchar2_table(196) := 'sid3360042\charrsid6765518 {\*\bkmkend Text7}'||chr(10)||
+'\par {\*\bkmkstart Text8}}{\field\flddirty{\*\fldinst';
+    wwv_flow_api.g_varchar2_table(197) := ' {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid3360042\charrsid6765518  FORMTEXT }{\rtlch\fcs1 \af2 \ltrc';
+    wwv_flow_api.g_varchar2_table(198) := 'h\fcs0 \f2\insrsid3360042\charrsid6765518 {\*\datafield '||chr(10)||
+'800100000000000005546578743800084855535f4e';
+    wwv_flow_api.g_varchar2_table(199) := '414d4500000000000c3c3f4855535f4e414d453f3e0000000000}{\*\formfield{\fftype0\ffownhelp\ffownstat\ffty';
+    wwv_flow_api.g_varchar2_table(200) := 'petxt0{\*\ffname Text8}{\*\ffdeftext HUS_NAME}{\*\ffstattext <?HUS_NAME?>}}}}}{\fldrslt {\rtlch\fcs1';
+    wwv_flow_api.g_varchar2_table(201) := ' \af2 '||chr(10)||
+'\ltrch\fcs0 \f2\lang1024\langfe1024\noproof\insrsid3360042\charrsid6765518 HUS_NAME}}}\sectd';
+    wwv_flow_api.g_varchar2_table(202) := ' \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10617749\sftn';
+    wwv_flow_api.g_varchar2_table(203) := 'bj {\rtlch\fcs1 \af2 \ltrch\fcs0 '||chr(10)||
+'\f2\insrsid3360042\charrsid6765518 {\*\bkmkend Text8} - {\*\bkmks';
+    wwv_flow_api.g_varchar2_table(204) := 'tart Text9}}{\field\flddirty{\*\fldinst {\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid3360042\charrsid676';
+    wwv_flow_api.g_varchar2_table(205) := '5518  FORMTEXT }{\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\insrsid3360042\charrsid6765518 '||chr(10)||
+'{\*\datafield 800';
+    wwv_flow_api.g_varchar2_table(206) := '10000000000000554657874390009444f435f444553435200000000000d3c3f444f435f44455343523f3e0000000000}{\*\';
+    wwv_flow_api.g_varchar2_table(207) := 'formfield{\fftype0\ffownhelp\ffownstat\fftypetxt0{\*\ffname Text9}{\*\ffdeftext DOC_DESCR}{\*\ffstat';
+    wwv_flow_api.g_varchar2_table(208) := 'text <?DOC_DESCR?>}}}}}{\fldrslt {'||chr(10)||
+'\rtlch\fcs1 \af2 \ltrch\fcs0 \f2\lang1024\langfe1024\noproof\ins';
+    wwv_flow_api.g_varchar2_table(209) := 'rsid3360042\charrsid6765518 DOC_DESCR}}}\sectd \linex0\headery708\footery708\colsx708\endnhere\sectl';
+    wwv_flow_api.g_varchar2_table(210) := 'inegrid360\sectdefaultcl\sectrsid10617749\sftnbj {\*\bkmkstart Text10}{\*\bkmkend Text9}'||chr(10)||
+'{\field\fl';
+    wwv_flow_api.g_varchar2_table(211) := 'ddirty{\*\fldinst {\rtlch\fcs1 \af0 \ltrch\fcs0 \cf9\insrsid3360042\charrsid3360042  FORMTEXT }{\rtl';
+    wwv_flow_api.g_varchar2_table(212) := 'ch\fcs1 \af0 \ltrch\fcs0 \cf9\insrsid3360042\charrsid3360042 {\*\datafield '||chr(10)||
+'80010000000000000654657';
+    wwv_flow_api.g_varchar2_table(213) := '8743130000220450000000000103c3f656e6420666f722d656163683f3e0000000000}{\*\formfield{\fftype0\ffownhe';
+    wwv_flow_api.g_varchar2_table(214) := 'lp\ffownstat\fftypetxt0{\*\ffname Text10}{\*\ffdeftext  E}{\*\ffstattext <?end for-each?>}}}}}{\fldr';
+    wwv_flow_api.g_varchar2_table(215) := 'slt {\rtlch\fcs1 \af0 '||chr(10)||
+'\ltrch\fcs0 \cf9\lang1024\langfe1024\noproof\insrsid3360042\charrsid3360042 ';
+    wwv_flow_api.g_varchar2_table(216) := ' E}}}\sectd \linex0\headery708\footery708\colsx708\endnhere\sectlinegrid360\sectdefaultcl\sectrsid10';
+    wwv_flow_api.g_varchar2_table(217) := '617749\sftnbj {\rtlch\fcs1 \af0 \ltrch\fcs0 \insrsid3360042 {\*\bkmkend Text10}'||chr(10)||
+'\nestcell{\nonestta';
+    wwv_flow_api.g_varchar2_table(218) := 'bles'||chr(10)||
+'\par }}\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adju';
+    wwv_flow_api.g_varchar2_table(219) := 'stright\rin0\lin0\itap2 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\c';
+    wwv_flow_api.g_varchar2_table(220) := 'grid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\insrsid3360042 {\*\nesttableprops\trow';
+    wwv_flow_api.g_varchar2_table(221) := 'd \irow0\irowband0\lastrow \ltrrow\ts15\trgaph108\trleft0\trbrdrb\brdrdot\brdrw10 \trbrdrh\brdrs\brd';
+    wwv_flow_api.g_varchar2_table(222) := 'rw10 \trbrdrv\brdrs\brdrw10 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl108\trpaddr108\trpaddfl3';
+    wwv_flow_api.g_varchar2_table(223) := '\trpaddft3\trpaddfb3\trpaddfr3\tblrsid6451980\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tb';
+    wwv_flow_api.g_varchar2_table(224) := 'lind0\tblindtype3 \clvertalt\clbrdrt\brdrtbl \clbrdrl\brdrtbl \clbrdrb'||chr(10)||
+'\brdrdot\brdrw10 \clbrdrr\br';
+    wwv_flow_api.g_varchar2_table(225) := 'drs\brdrw10 \cltxlrtb\clftsWidth3\clwWidth1980\clshdrawnil \cellx1980\clvertalt\clbrdrt\brdrtbl \clb';
+    wwv_flow_api.g_varchar2_table(226) := 'rdrl\brdrs\brdrw10 \clbrdrb\brdrdot\brdrw10 \clbrdrr\brdrtbl \cltxlrtb\clftsWidth3\clwWidth7380\clsh';
+    wwv_flow_api.g_varchar2_table(227) := 'drawnil \cellx9360'||chr(10)||
+'\nestrow}{\nonesttables'||chr(10)||
+'\par }\ltrrow}\trowd \irow2\irowband2\ltrrow\ts15\trgap';
+    wwv_flow_api.g_varchar2_table(228) := 'h108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\';
+    wwv_flow_api.g_varchar2_table(229) := 'brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1';
+    wwv_flow_api.g_varchar2_table(230) := ' '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpadd';
+    wwv_flow_api.g_varchar2_table(231) := 'fr3\tblrsid3360042\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertal';
+    wwv_flow_api.g_varchar2_table(232) := 't\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clb';
+    wwv_flow_api.g_varchar2_table(233) := 'rdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth9576\clshdrawnil \cellx9468\pard\plain \ltr';
+    wwv_flow_api.g_varchar2_table(234) := 'par'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\par';
+    wwv_flow_api.g_varchar2_table(235) := 'arsid13435002\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe1033\cgrid';
+    wwv_flow_api.g_varchar2_table(236) := '\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\insrsid3360';
+    wwv_flow_api.g_varchar2_table(237) := '042 {\*\bkmkend Text3}\cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\as';
+    wwv_flow_api.g_varchar2_table(238) := 'pnum\faauto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\';
+    wwv_flow_api.g_varchar2_table(239) := 'langfe1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp20';
+    wwv_flow_api.g_varchar2_table(240) := '57\insrsid3360042 \trowd \irow2\irowband2\ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brd';
+    wwv_flow_api.g_varchar2_table(241) := 'rcf1 \trbrdrl\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 ';
+    wwv_flow_api.g_varchar2_table(242) := '\trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidth';
+    wwv_flow_api.g_varchar2_table(243) := 'A3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid3360042\tbllkhdrrows\tbllkla';
+    wwv_flow_api.g_varchar2_table(244) := 'strow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdr';
+    wwv_flow_api.g_varchar2_table(245) := 'l'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\cl';
+    wwv_flow_api.g_varchar2_table(246) := 'ftsWidth3\clwWidth9576\clshdrawnil \cellx9468\row \ltrrow}\trowd \irow3\irowband3\lastrow \ltrrow\ts';
+    wwv_flow_api.g_varchar2_table(247) := '15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trbrdrl\brdrs\brdrw10\brdrcf1 \trbrdrb\brdr';
+    wwv_flow_api.g_varchar2_table(248) := 's\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrcf1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw';
+    wwv_flow_api.g_varchar2_table(249) := '10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpadd';
+    wwv_flow_api.g_varchar2_table(250) := 'fb3\trpaddfr3\tblrsid3360042\tbllkhdrrows\tbllklastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3';
+    wwv_flow_api.g_varchar2_table(251) := ' \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\br';
+    wwv_flow_api.g_varchar2_table(252) := 'drcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb\clftsWidth3\clwWidth9576\clshdrawnil \cellx9468\pard\';
+    wwv_flow_api.g_varchar2_table(253) := 'plain \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\intbl\wrapdefault\aspalpha\aspnum\faauto\adjustright\rin';
+    wwv_flow_api.g_varchar2_table(254) := '0\lin0\pararsid14376119\yts15 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 \f37\fs22\lang1033\langfe';
+    wwv_flow_api.g_varchar2_table(255) := '1033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 '||chr(10)||
+'\lang2057\langfe1033\langnp2057\i';
+    wwv_flow_api.g_varchar2_table(256) := 'nsrsid13435002 \cell }\pard\plain \ltrpar\ql \li0\ri0\widctlpar\intbl\wrapdefault\aspalpha\aspnum\fa';
+    wwv_flow_api.g_varchar2_table(257) := 'auto\adjustright\rin0\lin0 \rtlch\fcs1 \af0\afs22\alang1025 \ltrch\fcs0 '||chr(10)||
+'\f37\fs22\lang1033\langfe1';
+    wwv_flow_api.g_varchar2_table(258) := '033\cgrid\langnp1033\langfenp1033 {\rtlch\fcs1 \af0 \ltrch\fcs0 \lang2057\langfe1033\langnp2057\insr';
+    wwv_flow_api.g_varchar2_table(259) := 'sid13435002 \trowd \irow3\irowband3\lastrow \ltrrow\ts15\trgaph108\trleft-108\trbrdrt\brdrs\brdrw10\';
+    wwv_flow_api.g_varchar2_table(260) := 'brdrcf1 \trbrdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \trbrdrb\brdrs\brdrw10\brdrcf1 \trbrdrr\brdrs\brdrw10\brdrc';
+    wwv_flow_api.g_varchar2_table(261) := 'f1 \trbrdrh\brdrs\brdrw10\brdrcf1 \trbrdrv\brdrs\brdrw10\brdrcf1 '||chr(10)||
+'\trftsWidth1\trftsWidthB3\trftsWi';
+    wwv_flow_api.g_varchar2_table(262) := 'dthA3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tblrsid3360042\tbllkhdrrows\tbll';
+    wwv_flow_api.g_varchar2_table(263) := 'klastrow\tbllkhdrcols\tbllklastcol\tblind0\tblindtype3 \clvertalt\clbrdrt\brdrs\brdrw10\brdrcf1 \clb';
+    wwv_flow_api.g_varchar2_table(264) := 'rdrl'||chr(10)||
+'\brdrs\brdrw10\brdrcf1 \clbrdrb\brdrs\brdrw10\brdrcf1 \clbrdrr\brdrs\brdrw10\brdrcf1 \cltxlrtb';
+    wwv_flow_api.g_varchar2_table(265) := '\clftsWidth3\clwWidth9576\clshdrawnil \cellx9468\row }\pard \ltrpar'||chr(10)||
+'\ql \li0\ri0\sa200\widctlpar\wr';
+    wwv_flow_api.g_varchar2_table(266) := 'apdefault\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0\pararsid15428369 {\rtlch\fcs1 \af0 \ltr';
+    wwv_flow_api.g_varchar2_table(267) := 'ch\fcs0 \lang2057\langfe1033\langnp2057\insrsid13435002\charrsid16665483 '||chr(10)||
+'\par }}';
+ 
+end;
+/
+
+--application/shared_components/reports/report_layouts/report_card
+begin
+wwv_flow_api.create_report_layout(
+  p_id => 1325207339400801 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_report_layout_name =>'Report Card',
+  p_report_layout_type =>'RTF_FILE',
+  p_varchar2_table => wwv_flow_api.g_varchar2_table,
+  p_xslfo_column_heading =>'',
+  p_xslfo_column_template =>'',
+  p_xslfo_column_template_width =>'',
+  p_reference_id =>null,
+  p_report_layout_comment =>'');
+end;
+/
 prompt  ...authentication schemes
 --
 --application/shared_components/security/authentication/use_dad
