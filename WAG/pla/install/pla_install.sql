@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.1   Jul 08 2009 15:58:28   smarshall  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.2   Jul 09 2009 10:03:00   smarshall  $
 --       Module Name      : $Workfile:   pla_install.sql  $
---       Date into PVCS   : $Date:   Jul 08 2009 15:58:28  $
---       Date fetched Out : $Modtime:   Jul 08 2009 15:57:40  $
---       Version          : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Jul 09 2009 10:03:00  $
+--       Date fetched Out : $Modtime:   Jul 09 2009 10:05:12  $
+--       Version          : $Revision:   3.2  $
 -------------------------------------------------------------------------
 --
 set echo off
@@ -99,7 +99,6 @@ SET FEEDBACK OFF
 --
 ---------------------------------------------------------------------------------------------------
 --                    ********************* INDEXES *************************
-/*
 SET TERM ON
 Prompt Indexes...
 SET TERM OFF
@@ -111,7 +110,6 @@ from dual
 SET FEEDBACK ON
 start &&run_file
 SET FEEDBACK OFF
-*/
 --
 ---------------------------------------------------------------------------------------------------
 --                    ********************* CONSTRAINTS *************************
