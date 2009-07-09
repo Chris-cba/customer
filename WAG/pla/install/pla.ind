@@ -1,0 +1,18 @@
+-- PVCS Identifiers :-
+--
+-- sccsid                : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla.ind-arc   3.0   Jul 09 2009 09:59:56   smarshall  $
+-- Module Name           : $Workfile:   pla.ind  $
+-- Date into PVCS        : $Date:   Jul 09 2009 09:59:56  $
+-- Date fetched Out      : $Modtime:   Jul 09 2009 10:02:08  $
+-- PVCS Version          : $Revision:   3.0  $
+--
+
+PROMPT Creating Index 'WPRCL_DOC_FK'
+CREATE INDEX WPRCL_DOC_FK ON WAG_PLAN_RECORD_CARD_LINES
+ (WPRCL_DOC_ID)
+/
+
+PROMPT Creating Index 'WPRC_WPL_FK'
+CREATE INDEX WPRC_WPL_FK ON WAG_PLAN_RECORD_CARD
+ (WPRC_LPA)
+/
