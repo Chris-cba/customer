@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla.con-arc   3.0   Jul 08 2009 11:03:02   smarshall  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla.con-arc   3.1   Jul 09 2009 09:48:28   smarshall  $
 --       Module Name      : $Workfile:   pla.con  $
---       Date into PVCS   : $Date:   Jul 08 2009 11:03:02  $
---       Date fetched Out : $Modtime:   Jul 08 2009 11:02:46  $
---       Version          : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jul 09 2009 09:48:28  $
+--       Date fetched Out : $Modtime:   Jul 09 2009 09:50:00  $
+--       Version          : $Revision:   3.1  $
 -------------------------------------------------------------------------
 --
 
@@ -18,5 +18,20 @@ ALTER TABLE WAG_PLAN_RECORD_CARD
 PROMPT Creating Primary Key on 'WAG_PLAN_RECORD_CARD_LINES'
 ALTER TABLE WAG_PLAN_RECORD_CARD_LINES
  ADD (CONSTRAINT WPRCL_PK PRIMARY KEY
-  (WPRCL_WPRC_UPRN, WPRCL_SEQ, WPRCL_DOC_ID))
+  (WPRCL_WPRC_UPRN, WPRCL_SEQ))
 /
+
+PROMPT Creating Foreign Key on 'WAG_PLAN_RECORD_CARD_LINES'
+ALTER TABLE WAG_PLAN_RECORD_CARD_LINES ADD (CONSTRAINT
+ WPRCL_WPRC_FK FOREIGN KEY
+  (WPRCL_WPRC_UPRN) REFERENCES WAG_PLAN_RECORD_CARD
+  (WPRC_UPRN))
+/
+
+PROMPT Creating Foreign Key on 'WAG_PLAN_RECORD_CARD_LINES'
+ALTER TABLE WAG_PLAN_RECORD_CARD_LINES ADD (CONSTRAINT
+ WPRCL_DOC_FK FOREIGN KEY
+  (WPRCL_DOC_ID) REFERENCES DOCS
+  (DOC_ID))
+/
+
