@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.2   Jul 09 2009 10:03:00   smarshall  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.3   Jul 13 2009 11:04:42   smarshall  $
 --       Module Name      : $Workfile:   pla_install.sql  $
---       Date into PVCS   : $Date:   Jul 09 2009 10:03:00  $
---       Date fetched Out : $Modtime:   Jul 09 2009 10:05:12  $
---       Version          : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jul 13 2009 11:04:42  $
+--       Date fetched Out : $Modtime:   Jul 13 2009 11:07:08  $
+--       Version          : $Revision:   3.3  $
 -------------------------------------------------------------------------
 --
 set echo off
@@ -69,12 +69,9 @@ END;
 /
 
 --
--- Check that HIG has been installed @ v4.0.5.2, and PEM has been installed @ v4.0.5.2 as PLA is dependent on this
+-- Check that PEM has been installed @ v4.0.5.2 as PLA is dependent on this
 --
 BEGIN
- hig2.product_exists_at_version (p_product        => 'HIG'
-                                ,p_VERSION        => '4.0.5.2'
-                                );
  hig2.product_exists_at_version (p_product        => 'PEM'
                                 ,p_VERSION        => '4.0.5.2'
                                 );
