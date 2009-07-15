@@ -1,15 +1,15 @@
-CREATE OR REPLACE PACKAGE BODY x_tfl_ftp_util
+CREATE OR REPLACE PACKAGE BODY HIGHWAYS.x_tfl_ftp_util
 AS
 
 --
 -----------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_ftp_util.pkb-arc   2.0   Jun 14 2007 10:09:44   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_ftp_util.pkb-arc   2.1   Jul 15 2009 08:15:46   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_ftp_util.pkb  $
---       Date into SCCS   : $Date:   Jun 14 2007 10:09:44  $
---       Date fetched Out : $Modtime:   Jun 14 2007 10:09:26  $
---       SCCS Version     : $Revision:   2.0  $
+--       Date into SCCS   : $Date:   Jul 15 2009 08:15:46  $
+--       Date fetched Out : $Modtime:   Jul 14 2009 13:25:24  $
+--       SCCS Version     : $Revision:   2.1  $
 --
 --
 --   Author : Ian Turnbull
@@ -65,6 +65,10 @@ AS
    *                 	   we had to change because the humad\* accounts with backwards slash
    *                 	   throws the routine off. LTRIM RTRIM was changed to substr and instr
    *					   commands.
+   *
+   *  3.1.3    14-JUL-2009 Updated ftp_files_stage procedure, added call to raise inavalid transfer 
+   *  P Stanton            exception, previous version caught the error and sent it back to the calling 
+   *                       procedure but returned True to the calling procedure not FALSE.
 */
   --g_body_sccsid is the SCCS ID for the package body
   g_body_sccsid  CONSTANT varchar2(2000) := '"%W% %G%"';
@@ -2175,6 +2179,7 @@ dr-xr-xr-x   1 owner    group               0 Feb  1 17:32 bussys
                   p_files ( i ).status := 'ERROR';
                   p_files ( i ).error_message :=
                              c_process || ' :: ' || v_reply || ' :: ' || l_step;
+                             raise ctrl_exception;
                WHEN invalid_transfer
                THEN
                   p_files ( i ).status := 'ERROR';
@@ -2182,6 +2187,7 @@ dr-xr-xr-x   1 owner    group               0 Feb  1 17:32 bussys
                         'Invalid transfer method.  Use PUT/GET/REMOVE/RENAME/LS/DIR Only.'
                      || ' :: '
                      || l_step;
+                     raise invalid_transfer;
             END;
          END IF;
       END LOOP;
@@ -4525,7 +4531,7 @@ dr-xr-xr-x   1 owner    group               0 Feb  1 17:32 bussys
       ELSIF v_remotepath IS NOT NULL AND v_remotepath <> '.'
       THEN
          l_step := 'PERFORMING CWD COMMAND FOR ' || v_remotepath;
-
+--------------------------***********************debug here
 --
 --
          IF mainframe_connection
@@ -4647,7 +4653,7 @@ dr-xr-xr-x   1 owner    group               0 Feb  1 17:32 bussys
       THEN
          v_status := 'ERROR';
          v_error_message :=
-            c_process || ' :: ' || SQLCODE || ' - ' || SQLERRM || ' :: '
+            c_process || 'the error is here :: ' || SQLCODE || ' - ' || SQLERRM || ' :: '
             || l_step;
          utl_tcp.close_all_connections;
          RETURN FALSE;
