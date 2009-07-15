@@ -1,19 +1,24 @@
-CREATE OR REPLACE PACKAGE BODY x_tfl_cim
+CREATE OR REPLACE PACKAGE BODY HIGHWAYS.x_tfl_cim
 AS
 --
 -----------------------------------------------------------------------------
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.17   Dec 18 2007 16:11:40   Ian Turnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/x_tfl_cim.pkb-arc   2.18   Jul 15 2009 08:16:08   Ian Turnbull  $
 --       Module Name      : $Workfile:   x_tfl_cim.pkb  $
---       Date into SCCS   : $Date:   Dec 18 2007 16:11:40  $
---       Date fetched Out : $Modtime:   Dec 18 2007 16:11:20  $
---       SCCS Version     : $Revision:   2.17  $
+--       Date into SCCS   : $Date:   Jul 15 2009 08:16:08  $
+--       Date fetched Out : $Modtime:   Jul 14 2009 13:25:26  $
+--       SCCS Version     : $Revision:   2.18  $
 --
 --
 --   Author : Ian Turnbull
---
+--/*
+   * VERSION HISTORY
+   *  --------------------
+   *       14-Jul-2009    Updated process_out_archive_queue and process_in_archive_queue to check that the 
+   *       P Stanton      transfer was succesful before callin upd_queue_archive and marking the file for deletion
+*/
 --   x_tfl_cim body
 --
 -----------------------------------------------------------------------------
@@ -26,7 +31,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.17  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   2.18  $"';
 
   g_package_name CONSTANT varchar2(30) := 'x_tfl_cim';
 
@@ -50,7 +55,7 @@ AS
 
 
   type t_keys_type  is table of number index by binary_integer;
-  g_keys t_keys_type;  
+  g_keys t_keys_type;
 --
 -----------------------------------------------------------------------------
 --
@@ -60,7 +65,7 @@ procedure ins_log(  pi_filename varchar2 default null
                    ,pi_archive_dir varchar2 default null
                    ,pi_message varchar2
                    );
-                   
+
 
 procedure set_con_id(pi_con_id varchar2)
 is
@@ -116,7 +121,7 @@ is
 begin
    i := 1;
    l_contents.delete;
-   
+
    add('#!/bin/sh');
    add('cd ' ||g_interpath);
    ADD('rm ' || g_ftp_put_filename||'.log'||get_con_id);
@@ -134,7 +139,7 @@ begin
    --add ('cp ' || g_ftp_put_filename || ' ' || g_ftp_put_filename||'.'||get_con_id);
    add('exit');
 
-  
+
    nm3file.write_file(location  => g_interpath
                      ,filename  => g_ftp_put_filename
                      ,all_lines => l_contents
@@ -198,19 +203,19 @@ end create_get_ftp_script;
 --
 procedure revoke_remove_permission(pi_key number)
 is
-begin 
+begin
    dbms_java.disable_permission(pi_key);
    dbms_java.delete_permission(pi_key);
-end ;  
+end ;
 
 procedure revoke_remove_permission(pi_keys t_keys_type)
 is
-begin 
+begin
    for i in 1..pi_keys.count
     loop
       revoke_remove_permission(pi_key => pi_keys(i));
    end loop;
-end ;  
+end ;
 
 
 PROCEDURE enable_permissions(pi_filename varchar2)
@@ -238,12 +243,12 @@ BEGIN
                  'java.io.FilePermission',
                   c_unix_bin_home||'/sh',
                  'execute');
-               
+
     dbms_java.grant_permission
                  (user,
                  'java.io.FilePermission',
                   c_unix_bin_home||'/ftp',
-                 'execute');                
+                 'execute');
 --
   IF b_is_unix
   THEN
@@ -332,7 +337,7 @@ BEGIN
  l_ret_code := runthis(l_command);
  --l_ret_code := runthis(l_command);
  --ins_log(pi_message => 'l_ret_code is '||l_ret_code);
- 
+
 --
  IF l_ret_code < 0
  THEN
@@ -603,10 +608,10 @@ is
    l_bytes number;
    l_trans_start date;
    l_trans_end date;
-   
+
    l_lines nm3type.tab_varchar32767;
-  
-   
+
+
 begin
 --   ins_log(pi_message => 'start process_out_ftp_queue');
    set_cim_action(pi_cim_action => 'WO');
@@ -626,42 +631,42 @@ begin
          enable_permissions(pi_filename => g_ftp_put_filename);
          --
          exec_command (g_ftp_put_filename,user );
-        
-         
+
+
          WHILE nm3file.file_exists(g_interpath,g_ftp_put_filename||'.log'||get_con_id) = 'N'  LOOP
             null; -- just wait;
             for x in 1..1000000 loop null; end loop;
          END LOOP;
-         
+
          -- read the ftp log file produced
          l_lines.delete;
-         
+
          nm3file.get_file(location  => g_interpath
                         , filename  => g_ftp_put_filename||'.log'||get_con_id
                         , all_lines => l_lines);
-         
+
          if l_lines.count = 0
           then
             ins_log( pi_message => g_ftp_put_filename||'.log'||get_con_id || ' log file does not exist. put not executed');
          end if;
-              
+
          -- log success
          for i in 1..l_lines.count
          loop
-            if 
+            if
                instr(l_lines(i),ftp_rec.tfq_filename) > 0
              then
                upd_queue_ftp_site(pi_id => ftp_rec.tfq_id);
-               
+
                ins_log(pi_filename => ftp_rec.tfq_filename
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => 'FTP transfer OK');
-               
+
                ins_log(pi_filename => ftp_rec.tfq_filename
                      , pi_ftp_dir => dir_rec.ftp_out_dir
                      , pi_message => l_lines(i));
-                     
-            end if;            
+
+            end if;
          end loop;
 
       end loop;
@@ -873,6 +878,7 @@ begin
                                      ,d_trans_end => l_trans_end);
          if not l_ftp
           then
+          
             -- try again
             l_ftp := x_tfl_ftp_util.PUT( p_localpath => g_interpath
                                         ,p_filename => ftp_rec.tfq_filename
@@ -899,11 +905,16 @@ begin
                                   'Error: ' ||l_error||' '||
                                   'Bytes: ' ||l_bytes||' ');
                exit;
+            
             end if;
+            
+         
          end if;
-         -- log success
-         upd_queue_archive(pi_id => ftp_rec.tfq_id);
-
+         --log success 
+         IF l_ftp = TRUE THEN
+            upd_queue_archive(pi_id => ftp_rec.tfq_id);
+         END IF;
+         
          ins_log(pi_filename => ftp_rec.tfq_filename
             , pi_ftp_dir => dir_rec.ftp_out_dir
             , pi_archive_dir => null
@@ -995,11 +1006,15 @@ begin
                                   'Error: ' ||l_error||' '||
                                   'Bytes: ' ||l_bytes||' ');
                exit;
+               
             end if;
+            
+         
          end if;
-         -- log success
+          --log success
+           IF l_ftp = TRUE THEN
          upd_queue_archive(pi_id => ftp_rec.tfq_id);
-
+          END IF;
          ins_log(pi_filename => ftp_rec.tfq_filename
             , pi_ftp_dir => dir_rec.ftp_in_dir
             , pi_archive_dir => null
@@ -1043,7 +1058,7 @@ begin
             dbms_java.grant_permission( user, 'SYS:java.io.FilePermission', g_interpath||'/'||ftp_rec.tfq_filename, 'delete',l_key );
             nm3file.delete_File(pi_dir => g_interpath, pi_file => ftp_rec.tfq_filename);
             revoke_remove_permission(pi_key => l_key);
-            
+
          exception
             when others then
             -- send email
@@ -1155,6 +1170,8 @@ begin
             if substr(upper(ftp_rec.tfq_filename),1,2) = 'WC'  -- completions
              then
               l_errors:= null;
+              ins_log(pi_filename => ftp_rec.tfq_filename
+                    , pi_message => dir_rec.ftp_contractor || ' ' ||  g_interpath || ' ' || ftp_rec.tfq_filename);
               interfaces.completion_file_ph1(p_contractor_id => dir_rec.ftp_contractor
                                             ,p_seq_no => null
                                             ,p_filepath => g_interpath
@@ -1162,7 +1179,7 @@ begin
                                             ,p_error => l_errors );
 
               ins_log(pi_filename => ftp_rec.tfq_filename
-                    , pi_message =>'processed completeions file '||ftp_rec.tfq_filename || ' errors :' ||nvl(l_errors,'No Errors'));
+                    , pi_message =>'processed completions file '||ftp_rec.tfq_filename || ' errors :' ||nvl(l_errors,'No Errors'));
             elsif substr(upper(ftp_rec.tfq_filename),1,2) in( 'WI' ) -- invoice
              then
               l_errors:= null;
