@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.6   Dec 04 2008 11:18:40   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.7   Jul 20 2009 09:11:14   dyounger  $
 --       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
---       Date into SCCS   : $Date:   Dec 04 2008 11:18:40  $
---       Date fetched Out : $Modtime:   Dec 04 2008 11:17:06  $
---       PVCS Version     : $Revision:   2.6  $
+--       Date into SCCS   : $Date:   Jul 20 2009 09:11:14  $
+--       Date fetched Out : $Modtime:   Jul 19 2009 21:23:38  $
+--       PVCS Version     : $Revision:   2.7  $
 --       Originally based on SCCS version 1.6
 --
 --
@@ -60,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.6  $';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.7  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -754,6 +754,46 @@ END get_commitment_data;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION get_del_wol_cmtmt_data RETURN t_commitment_data_arr IS 
+
+  l_commitment_data_arr t_commitment_data_arr;
+                         
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'get_del_wol_cmtmt_data');
+  
+  --selecting where
+  --  wol has been deleted (from audit information)
+  --  a commitment has been made
+  --  no payment has been made
+  
+  SELECT wad_wor_works_order_no,
+         NULL,
+         xmgw_wol_id,
+         NULL,
+         xmgw_commitment_value,
+         NULL,
+         NULL
+  BULK COLLECT
+  INTO   l_commitment_data_arr
+  FROM   xnor_may_gurney_wols mgw,
+         wo_audit wa
+  WHERE  mgw.xmgw_wol_id = wa.wad_wol_id
+  AND    wa.wad_change = '* DELETED *'
+  AND    xmgw_payment_value IS NULL
+  AND    wad_boq_id IS NULL
+  AND    xmgw_commitment_value IS NOT NULL
+  ORDER BY xmgw_wol_id;
+
+  nm_debug.proc_end(p_package_name   => g_package_name
+                   ,p_procedure_name => 'get_del_wol_cmtmt_data');
+    
+  RETURN l_commitment_data_arr;
+
+END get_del_wol_cmtmt_data;
+--
+-----------------------------------------------------------------------------
+--
 FUNCTION get_payment_data(pi_contract_id    IN contracts.con_id%TYPE
                          ,pi_financial_year IN financial_years.fyr_id%TYPE
                          ,pi_start_date     IN date
@@ -861,6 +901,37 @@ END get_xmgw;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION get_cost_code_for_del_wol(pi_wol_id IN work_order_lines.wol_id%TYPE
+                                  ) RETURN interface_wol.iwol_cost_code%TYPE IS
+
+  l_retval interface_wol.iwol_cost_code%TYPE;
+
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'get_cost_code_for_del_wol');
+
+  SELECT cost_code
+  INTO   l_retval
+  FROM   (SELECT   iwol.iwol_cost_code cost_code
+          FROM     interface_wol iwol
+          WHERE    iwol_id = pi_wol_id
+          ORDER BY iwol_transaction_id DESC)
+  WHERE ROWNUM = 1;
+
+  nm_debug.proc_end(p_package_name   => g_package_name
+                   ,p_procedure_name => 'get_cost_code_for_del_wol');
+
+  RETURN l_retval;
+
+EXCEPTION
+  WHEN too_many_rows
+  THEN
+    log_error(pi_error_msg => 'Found more than one record on primary key lookup xnor_may_gurney_wols.xmgw_wol_id = ' || pi_wol_id);
+ 
+END get_cost_code_for_del_wol;
+--
+-----------------------------------------------------------------------------
+--
 PROCEDURE ins_all_xmgw(pi_xmgw_arr IN t_xmgw_arr
                       ) IS
 BEGIN
@@ -877,6 +948,25 @@ BEGIN
                    ,p_procedure_name => 'ins_all_xmgw');
 
 END ins_all_xmgw;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE del_all_xmgw(pi_wol_id_arr IN t_wol_id_arr
+                      ) IS
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'del_all_xmgw');
+
+  FORALL i IN 1..pi_wol_id_arr.COUNT
+    DELETE
+      xnor_may_gurney_wols
+    WHERE
+      xmgw_wol_id = pi_wol_id_arr(i);
+
+  nm_debug.proc_end(p_package_name   => g_package_name
+                   ,p_procedure_name => 'del_all_xmgw');
+
+END del_all_xmgw;
 --
 -----------------------------------------------------------------------------
 --
@@ -1372,7 +1462,8 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
   
   l_control_file_name varchar2(4000);
   
-  l_commitment_data_arr t_commitment_data_arr;
+  l_commitment_data_arr    t_commitment_data_arr;
+  l_del_wol_cmtmt_data_arr t_commitment_data_arr;
   
   l_accounting_date date;
   
@@ -1382,6 +1473,8 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
   
   l_xmgw_upd_wol_id_arr          t_xmgw_wol_id_arr;
   l_xmgw_upd_commitmnt_value_arr t_xmgw_commitment_value_arr;
+  
+  l_xmgw_del_wol_id_arr t_wol_id_arr;
   
   l_xmgw_rec xnor_may_gurney_wols%ROWTYPE;
   
@@ -1426,53 +1519,17 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
     l_lines_written_to_file := l_lines_written_to_file + 1;
   
   END writeln;
-
-BEGIN
-  nm_debug.proc_start(p_package_name   => g_package_name
-                     ,p_procedure_name => 'generate_order_file');
   
-  db(g_package_name || '.generate_order_file');
-  db('  pi_contractor_id  = ' || pi_contractor_id);
-  db('  pi_financial_year = ' || pi_financial_year);
-  --db('  pi_start_date     = ' || TO_CHAR(pi_start_date, 'dd-mon-yyyy hh24:mi:ss'));
-  db('  pi_end_date       = ' || TO_CHAR(pi_end_date, 'dd-mon-yyyy hh24:mi:ss'));
-  db('  pi_file_path      = ' || pi_file_path);
-
-  --check contractor exists and get details
-  l_oun_rec := get_oun(pi_oun_org_id => pi_contractor_id);
-  db('Contractor Name = ' || l_oun_rec.oun_name);
-  
-  l_commitment_data_arr := get_commitment_data(pi_oun_id         => pi_contractor_id
-                                              ,pi_financial_year => pi_financial_year
-                                              --,pi_start_date     => pi_start_date
-                                              ,pi_end_date       => pi_end_date);
-                                   
-  db('Found ' || l_commitment_data_arr.COUNT || ' work order lines');
-  
-  IF l_commitment_data_arr.COUNT > 0
-  THEN
-    --we have records to process
-    --open the file
-
-    l_run_name := generate_run_name(pi_run_subject=> l_oun_rec.oun_name);
-    db('Run Name = ' || l_run_name);
-    
-    l_filename := generate_filename(pi_run_name  => l_run_name
-                                   ,pi_file_type => c_commitments_file_type);
-    db('Filename = ' || l_filename);
-    
-    l_file_id := open_output_file(pi_file_path => pi_file_path
-                                 ,pi_filename  => l_filename);
-  
-    --which date do we use in the output file?
-    l_accounting_date := xnor_financial_interface.get_accounting_date(pi_period_13 => pi_period_13);
-  
+  PROCEDURE process_commitment_data(pi_commitment_data_arr IN t_commitment_data_arr
+                                   ,pi_processing_del_wols IN BOOLEAN
+                                   ) IS
+  BEGIN
     -------------------------
     --process the wol records
     -------------------------
-    FOR i IN 1..l_commitment_data_arr.COUNT
+    FOR i IN 1..pi_commitment_data_arr.COUNT
     LOOP
-    db('processing wol ' || l_commitment_data_arr(i).wol_id || ' with cost ' || l_commitment_data_arr(i).wol_cost);  
+    db('processing wol ' || pi_commitment_data_arr(i).wol_id || ' with cost ' || pi_commitment_data_arr(i).wol_cost);  
     
       l_write_wol_to_file := FALSE;
       
@@ -1481,23 +1538,29 @@ BEGIN
         --l_accounting_date := get_accounting_date(pi_date_order_raised    => l_commitment_data_arr(i).wor_date_confirmed
         --                                        ,pi_order_financial_year => pi_financial_year);
       
-      l_line_descr := get_line_description(pi_works_order_no => l_commitment_data_arr(i).works_order_no
-                                          ,pi_wol_id         => l_commitment_data_arr(i).wol_id
-                                          ,pi_defect_id      => l_commitment_data_arr(i).defect_id);
+      l_line_descr := get_line_description(pi_works_order_no => pi_commitment_data_arr(i).works_order_no
+                                          ,pi_wol_id         => pi_commitment_data_arr(i).wol_id
+                                          ,pi_defect_id      => pi_commitment_data_arr(i).defect_id);
       
-      l_commitment_cost_code := interfaces.split_cost_code(p_cost_code => l_commitment_data_arr(i).budget_cost_code
-                                                          ,p_number    => c_pandt_cost_code_pos);
+      IF pi_processing_del_wols
+      THEN
+        l_commitment_cost_code := get_cost_code_for_del_wol(pi_wol_id => pi_commitment_data_arr(i).wol_id);
+      ELSE
+        l_commitment_cost_code := interfaces.split_cost_code(p_cost_code => pi_commitment_data_arr(i).budget_cost_code
+                                                            ,p_number    => c_pandt_cost_code_pos);
+      END IF;
       
       --get log record for this wol
       BEGIN
-        l_xmgw_rec := get_xmgw(pi_wol_id => l_commitment_data_arr(i).wol_id);
+        l_xmgw_rec := get_xmgw(pi_wol_id => pi_commitment_data_arr(i).wol_id);
         
         db('found xmgw record');
         
         ---------------------------------
         --check values against log record
         ---------------------------------
-        IF l_commitment_data_arr(i).wol_cost <> l_xmgw_rec.xmgw_commitment_value
+        IF pi_processing_del_wols
+          OR pi_commitment_data_arr(i).wol_cost <> l_xmgw_rec.xmgw_commitment_value
         THEN
           db('writing reversal');
           --we need to generate a reversal record for the original value in the file
@@ -1523,10 +1586,17 @@ BEGIN
                                                                          ,pi_period_13             => pi_period_13)
                ,pi_cost => l_xmgw_rec.xmgw_commitment_value);          
           
-          --we also need to update the log file with the new value
-          --add data to log table update arrays
-          l_xmgw_upd_wol_id_arr(l_xmgw_upd_wol_id_arr.COUNT + 1)      := l_commitment_data_arr(i).wol_id;
-          l_xmgw_upd_commitmnt_value_arr(l_xmgw_upd_wol_id_arr.COUNT) := l_commitment_data_arr(i).wol_cost;
+          
+          IF pi_processing_del_wols
+          THEN
+            --need to delete as wol has been deleted
+            l_xmgw_del_wol_id_arr(l_xmgw_del_wol_id_arr.COUNT + 1) := pi_commitment_data_arr(i).wol_id;
+          ELSE
+            --we also need to update the log file with the new value
+            --add data to log table update arrays
+            l_xmgw_upd_wol_id_arr(l_xmgw_upd_wol_id_arr.COUNT + 1)      := pi_commitment_data_arr(i).wol_id;
+            l_xmgw_upd_commitmnt_value_arr(l_xmgw_upd_wol_id_arr.COUNT) := pi_commitment_data_arr(i).wol_cost;
+          END IF;
           
           --record credits/debits in file
           l_total_credits := l_total_credits + l_xmgw_rec.xmgw_commitment_value;
@@ -1540,11 +1610,11 @@ BEGIN
         THEN
           db('xmgw not found');
           --if we have a non-zero cost then add it to the log
-          IF l_commitment_data_arr(i).wol_cost <> 0
+          IF pi_commitment_data_arr(i).wol_cost <> 0
           THEN
             --add new rec to log table insert array
-            l_xmgw_rec.xmgw_wol_id              := l_commitment_data_arr(i).wol_id;
-            l_xmgw_rec.xmgw_commitment_value    := l_commitment_data_arr(i).wol_cost;
+            l_xmgw_rec.xmgw_wol_id              := pi_commitment_data_arr(i).wol_id;
+            l_xmgw_rec.xmgw_commitment_value    := pi_commitment_data_arr(i).wol_cost;
             l_xmgw_rec.xmgw_user_last_processed := USER;
             l_xmgw_rec.xmgw_date_last_processed := SYSDATE;
             
@@ -1557,36 +1627,91 @@ BEGIN
       -------------------------
       --write line for this wol
       -------------------------
-      IF l_write_wol_to_file
-        AND l_commitment_data_arr(i).wol_cost <> 0
+      IF NOT pi_processing_del_wols
+        AND l_write_wol_to_file
+        AND pi_commitment_data_arr(i).wol_cost <> 0
       THEN
         db('writing lines');
         --write PandT line
         writeln(pi_text => xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
-                                                                       ,pi_cost                  => l_commitment_data_arr(i).wol_cost
+                                                                       ,pi_cost                  => pi_commitment_data_arr(i).wol_cost
                                                                        ,pi_descr                 => l_line_descr
                                                                        ,pi_cost_code             => l_commitment_cost_code
                                                                        ,pi_user_je_category_name => c_user_jre_category_name
                                                                        ,pi_encumbrance_type_id   => c_encumbrance_type_id
                                                                        ,pi_actual_flag           => c_actual_flag
                                                                        ,pi_period_13             => pi_period_13)
-               ,pi_cost => l_commitment_data_arr(i).wol_cost);
+               ,pi_cost => pi_commitment_data_arr(i).wol_cost);
         --write commitment line
         writeln(pi_text => xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_accounting_date
-                                                                       ,pi_cost                  => -l_commitment_data_arr(i).wol_cost
+                                                                       ,pi_cost                  => -pi_commitment_data_arr(i).wol_cost
                                                                        ,pi_descr                 => l_line_descr
                                                                        ,pi_cost_code             => c_mag_encumb_cost_code
                                                                        ,pi_user_je_category_name => c_user_jre_category_name
                                                                        ,pi_encumbrance_type_id   => c_encumbrance_type_id
                                                                        ,pi_actual_flag           => c_actual_flag
                                                                        ,pi_period_13             => pi_period_13)
-               ,pi_cost => -l_commitment_data_arr(i).wol_cost);      
+               ,pi_cost => -pi_commitment_data_arr(i).wol_cost);      
       
         --record credits/debits in file
-        l_total_credits := l_total_credits + l_commitment_data_arr(i).wol_cost;
-        l_total_debits  := l_total_debits + l_commitment_data_arr(i).wol_cost;
+        l_total_credits := l_total_credits + pi_commitment_data_arr(i).wol_cost;
+        l_total_debits  := l_total_debits + pi_commitment_data_arr(i).wol_cost;
       END IF;
     END LOOP;
+    
+  END process_commitment_data;
+
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'generate_order_file');
+  
+  db(g_package_name || '.generate_order_file');
+  db('  pi_contractor_id  = ' || pi_contractor_id);
+  db('  pi_financial_year = ' || pi_financial_year);
+  --db('  pi_start_date     = ' || TO_CHAR(pi_start_date, 'dd-mon-yyyy hh24:mi:ss'));
+  db('  pi_end_date       = ' || TO_CHAR(pi_end_date, 'dd-mon-yyyy hh24:mi:ss'));
+  db('  pi_file_path      = ' || pi_file_path);
+
+  --check contractor exists and get details
+  l_oun_rec := get_oun(pi_oun_org_id => pi_contractor_id);
+  db('Contractor Name = ' || l_oun_rec.oun_name);
+  
+  l_commitment_data_arr := get_commitment_data(pi_oun_id         => pi_contractor_id
+                                              ,pi_financial_year => pi_financial_year
+                                              --,pi_start_date     => pi_start_date
+                                              ,pi_end_date       => pi_end_date);
+                                   
+  db('Found ' || l_commitment_data_arr.COUNT || ' work order lines');
+  
+  l_del_wol_cmtmt_data_arr := get_del_wol_cmtmt_data();
+  
+  db('Found ' || l_del_wol_cmtmt_data_arr.COUNT || ' work order lines');
+  
+  IF l_commitment_data_arr.COUNT > 0
+  THEN
+    --we have records to process
+    --open the file
+
+    l_run_name := generate_run_name(pi_run_subject=> l_oun_rec.oun_name);
+    db('Run Name = ' || l_run_name);
+    
+    l_filename := generate_filename(pi_run_name  => l_run_name
+                                   ,pi_file_type => c_commitments_file_type);
+    db('Filename = ' || l_filename);
+    
+    l_file_id := open_output_file(pi_file_path => pi_file_path
+                                 ,pi_filename  => l_filename);
+  
+    --which date do we use in the output file?
+    l_accounting_date := xnor_financial_interface.get_accounting_date(pi_period_13 => pi_period_13);
+  
+    db('processing normal commitment data');
+    process_commitment_data(pi_commitment_data_arr => l_commitment_data_arr
+                           ,pi_processing_del_wols => FALSE);
+    
+    db('processing deleted wols commitment data');
+    process_commitment_data(pi_commitment_data_arr => l_del_wol_cmtmt_data_arr
+                           ,pi_processing_del_wols => TRUE);
 
     -----------------
     --process inserts
@@ -1600,6 +1725,11 @@ BEGIN
     db('Updating ' || l_xmgw_upd_wol_id_arr.COUNT || ' records in xnor_may_gurney_wols');
     upd_all_xmgw_commitments(pi_xmgw_wol_id_arr           => l_xmgw_upd_wol_id_arr
                             ,pi_xmgw_commitment_value_arr => l_xmgw_upd_commitmnt_value_arr);
+
+    -----------------
+    --process deletes
+    -----------------
+    del_all_xmgw(pi_wol_id_arr => l_xmgw_del_wol_id_arr);
 
     ------------
     --close file
@@ -1932,7 +2062,7 @@ BEGIN
       ----------------------
       --generate a file line
       ----------------------
-      IF l_payment_data_arr(i).wol_act_cost > 0
+      IF l_payment_data_arr(i).wol_act_cost <> 0
       THEN
         --keep track of the total invoice amount
         l_total_invoice_amount := l_total_invoice_amount + l_payment_data_arr(i).wol_act_cost;
