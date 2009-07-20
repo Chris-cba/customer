@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.4   Mar 25 2008 10:46:46   smarshall  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_hops_gl_interface.pkb-arc   2.5   Jul 20 2009 09:09:34   dyounger  $
 --       Module Name      : $Workfile:   xnor_hops_gl_interface.pkb  $
---       Date into PVCS   : $Date:   Mar 25 2008 10:46:46  $
---       Date fetched Out : $Modtime:   Mar 25 2008 08:29:44  $
---       PVCS Version     : $Revision:   2.4  $
+--       Date into PVCS   : $Date:   Jul 20 2009 09:09:34  $
+--       Date fetched Out : $Modtime:   Jul 19 2009 21:23:38  $
+--       PVCS Version     : $Revision:   2.5  $
 --
 --
 --   Author : Kevin Angus
@@ -67,7 +67,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.4  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) := '"$Revision:   2.5  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xnor_hops_gl_interface';
   
@@ -89,7 +89,7 @@ AS
   -----------
   g_grr_job_id gri_report_runs.grr_job_id%TYPE;
   
-  g_debug_on BOOLEAN := FALSE;
+  g_debug_on BOOLEAN := TRUE;
 --
 -----------------------------------------------------------------------------
 --
@@ -279,6 +279,76 @@ END get_commitment_data;
 --
 -----------------------------------------------------------------------------
 --
+FUNCTION get_cmtmt_data_del_wols(pi_contractor_id  IN contracts.con_contr_org_id%TYPE
+                                ,pi_financial_year IN budgets.bud_fyr_id%TYPE
+                                ,pi_run_up_to_date IN date DEFAULT NULL
+                                )RETURN t_commitment_data_arr IS
+
+  l_commitment_data_arr t_commitment_data_arr;
+
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'get_cmtmt_data_del_wols');
+
+  nm_debug.DEBUG('get_cmtmt_data_del_wols ' || pi_contractor_id || ':' || pi_financial_year || ':' || TO_CHAR(pi_run_up_to_date));
+  
+  SELECT
+    MIN(iwor.iwor_transaction_id),
+    iwor.iwor_transaction_type,
+    iwor.iwor_works_order_no,
+    iwol.iwol_id,
+    SUM(iboq.iboq_cost) wol_est_cost,
+    iwol.iwol_road_id,
+    iwol.iwol_cost_code,
+    NULL,
+    NULL
+  BULK COLLECT INTO
+    l_commitment_data_arr
+  FROM
+    interface_wor    iwor,
+    interface_wol    iwol,
+    interface_boq    iboq,
+    contracts        con
+  WHERE
+    iwor.iwor_fi_run_number IS NULL
+  AND
+    (pi_run_up_to_date IS NULL
+     OR
+     iwor_date_confirmed <= pi_run_up_to_date)
+  AND
+    con.con_contr_org_id = pi_contractor_id
+  AND
+    con.con_code = iwor.iwor_con_code
+  AND
+    iwor.iwor_transaction_id = iwol.iwol_transaction_id
+  AND
+    iwol.iwol_transaction_id = iboq.iboq_transaction_id (+)
+  AND
+    iwol.iwol_id = iboq.iboq_wol_id (+) 
+ AND
+   NOT EXISTS (SELECT NULL
+               FROM   work_order_lines wol
+               WHERE  wol.wol_id = iwol.iwol_id)
+  GROUP BY
+    iwol.iwol_id,
+    iwor.iwor_transaction_id,
+    iwor.iwor_transaction_type,
+    iwor.iwor_works_order_no,
+    iwol.iwol_road_id,
+    iwol.iwol_cost_code
+  ORDER BY
+    iwol.iwol_id,
+    iwor.iwor_transaction_id DESC;
+
+  nm_debug.proc_end(p_package_name   => g_package_name
+                   ,p_procedure_name => 'get_commitment_data');
+
+  RETURN l_commitment_data_arr;
+
+END get_cmtmt_data_del_wols;
+--
+-----------------------------------------------------------------------------
+--
 -- Returns the next sequencial file number for a particular type of
 -- file and for a particular contractor where applicable. This is
 -- determined from the highest number used, as logged in the
@@ -413,6 +483,75 @@ END get_last_committed_cost;
 --
 -----------------------------------------------------------------------------
 --
+PROCEDURE get_last_cmtd_cost_del_wol(pi_transaction_id IN     interface_wol.iwol_transaction_id%TYPE
+                                    ,pi_wol_id         IN     interface_wol.iwol_id%TYPE
+                                    ,po_cost              OUT interface_boq.iboq_cost%TYPE
+                                    ,po_cost_code         OUT interface_wol.iwol_cost_code%TYPE
+                                    ) IS
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'get_last_cmtd_cost_del_wol');
+  
+  db('looking for last commitment for deleted wol');
+  SELECT
+    wol_est_cost,
+    cost_code
+  INTO
+    po_cost,
+    po_cost_code
+  FROM
+    (SELECT
+      SUM(iboq_cost) wol_est_cost,
+      --NVL(iwol_cost_code, bud.bud_cost_code) cost_code
+      iwol_cost_code cost_code
+    FROM
+      interface_wor    iwor,
+      interface_wol    iwol,
+      interface_boq    iboq--,
+      --work_order_lines wol,
+      --budgets          bud
+    WHERE
+      iwol.iwol_id = pi_wol_id
+    AND
+      (pi_transaction_id IS NULL
+       OR iwol_transaction_id < pi_transaction_id)
+    AND
+      iwol.iwol_transaction_id = iboq.iboq_transaction_id (+)
+    AND
+      iwol.iwol_id = iboq.iboq_wol_id (+)
+    AND
+      iwor.iwor_transaction_id = iwol.iwol_transaction_id
+    AND
+      iwor.iwor_fi_run_number IS NOT NULL
+    --AND
+    --  iwol.iwol_id = wol.wol_id
+    --AND
+    --  wol.wol_bud_id = bud.bud_id
+    GROUP BY
+      iwol_transaction_id,
+      iwol_cost_code--,
+      --bud.bud_cost_code
+    HAVING
+      SUM(iboq_cost) <> 0
+    ORDER BY
+      iwol.iwol_transaction_id DESC)
+  WHERE
+    ROWNUM = 1;
+
+  nm_debug.proc_end(p_package_name   => g_package_name
+                   ,p_procedure_name => 'get_last_cmtd_cost_del_wol');
+
+EXCEPTION
+  WHEN no_data_found
+  THEN
+    db('no last cost found');
+    po_cost      := NULL;
+    po_cost_code := NULL;
+
+END get_last_cmtd_cost_del_wol;
+--
+-----------------------------------------------------------------------------
+--
 FUNCTION get_line_description(pi_works_order_no IN work_orders.wor_works_order_no%TYPE
                              ,pi_wol_id         IN work_order_lines.wol_id%TYPE
                              ,pi_defect_id      IN work_order_lines.wol_def_defect_id%TYPE
@@ -516,7 +655,8 @@ FUNCTION generate_commitment_file(pi_seq_no         IN interface_run_log.irl_run
                                                          ,pi_seq_no            => pi_seq_no
                                                          ,pi_oun_contractor_id => interfaces.get_oun_id(p_contractor_id => pi_contractor_id));
   
-  l_commitment_data_arr t_commitment_data_arr;
+  l_commitment_data_arr     t_commitment_data_arr;
+  l_cmtmt_data_del_wols_arr t_commitment_data_arr;
   
   l_output_date date;
   
@@ -580,48 +720,34 @@ FUNCTION generate_commitment_file(pi_seq_no         IN interface_run_log.irl_run
     l_total_debits  := l_total_debits + NVL(ABS(pi_debit), 0);
   
   END log_ctrl_data;
-
-BEGIN
-  nm_debug.proc_start(p_package_name   => g_package_name
-                     ,p_procedure_name => 'generate_commitment_file');
-
-  nm_debug.DEBUG('main generate_commitment_file');
   
-  l_commitment_data_arr := get_commitment_data(pi_contractor_id  => pi_contractor_id
-                                              ,pi_financial_year => pi_financial_year
-                                              ,pi_run_up_to_date => pi_end_date);
-
-  nm_debug.DEBUG('got ' || l_commitment_data_arr.COUNT || ' rows to process' );
-
-  IF l_commitment_data_arr.COUNT > 0
-  THEN
-    --which date do we use in the output file?
-    l_output_date := xnor_financial_interface.get_accounting_date(pi_period_13 => pi_period_13);
-    
-    l_file_id := open_output_file(pi_file_path => pi_file_path
-                                 ,pi_filename  => c_filename);
-  
-    FOR i IN 1..l_commitment_data_arr.COUNT
+  PROCEDURE process_commitment_array(pi_commitment_data_arr     IN t_commitment_data_arr
+                                    ,pi_processing_deleted_wols IN BOOLEAN
+                                    ) IS
+                                    
+  BEGIN
+    FOR i IN 1..pi_commitment_data_arr.COUNT
     LOOP
       db('loop ' || i);
       db('last wol_id      = ' || l_last_wol_id);
-      db('wol_id           = ' || l_commitment_data_arr(i).wol_id); 
-      db('wol_cost         = ' || l_commitment_data_arr(i).wol_cost);
-      db('works_order_no   = ' || l_commitment_data_arr(i).works_order_no);
-      db('road_id          = ' || l_commitment_data_arr(i).road_id);
-      db('cost_code        = ' || l_commitment_data_arr(i).cost_code);
-      db('transaction_type = ' || l_commitment_data_arr(i).transaction_type);
-      db('wol_status_code  = ' || l_commitment_data_arr(i).wol_status_code);
+      db('wol_id           = ' || pi_commitment_data_arr(i).wol_id); 
+      db('wol_cost         = ' || pi_commitment_data_arr(i).wol_cost);
+      db('works_order_no   = ' || pi_commitment_data_arr(i).works_order_no);
+      db('road_id          = ' || pi_commitment_data_arr(i).road_id);
+      db('cost_code        = ' || pi_commitment_data_arr(i).cost_code);
+      db('transaction_type = ' || pi_commitment_data_arr(i).transaction_type);
+      db('wol_status_code  = ' || pi_commitment_data_arr(i).wol_status_code);
       
       --do we need to process this record?
-      IF (l_last_wol_id IS NULL OR l_commitment_data_arr(i).wol_id <> l_last_wol_id)
-        AND l_commitment_data_arr(i).wol_cost <> 0
-        AND l_commitment_data_arr(i).wol_status_code <> xnor_financial_interface.c_wol_status_paid
+      IF (l_last_wol_id IS NULL OR pi_commitment_data_arr(i).wol_id <> l_last_wol_id)
+        AND ((pi_commitment_data_arr(i).wol_cost <> 0) OR pi_processing_deleted_wols)
+        AND ((pi_commitment_data_arr(i).wol_status_code <> xnor_financial_interface.c_wol_status_paid) OR pi_processing_deleted_wols)
       THEN
         --this wol neither zero cost nor already processed nor already paid...so process
+        db('processing record');
       
         CASE
-          l_commitment_data_arr(i).transaction_type
+          pi_commitment_data_arr(i).transaction_type
           
         WHEN 'C'
         THEN
@@ -632,7 +758,7 @@ BEGIN
         WHEN 'A'
         THEN
           --'A'mendment
-          l_new_commitment    := TRUE;
+          l_new_commitment    := NOT pi_processing_deleted_wols;
           l_reversal_required := TRUE;
         
         WHEN 'D'
@@ -642,29 +768,40 @@ BEGIN
           l_reversal_required := TRUE;
         
         ELSE
-          raise_application_error(-20001, 'Unknown transaction type: ' || l_commitment_data_arr(i).transaction_type
-                                          || ' for WOL ' || l_commitment_data_arr(i).wol_id);
+          raise_application_error(-20001, 'Unknown transaction type: ' || pi_commitment_data_arr(i).transaction_type
+                                          || ' for WOL ' || pi_commitment_data_arr(i).wol_id);
         
         END CASE;
  
         --get description for file lines
-        l_line_descr := get_line_description(pi_works_order_no => l_commitment_data_arr(i).works_order_no
-                                            ,pi_wol_id         => l_commitment_data_arr(i).wol_id
-                                            ,pi_defect_id      => l_commitment_data_arr(i).defect_id);  
+        l_line_descr := get_line_description(pi_works_order_no => pi_commitment_data_arr(i).works_order_no
+                                            ,pi_wol_id         => pi_commitment_data_arr(i).wol_id
+                                            ,pi_defect_id      => pi_commitment_data_arr(i).defect_id);  
 
         IF l_reversal_required
         THEN
           db('potential reversal required');
           --get last committed value
-          get_last_committed_cost(pi_transaction_id => l_commitment_data_arr(i).transaction_id
-                                 ,pi_wol_id         => l_commitment_data_arr(i).wol_id
-                                 ,po_cost           => l_last_sent_cost
-                                 ,po_cost_code      => l_last_sent_cost_code);
+          IF pi_processing_deleted_wols
+          THEN
+            get_last_cmtd_cost_del_wol(pi_transaction_id => pi_commitment_data_arr(i).transaction_id
+                                      ,pi_wol_id         => pi_commitment_data_arr(i).wol_id
+                                      ,po_cost           => l_last_sent_cost
+                                      ,po_cost_code      => l_last_sent_cost_code);
+          ELSE
+            get_last_committed_cost(pi_transaction_id => pi_commitment_data_arr(i).transaction_id
+                                   ,pi_wol_id         => pi_commitment_data_arr(i).wol_id
+                                   ,po_cost           => l_last_sent_cost
+                                   ,po_cost_code      => l_last_sent_cost_code);
+          END IF;
+          
+          db('l_last_sent_cost = ' || l_last_sent_cost);
           
           IF l_last_sent_cost IS NOT NULL
           THEN
-            IF l_last_sent_cost <> l_commitment_data_arr(i).wol_cost
-              OR l_last_sent_cost_code <> l_commitment_data_arr(i).cost_code
+            IF l_last_sent_cost <> pi_commitment_data_arr(i).wol_cost
+              OR l_last_sent_cost_code <> pi_commitment_data_arr(i).cost_code
+              OR pi_processing_deleted_wols
             THEN
               db('found a previously sent value ' || l_last_sent_cost || ':' || l_last_sent_cost_code);
               l_credit_cost_code := interfaces.reformat_cost_code(p_cost_code => interfaces.split_cost_code(p_cost_code => l_last_sent_cost_code
@@ -708,14 +845,14 @@ BEGIN
         IF l_new_commitment
         THEN
           db('New commitment value');
-          l_credit_cost_code := interfaces.reformat_cost_code(p_cost_code => interfaces.split_cost_code(p_cost_code => l_commitment_data_arr(i).cost_code
+          l_credit_cost_code := interfaces.reformat_cost_code(p_cost_code => interfaces.split_cost_code(p_cost_code => pi_commitment_data_arr(i).cost_code
                                                                                                        ,p_number    => 3));
-          l_debit_cost_code  := interfaces.reformat_cost_code(p_cost_code => interfaces.split_cost_code(p_cost_code => l_commitment_data_arr(i).cost_code
+          l_debit_cost_code  := interfaces.reformat_cost_code(p_cost_code => interfaces.split_cost_code(p_cost_code => pi_commitment_data_arr(i).cost_code
                                                                                                        ,p_number    => 1));
             
           --write reversal for last if nec
           writeln(pi_text => xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                                         ,pi_cost                  => l_commitment_data_arr(i).wol_cost
+                                                                         ,pi_cost                  => pi_commitment_data_arr(i).wol_cost
                                                                          ,pi_descr                 => l_line_descr
                                                                          ,pi_cost_code             => l_debit_cost_code
                                                                          ,pi_user_je_category_name => c_user_jre_cat_name_order
@@ -723,9 +860,9 @@ BEGIN
                                                                          ,pi_actual_flag           => c_actual_flag_estimate
                                                                          ,pi_period_13             => pi_period_13
                                                                          ,pi_part_cost_code        => FALSE)
-                 ,pi_cost => l_commitment_data_arr(i).wol_cost);
+                 ,pi_cost => pi_commitment_data_arr(i).wol_cost);
           writeln(pi_text => xnor_financial_interface.get_commitment_line(pi_accounting_date       => l_output_date
-                                                                         ,pi_cost                  => -l_commitment_data_arr(i).wol_cost
+                                                                         ,pi_cost                  => -pi_commitment_data_arr(i).wol_cost
                                                                          ,pi_descr                 => l_line_descr
                                                                          ,pi_cost_code             => l_credit_cost_code
                                                                          ,pi_user_je_category_name => c_user_jre_cat_name_order
@@ -733,19 +870,57 @@ BEGIN
                                                                          ,pi_actual_flag           => c_actual_flag_estimate
                                                                          ,pi_period_13             => pi_period_13
                                                                          ,pi_part_cost_code        => FALSE)
-                 ,pi_cost => -l_commitment_data_arr(i).wol_cost);
+                 ,pi_cost => -pi_commitment_data_arr(i).wol_cost);
           
         
-          log_ctrl_data(pi_credit => l_commitment_data_arr(i).wol_cost
-                       ,pi_debit  => l_commitment_data_arr(i).wol_cost);
+          log_ctrl_data(pi_credit => pi_commitment_data_arr(i).wol_cost
+                       ,pi_debit  => pi_commitment_data_arr(i).wol_cost);
         END IF;
       
-        l_last_wol_id := l_commitment_data_arr(i).wol_id;
+        l_last_wol_id := pi_commitment_data_arr(i).wol_id;
       END IF;
       
       --record transaction id
-      l_transactions_processed_arr(l_transactions_processed_arr.COUNT + 1) := l_commitment_data_arr(i).transaction_id;
+      l_transactions_processed_arr(l_transactions_processed_arr.COUNT + 1) := pi_commitment_data_arr(i).transaction_id;
     END LOOP;
+  
+  
+  END process_commitment_array;
+
+BEGIN
+  nm_debug.proc_start(p_package_name   => g_package_name
+                     ,p_procedure_name => 'generate_commitment_file');
+
+  nm_debug.DEBUG('main generate_commitment_file');
+  
+  l_commitment_data_arr := get_commitment_data(pi_contractor_id  => pi_contractor_id
+                                              ,pi_financial_year => pi_financial_year
+                                              ,pi_run_up_to_date => pi_end_date);
+
+  nm_debug.DEBUG('got ' || l_commitment_data_arr.COUNT || ' rows to process' );
+
+  l_cmtmt_data_del_wols_arr := get_cmtmt_data_del_wols(pi_contractor_id  => pi_contractor_id
+                                                      ,pi_financial_year => pi_financial_year
+                                                      ,pi_run_up_to_date => pi_end_date);
+
+  nm_debug.DEBUG('got ' || l_cmtmt_data_del_wols_arr.COUNT || ' deleted wols rows to process' );
+
+  IF l_commitment_data_arr.COUNT > 0
+    OR l_cmtmt_data_del_wols_arr.COUNT > 0
+  THEN
+    --which date do we use in the output file?
+    l_output_date := xnor_financial_interface.get_accounting_date(pi_period_13 => pi_period_13);
+    
+    l_file_id := open_output_file(pi_file_path => pi_file_path
+                                 ,pi_filename  => c_filename);
+  
+    db('process normal commitments');
+    process_commitment_array(pi_commitment_data_arr     => l_commitment_data_arr
+                            ,pi_processing_deleted_wols => FALSE);
+
+    db('process deleted wol commitments');
+    process_commitment_array(pi_commitment_data_arr     => l_cmtmt_data_del_wols_arr
+                            ,pi_processing_deleted_wols => TRUE);
 
     -------------------------------------
     --set these transactions as processed
@@ -1218,7 +1393,7 @@ BEGIN
   
   process_payment_run(pi_con_id         => l_con_rec.con_id
                      ,pi_apply_vat      => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
-                                                                       ,a_param  => 'CONTRACT_ID') = 'Y'
+                                                                       ,a_param  => 'ANSWER') = 'Y'
                      ,pi_oun_ord_id     => l_con_rec.con_contr_org_id
                      ,pi_start_date     => higgrirp.get_parameter_value(a_job_id => pi_grr_job_id
                                                                        ,a_param  => 'FROM_DATE')
