@@ -1,0 +1,26 @@
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/tpc/install/tpc.sqs-arc   3.0   Sep 21 2009 16:16:24   smarshall  $
+--       Module Name      : $Workfile:   tpc.sqs  $
+--       Date into PVCS   : $Date:   Sep 21 2009 16:16:24  $
+--       Date fetched Out : $Modtime:   Sep 21 2009 16:15:50  $
+--       Version          : $Revision:   3.0  $
+-------------------------------------------------------------------------
+--
+
+PROMPT Creating Sequence 'wag_tpc_mail_id_seq'
+CREATE SEQUENCE wag_tpc_mail_id_seq
+ NOMAXVALUE
+ NOMINVALUE
+ NOCYCLE
+ NOCACHE
+/
+
+PROMPT Creating Sequence 'WAG_TPC_MOI_SEQ'
+CREATE SEQUENCE WAG_TPC_MOI_SEQ
+ NOMAXVALUE
+ NOMINVALUE
+ NOCYCLE
+ NOCACHE
+/
