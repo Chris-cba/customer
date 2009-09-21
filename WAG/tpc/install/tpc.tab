@@ -1,0 +1,90 @@
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/tpc/install/tpc.tab-arc   3.0   Sep 21 2009 16:16:26   smarshall  $
+--       Module Name      : $Workfile:   tpc.tab  $
+--       Date into PVCS   : $Date:   Sep 21 2009 16:16:26  $
+--       Date fetched Out : $Modtime:   Sep 21 2009 16:15:52  $
+--       Version          : $Revision:   3.0  $
+-------------------------------------------------------------------------
+--
+
+PROMPT Creating Table 'WAG_TPC_INCIDENT'
+CREATE TABLE WAG_TPC_INCIDENT
+(
+  WAG_TPC_INCIDENT_ID       NUMBER(9)           NOT NULL,
+  WAG_TPC_STATUS            VARCHAR2(1 BYTE)    NOT NULL,
+  WAG_TPC_DETAILS_COMPLETE  VARCHAR2(1 BYTE)    NOT NULL,
+  WAG_TPC_AUTHORISE         VARCHAR2(255 BYTE)  NOT NULL,
+  WAG_TPC_SENT_TPC          VARCHAR2(1 BYTE)    NOT NULL,
+  WAG_TPC_COMMENTS          VARCHAR2(4000 BYTE)
+)
+/
+
+COMMENT ON TABLE WAG_TPC_INCIDENT IS 'Utilised by WAG third party claims tool'
+/
+
+PROMPT Creating Table 'WAG_TPC_INSPECTIONS'
+CREATE TABLE WAG_TPC_INSPECTIONS
+(
+  WAG_TPC_INCIDENT_ID             NUMBER(9)     NOT NULL,
+  WAG_TPC_SITE_INSPECTED          VARCHAR2(1 BYTE) NOT NULL,
+  WAG_TPC_OTHER_SIMILAR_CLAIM     VARCHAR2(1 BYTE) NOT NULL,
+  WAG_TPC_OTHER_CLAIM_SITE        VARCHAR2(1 BYTE) NOT NULL,
+  WAG_TPC_SITE_INS_NOTES          VARCHAR2(2000 BYTE),
+  WAG_TPC_OTHER_SIM_CLAIM_NOTES   VARCHAR2(2000 BYTE),
+  WAG_TPC_OTHER_CLAIM_SITE_NOTES  VARCHAR2(2000 BYTE),
+  WAG_TPC_CONTRACTOR_CLAIM        VARCHAR2(1 BYTE),
+  WAG_TPC_CLAIM_FORM_ATTACHED     VARCHAR2(1 BYTE)
+)
+/
+
+COMMENT ON TABLE WAG_TPC_INSPECTIONS IS 'Utilised by WAG third party claims tool'
+/
+
+PROMPT Creating Table 'WAG_TPC_MATTEROFISSUE_DATA'
+CREATE TABLE WAG_TPC_MATTEROFISSUE_DATA
+(
+  WAG_TPC_PK               NUMBER(9)            NOT NULL,
+  WAG_TPC_INCIDENT_ID      NUMBER(9)            NOT NULL,
+  WAG_TPC_CATEGORY_ID      VARCHAR2(4 BYTE)     NOT NULL,
+  WAG_TPC_CLASS_ID         VARCHAR2(4 BYTE)     NOT NULL,
+  WAG_TPC_TYPE_ID          VARCHAR2(4 BYTE)     NOT NULL,
+  WAG_TPC_QUESTION_NUM     NUMBER(3)            NOT NULL,
+  WAG_TPC_QUESTION_ANSWER  VARCHAR2(1000 BYTE)  NOT NULL
+)
+/
+
+COMMENT ON TABLE WAG_TPC_MATTEROFISSUE_DATA IS 'Utilised by WAG third party claims tool'
+/
+
+PROMPT Creating Table 'WAG_TPC_MATTEROFISSUE_TEMPLATE'
+CREATE TABLE WAG_TPC_MATTEROFISSUE_TEMPLATE
+(
+  WAG_TPC_CATEGORY_ID    VARCHAR2(4 BYTE)       NOT NULL,
+  WAG_TPC_CLASS_ID       VARCHAR2(4 BYTE)       NOT NULL,
+  WAG_TPC_TYPE_ID        VARCHAR2(4 BYTE)       NOT NULL,
+  WAG_TPC_QUESTION_NUM   NUMBER(3)              NOT NULL,
+  WAG_TPC_QUESTION_TEXT  VARCHAR2(500 BYTE)     NOT NULL
+)
+/
+
+COMMENT ON TABLE WAG_TPC_MATTEROFISSUE_TEMPLATE IS 'Utilised by WAG third party claims tool'
+/
+
+PROMPT Creating Table 'WAG_TPC_SDO_CACHED_MAPS'
+CREATE TABLE WAG_TPC_SDO_CACHED_MAPS
+(
+  NAME         VARCHAR2(32 BYTE),
+  DESCRIPTION  VARCHAR2(4000 BYTE),
+  TILES_TABLE  VARCHAR2(32 BYTE),
+  IS_ONLINE    VARCHAR2(3 BYTE)                 NOT NULL,
+  IS_INTERNAL  VARCHAR2(4 BYTE)                 NOT NULL,
+  DEFINITION   CLOB,
+  BASE_MAP     VARCHAR2(32 BYTE),
+  MAP_ADAPTER  BLOB
+)
+/
+
+COMMENT ON TABLE WAG_TPC_SDO_CACHED_MAPS IS 'Utilised by WAG third party claims tool'
+/
