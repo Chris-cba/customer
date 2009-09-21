@@ -1,0 +1,23 @@
+-- PVCS Identifiers :-
+--
+-- sccsid                : $Header:   //vm_latest/archives/customer/WAG/tpc/install/tpc.ind-arc   3.0   Sep 21 2009 16:33:14   smarshall  $
+-- Module Name           : $Workfile:   tpc.ind  $
+-- Date into PVCS        : $Date:   Sep 21 2009 16:33:14  $
+-- Date fetched Out      : $Modtime:   Sep 21 2009 16:32:26  $
+-- PVCS Version          : $Revision:   3.0  $
+--
+
+PROMPT Creating Index 'WTI_PK'
+CREATE INDEX WTI_PK ON WAG_TPC_INCIDENT
+ (WAG_TPC_INCIDENT_ID)
+/
+
+PROMPT Creating Index 'WTIN_PK'
+CREATE INDEX WTIN_PK ON WAG_TPC_INSPECTIONS
+ (WAG_TPC_INCIDENT_ID)
+/
+
+PROMPT Creating Index 'WAG_TPC_MOI_PK'
+CREATE INDEX WAG_TPC_MOI_PK ON WAG_TPC_MATTEROFISSUE_DATA
+ (WAG_TPC_PK)
+/
