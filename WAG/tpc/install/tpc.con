@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/tpc/install/tpc.con-arc   3.0   Sep 21 2009 16:27:08   smarshall  $
+--       Module Name      : $Workfile:   tpc.con  $
+--       Date into PVCS   : $Date:   Sep 21 2009 16:27:08  $
+--       Date fetched Out : $Modtime:   Sep 21 2009 16:26:44  $
+--       Version          : $Revision:   3.0  $
+-------------------------------------------------------------------------
+--
+
+PROMPT Creating Primary Key on 'WAG_TPC_INCIDENT'
+ALTER TABLE WAG_TPC_INCIDENT 
+ ADD (CONSTRAINT WTI_PK PRIMARY KEY
+ (WAG_TPC_INCIDENT_ID))
+/
+
+PROMPT Creating Primary Key on 'WAG_TPC_INSPECTIONS'
+ALTER TABLE WAG_TPC_INSPECTIONS 
+ ADD (CONSTRAINT WTIN_PK PRIMARY KEY
+ (WAG_TPC_INCIDENT_ID))
+/
+
+PROMPT Creating Primary Key on 'WAG_TPC_MATTEROFISSUE_DATA'
+ALTER TABLE WAG_TPC_MATTEROFISSUE_DATA 
+ ADD (CONSTRAINT WAG_TPC_MOI_PK PRIMARY KEY
+ (WAG_TPC_PK))
+/
+
+PROMPT Creating Foreign Key on 'WAG_TPC_INCIDENT'
+ALTER TABLE WAG_TPC_INCIDENT ADD (CONSTRAINT 
+ WTI_FK_DOCS FOREIGN KEY 
+  (WAG_TPC_INCIDENT_ID) REFERENCES DOCS 
+  (DOC_ID))
+/
+ 
+PROMPT Creating Foreign Key on 'WAG_TPC_INSPECTIONS'
+ALTER TABLE WAG_TPC_INSPECTIONS ADD (CONSTRAINT 
+ WTIN_FK_DOCS FOREIGN KEY 
+  (WAG_TPC_INCIDENT_ID) REFERENCES DOCS 
+  (DOC_ID))
+/
