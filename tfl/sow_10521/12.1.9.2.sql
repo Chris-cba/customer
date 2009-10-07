@@ -1,6 +1,6 @@
   ------------------------------------------------------------------------------
   --
-  --  THIS SCRIPT WAS WRITTEN AS PART OF SoW 10521 REQUIREMENT REF: 12.1.9.2 by Aileen Heal
+  --  THIS SCRIPT WAS WRITTEN AS PART OF SoW 10521 REQUIREMENT REF: 12.1.9.2 by Aileen Heal 
   --
   --   This script create a theme to show TMA restrictions where the restriction status
   --   is IN FORCE or PROPOSED. The theme is colour coded by status i.e. Proposed or In FORCE
@@ -17,11 +17,11 @@
   --
   --   PVCS Identifiers :-
   --
-  --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/sow_10521/12.1.9.2.sql-arc   3.0   Sep 02 2009 11:58:16   Ian Turnbull  $
+  --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/sow_10521/12.1.9.2.sql-arc   3.1   Oct 07 2009 12:44:48   Ian Turnbull  $
   --       Module Name      : $Workfile:   12.1.9.2.sql  $
-  --       Date into PVCS   : $Date:   Sep 02 2009 11:58:16  $
-  --       Date fetched Out : $Modtime:   Sep 02 2009 11:35:00  $
-  --       PVCS Version     : $Revision:   3.0  $
+  --       Date into PVCS   : $Date:   Oct 07 2009 12:44:48  $
+  --       Date fetched Out : $Modtime:   Oct 07 2009 12:43:24  $
+  --       PVCS Version     : $Revision:   3.1  $
   --
   --
   --   Author : Aileen Heal
@@ -43,11 +43,11 @@ select
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/sow_10521/12.1.9.2.sql-arc   3.0   Sep 02 2009 11:58:16   Ian Turnbull  $
---       Module Name      : $Workfile:   12.1.9.2.sql  $
---       Date into PVCS   : $Date:   Sep 02 2009 11:58:16  $
---       Date fetched Out : $Modtime:   Sep 02 2009 11:35:00  $
---       PVCS Version     : $Revision:   3.0  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/sow_10521/12.1.9.2.sql-arc   3.1   Oct 07 2009 12:44:48   Ian Turnbull  $
+--       Module Name      : $Workfile::   12.1.9.2.sql  $
+--       Date into PVCS   : $Date:   Oct 07 2009 12:44:48  $
+--       Date fetched Out : $Modtime:   Oct 07 2009 12:43:24  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : Aileen Heal
@@ -67,7 +67,7 @@ insert into user_sdo_geom_metadata
     where table_name = 'TMA_RESTRICTIONS_SDO' and column_name = 'TRES_GEOMETRY' and rownum = 1;
     
 create or replace view X_RESTRICT_PROPORINFORCE_SDOPT as
-select a.*, b.GEOMETRY, b.TRES_RESTRICTION_ID 
+select  
 ------------------------------------------------------------------------------
 --  THIS VIEW WAS WRITTEN AS PART OF SoW 10521 REQUIREMENT REF: 12.1.9.2 by Aileen Heal
 --
@@ -78,11 +78,11 @@ select a.*, b.GEOMETRY, b.TRES_RESTRICTION_ID
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/sow_10521/12.1.9.2.sql-arc   3.0   Sep 02 2009 11:58:16   Ian Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/sow_10521/12.1.9.2.sql-arc   3.1   Oct 07 2009 12:44:48   Ian Turnbull  $
 --       Module Name      : $Workfile:   12.1.9.2.sql  $
---       Date into PVCS   : $Date:   Sep 02 2009 11:58:16  $
---       Date fetched Out : $Modtime:   Sep 02 2009 11:35:00  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 07 2009 12:44:48  $
+--       Date fetched Out : $Modtime:   Oct 07 2009 12:43:24  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : Aileen Heal
