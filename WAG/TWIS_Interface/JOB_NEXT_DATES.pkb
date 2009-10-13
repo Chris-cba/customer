@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/JOB_NEXT_DATES.pkb-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/JOB_NEXT_DATES.pkb-arc   3.2   Oct 13 2009 15:48:26   Ian Turnbull  $
 --       Module Name      : $Workfile:   JOB_NEXT_DATES.pkb  $
---       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
---       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Oct 13 2009 15:48:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 12:09:30  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --
@@ -27,9 +27,12 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.2  $"';
 
   g_package_name CONSTANT varchar2(30) := '%YourObjectName%';
+
+  type days_t is table of boolean index by binary_integer;
+
 --
 -----------------------------------------------------------------------------
 --
@@ -47,7 +50,6 @@ END get_body_version;
 --
 -----------------------------------------------------------------------------
 --
-  type days_t is table of boolean index by binary_integer;
 
 procedure debug (message in varchar2)
 is
