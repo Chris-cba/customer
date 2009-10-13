@@ -1,0 +1,6 @@
+CREATE OR REPLACE package WAG.wag_twis_load
+as
+procedure load_twis(p_twis_rec v_wag_twis%rowtype);
+end;
+/
+
