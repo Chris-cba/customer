@@ -1,0 +1,56 @@
+CREATE OR REPLACE package WAG.job_next_dates is
+/*
+Purpose : Functions that return the next date specified.
+          For the "interval" parameter of DBMS_JOB,
+          which accepts a varchar2 string that evaluates to a date.
+          These functions allow scheduling of database jobs
+          on complex schedules.
+Example :
+  dbms_job.submit(:job, 'myproc;', sysdate,
+    'job_next_dates.weekly(''MoTuWe'',''14:45'')' );
+*/
+
+  -- In all of these functions, HOUR24 should be entered in the format
+  -- HH:MI where HH is the 24-hour hour.
+  -- eg. 14:45
+  -- 00:00 is a valid value, but 24:00 is not.
+
+  function weekly (Sun in boolean, Mon in boolean, Tue in boolean,
+   Wed in boolean, Thu in boolean, Fri in boolean, Sat in boolean,
+   hour24 in varchar2)
+  return date;
+
+  function weekly (daystring in varchar2, hour24 in varchar2)
+   return date;
+
+  function friendly_date(date_string in varchar2, format_string in varchar2)
+   return date;
+
+  function specific_dates(format_string in varchar2,
+   date1 in varchar2,
+   date2 in varchar2 default null,
+   date3 in varchar2 default null,
+   date4 in varchar2 default null,
+   date5 in varchar2 default null)
+  return date;
+
+  function specific_dates(format_string in varchar2,
+   date1 in varchar2,
+   date2 in varchar2 default null,
+   date3 in varchar2 default null,
+   date4 in varchar2 default null,
+   date5 in varchar2 default null,
+   hour24 in varchar2)
+  return date;
+
+  --use this function as "interval" argument to run a job every day at
+  --the same time
+  function every_day(hour24 in varchar2)
+  return date;
+
+  function monthly_first_working
+  return date;
+
+end job_next_dates;
+/
+
