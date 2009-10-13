@@ -1,4 +1,4 @@
-CREATE OR REPLACE package WAG.job_next_dates is
+CREATE OR REPLACE package job_next_dates 
 /*
 Purpose : Functions that return the next date specified.
           For the "interval" parameter of DBMS_JOB,
@@ -9,7 +9,61 @@ Example :
   dbms_job.submit(:job, 'myproc;', sysdate,
     'job_next_dates.weekly(''MoTuWe'',''14:45'')' );
 */
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/JOB_NEXT_DATES.pkh-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       Module Name      : $Workfile:   JOB_NEXT_DATES.pkh  $
+--       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
+--       PVCS Version     : $Revision:   3.1  $
+--       Based on SCCS version :
 
+--
+--
+--   Author : %USERNAME%
+--
+--    %YourObjectName%
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   3.1  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+--------------------------------------------
   -- In all of these functions, HOUR24 should be entered in the format
   -- HH:MI where HH is the 24-hour hour.
   -- eg. 14:45

@@ -4,11 +4,11 @@ AS
 -----------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/X_TWIS.pkh-arc   3.0   Oct 13 2009 08:15:42   Ian Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/X_TWIS.pkh-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
 --       Module Name      : $Workfile:   X_TWIS.pkh  $
---       Date into PVCS   : $Date:   Oct 13 2009 08:15:42  $
---       Date fetched Out : $Modtime:   Oct 13 2009 08:12:56  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
+--       PVCS Version     : $Revision:   3.1  $
 
 --
 --

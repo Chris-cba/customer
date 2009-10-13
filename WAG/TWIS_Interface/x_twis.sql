@@ -1,3 +1,21 @@
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/x_twis.sql-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       Module Name      : $Workfile:   x_twis.sql  $
+--       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
+--       PVCS Version     : $Revision:   3.1  $
+--
+--
+--   Author : %USERNAME%
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--
+
 ALTER TABLE WAG.X_TWIS_LOG
  DROP PRIMARY KEY CASCADE;
 

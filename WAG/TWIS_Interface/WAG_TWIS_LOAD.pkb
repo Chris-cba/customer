@@ -1,5 +1,54 @@
-CREATE OR REPLACE package body WAG.wag_twis_load
-as
+CREATE OR REPLACE package body wag_twis_load
+
+AS
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/WAG_TWIS_LOAD.pkb-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       Module Name      : $Workfile:   WAG_TWIS_LOAD.pkb  $
+--       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
+--       PVCS Version     : $Revision:   3.1  $
+--       Based on SCCS version :
+--
+--
+--   Author : %USERNAME%
+--
+--   WAG_TWIS_LOAD body
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--
+--all global package variables here
+
+  -----------
+  --constants
+  -----------
+  --g_body_sccsid is the SCCS ID for the package body
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+
+  g_package_name CONSTANT varchar2(30) := 'wag_twis_load.pkb';
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_version RETURN varchar2 IS
+BEGIN
+   RETURN g_sccsid;
+END get_version;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_body_version RETURN varchar2 IS
+BEGIN
+   RETURN g_body_sccsid;
+END get_body_version;
+--
+-----------------------------------------------------------------------------
+--
+
 procedure load_twis(p_twis_rec v_wag_twis%rowtype)
 is
 l_road_group varchar(255) default null;

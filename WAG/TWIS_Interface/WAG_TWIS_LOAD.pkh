@@ -1,5 +1,59 @@
-CREATE OR REPLACE package WAG.wag_twis_load
-as
+CREATE OR REPLACE package wag_twis_load
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/WAG_TWIS_LOAD.pkh-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       Module Name      : $Workfile:   WAG_TWIS_LOAD.pkh  $
+--       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
+--       PVCS Version     : $Revision:   3.1  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : %USERNAME%
+--
+--    WAG_TWIS_LOAD
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   3.1  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+--------------------------------------------
 procedure load_twis(p_twis_rec v_wag_twis%rowtype);
 end;
 /

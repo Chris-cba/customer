@@ -14,6 +14,22 @@ DECLARE
    l_rec_nlfc nm_load_file_cols%ROWTYPE;
    l_rec_nlfd nm_load_file_destinations%ROWTYPE;
 --
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/TWIS001NWTRA.sql-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       Module Name      : $Workfile:   TWIS001NWTRA.sql  $
+--       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
+--       PVCS Version     : $Revision:   3.1  $
+--
+--
+--   Author : %USERNAME%
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
    PROCEDURE add_nlfc (p_nlfc_holding_col      nm_load_file_cols.nlfc_holding_col%TYPE
                       ,p_nlfc_datatype         nm_load_file_cols.nlfc_datatype%TYPE
                       ,p_nlfc_varchar_size     nm_load_file_cols.nlfc_varchar_size%TYPE

@@ -1,5 +1,52 @@
-CREATE OR REPLACE package body WAG.job_next_dates is
+CREATE OR REPLACE package body job_next_dates 
+AS
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/JOB_NEXT_DATES.pkb-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       Module Name      : $Workfile:   JOB_NEXT_DATES.pkb  $
+--       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
+--       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
+--       PVCS Version     : $Revision:   3.1  $
+--       Based on SCCS version :
+--
+--
+--   Author : %USERNAME%
+--
+--   %YourObjectName% body
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--
+--all global package variables here
 
+  -----------
+  --constants
+  -----------
+  --g_body_sccsid is the SCCS ID for the package body
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+
+  g_package_name CONSTANT varchar2(30) := '%YourObjectName%';
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_version RETURN varchar2 IS
+BEGIN
+   RETURN g_sccsid;
+END get_version;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION get_body_version RETURN varchar2 IS
+BEGIN
+   RETURN g_body_sccsid;
+END get_body_version;
+--
+-----------------------------------------------------------------------------
+--
   type days_t is table of boolean index by binary_integer;
 
 procedure debug (message in varchar2)
