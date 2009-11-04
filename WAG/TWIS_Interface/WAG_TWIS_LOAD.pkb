@@ -1,4 +1,4 @@
-CREATE OR REPLACE package body wag_twis_load
+CREATE OR REPLACE package body WAG.wag_twis_load
 
 AS
 --
@@ -6,11 +6,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/WAG_TWIS_LOAD.pkb-arc   3.1   Oct 13 2009 10:08:38   Ian Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/WAG/TWIS_Interface/WAG_TWIS_LOAD.pkb-arc   3.2   Nov 04 2009 12:37:18   iturnbull  $
 --       Module Name      : $Workfile:   WAG_TWIS_LOAD.pkb  $
---       Date into PVCS   : $Date:   Oct 13 2009 10:08:38  $
---       Date fetched Out : $Modtime:   Oct 13 2009 10:08:12  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Nov 04 2009 12:37:18  $
+--       Date fetched Out : $Modtime:   Nov 04 2009 12:24:20  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --
@@ -28,7 +28,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.2  $"';
 
   g_package_name CONSTANT varchar2(30) := 'wag_twis_load.pkb';
 --
@@ -54,6 +54,7 @@ is
 l_road_group varchar(255) default null;
 l_scheme_type hig_codes.hco_code%type default null;
 l_exists number default 0;
+l_icb_id number;
 --
 begin
   begin
@@ -83,8 +84,14 @@ begin
       where bud_add_cost_code=p_twis_rec.til_scheme_number
         and bud_agency = p_twis_rec.til_agency;
     else
-      insert into item_code_breakdowns
-      ( icb_id,
+      begin
+        select icb_id_seq.nextval 
+        into l_icb_id 
+        from dual; 
+        
+        
+        insert into item_code_breakdowns
+        ( icb_id,
         icb_work_code,
         icb_item_code,
         icb_sub_item_code,
@@ -95,9 +102,9 @@ begin
         icb_required_type,
         icb_rse_road_environment,
         icb_agency_code
-      )
-      VALUES
-      ( icb_id_seq.nextval,                         --icb_id
+        )
+        VALUES
+        ( l_icb_id,                         --icb_id
         substr(p_twis_rec.til_scheme_number,3,6),   --icb_work_code
         substr(p_twis_rec.til_scheme_number,3,2),   --icb_item_code
         substr(p_twis_rec.til_scheme_number,5,2),   --icb_sub_item_code
@@ -108,19 +115,36 @@ begin
         null,                                       --icb_required_type
         null,                                       --icb_rse_road_environment
         p_twis_rec.til_agency		            --icb_agency_code
-      );
+        );
+      exception
+        when dup_val_on_index then
+        select icb_id
+        into l_icb_id
+        from item_Code_breakdowns        
+        where icb_agency_code=p_twis_rec.til_agency
+        and icb_dtp_flag='D'
+        and icb_item_code=substr(p_twis_rec.til_scheme_number,3,2)
+        and icb_sub_item_Code=substr(p_twis_rec.til_scheme_number,5,2)
+        and icb_sub_sub_item_code=substr(p_twis_rec.til_scheme_number,7,2 ) ;      
+      end;    
       --
-      insert into ihms_conversions
-      ( ihc_icb_id,
-        ihc_atv_acty_area_code
-      )
-      select icb_id_seq.currval,
-             atv_acty_area_code
-      from   activities
-      where  atv_end_date is null;
+      begin
+        insert into ihms_conversions
+        ( ihc_icb_id,
+          ihc_atv_acty_area_code
+        )
+        select l_icb_id,
+               atv_acty_area_code
+        from   activities
+        where  atv_end_date is null;
+      exception 
+       when dup_val_on_index then
+         null;
+      end;  
       --
-      insert into budgets
-      ( bud_sys_flag,
+      begin
+        insert into budgets
+        ( bud_sys_flag,
         bud_agency,
         bud_rse_he_id,
         bud_job_code,
@@ -134,9 +158,9 @@ begin
         bud_committed,
         bud_actual,
         bud_comment
-      )
-      VALUES
-      ( 'D',
+         )
+        VALUES
+        ( 'D',
         p_twis_rec.til_agency,
         l_road_group,
         '0',
@@ -150,9 +174,24 @@ begin
         0,
         0,
         'Created by TWIS interface on '||to_char(sysdate,'DD-MON-YYYY HH24:MI:SS')
-      );
+        );
+      exception when dup_val_on_index then  --data was out of date, the bud_add_cost_code cant have been updated
+        update budgets
+        set bud_value = p_twis_rec.til_approved_code,
+          bud_comment = 'Updated by TWIS interface on '||to_char(sysdate,'DD-MON-YYYY HH24:MI:SS')
+          ,bud_add_cost_code=p_twis_rec.til_scheme_number
+          where bud_sys_flag='D'
+          and bud_agency = p_twis_rec.til_agency
+          and bud_rse_he_id=l_road_group
+          and bud_job_code=0
+          and bud_icb_item_code=substr(p_twis_rec.til_scheme_number,3,2)
+          and bud_icb_sub_item_Code=substr(p_twis_rec.til_scheme_number,5,2)
+          and bud_icb_sub_sub_item_code=substr(p_twis_rec.til_scheme_number,7,2)
+          and bud_fyr_id='20'||substr(p_twis_rec.til_scheme_number,1,2);
+      end;
+          
+           
   end if;
 end;
 end;
 /
-
