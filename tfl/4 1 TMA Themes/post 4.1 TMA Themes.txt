@@ -1,0 +1,10 @@
+refreshed Phases (do not change asset type)
+refreshed Restrictions
+refreshed Sites (set View Theme Name to be TMA REGISTERED WORKS)
+
+run stand post 4.1 TMA script
+
+then run tfl_post_4_1.sql
+
+
+
