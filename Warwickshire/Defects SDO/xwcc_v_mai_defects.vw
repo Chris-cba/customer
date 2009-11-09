@@ -1,15 +1,46 @@
-CREATE OR REPLACE FORCE VIEW v_mai_defects
+DROP VIEW WORCS.V_MAI_DEFECTS;
+
+CREATE OR REPLACE FORCE VIEW V_MAI_DEFECTS
+(
+   DEFECT_ID,
+   DEFECT_ROAD_ID,
+   DEFECT_ROAD_NAME,
+   DEFECT_ROAD_DESCRIPTION,
+   DEFECT_START_CHAIN,
+   DEFECT_ARE_REPORT_ID,
+   DEFECT_SISS_ID,
+   DEFECT_WORKS_ORDER_NO,
+   DEFECT_CREATED_DATE,
+   DEFECT_INSPECTED_DATE,
+   DEFECT_INSPECTED_TIME,
+   DEFECT_CODE,
+   DEFECT_PRIORITY,
+   DEFECT_STATUS_CODE,
+   DEFECT_ACTIVITY,
+   DEFECT_LOCATION,
+   DEFECT_DESCRIPTION,
+   DEFECT_ASSET_TYPE,
+   DEFECT_ASSET_ID,
+   DEFECT_INITIATION_TYPE,
+   DEFECT_INSPECTOR,
+   DEFECT_X_SECTION,
+   DEFECT_NOTIFY_ORG,
+   DEFECT_RECHARGE_ORG,
+   DEFECT_NE_ID,
+   DEFECT_BEGIN_MP,
+   DEFECT_TMA_CODE
+)
 AS
   SELECT 
          --
          --------------------------------------------------------------------------------
          --   PVCS Identifiers :-
          --
-         --       sccsid           : $Header:   //vm_latest/archives/customer/Warwickshire/Defects SDO/xwcc_v_mai_defects.vw-arc   3.0   Oct 22 2009 09:01:20   aedwards  $
+         --       sccsid           : $Header:   //vm_latest/archives/customer/Warwickshire/Defects SDO/xwcc_v_mai_defects.vw-arc   3.1   09 Nov 2009 17:41:12   kdawson  $
          --       Module Name      : $Workfile:   xwcc_v_mai_defects.vw  $
-         --       Date into PVCS   : $Date:   Oct 22 2009 09:01:20  $
-         --       Date fetched Out : $Modtime:   Oct 22 2009 09:00:06  $
-         --       PVCS Version     : $Revision:   3.0  $
+         --       Date into PVCS   : $Date:   09 Nov 2009 17:41:12  $
+         --       Date fetched Out : $Modtime:   06 Nov 2009 11:48:32  $
+         --       PVCS Version     : $Revision:   3.1  $
          --
          --------------------------------------------------------------------------------
          --
@@ -58,4 +89,9 @@ AS
      AND are.are_peo_person_id_actioned = hus.hus_user_id
      AND def.def_notify_org_id = org1.oun_org_id(+)
      AND def.def_rechar_org_id = org2.oun_org_id(+);
+	 
+	 DROP SYNONYM WARKS_SUB.V_MAI_DEFECTS;
+
+     CREATE SYNONYM WARKS_SUB.V_MAI_DEFECTS FOR WORCS.V_MAI_DEFECTS;
+	 
 /
