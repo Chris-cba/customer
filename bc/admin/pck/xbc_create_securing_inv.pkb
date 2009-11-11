@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE BODY XBC_CREATE_SECURING_INV AS
+CREATE OR REPLACE PACKAGE BODY APP_RIM.XBC_CREATE_SECURING_INV AS
 --
 ---------------------
 --
@@ -6,13 +6,13 @@ CREATE OR REPLACE PACKAGE BODY XBC_CREATE_SECURING_INV AS
 --
 -- PVCS Identifiers :-
 --
--- sccsid : $Header:   //vm_latest/archives/customer/bc/admin/pck/xbc_create_securing_inv.pkb-arc   1.0   Mar 26 2009 09:58:26   smarshall  $
+-- sccsid : $Header:   //vm_latest/archives/customer/bc/admin/pck/xbc_create_securing_inv.pkb-arc   1.1   Nov 11 2009 08:02:38   iturnbull  $
 -- Module Name : $Workfile:   xbc_create_securing_inv.pkb  $
--- Date into PVCS : $Date:   Mar 26 2009 09:58:26  $
--- Date fetched Out : $Modtime:   Mar 26 2009 09:58:14  $
--- PVCS Version : $Revision:   1.0  $
+-- Date into PVCS : $Date:   Nov 11 2009 08:02:38  $
+-- Date fetched Out : $Modtime:   May 07 2009 17:01:36  $
+-- PVCS Version : $Revision:   1.1  $
 
- g_body_sccsid constant varchar2(30) :='"$Revision:   1.0  $"';
+ g_body_sccsid constant varchar2(30) :='"$Revision:   1.1  $"';
 
 --
  g_package_name CONSTANT varchar2(30) := 'xkytc_create_securing_inv';
@@ -21,11 +21,16 @@ CREATE OR REPLACE PACKAGE BODY XBC_CREATE_SECURING_INV AS
 --
  g_count PLS_INTEGER := 0;
  g_tab_ne_id nm3type.tab_number;
+ 
+ g_tab_ca_iit_ne_id_count PLS_INTEGER := 0;
+ g_tab_ca_iit_ne_id nm3type.tab_number;
 --
  g_block nm3type.max_varchar2;
 --
  g_nothing_to_do EXCEPTION;
 --
+    g_count_enddate             PLS_INTEGER    := 0;
+    g_tab_ne_id_enddate        NM3TYPE.TAB_NUMBER;
 -----------------------------------------------------------------
 --
 PROCEDURE clear_globals IS
@@ -35,13 +40,50 @@ BEGIN
 --
  g_count := 0;
  g_tab_ne_id.DELETE;
+ 
 --
  nm_debug.proc_end(g_package_name,'clear_globals');
 --
 END clear_globals;
 --
 -----------------------------------------------------------------
+PROCEDURE clear_globals_enddate IS
+BEGIN
 --
+ nm_debug.proc_start(g_package_name,'clear_globals_enddate');
+--
+    g_count_enddate     := 0;
+    g_tab_ne_id_enddate.DELETE;
+ 
+--
+ nm_debug.proc_end(g_package_name,'clear_globals_enddate');
+--
+END clear_globals_enddate;
+--
+PROCEDURE append_to_g_tab_ca_iit_ne_id (p_ne_id IN nm_elements_all.ne_id%TYPE
+ ,p_ne_nt_type IN nm_elements_all.ne_nt_type%TYPE
+ ) IS
+-- this procedure collects up the iit_ne_ids on the datum before it get's processed by a network opperation.
+--
+BEGIN
+--
+ nm_debug.proc_start(g_package_name,'append_to_g_tab_ca_iit_ne_id');
+
+ 
+ for iit_ne_id in (select nm_ne_id_in from nm_members where nm_ne_id_of = p_ne_id and nm_obj_type in ('CA','PINV') and nm_type='I' )
+ loop
+        
+        g_tab_ca_iit_ne_id_count := g_tab_ca_iit_ne_id_count + 1;
+        g_tab_ca_iit_ne_id(g_count) := iit_ne_id.nm_ne_id_in;
+        
+        DBMS_OUTPUT.PUT_LINE  ('count = ' || g_tab_ca_iit_ne_id_count || ' iit_ne_id = ' || iit_ne_id.nm_ne_id_in );
+
+  end loop;
+--
+ nm_debug.proc_end(g_package_name,'append_to_g_tab_ca_iit_ne_id');
+--
+END append_to_g_tab_ca_iit_ne_id;
+
 PROCEDURE append_to_globals (p_ne_id IN nm_elements_all.ne_id%TYPE
  ,p_ne_nt_type IN nm_elements_all.ne_nt_type%TYPE
  ) IS
@@ -49,8 +91,8 @@ PROCEDURE append_to_globals (p_ne_id IN nm_elements_all.ne_id%TYPE
 --
 BEGIN
 --
- nm_debug.proc_start(g_package_name,'append_to_globals');
 --
+nm_debug.proc_start(g_package_name,'append_to_globals');
  g_count := g_count + 1;
  g_tab_ne_id(g_count) := p_ne_id;
 --
@@ -58,8 +100,51 @@ BEGIN
 --
 END append_to_globals;
 --
+--
+PROCEDURE append_to_globals_enddate (p_ne_id IN nm_elements_all.ne_id%TYPE
+ ,p_ne_nt_type IN nm_elements_all.ne_nt_type%TYPE
+ ) IS
+--
+--
+BEGIN
+--
+    nm_debug.proc_start(g_package_name,'append_to_globals_enddate');
+nm3dbg.putln('g_count_enddate: ' || g_count_enddate || ' - ' || p_ne_id);
+--
+    g_count_enddate := g_count_enddate + 1;
+    g_tab_ne_id_enddate(g_count_enddate) := p_ne_id;
+--
+    nm_debug.proc_end(g_package_name,'append_to_globals_enddate');
+--
+END append_to_globals_enddate;
+--
+--
 -----------------------------------------------------------------
 --
+PROCEDURE process_g_tab_ca_iit_ne_id IS
+l_iit_ne_id nm_inv_items.iit_ne_id%TYPE;
+l_pinv_admin_unit nm_admin_units.nau_admin_unit%type:=164;
+BEGIN
+--
+ nm_debug.proc_start(g_package_name,'process_g_tab_ca_iit_ne_id');
+ 
+ DBMS_OUTPUT.PUT_LINE   ( 'id count = ' || g_tab_ca_iit_ne_id.count);
+ DBMS_OUTPUT.PUT_LINE   ( 'id = '  || g_tab_ca_iit_ne_id(1));
+ 
+ FOR i IN 1..g_tab_ca_iit_ne_id_count
+ LOOP
+     
+ DBMS_OUTPUT.PUT_LINE   ( 'id = '  || g_tab_ca_iit_ne_id(i));
+   -- nm3api_inv.end_date_item (g_tab_ca_iit_ne_id(i));
+
+ end loop;
+ 
+ g_tab_ca_iit_ne_id_count := 0;
+ g_tab_ca_iit_ne_id.DELETE;
+ 
+ end  process_g_tab_ca_iit_ne_id ;
+        
+
 PROCEDURE process_globals IS
 l_iit_ne_id nm_inv_items.iit_ne_id%TYPE;
 l_pinv_admin_unit nm_admin_units.nau_admin_unit%type:=164;
@@ -68,7 +153,7 @@ BEGIN
  nm_debug.proc_start(g_package_name,'process_globals');
 --
  BEGIN
- IF g_count > 0 and not nm3merge.is_nw_operation_in_progress
+ IF g_count > 0 -- and not nm3merge.is_nw_operation_in_progress
  THEN
  IF NOT nm3user.is_user_unrestricted
  THEN
@@ -81,44 +166,45 @@ BEGIN
  LOOP
  g_rec_ne := nm3get.get_ne_all (pi_ne_id => g_tab_ne_id(i));
  -- nm3api_inv.end_date_item (g_tab_ne_id(i)
-	 -- ,g_rec_ne.ne_start_date
+     -- ,g_rec_ne.ne_start_date
  -- );
  --first close any existing CA or PINV items on this datum that may have been created as a result of a merge/split
- for c1rec in 
+ /*for c1rec in
  (select nm_ne_id_in
  from nm_members
  where nm_type='I'
  and nm_obj_type in ('CA','PINV')
  and nm_ne_id_of=g_rec_ne.ne_id)
- loop 
+ loop
  nm3api_inv.end_date_item(p_iit_ne_id =>c1rec.nm_ne_id_in
  ,p_effective_date=> g_rec_ne.ne_start_date);
  end loop;
- 
+ */
+
  NM3API_INV_CA.ins (p_iit_ne_id => l_iit_ne_id
-	 ,p_effective_date => g_rec_ne.ne_start_date
-	 ,p_admin_unit => find_corresponding_au(g_rec_ne.ne_admin_unit,'DINV')
-	 ,p_descr => g_rec_ne.ne_unique
-	 ,p_note => g_rec_ne.ne_nt_type
-	 ,p_element_ne_id => g_rec_ne.ne_id
+     ,p_effective_date => g_rec_ne.ne_start_date
+     ,p_admin_unit => find_corresponding_au(g_rec_ne.ne_admin_unit,'DINV')
+     ,p_descr => g_rec_ne.ne_unique
+     ,p_note => g_rec_ne.ne_nt_type
+     ,p_element_ne_id => g_rec_ne.ne_id
  );
- 
+
 /* PINV admin unit is hard coded as there is only 1 value.
 its value is returned by
 
 select nau_admin_unit
  from nm_admin_units_all,nm_inv_types_all
-where nau_admin_type=nit_admin_type 
+where nau_admin_type=nit_admin_type
 and nit_inv_type='PINV'
 
-*/ 
+*/
  NM3API_INV_PINV.ins (p_iit_ne_id => l_iit_ne_id
-	 ,p_effective_date => g_rec_ne.ne_start_date
-	 ,p_admin_unit => 164
-	 ,p_descr => g_rec_ne.ne_unique
-	 ,p_note => g_rec_ne.ne_nt_type
-	 ,p_element_ne_id => g_rec_ne.ne_id
- ); 
+     ,p_effective_date => g_rec_ne.ne_start_date
+     ,p_admin_unit => 164
+     ,p_descr => g_rec_ne.ne_unique
+     ,p_note => g_rec_ne.ne_nt_type
+     ,p_element_ne_id => g_rec_ne.ne_id
+ );
  END LOOP;
  END IF;
  EXCEPTION
@@ -135,6 +221,70 @@ END process_globals;
 --
 -----------------------------------------------------------------
 --
+PROCEDURE process_globals_enddate IS
+
+t_count     NUMBER;
+t_index     NUMBER;
+t_today     DATE;
+t_iit       NUMBER;
+t_datum     NUMBER;
+t_error     VARCHAR2(220);
+t_exists    number;
+
+CURSOR cur_ca(cp_neid IN NUMBER) IS
+    SELECT nm_ne_id_in
+    FROM nm_members_all
+    WHERE nm_ne_id_of = cp_neid
+        AND nm_obj_type IN ('CA','PINV');
+
+BEGIN
+nm_debug.proc_start(g_package_name,'start');
+nm3dbg.debug_on;
+
+		t_count		:=  g_tab_ne_id_enddate.COUNT;
+		t_index		:= 0;
+
+		SELECT SYSDATE INTO t_today FROM DUAL;
+		t_today		:= trunc(t_today);
+
+		FOR t_index IN 1..t_count LOOP
+
+	nm3dbg.putln('*********t_index1: ' || t_index );
+            t_datum       := g_tab_ne_id_enddate(t_index);
+	nm3dbg.putln('*********t_index2: ' || t_index );
+           
+            
+            FOR c_ca IN cur_ca(t_datum) LOOP
+
+                t_iit       := c_ca.nm_ne_id_in;
+nm3dbg.putln('Processing Datum: ' || t_datum || ', asset: ' || t_iit || ' t_index: ' || t_index );
+                -- need to check in case it's already been end dated
+                
+                
+                select count(*) into t_exists from nm_inv_items where iit_ne_id = t_iit;
+                
+                if nvl(t_exists,0) > 0 then
+                
+                    nm3api_inv.end_date_item(p_iit_ne_id => t_iit, p_effective_date => t_today);
+                    nm3dbg.putln('Asset end-dated: ' || t_iit);
+                 
+                end if;
+
+                
+            END LOOP;
+            
+        END LOOP;
+nm_debug.proc_end(g_package_name,'start');
+        
+EXCEPTION WHEN OTHERS THEN
+    t_error := substr(sqlerrm,1,200);
+    nm_debug.proc_start(g_package_name,'start');
+    nm3dbg.debug_on;
+    nm3dbg.putln('End date trigger failure: ' || t_error);
+    nm_debug.proc_end(g_package_name,'start');
+END;
+
+
 FUNCTION find_corresponding_au (p_nau_admin_unit nm_admin_units.nau_admin_unit%TYPE
  ,p_nat_admin_type nm_au_types.nat_admin_type%TYPE
  ) RETURN nm_admin_units.nau_admin_unit%TYPE IS
@@ -178,6 +328,5 @@ END find_corresponding_au;
  END get_body_version;
  --
 
-END BC_APP_RIM.xbc_create_securing_inv; 
+END xbc_create_securing_inv;
 /
-

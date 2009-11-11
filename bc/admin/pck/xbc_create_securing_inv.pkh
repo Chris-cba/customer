@@ -1,15 +1,15 @@
-CREATE OR REPLACE PACKAGE XBC_CREATE_SECURING_INV AS
+CREATE OR REPLACE PACKAGE APP_RIM.XBC_CREATE_SECURING_INV AS
 --<PACKAGE>
 
 -- PVCS Identifiers :-
 --
--- sccsid : $Header:   //vm_latest/archives/customer/bc/admin/pck/xbc_create_securing_inv.pkh-arc   1.0   Mar 26 2009 09:58:26   smarshall  $
+-- sccsid : $Header:   //vm_latest/archives/customer/bc/admin/pck/xbc_create_securing_inv.pkh-arc   1.1   Nov 11 2009 08:02:38   iturnbull  $
 -- Module Name : $Workfile:   xbc_create_securing_inv.pkh  $
--- Date into PVCS : $Date:   Mar 26 2009 09:58:26  $
--- Date fetched Out : $Modtime:   Mar 26 2009 09:58:14  $
--- PVCS Version : $Revision:   1.0  $
+-- Date into PVCS : $Date:   Nov 11 2009 08:02:38  $
+-- Date fetched Out : $Modtime:   May 07 2009 17:01:48  $
+-- PVCS Version : $Revision:   1.1  $
 
- g_sccsid constant varchar2(30) :='"$Revision:   1.0  $"';
+ g_sccsid constant varchar2(30) :='"$Revision:   1.1  $"';
  g_rec_ne nm_elements_all%ROWTYPE;
 --
 --</GLOBVAR>
@@ -25,6 +25,8 @@ CREATE OR REPLACE PACKAGE XBC_CREATE_SECURING_INV AS
 PROCEDURE clear_globals;
 --</PROC>
 --
+
+PROCEDURE clear_globals_enddate;
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="append_to_globals">
@@ -35,6 +37,20 @@ PROCEDURE append_to_globals (p_ne_id IN nm_elements_all.ne_id%TYPE
  );
 --</PROC>
 --
+PROCEDURE append_to_globals_enddate (p_ne_id IN nm_elements_all.ne_id%TYPE
+ ,p_ne_nt_type IN nm_elements_all.ne_nt_type%TYPE
+ );
+--</PROC>
+--
+
+--<PROC NAME="append_to_g_tab_ca_iit_ne_id">
+-- This procedure appends the iit_ne_id of assets on the datum to the global g_tab_ca_iit_ne_id
+
+PROCEDURE append_to_g_tab_ca_iit_ne_id (p_ne_id IN nm_elements_all.ne_id%TYPE
+ ,p_ne_nt_type IN nm_elements_all.ne_nt_type%TYPE
+ )
+;
+
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="process_globals">
@@ -44,7 +60,21 @@ PROCEDURE append_to_globals (p_ne_id IN nm_elements_all.ne_id%TYPE
 PROCEDURE process_globals;
 --</PROC>
 --
------------------------------------------------------------------
+--
+PROCEDURE process_globals_enddate;
+
+-----------------------------------------------------------------------------
+--<PROC NAME="process_g_tab_ca_iit_ne_id">
+-- This procedure processes the entries in the global g_tab_ca_iit_ne_id array and removes any old assets
+-- 
+
+PROCEDURE process_g_tab_ca_iit_ne_id;
+--</PROC>
+--
+--
+
+
+---------------------------------------------------------------
 --
 --<PROC NAME="find_corresponding_au">
 FUNCTION find_corresponding_au (p_nau_admin_unit nm_admin_units.nau_admin_unit%TYPE
@@ -74,6 +104,5 @@ FUNCTION find_corresponding_au (p_nau_admin_unit nm_admin_units.nau_admin_unit%T
 --
 -----------------------------------------------------------------------------
 --
-END BC_APP_RIM.xbc_create_securing_inv; 
+END xbc_create_securing_inv;
 /
-
