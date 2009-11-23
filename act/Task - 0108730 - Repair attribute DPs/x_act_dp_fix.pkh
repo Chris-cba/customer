@@ -1,0 +1,53 @@
+CREATE OR REPLACE PACKAGE x_act_dp_fix
+--
+--------------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/customer/act/Task - 0108730 - Repair attribute DPs/x_act_dp_fix.pkh-arc   3.0   Nov 23 2009 10:25:02   aedwards  $
+--       Module Name      : $Workfile:   x_act_dp_fix.pkh  $
+--       Date into PVCS   : $Date:   Nov 23 2009 10:25:02  $
+--       Date fetched Out : $Modtime:   Nov 23 2009 10:22:06  $
+--       PVCS Version     : $Revision:   3.0  $
+--
+--------------------------------------------------------------------------------
+--
+AS
+  g_pvcs_id CONSTANT VARCHAR2(30) :='"$Revision:   3.0  $"';
+--
+-------------------------------------------------------------------------------
+--
+  FUNCTION get_sccs_version RETURN NUMBER;
+--
+-------------------------------------------------------------------------------
+--
+  FUNCTION get_body_version RETURN NUMBER;
+--
+-------------------------------------------------------------------------------
+--
+  PROCEDURE run_checker;
+--
+-------------------------------------------------------------------------------
+--
+  PROCEDURE run_checker
+                ( pi_asset_type IN nm_inv_types.nit_inv_type%TYPE );
+--
+-------------------------------------------------------------------------------
+--
+  PROCEDURE do_asset_type 
+                ( pi_asset_type IN nm_inv_types.nit_inv_type%TYPE );
+--
+-------------------------------------------------------------------------------
+--
+  PROCEDURE do_asset_type 
+                ( pi_asset_type        IN nm_inv_types.nit_inv_type%TYPE 
+                , pi_asset_attrib_name IN nm_inv_type_attribs.ita_attrib_name%TYPE);
+--
+-------------------------------------------------------------------------------
+--
+  PROCEDURE do_asset_type 
+                ( pi_asset_type     IN nm_inv_types.nit_inv_type%TYPE 
+                , pi_asset_view_col IN nm_inv_type_attribs.ita_view_col_name%TYPE);
+--
+-------------------------------------------------------------------------------
+--
+END x_act_dp_fix;
