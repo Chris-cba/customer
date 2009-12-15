@@ -1,0 +1,64 @@
+CREATE OR REPLACE PACKAGE x_tfl_tma_ftp
+AS
+--<PACKAGE>
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/tfl/Task 0108913 - FTP Solution/x_tfl_tma_ftp.pkh-arc   3.0   Dec 15 2009 10:06:46   aedwards  $
+--       Module Name      : $Workfile:   x_tfl_tma_ftp.pkh  $
+--       Date into PVCS   : $Date:   Dec 15 2009 10:06:46  $
+--       Date fetched Out : $Modtime:   Dec 15 2009 09:48:06  $
+--       Version          : $Revision:   3.0  $
+--       Based on SCCS version : 
+-------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.0  $';
+
+  g_ftp_type_get   CONSTANT varchar2(5) := 'TMAI';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_INSPECTION_FILES">
+-- The procedure gets TMA inspection files from FTP site
+PROCEDURE get_inspection_files ( pi_ftp_type       IN VARCHAR2 DEFAULT g_ftp_type_get
+                               , pi_orcl_directory IN hig_directories.hdir_name%TYPE DEFAULT NULL
+                               , pi_delete_files   IN BOOLEAN DEFAULT TRUE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION next_tfl_id_seq RETURN NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end x_tfl_tma_ftp;
+/
