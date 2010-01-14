@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.4   Jul 13 2009 11:22:10   smarshall  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.5   Jan 14 2010 17:22:50   malexander  $
 --       Module Name      : $Workfile:   pla_install.sql  $
---       Date into PVCS   : $Date:   Jul 13 2009 11:22:10  $
---       Date fetched Out : $Modtime:   Jul 13 2009 11:24:22  $
---       Version          : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Jan 14 2010 17:22:50  $
+--       Date fetched Out : $Modtime:   Jan 14 2010 17:22:36  $
+--       Version          : $Revision:   3.5  $
 -------------------------------------------------------------------------
 --
 set echo off
@@ -69,11 +69,11 @@ END;
 /
 
 --
--- Check that PEM has been installed @ v4.0.5.2 as PLA is dependent on this
+-- Check that PEM has been installed @ v4.1.0.0 as PLA is dependent on this
 --
 BEGIN
  hig2.product_exists_at_version (p_product        => 'ENQ'
-                                ,p_VERSION        => '4.0.5.2'
+                                ,p_VERSION        => '4.1.0.0'
                                 );
 END;
 /
@@ -316,7 +316,7 @@ SET TERM ON
 Prompt Setting The Version Number...
 SET TERM OFF
 BEGIN
-      hig2.upgrade('PLA','pla_install.sql','Installed','4.0.5.2');
+      hig2.upgrade('PLA','pla_install.sql','Installed','4.1.0.0');
 END;
 /
 COMMIT;
