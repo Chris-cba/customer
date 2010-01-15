@@ -1,12 +1,37 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_inst.sql-arc   3.0   Jul 08 2009 11:11:42   smarshall  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_inst.sql-arc   3.1   Jan 15 2010 11:14:36   malexander  $
 --       Module Name      : $Workfile:   pla_inst.sql  $
---       Date into PVCS   : $Date:   Jul 08 2009 11:11:42  $
---       Date fetched Out : $Modtime:   Jul 08 2009 11:11:28  $
---       Version          : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jan 15 2010 11:14:36  $
+--       Date fetched Out : $Modtime:   Jan 15 2010 11:14:20  $
+--       Version          : $Revision:   3.1  $
 -------------------------------------------------------------------------
+
+--
+-- set pl/sql variables to be referenced by pla_install script
+--
+set define on
+
+undefine script_mode
+col      script_mode new_value script_mode noprint
+
+Select 'UPGRADE' script_mode
+From   hig_products
+Where  hpr_product = 'PLA'
+And    hpr_version = '4.0.5.2'
+Union
+Select 'INSTALL' script_mode
+From   Dual
+Where Not Exists (Select 1
+                  From   hig_products
+                  Where  hpr_product = 'PLA'
+                 )
+/
+
+define from_version=4052
+define to_version=4100
+define fix_number=Null
 
 undefine exor_base
 undefine run_file
@@ -72,4 +97,10 @@ from dual
 
 start '&run_file'
 
-Prompt Done
+prompt
+prompt The install scripts could not be found in the directory
+prompt specified for exor base (&exor_base).
+prompt
+prompt Please re-run the installation script and enter the correct directory name.
+prompt
+accept leave_it prompt "Press RETURN to exit from SQL*PLUS"
