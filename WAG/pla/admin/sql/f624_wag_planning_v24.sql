@@ -67,7 +67,7 @@ prompt  Set Credentials...
 begin
  
   -- Assumes you are running the script connected to SQL*Plus as the Oracle user APEX_030200 or as the owner (parsing schema) of the application.
-  wwv_flow_api.set_security_group_id(p_security_group_id=>4661904384848534);
+  wwv_flow_api.set_security_group_id(p_security_group_id=>apex_util.find_security_group_id('PLANAPPS'));
  
 end;
 /
@@ -187,7 +187,7 @@ wwv_flow_api.create_flow(
   p_default_menur_template => 63121954153599613 + wwv_flow_api.g_id_offset,
   p_default_listr_template => 63125835672599618 + wwv_flow_api.g_id_offset,
   p_substitution_string_01 => 'FRAMEWORK_VERSION',
-  p_substitution_value_01  => '$Revision:   3.2  $',
+  p_substitution_value_01  => '$Revision:   3.3  $',
   p_substitution_string_02 => 'MSG_COPYRIGHT',
   p_substitution_value_02  => '&copy: copyright exor corporation ltd 2009',
   p_last_updated_by => 'WAG',
