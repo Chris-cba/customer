@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.6   Jan 15 2010 11:10:46   malexander  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.7   Feb 01 2010 10:52:04   malexander  $
 --       Module Name      : $Workfile:   pla_install.sql  $
---       Date into PVCS   : $Date:   Jan 15 2010 11:10:46  $
---       Date fetched Out : $Modtime:   Jan 15 2010 11:09:30  $
---       Version          : $Revision:   3.6  $
+--       Date into PVCS   : $Date:   Feb 01 2010 10:52:04  $
+--       Date fetched Out : $Modtime:   Feb 01 2010 10:16:10  $
+--       Version          : $Revision:   3.7  $
 -------------------------------------------------------------------------
 --	Copyright (c) Exor Corporation Ltd, 2010
 -------------------------------------------------------------------------
@@ -52,16 +52,27 @@ col      logfile2 new_value logfile2 noprint
 
 set term off
 select  case when UPPER('&script_mode') = 'INSTALL' THEN 
-                  'pla_install_&log_extension' 
+                  'pla_install_1_&log_extension' 
              when UPPER('&script_mode') = 'UPGRADE' THEN 
-                  'pla'||&from_version||'_pla'||&to_version||'_'||'&log_extension'
+                  'pla'||&from_version||'_pla'||&to_version||'_1_'||'&log_extension'
              else
-                  'pla'||&from_version||'_fix'||&fix_number||'_'||'&log_extension' 
-             end logfile                        
+                  'pla'||&from_version||'_fix'||&fix_number||'_1_'||'&log_extension' 
+             end logfile1                       
 from dual             
 /
 set term on
 
+set term off
+select  case when UPPER('&script_mode') = 'INSTALL' THEN 
+                  'pla_install_2_&log_extension' 
+             when UPPER('&script_mode') = 'UPGRADE' THEN 
+                  'pla'||&from_version||'_pla'||&to_version||'_2_'||'&log_extension'
+             else
+                  'pla'||&from_version||'_fix'||&fix_number||'_2_'||'&log_extension' 
+             end logfile2                       
+from dual             
+/
+set term on
 spool &logfile1
 --
 ---------------------------------------------------------------------------------------------------
