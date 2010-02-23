@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.7   Feb 01 2010 10:52:04   malexander  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/pla/install/pla_install.sql-arc   3.8   Feb 23 2010 13:15:06   malexander  $
 --       Module Name      : $Workfile:   pla_install.sql  $
---       Date into PVCS   : $Date:   Feb 01 2010 10:52:04  $
---       Date fetched Out : $Modtime:   Feb 01 2010 10:16:10  $
---       Version          : $Revision:   3.7  $
+--       Date into PVCS   : $Date:   Feb 23 2010 13:15:06  $
+--       Date fetched Out : $Modtime:   Feb 23 2010 13:14:54  $
+--       Version          : $Revision:   3.8  $
 -------------------------------------------------------------------------
 --	Copyright (c) Exor Corporation Ltd, 2010
 -------------------------------------------------------------------------
@@ -442,20 +442,6 @@ select  case when UPPER('&script_mode') = 'INSTALL' THEN
              end details
 FROM hig_products
 WHERE hpr_product IN ('PLA');
---
----------------------------------------------------------------------------------------------------
---                    ********************* APPLICATION AND PODS *************************
-SET TERM ON
-Prompt Application and Pods...
-SET TERM OFF
-SET DEFINE ON  
-select '&exor_base'||'pla'||'&terminator'||'admin'||
-        '&terminator'||'sql'||'&terminator'||'f624_wag_planning_v24' run_file
-from dual
-/
-SET FEEDBACK ON
-start '&&run_file'
-SET FEEDBACK OFF
 --
 --
 spool off
