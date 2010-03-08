@@ -2,11 +2,11 @@
 --------------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/Enfield/Task 0108973/docman_enfield_4200_upgrade.sql-arc   1.0   Mar 01 2010 12:01:44   aedwards  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/Enfield/Task 0108973/docman_enfield_4200_upgrade.sql-arc   1.1   Mar 08 2010 11:42:10   aedwards  $
 --       Module Name      : $Workfile:   docman_enfield_4200_upgrade.sql  $
---       Date into PVCS   : $Date:   Mar 01 2010 12:01:44  $
---       Date fetched Out : $Modtime:   Mar 01 2010 11:30:20  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Mar 08 2010 11:42:10  $
+--       Date fetched Out : $Modtime:   Mar 08 2010 11:41:32  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --------------------------------------------------------------------------------
 --
@@ -51,13 +51,12 @@ PROMPT
 PROMPT   Metadata :
 PROMPT
 PROMPT     > WORKFOLDER          User Option
-PROMPT     > DUMPTODIR           System Option
+PROMPT     > DIRMOVE             System Option
 PROMPT
 PROMPT
 
 ACCEPT doc_tablespace DEFAULT &&def_tablespace PROMPT "Please enter tablespace for DOC_FILES_ALL table [&default_tablespace] : "
 
-ACCEPT dot_tablespace DEFAULT &&def_tablespace PROMPT "Please enter tablespace for DOC_TEMPLATES_ALL table [&default_tablespace] : "
 
 --
 --------------------------------------------------------------------------------
