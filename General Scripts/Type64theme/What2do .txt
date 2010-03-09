@@ -1,0 +1,17 @@
+--
+--------------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/customer/General Scripts/Type64theme/What2do .txt-arc   1.0   Mar 09 2010 10:22:58   iturnbull  $
+--       Module Name      : $Workfile:   What2do .txt  $
+--       Date into PVCS   : $Date:   Mar 09 2010 10:22:58  $
+--       Date fetched Out : $Modtime:   Mar 09 2010 09:37:18  $
+--       PVCS Version     : $Revision:   1.0  $
+--
+--------------------------------------------------------------------------------
+--
+To create the type 64 themes you need to do 4 steps
+1. Create the actual "exor" theme - run Create_type64_nm_theme.sql
+2. Create the oracle stykles/themes - run Create_type64_sdo_style_n_theme.sql - remember to issue a commit.
+3. Run mapbuilder and add the new theme 'TYPE 64' to the map.
+4. Restart MapViewer
