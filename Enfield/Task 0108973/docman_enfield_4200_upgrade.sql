@@ -2,11 +2,11 @@
 --------------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/Enfield/Task 0108973/docman_enfield_4200_upgrade.sql-arc   1.1   Mar 08 2010 11:42:10   aedwards  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/Enfield/Task 0108973/docman_enfield_4200_upgrade.sql-arc   1.2   Mar 18 2010 15:48:38   aedwards  $
 --       Module Name      : $Workfile:   docman_enfield_4200_upgrade.sql  $
---       Date into PVCS   : $Date:   Mar 08 2010 11:42:10  $
---       Date fetched Out : $Modtime:   Mar 08 2010 11:41:32  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Mar 18 2010 15:48:38  $
+--       Date fetched Out : $Modtime:   Mar 18 2010 15:47:58  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 --------------------------------------------------------------------------------
 --
@@ -202,20 +202,20 @@ ALTER TABLE DOC_LOCATION_TABLES ADD (
  
 CREATE SEQUENCE dlt_id_seq;
 
-INSERT INTO doc_location_tables
-SELECT dlt_id_seq.nextval
-     , dlc_id
-     , 'DOC_FILES_ALL'
-     , 'DF_DOC_ID'
-     , 'DF_CONTENT'
-     , 'DF_REVISION'
-     , 'DF_START_DATE'
-     , 'DF_END_DATE'
-     , 'DF_FULL_PATH'
-     , 'DF_FILENAME'
-     , 'DF_AUDIT_COL'
-     , 'DF_FILE_INFO'
-   FROM doc_locations;
+--INSERT INTO doc_location_tables
+--SELECT dlt_id_seq.nextval
+--     , dlc_id
+--     , 'DOC_FILES_ALL'
+--     , 'DF_DOC_ID'
+--     , 'DF_CONTENT'
+--     , 'DF_REVISION'
+--     , 'DF_START_DATE'
+--     , 'DF_END_DATE'
+--     , 'DF_FULL_PATH'
+--     , 'DF_FILENAME'
+--     , 'DF_AUDIT_COL'
+--     , 'DF_FILE_INFO'
+--   FROM doc_locations;
 
 --
 --------------------------------------------------------------------------------
