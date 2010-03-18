@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.7   Jul 20 2009 09:11:14   dyounger  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.8   Mar 18 2010 09:14:50   iturnbull  $
 --       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
---       Date into SCCS   : $Date:   Jul 20 2009 09:11:14  $
---       Date fetched Out : $Modtime:   Jul 19 2009 21:23:38  $
---       PVCS Version     : $Revision:   2.7  $
+--       Date into SCCS   : $Date:   Mar 18 2010 09:14:50  $
+--       Date fetched Out : $Modtime:   Mar 18 2010 09:11:40  $
+--       PVCS Version     : $Revision:   2.8  $
 --       Originally based on SCCS version 1.6
 --
 --
@@ -60,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.7  $';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.8  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -87,7 +87,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   c_vat_rate_opt               CONSTANT hig_options.hop_id%TYPE := 'NCCVATRATE';
   c_vat_rate                   CONSTANT hig_options.hop_value%TYPE := hig.get_sysopt(p_option_id => c_vat_rate_opt);
     
-  c_vat_tax_code               CONSTANT varchar2(13) := 'NCC P' || c_ampersand || 'T CAR15';
+  c_vat_tax_code               CONSTANT varchar2(13) := 'NCC P' || c_ampersand || 'T CAR';
     
   c_sep                        CONSTANT varchar2(1) := ',';
   
@@ -1476,8 +1476,6 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
   
   l_xmgw_del_wol_id_arr t_wol_id_arr;
   
-  l_xmgw_rec xnor_may_gurney_wols%ROWTYPE;
-  
   l_file_id utl_file.file_type;
   l_control_file_id utl_file.file_type;
   
@@ -1523,6 +1521,9 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
   PROCEDURE process_commitment_data(pi_commitment_data_arr IN t_commitment_data_arr
                                    ,pi_processing_del_wols IN BOOLEAN
                                    ) IS
+  
+    l_xmgw_rec xnor_may_gurney_wols%ROWTYPE;
+  
   BEGIN
     -------------------------
     --process the wol records
@@ -1615,6 +1616,7 @@ FUNCTION generate_order_file(pi_contractor_id  IN org_units.oun_org_id%TYPE
             --add new rec to log table insert array
             l_xmgw_rec.xmgw_wol_id              := pi_commitment_data_arr(i).wol_id;
             l_xmgw_rec.xmgw_commitment_value    := pi_commitment_data_arr(i).wol_cost;
+            l_xmgw_rec.xmgw_payment_value       := NULL;
             l_xmgw_rec.xmgw_user_last_processed := USER;
             l_xmgw_rec.xmgw_date_last_processed := SYSDATE;
             
