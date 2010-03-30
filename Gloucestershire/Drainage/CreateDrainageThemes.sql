@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/Gloucestershire/Drainage/CreateDrainageThemes.sql-arc   3.0   Mar 29 2010 12:51:12   iturnbull  $   
+--       sccsid           : $Header:   //vm_latest/archives/customer/Gloucestershire/Drainage/CreateDrainageThemes.sql-arc   3.1   Mar 30 2010 13:54:46   iturnbull  $   
 --       Module Name      : $Workfile:   CreateDrainageThemes.sql  $   
---       Date into PVCS   : $Date:   Mar 29 2010 12:51:12  $
---       Date fetched Out : $Modtime:   Mar 29 2010 11:34:30  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Mar 30 2010 13:54:46  $
+--       Date fetched Out : $Modtime:   Mar 30 2010 13:33:04  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --       Author: Aileen Heal
 --------------------------------------------------------------------------------
@@ -19,13 +19,13 @@
 -- script is run as it will only create themes for which the asset metamodel has 
 -- beeen defined. 
 --
--- before you run this script check that the nit_descr is unique in nm_inv_types. 
+-- You need to have loaded the drainiange styles (DRAIN_STYLES.DAT) using MapBuilder.
+--
+-- Before you run this script check that the nit_descr is unique in nm_inv_types. 
 -- select nit_descr, count(*) num from nm_inv_types group by nit_descr having count(*) > 1
 --
 -- if not unique and you have 2 manholes, II and MM, change II to be interceptor.
 --
--- You need to have loaded the drainiange styles (DRAIN_STYLES.DAT) using MapBuilder.
--- 
 --------------------------------------------------------------------------------
 
 col         log_extension new_value log_extension noprint
@@ -176,6 +176,20 @@ begin
   end loop; -- loop over all asset types
 
   nm_debug.debug('Completed all drainage asset themes' );
+
+  nm_debug.debug('Creating network sdo_themes' );
+  Insert into USER_SDO_THEMES (NAME, BASE_TABLE, GEOMETRY_COLUMN, STYLING_RULES)
+   Select 'PIPE NETWORK', 'DRN_NET_SDO', 'SHAPE', 
+          '<?xml version="1.0" standalone="yes"?> ' ||
+          '<styling_rules key_column="NE_ID" caching="NONE"> ' ||
+          '<rule> <features style="L.EXOR.DRAIN.PIPE NETWORK"> </features> </rule> ' ||
+          '</styling_rules>'
+    from dual
+         where not exists (select 'x' 
+                             from USER_SDO_THEMES where NAME = 'PIPE NETWORK' );
+                             
+  nm_debug.debug('Completed all drainage themes' );
+  
   nm_debug.debug_off;
 
   update hig_options
