@@ -6,11 +6,11 @@ SELECT
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/tma_traffic_themes/V_X_TMAPHS_PROPINPROG_SDOPT.vw-arc   1.0   May 05 2010 15:57:38   iturnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/tma_traffic_themes/V_X_TMAPHS_PROPINPROG_SDOPT.vw-arc   1.1   May 12 2010 10:16:22   iturnbull  $
 --       Module Name      : $Workfile:   V_X_TMAPHS_PROPINPROG_SDOPT.vw  $
---       Date into PVCS   : $Date:   May 05 2010 15:57:38  $
---       Date fetched Out : $Modtime:   May 05 2010 10:41:52  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   May 12 2010 10:16:22  $
+--       Date fetched Out : $Modtime:   May 12 2010 10:07:48  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --
 --   Author : Aileen Heal
@@ -62,3 +62,8 @@ SELECT
 /
 
 
+insert into user_sdo_geom_metadata
+   select 'V_X_TMAPHS_PROPINPROG_SDOPT', 'GEOM_PT', DIMINFO, SRID
+     from USER_SDO_GEOM_METADATA 
+    WHERE table_name = 'TMA_PHASES_POINT_SDO'
+/
