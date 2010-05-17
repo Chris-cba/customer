@@ -7,11 +7,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/MapCapture/DEF_PHOTO_DOC_ASSOCS.trg-arc   3.0   Oct 09 2009 14:43:00   Ian Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/MapCapture/DEF_PHOTO_DOC_ASSOCS.trg-arc   3.1   May 17 2010 14:04:50   swilliams  $
 --       Module Name      : $Workfile:   DEF_PHOTO_DOC_ASSOCS.trg  $
---       Date into PVCS   : $Date:   Oct 09 2009 14:43:00  $
---       Date fetched Out : $Modtime:   Oct 09 2009 14:25:34  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   May 17 2010 14:04:50  $
+--       Date fetched Out : $Modtime:   May 17 2010 13:45:58  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -28,13 +28,17 @@ DECLARE
                                            was creating both when it didn't have both a before and after photo
    1.3        09/10/2009  P Stanton        For East Sussex made change to a before insert trigger so that the special instruction 
                                            field could have the special characters removed after the photo associations have been made
-                                           this is because the CHR(1) was coming out in the CIM file and couldn't be loaded                                                 
+                                           this is because the CHR(1) was coming out in the CIM file and couldn't be loaded  
+   1.4        17/05/2010  P Stanton        For East Sussex made change to check for existance of CHR(1) in the special instructions field.
+                                           If they exist then it runs the process as normal if not then the defect has not been loaded via 
+										   MapCapture and the automatic photo assaciation would try and create a doc assoc that was meaningless.
+   
    NOTES:
    Trigger to create document associations between defect photos and defects.
    In mapcapture when defect photo are attached, the names of the photos are stored in the def_special_instr field.
    This trigger fires before insert and checks the def_special_instr field for photo id’s and if they exist creates doc_assocs records for   
    the photos. 
-   Document manager metadata must exist that has a doc_type of PHOTO and a doc_location named DEFECT PHOTOS.
+   Document manager metadata must exist that has a doc_type of PHOT and a doc_location named DEFECT PHOTOS.
    The def_special_instr is then stripped of the special characters ( CHR(1) ) so that if the customer is using CIM this does not cause 
    Problems when extracted.
 
@@ -66,7 +70,7 @@ DECLARE
   
 BEGIN
 
-IF :new.def_special_instr IS NOT NULL THEN
+IF :new.def_special_instr IS NOT NULL and instr(:new.def_special_instr,chr(1)) <>  0 THEN
 
     --l_before_photo := substr(:new.def_special_instr,instr(:new.def_special_instr,chr(1),1)+1,instr(:new.def_special_instr,chr(1),2)-2); 
     
@@ -104,7 +108,7 @@ IF :new.def_special_instr IS NOT NULL THEN
       ( 
         l_doc_id,
         Substr('Defect Photograph '||doc.get_table_descr('DEFECTS')||' - '||:new.def_defect_id, 1, 60),
-        'PHOTO',
+        'PHOT',
         sysdate,
         l_before_photo,
         l_dlc_dmd_id,
@@ -155,7 +159,7 @@ IF :new.def_special_instr IS NOT NULL THEN
       ( 
         l_doc_id,
         Substr('Defect Photograph '||doc.get_table_descr('DEFECTS')||' - '||:new.def_defect_id, 1, 60),
-       'PHOTO',
+       'PHOT',
         sysdate,
         l_after_photo,
         l_dlc_dmd_id,
