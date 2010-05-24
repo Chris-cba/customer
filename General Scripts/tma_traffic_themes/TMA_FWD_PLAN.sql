@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/tma_traffic_themes/TMA_FWD_PLAN.sql-arc   1.0   May 05 2010 15:57:38   iturnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/tma_traffic_themes/TMA_FWD_PLAN.sql-arc   1.1   May 24 2010 09:15:50   iturnbull  $
 --       Module Name      : $Workfile:   TMA_FWD_PLAN.sql  $
---       Date into PVCS   : $Date:   May 05 2010 15:57:38  $
---       Date fetched Out : $Modtime:   May 05 2010 12:10:34  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   May 24 2010 09:15:50  $
+--       Date fetched Out : $Modtime:   May 17 2010 11:14:36  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -39,7 +39,7 @@ Insert into NM_THEMES_ALL
             NTH_USE_HISTORY, NTH_BASE_TABLE_THEME, NTH_SNAP_TO_THEME, NTH_LREF_MANDATORY, NTH_TOLERANCE, NTH_TOL_UNITS, NTH_DYNAMIC_THEME)
      SELECT nth_theme_id_seq.nextval, 'TMA FWD PLAN', 'V_X_TMAPHS_FWD_PLAN_SDOPT', 
             NTH_PK_COLUMN, NTH_LABEL_COLUMN, 'V_X_TMAPHS_FWD_PLAN_SDOPT',
-            NTH_FEATURE_PK_COLUMN, 'GEOM_PT', 
+            'TPHS_PHASE_ID', 'GEOM_PT', 
             NTH_HPR_PRODUCT, NTH_LOCATION_UPDATABLE, NTH_THEME_TYPE, NTH_DEPENDENCY, NTH_STORAGE, NTH_UPDATE_ON_EDIT,
             NTH_USE_HISTORY, NTH_THEME_ID, NTH_SNAP_TO_THEME, NTH_LREF_MANDATORY, NTH_TOLERANCE, NTH_TOL_UNITS, NTH_DYNAMIC_THEME
        FROM NM_THEMES_ALL 
