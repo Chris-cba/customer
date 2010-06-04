@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/tfl/Task 0108913 - FTP Solution/x_tfl_tma_ftp.pkb-arc   3.0   Dec 15 2009 10:06:46   aedwards  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/tfl/Task 0108913 - FTP Solution/x_tfl_tma_ftp.pkb-arc   3.1   Jun 04 2010 09:00:04   aedwards  $
 --       Module Name      : $Workfile:   x_tfl_tma_ftp.pkb  $
---       Date into PVCS   : $Date:   Dec 15 2009 10:06:46  $
---       Date fetched Out : $Modtime:   Dec 15 2009 10:04:34  $
---       Version          : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jun 04 2010 09:00:04  $
+--       Date fetched Out : $Modtime:   Jun 04 2010 08:54:38  $
+--       Version          : $Revision:   3.1  $
 --       Based on SCCS version : 
 -------------------------------------------------------------------------
 --
@@ -17,7 +17,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT varchar2(2000) := '$Revision:   3.0  $';
+  g_body_sccsid    CONSTANT varchar2(2000) := '$Revision:   3.1  $';
 
   g_package_name   CONSTANT varchar2(30) := 'x_tfl_tma_ftp';
 
@@ -71,12 +71,14 @@ END does_directory_exist;
 --
 -----------------------------------------------------------------------------
 --
-FUNCTION get_xtfd (pi_ftp_type IN VARCHAR2) RETURN x_tfl_ftp_dirs%ROWTYPE
+FUNCTION get_xtfd (pi_ftp_type IN VARCHAR2) RETURN hig_ftp_connections%ROWTYPE
 IS
-  retval x_tfl_ftp_dirs%ROWTYPE;
+  retval hig_ftp_connections%ROWTYPE;
 BEGIN
-  SELECT * INTO retval FROM x_tfl_ftp_dirs
-   WHERE ftp_type = pi_ftp_type;
+  SELECT hig_ftp_connections.* INTO retval 
+    FROM hig_ftp_connections, hig_ftp_types
+   WHERE hft_type = pi_ftp_type
+     AND hfc_hft_id = hft_id;
 --
   RETURN retval;
 --
@@ -115,9 +117,9 @@ PROCEDURE get_inspection_files
            , pi_orcl_directory IN hig_directories.hdir_name%TYPE DEFAULT NULL
            , pi_delete_files   IN BOOLEAN DEFAULT TRUE)
 IS
-  l_rec_xtfd       x_tfl_ftp_dirs%ROWTYPE;
+  l_rec_xtfd       hig_ftp_connections%ROWTYPE;
   l_conn           utl_tcp.connection;
-  ftplist          nm3mcp_ftp.t_string_table;
+  ftplist          nm3ftp.t_string_table;
   l_filename       nm3type.max_varchar2;
   l_count          NUMBER := 0;
   l_delete_count   NUMBER := 0;
@@ -128,6 +130,8 @@ IS
   ex_no_directory  EXCEPTION;
 --
 BEGIN
+--
+  nm3ctx.set_context('NM3FTPPASSWORD','Y');
 --
   log_it (l_log_prefix_get||'==============================================================');
   log_it (l_log_prefix_get||'Start TMA Inspection File Get Process started by '||USER|| ' at '||to_char(SYSDATE,'DD-MON-YYYY HH24:MI:SS'));
@@ -144,20 +148,20 @@ BEGIN
   log_it (l_log_prefix_get||'Derived FTP connection details');
 --
 -- connection
-  l_conn := nm3mcp_ftp.login( l_rec_xtfd.ftp_host
-                            , l_rec_xtfd.ftp_port
-                            , l_rec_xtfd.ftp_username
-                            , l_rec_xtfd.ftp_password);
+  l_conn := nm3ftp.login( l_rec_xtfd.hfc_ftp_host
+                        , l_rec_xtfd.hfc_ftp_port
+                        , l_rec_xtfd.hfc_ftp_username
+                        , nm3ftp.get_password(l_rec_xtfd.hfc_ftp_password));
 --
-  log_it (l_log_prefix_get||'Connected to FTP site [ '||l_rec_xtfd.ftp_host||':'
-                                                      ||l_rec_xtfd.ftp_port||' ]');
+  log_it (l_log_prefix_get||'Connected to FTP site [ '||l_rec_xtfd.hfc_ftp_host||':'
+                                                      ||l_rec_xtfd.hfc_ftp_port||' ]');
 -- set to ascii transfer
-  nm3mcp_ftp.ascii(p_conn => l_conn);
+  nm3ftp.ascii(p_conn => l_conn);
 --
 -- list files in folder
-  nm3mcp_ftp.list (p_conn  => l_conn,
-                   p_dir   => l_rec_xtfd.ftp_in_dir,
-                   p_list  => ftplist );
+  nm3ftp.list (p_conn  => l_conn,
+               p_dir   => l_rec_xtfd.hfc_ftp_in_dir,
+               p_list  => ftplist );
 --
   l_total := ftplist.COUNT;
 --
@@ -174,13 +178,13 @@ BEGIN
     --
         l_filename := ltrim(substr(ftplist(i), instr(ftplist(i),chr(32),-1,1),length(ftplist(i))));
     --
-        nm3mcp_ftp.get
+        nm3ftp.get
                     (p_conn      => l_conn,
-                     p_from_file => l_rec_xtfd.ftp_in_dir||c_dir_sep||l_filename,
+                     p_from_file => l_rec_xtfd.hfc_ftp_in_dir||c_dir_sep||l_filename,
                      p_to_dir    => l_in_dir,
                      p_to_file   => l_filename);
     --
-        log_it (l_log_prefix_get||'Downloaded '||l_filename||' to '||l_rec_xtfd.ftp_in_dir||c_dir_sep||l_filename);
+        log_it (l_log_prefix_get||'Downloaded '||l_filename||' to '||l_rec_xtfd.hfc_ftp_in_dir||c_dir_sep||l_filename);
         log_it (l_log_prefix_get||'File details :'||ftplist(i));
     --
         l_count := l_count + 1;
@@ -196,7 +200,7 @@ BEGIN
     --
     END LOOP;
     -- close and clear connections
-    nm3mcp_ftp.logout(l_conn);
+    nm3ftp.logout(l_conn);
   --
     utl_tcp.close_all_connections;
   --
@@ -217,18 +221,18 @@ BEGIN
           l_filename2 := ltrim(substr(ftplist(d), instr(ftplist(d),chr(32),-1,1),length(ftplist(d))));
         --
           BEGIN
-            l_conn2 := nm3mcp_ftp.login( l_rec_xtfd.ftp_host
-                                       , l_rec_xtfd.ftp_port
-                                       , l_rec_xtfd.ftp_username
-                                       , l_rec_xtfd.ftp_password);
-            nm3mcp_ftp.delete(p_conn   => l_conn2,
-                              p_file   => l_rec_xtfd.ftp_in_dir||c_dir_sep||l_filename2);
+            l_conn2 := nm3ftp.login( l_rec_xtfd.hfc_ftp_host
+                                   , l_rec_xtfd.hfc_ftp_port
+                                   , l_rec_xtfd.hfc_ftp_username
+                                   , l_rec_xtfd.hfc_ftp_password);
+            nm3ftp.delete(p_conn   => l_conn2,
+                              p_file   => l_rec_xtfd.hfc_ftp_in_dir||c_dir_sep||l_filename2);
             l_delete_count := l_delete_count + 1;
           EXCEPTION
             WHEN OTHERS
             THEN
             -- close and clear connections
-              nm3mcp_ftp.logout(l_conn2);
+              nm3ftp.logout(l_conn2);
             --
               utl_tcp.close_all_connections;
               log_it (l_log_prefix_get||'Delete file error : '||l_filename2||' - '||SQLERRM);
@@ -262,20 +266,22 @@ EXCEPTION
   THEN
   --
     log_it (l_log_prefix_get||'==============================================================');
-    log_it (l_log_prefix_get||'FTP Metadata failure : '||l_ftp_type||' returns too many rows from x_tfl_ftp_dirs table');
+    log_it (l_log_prefix_get||'FTP Metadata failure : '||l_ftp_type||' returns too many rows from hig_ftp_connections table');
     log_it (l_log_prefix_get||'==============================================================');
+    utl_tcp.close_all_connections;
   WHEN ex_no_directory
   THEN
     --
     log_it (l_log_prefix_get||'==============================================================');
     log_it (l_log_prefix_get||'Oracle Directory failure : '||l_directory||' either does not exist or is not set correctly');
     log_it (l_log_prefix_get||'==============================================================');
+    utl_tcp.close_all_connections;
   WHEN OTHERS
   THEN
     -- close and clear connections
     --nm3mcp_ftp.logout(l_conn);
     --
-    --utl_tcp.close_all_connections;
+    utl_tcp.close_all_connections;
     --
     log_it (l_log_prefix_get||'==============================================================');
     log_it (l_log_prefix_get||'General failure : '||SQLERRM);
