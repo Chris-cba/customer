@@ -1,0 +1,40 @@
+create or replace
+package APEX_MAPPING_UTILS as 
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/tpc/admin/pck/apex_mapping_utils.pkh-arc   3.0   Jun 15 2010 14:49:00   iturnbull  $
+--       Module Name      : $Workfile:   apex_mapping_utils.pkh  $
+--       Date into PVCS   : $Date:   Jun 15 2010 14:49:00  $
+--       Date fetched Out : $Modtime:   Jun 15 2010 14:36:12  $
+--       PVCS Version     : $Revision:   3.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : ITurnbull
+--
+--
+-----------------------------------------------------------------------------
+--    Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--</PACKAGE>
+procedure get_map_variables(pi_product hig_products.hpr_product%type);
+
+function get_cookie_value(pi_name varchar2)
+return varchar2;
+
+     
+procedure GETMAPCENTERXY;    
+
+procedure SAVE_COOKIE(PI_NAME varchar2
+                     ,PI_VALUE       varchar2);
+function GET_COOKIE(PI_NAME varchar2) return VARChar2;               
+
+function GET_MAX_ZOOM return varchar2;
+procedure GET_MAX_ZOOM;
+
+
+end apex_mapping_utils;
