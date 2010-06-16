@@ -1,16 +1,16 @@
 --service delivered solution to overcome the mismatch between the server COR which only generates CSV defintions
 --for MapCap v3 metadata.  For v4 mapcap installations use this functionality.
---it is based on nm3inv_view. create_mapcapture_csv_metadata PVCS Version     	: $Revision:   3.0  $
+--it is based on nm3inv_view. create_mapcapture_csv_metadata PVCS Version     	: $Revision:   3.1  $
 
-CREATE OR REPLACE package body WAG.x_mapcap_csv_metadata is
--<PACKAGE>
+CREATE OR REPLACE package body x_mapcap_csv_metadata is
+--<PACKAGE>
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/General Scripts/mapcap/admin/pck/X_MAPCAP_CSV_METADATA.pkb-arc   3.0   Jun 16 2010 10:46:56   iturnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/General Scripts/mapcap/admin/pck/X_MAPCAP_CSV_METADATA.pkb-arc   3.1   Jun 16 2010 11:06:32   iturnbull  $
 --       Module Name      : $Workfile:   X_MAPCAP_CSV_METADATA.pkb  $
---       Date into SCCS   : $Date:   Jun 16 2010 10:46:56  $
---       Date fetched Out : $Modtime:   Jun 16 2010 10:45:30  $
---       SCCS Version     : $Revision:   3.0  $
+--       Date into SCCS   : $Date:   Jun 16 2010 11:06:32  $
+--       Date fetched Out : $Modtime:   Jun 16 2010 11:04:04  $
+--       SCCS Version     : $Revision:   3.1  $
 --       Based on SCCS Version     : 1.7
 --
 --
@@ -28,9 +28,9 @@ CREATE OR REPLACE package body WAG.x_mapcap_csv_metadata is
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  G_BODY_SCCSID  CONSTANT varchar2(2000) :='"$Revision:   3.0  $"';
+  G_BODY_SCCSID  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
 
-  G_PACKAGE_NAME CONSTANT varchar2(30) := 'imf_framework';
+  G_PACKAGE_NAME CONSTANT varchar2(30) := 'X_MAPCAP_CSV_METADATA';
 
 --
 -----------------------------------------------------------------------------
