@@ -1,0 +1,61 @@
+--service delivered solution to overcome the mismatch between the server COR which only generates CSV defintions
+--for MapCap v3 metadata.  For v4 mapcap installations use this functionality.
+--it is based on nm3inv_view. create_mapcapture_csv_metadata PVCS Version     	: $Revision:   3.0  $
+CREATE OR REPLACE package WAG.x_mapcap_csv_metadata is
+-<PACKAGE>
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/customer/General Scripts/mapcap/admin/pck/X_MAPCAP_CSV_METADATA.pkh-arc   3.0   Jun 16 2010 10:46:58   iturnbull  $
+--       Module Name      : $Workfile:   X_MAPCAP_CSV_METADATA.pkh  $
+--       Date into SCCS   : $Date:   Jun 16 2010 10:46:58  $
+--       Date fetched Out : $Modtime:   Jun 16 2010 10:45:28  $
+--       SCCS Version     : $Revision:   3.0  $
+--       Based on SCCS Version     : 1.7
+--
+--
+--   Author :
+--
+--   DOCUMENTS application generic utilities package
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  G_SCCSID CONSTANT VARCHAR2(2000):='"$Revision:   3.0  $"';
+   
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--this procedure creates metadata for all inventory with nit_category='I'
+procedure create_all_mapcap_csv_metadata;
+
+-- this procedure creates metadata for the specified inventory type.
+procedure create_mapcap_csv_metadata(pi_inv_type    varchar2);
+
+end x_mapcap_csv_metadata ; 
+/
+
