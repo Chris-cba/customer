@@ -13,11 +13,11 @@ prompt  APPLICATION 624 - wag_planning_v24
 -- Application Export:
 --   Application:     624
 --   Name:            wag_planning_v24
---   Date and Time:   11:51 Tuesday February 23, 2010
---   Exported By:     WAG
+--   Date and Time:   13:56 Friday June 18, 2010
+--   Exported By:     ITURNBULL
 --   Flashback:       0
 --   Export Type:     Application Export
---   Version: 3.2.0.00.27
+--   Version: 3.2.1.00.11
  
 -- Import:
 --   Using application builder
@@ -35,9 +35,9 @@ prompt  APPLICATION 624 - wag_planning_v24
 --   Shared Components
 --     Breadcrumbs:         1
 --        Entries           0
---     Items:               2
+--     Items:               4
 --     Computations:        0
---     Processes:           0
+--     Processes:           4
 --     Parent Tabs:         0
 --     Tab Sets:            1
 --        Tabs:             4
@@ -145,7 +145,7 @@ wwv_flow_api.create_flow(
   p_default_region_template=> 63125835672599618 + wwv_flow_api.g_id_offset,
   p_error_template    => 63118740619599608 + wwv_flow_api.g_id_offset,
   p_page_protection_enabled_y_n=> 'Y',
-  p_checksum_salt_last_reset => '20100223115116',
+  p_checksum_salt_last_reset => '20100618122530',
   p_max_session_length_sec=> 28800,
   p_home_link         => 'f?p=&APP_ID.:1:&SESSION.',
   p_flow_language     => 'en-gb',
@@ -187,11 +187,11 @@ wwv_flow_api.create_flow(
   p_default_menur_template => 63121954153599613 + wwv_flow_api.g_id_offset,
   p_default_listr_template => 63125835672599618 + wwv_flow_api.g_id_offset,
   p_substitution_string_01 => 'FRAMEWORK_VERSION',
-  p_substitution_value_01  => '$Revision:   3.4  $',
+  p_substitution_value_01  => '$Revision:   3.5  $',
   p_substitution_string_02 => 'MSG_COPYRIGHT',
   p_substitution_value_02  => '&copy: copyright exor corporation ltd 2009',
-  p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss=> '20100223115116',
+  p_last_updated_by => 'ITURNBULL',
+  p_last_upd_yyyymmddhh24miss=> '20100618122530',
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
  
@@ -239,6 +239,131 @@ end;
 
 prompt  ...application processes
 --
+--application/shared_components/logic/application_processes/getmapvariables
+ 
+begin
+ 
+declare
+    p varchar2(32767) := null;
+    l_clob clob;
+    l_length number := 1;
+begin
+p:=p||'apex_mapping_utils.get_map_variables(pi_product => ''WAGPAP'');';
+
+wwv_flow_api.create_flow_process(
+  p_id => 2040728238859715 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_process_sequence=> 1,
+  p_process_point => 'ON_DEMAND',
+  p_process_type=> 'PLSQL',
+  p_process_name=> 'getMapVariables',
+  p_process_sql_clob=> p,
+  p_process_error_message=> '',
+  p_process_when=> '',
+  p_process_when_type=> '',
+  p_required_patch=> null + wwv_flow_api.g_id_offset,
+  p_process_comment=> '');
+end;
+ 
+null;
+ 
+end;
+/
+
+--application/shared_components/logic/application_processes/get_user_temp_value
+ 
+begin
+ 
+declare
+    p varchar2(32767) := null;
+    l_clob clob;
+    l_length number := 1;
+begin
+p:=p||'htp.prn(apex_mapping_utils.get_cookie(pi_name => :TEMP_TYPE));';
+
+wwv_flow_api.create_flow_process(
+  p_id => 2040902050861545 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_process_sequence=> 1,
+  p_process_point => 'ON_DEMAND',
+  p_process_type=> 'PLSQL',
+  p_process_name=> 'GET_USER_TEMP_VALUE',
+  p_process_sql_clob=> p,
+  p_process_error_message=> '',
+  p_process_when=> '',
+  p_process_when_type=> '',
+  p_required_patch=> null + wwv_flow_api.g_id_offset,
+  p_process_comment=> '');
+end;
+ 
+null;
+ 
+end;
+/
+
+--application/shared_components/logic/application_processes/ins_user_temp_values
+ 
+begin
+ 
+declare
+    p varchar2(32767) := null;
+    l_clob clob;
+    l_length number := 1;
+begin
+p:=p||'apex_mapping_utils.save_cookie(pi_name     => :TEMP_TYPE'||chr(10)||
+'                        ,PI_VALUE    => :TEMPVALUE);';
+
+wwv_flow_api.create_flow_process(
+  p_id => 2041108629863454 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_process_sequence=> 1,
+  p_process_point => 'ON_DEMAND',
+  p_process_type=> 'PLSQL',
+  p_process_name=> 'INS_USER_TEMP_VALUES',
+  p_process_sql_clob=> p,
+  p_process_error_message=> '',
+  p_process_when=> '',
+  p_process_when_type=> '',
+  p_required_patch=> null + wwv_flow_api.g_id_offset,
+  p_process_comment=> '');
+end;
+ 
+null;
+ 
+end;
+/
+
+--application/shared_components/logic/application_processes/getmapcenterxy
+ 
+begin
+ 
+declare
+    p varchar2(32767) := null;
+    l_clob clob;
+    l_length number := 1;
+begin
+p:=p||'apex_mapping_utils.GETMAPCENTERXY;';
+
+wwv_flow_api.create_flow_process(
+  p_id => 2041316941865822 + wwv_flow_api.g_id_offset,
+  p_flow_id => wwv_flow.g_flow_id,
+  p_process_sequence=> 1,
+  p_process_point => 'ON_DEMAND',
+  p_process_type=> 'PLSQL',
+  p_process_name=> 'getmapcenterxy',
+  p_process_sql_clob=> p,
+  p_process_error_message=> '',
+  p_process_when=> '',
+  p_process_when_type=> '',
+  p_required_patch=> null + wwv_flow_api.g_id_offset,
+  p_process_comment=> '');
+end;
+ 
+null;
+ 
+end;
+/
+
 prompt  ...application items
 --
 --application/shared_components/logic/application_items/fsp_after_login_url
@@ -271,6 +396,44 @@ wwv_flow_api.create_flow_item(
   p_data_type=> 'VARCHAR',
   p_is_persistent=> 'Y',
   p_protection_level=> '',
+  p_required_patch=> null + wwv_flow_api.g_id_offset,
+  p_item_comment=> '');
+ 
+null;
+ 
+end;
+/
+
+--application/shared_components/logic/application_items/tempvalue
+ 
+begin
+ 
+wwv_flow_api.create_flow_item(
+  p_id=> 2040519234857034 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_name=> 'TEMPVALUE',
+  p_data_type=> 'VARCHAR',
+  p_is_persistent=> 'Y',
+  p_protection_level=> 'N',
+  p_required_patch=> null + wwv_flow_api.g_id_offset,
+  p_item_comment=> '');
+ 
+null;
+ 
+end;
+/
+
+--application/shared_components/logic/application_items/temp_type
+ 
+begin
+ 
+wwv_flow_api.create_flow_item(
+  p_id=> 2040315424855937 + wwv_flow_api.g_id_offset,
+  p_flow_id=> wwv_flow.g_flow_id,
+  p_name=> 'TEMP_TYPE',
+  p_data_type=> 'VARCHAR',
+  p_is_persistent=> 'Y',
+  p_protection_level=> 'N',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_item_comment=> '');
  
@@ -3627,9 +3790,8 @@ declare
     ph varchar2(32767) := null;
 begin
 h := null;
-ph:=ph||'<script language="JavaScript" src="/mapviewer/fsmc/jslib/oraclemaps.js"></script>'||chr(10)||
-'<script language="Javascript" src="/exor/wagplan_24.js"></script>'||chr(10)||
-'';
+ph:=ph||'<script language="JavaScript" src="http://195.188.241.201/mapviewer/fsmc/jslib/oraclemaps.js"></script>'||chr(10)||
+'<script language="Javascript" src="/exor/wagplan_24_new.js"></script>';
 
 wwv_flow_api.create_page(
   p_id     => 5,
@@ -3648,8 +3810,8 @@ wwv_flow_api.create_page(
   p_html_page_header => ' ',
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
-  p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20090617092027',
+  p_last_updated_by => 'ITURNBULL',
+  p_last_upd_yyyymmddhh24miss => '20100618122530',
   p_page_is_public_y_n=> 'N',
   p_protection_level=> 'N',
   p_page_comment  => '');
@@ -15314,5 +15476,10 @@ end;
 --application/end_environment
 commit;
 commit;
-
---export elap=           2.57
+begin 
+execute immediate 'alter session set nls_numeric_characters='''||wwv_flow_api.g_nls_numeric_chars||'''';
+end;
+/
+set verify on
+set feedback on
+prompt  ...done
