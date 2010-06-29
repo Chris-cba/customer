@@ -1,0 +1,121 @@
+CREATE OR REPLACE PACKAGE X_WAG_NLPG AS
+--<PACKAGE>
+-------------------------------------------------------------------------
+-- created by Aileen Heal Jan 09 for WAG planning app system
+--
+-------------------------------------------------------------------------
+
+--<TYPES>
+
+  TYPE address_rec_type
+  IS RECORD ( uprn           NUMBER(12),
+              address        varchar2(200));
+
+
+
+  TYPE address_rec_table_type IS TABLE OF
+       address_rec_type
+       INDEX BY BINARY_INTEGER;
+
+--</TYPES>
+--
+
+  g_debug integer := 0; -- 1 turns begug_print on
+  g_radius number;
+  g_address_count number;
+  g_sccsid CONSTANT varchar2(2000) := '"$Revision:   3.0  $"';
+-----------------------------------------------------------------------------
+-- FUNCTIONS AND PROCEDURES
+-----------------------------------------------------------------------------
+--
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_COORDINATES">
+PROCEDURE get_coordinates( v_uprn in nlpg_lpi.UPRN%TYPE
+  	                     , x_coordinate out number
+  	                     , y_coordinate out number
+  	                     );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_G_RADIUS">
+FUNCTION get_g_radius return number;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_G_ADDRESS_COUNT">
+FUNCTION get_g_address_count return number;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_DUMMY_NLPG_ADDRESSES">
+FUNCTION get_dummy_nlpg_addresses ( v_uprn     IN nlpg_lpi.UPRN%TYPE
+                               ) return address_rec_table_type;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_NLPG_ADDRESSES">
+-- for specified uprn and language (language 'ENG' or 'CYM' for Welsh) return  the addresses as a
+-- table of address_rec_types
+-- if the language is not 'ENG' and there is no address found, then the function will return the english address (if there is one)
+-- if no address is found function return  empty table
+FUNCTION get_nlpg_addresses ( v_uprn     IN nlpg_lpi.UPRN%TYPE,
+                              v_language IN nlpg_lpi.language%type DEFAULT 'ENG' ) return address_rec_table_type;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_STREET_INFO">
+-- for specified usrn and language (language 'ENG' or 'CYM' for Welsh) return  the street_info i.e.
+-- <street name> <localitty name> <town name. as a string
+-- if the language is not 'ENG' and there is no street found, then the function will return null
+FUNCTION get_street_info (v_usrn     IN nlpg_street_descriptor.USRN%TYPE,
+                          v_language IN nlpg_street_descriptor.LANGUAGE%TYPE DEFAULT 'ENG' ) return varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_ADDRESSES_FROM_BNG">
+-- this function will return a table of address records which fall inside the rectange
+-- (v_easting - v_radius, v_northing - v_radius ,v_easting + v_radius, v_northing + v_radius)
+-- language 'ENG' or 'CYM' for Welsh) determins the language fro the addresses. If language is not 'ENG' and
+-- there is only and english address for a particular property it will return the english address.
+PROCEDURE get_addresses_from_bng( v_easting         in number,
+                                 v_northing        in number,
+                                 v_search_radius   in number DEFAULT 100,  -- in metres
+                                 v_language        in nlpg_lpi.language%type DEFAULT 'ENG',
+                                 v_address_table in out address_rec_table_type);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_PAO_SAO">
+-- return a string representing the pao/sao from the consituent partd
+FUNCTION get_PAO_SAO( v_start_number IN number,
+                      v_start_suffix IN varchar2,
+                      v_end_number   IN number,
+                      v_end_suffix   IN varchar2,
+                      v_text         In varchar2 ) return varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+END X_WAG_NLPG; 
+/
+
