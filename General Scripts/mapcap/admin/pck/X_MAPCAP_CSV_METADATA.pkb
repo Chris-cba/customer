@@ -1,16 +1,16 @@
 --service delivered solution to overcome the mismatch between the server COR which only generates CSV defintions
 --for MapCap v3 metadata.  For v4 mapcap installations use this functionality.
---it is based on nm3inv_view. create_mapcapture_csv_metadata PVCS Version     	: $Revision:   3.1  $
+--it is based on nm3inv_view. create_mapcapture_csv_metadata PVCS Version     	: $Revision:   3.2  $
 
 CREATE OR REPLACE package body x_mapcap_csv_metadata is
 --<PACKAGE>
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/General Scripts/mapcap/admin/pck/X_MAPCAP_CSV_METADATA.pkb-arc   3.1   Jun 16 2010 11:06:32   iturnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/General Scripts/mapcap/admin/pck/X_MAPCAP_CSV_METADATA.pkb-arc   3.2   Jul 07 2010 16:25:14   Ian.Turnbull  $
 --       Module Name      : $Workfile:   X_MAPCAP_CSV_METADATA.pkb  $
---       Date into SCCS   : $Date:   Jun 16 2010 11:06:32  $
---       Date fetched Out : $Modtime:   Jun 16 2010 11:04:04  $
---       SCCS Version     : $Revision:   3.1  $
+--       Date into SCCS   : $Date:   Jul 07 2010 16:25:14  $
+--       Date fetched Out : $Modtime:   Jul 07 2010 13:04:26  $
+--       SCCS Version     : $Revision:   3.2  $
 --       Based on SCCS Version     : 1.7
 --
 --
@@ -28,7 +28,7 @@ CREATE OR REPLACE package body x_mapcap_csv_metadata is
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  G_BODY_SCCSID  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+  G_BODY_SCCSID  CONSTANT varchar2(2000) :='"$Revision:   3.2  $"';
 
   G_PACKAGE_NAME CONSTANT varchar2(30) := 'X_MAPCAP_CSV_METADATA';
 
@@ -115,7 +115,7 @@ procedure create_mapcap_csv_metadata(pi_inv_type    varchar2) is
    l_std_cols(l_std_cols.COUNT+1) := 'IIT_NE_ID';
    l_std_cols(l_std_cols.COUNT+1) := 'IIT_DESCR';
    l_std_cols(l_std_cols.COUNT+1) := 'IIT_X_SECT';
-   --l_std_cols(l_std_cols.COUNT+1) := 'IIT_OWNER';
+   l_std_cols(l_std_cols.COUNT+1) := 'IIT_INSP';
    l_std_cols(l_std_cols.COUNT+1) := 'IIT_START_DATE';
    l_std_cols(l_std_cols.COUNT+1) := 'IIT_END_DATE';
    l_std_cols(l_std_cols.COUNT+1) := 'NM_START';
@@ -243,8 +243,8 @@ BEGIN
     l_nlf_rec.nlf_descr  := l_mc_descr||pi_inv_type;
     l_nlf_rec.nlf_path   := hig.get_sysopt('MAPCAP_DIR');
     l_nlf_rec.nlf_delimiter := CHR(44);
-    l_nlf_rec.nlf_date_format_mask := nm3mapcapture_int.c_date_format;
-    l_nlf_rec.nlf_holding_table := g_mapcapture_holding_table;
+    l_nlf_rec.nlf_date_format_mask := c_date_format;
+    l_nlf_rec.nlf_holding_table := null;
 
     nm3ins.ins_nlf(p_rec_nlf => l_nlf_rec);
 
@@ -286,7 +286,7 @@ BEGIN
           
           l_st_rec.nlfc_nlf_id           := p_nlf_id;
           l_st_rec.nlfc_seq_no           := get_next_seq_no(p_nlf_id);
-          l_st_rec.nlfc_holding_col      := 'IIT_OWNER';
+          l_st_rec.nlfc_holding_col      := 'IIT_INSP';
           l_st_rec.nlfc_datatype         := 'VARCHAR2';
           l_st_rec.nlfc_varchar_size     := 10;
           l_st_rec.nlfc_date_format_mask := NULL;
@@ -299,7 +299,7 @@ BEGIN
           l_st_rec.nlfc_holding_col      := 'IIT_START_DATE';
           l_st_rec.nlfc_datatype         := 'DATE';
           l_st_rec.nlfc_varchar_size     := NULL;
-          l_st_rec.nlfc_date_format_mask := nm3mapcapture_int.c_date_format;
+          l_st_rec.nlfc_date_format_mask := c_date_format;
           l_st_rec.nlfc_mandatory        := 'N';
     
           nm3ins.ins_nlfc(l_st_rec);
@@ -309,7 +309,7 @@ BEGIN
           l_st_rec.nlfc_holding_col      := 'IIT_END_DATE';
           l_st_rec.nlfc_datatype         := 'DATE';
           l_st_rec.nlfc_varchar_size     := NULL;
-          l_st_rec.nlfc_date_format_mask := nm3mapcapture_int.c_date_format;
+          l_st_rec.nlfc_date_format_mask := c_date_format;
           l_st_rec.nlfc_mandatory        := 'N';
     
           nm3ins.ins_nlfc(l_st_rec);
@@ -459,7 +459,7 @@ BEGIN
           l_st_rec.nlfc_holding_col      := 'SUR_DATE';
           l_st_rec.nlfc_datatype         := 'DATE';
           l_st_rec.nlfc_varchar_size     := NULL;
-          l_st_rec.nlfc_date_format_mask := nm3mapcapture_int.c_date_format;
+          l_st_rec.nlfc_date_format_mask := c_date_format;
           l_st_rec.nlfc_mandatory        := 'N';
     
           nm3ins.ins_nlfc(l_st_rec);
@@ -503,17 +503,20 @@ BEGIN
         END IF;
 
         IF l_mc_cols(i).ita_mandatory_yn = 'N' THEN
-          l_nlfc_rec.nlfc_mandatory := 'Y';
-        ELSE
           l_nlfc_rec.nlfc_mandatory := 'N';
+        ELSE
+          l_nlfc_rec.nlfc_mandatory := 'Y';
         END IF;
 
         nm3ins.ins_nlfc(l_nlfc_rec);
+        
 
       END IF;
 
     END LOOP;
 
+    nm3load.create_holding_table(l_nlf_rec.nlf_id);
+    
     -- now create the file destination defnintions
     -- get the destination
     l_nld_rec := nm3get.get_nld(pi_nld_table_name => get_mapcapture_load_dest(pi_inv_type));
@@ -539,6 +542,24 @@ BEGIN
                              WHERE nlfc_nlf_id = l_nlf_rec.nlf_id)
        OR  nlcd_dest_col IN ('BATCH_NO', 'RECORD_NO')); -- need to copy over the batch and record nu
 
+    UPDATE nm_load_file_col_destinations
+    SET    nlcd_source_col = l_nlf_rec.nlf_unique||'.SUR_DATE'
+    WHERE  nlcd_nlf_id = l_nlf_rec.nlf_id
+    AND    nlcd_nld_id = l_nld_rec.nld_id
+    AND    nlcd_dest_col = 'NLM_INVENT_DATE';
+    
+    UPDATE nm_load_file_col_destinations
+    SET    nlcd_source_col = l_nlf_rec.nlf_unique||'.IIT_X_SECT'
+    WHERE  nlcd_nlf_id = l_nlf_rec.nlf_id
+    AND    nlcd_nld_id = l_nld_rec.nld_id
+    AND    nlcd_dest_col = 'NLM_X_SECT';
+
+    UPDATE nm_load_file_col_destinations
+    SET    nlcd_source_col = 'nm3get.get_ne(pi_ne_id=>'||l_nlf_rec.nlf_unique||'.NE_ID).NE_ADMIN_UNIT'
+    WHERE  nlcd_nlf_id = l_nlf_rec.nlf_id
+    AND    nlcd_nld_id = l_nld_rec.nld_id
+    AND    nlcd_dest_col = 'IIT_ADMIN_UNIT';
+    
 --  END IF;
 
   COMMIT;
