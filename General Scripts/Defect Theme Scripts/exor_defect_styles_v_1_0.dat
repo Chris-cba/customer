@@ -1,0 +1,170 @@
+--------STYLES BEGIN--------
+M.EXOR.DEF.CAT.DEFAULT - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#000000;fill:#FFFFFF;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <circle cx="0" cy="0" r="0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEF.STATUS.AV - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#000000;fill:#FF0000;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <polyline points="138.0,123.0,161.0,198.0,100.0,152.0,38.0,198.0,61.0,123.0,0.0,76.0,76.0,76.0,100.0,0.0,123.0,76.0,199.0,76.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEF.STATUS.CO - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#000000;fill:#0000FF;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#0000FF">
+    <polyline points="138.0,123.0,161.0,198.0,100.0,152.0,38.0,198.0,61.0,123.0,0.0,76.0,76.0,76.0,100.0,0.0,123.0,76.0,199.0,76.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEF.STATUS.DEFAULT - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#000000;fill:#000000;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <polyline points="138.0,123.0,161.0,198.0,100.0,152.0,38.0,198.0,61.0,123.0,0.0,76.0,76.0,76.0,100.0,0.0,123.0,76.0,199.0,76.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEF.STATUS.IN - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#000000;fill:#32CD32;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#32CD32">
+    <polyline points="138.0,123.0,161.0,198.0,100.0,152.0,38.0,198.0,61.0,123.0,0.0,76.0,76.0,76.0,100.0,0.0,123.0,76.0,199.0,76.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEF.STATUS.SM - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#000000;fill:#66CCFF;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#696969">
+    <polyline points="138.0,123.0,161.0,198.0,100.0,152.0,38.0,198.0,61.0,123.0,0.0,76.0,76.0,76.0,100.0,0.0,123.0,76.0,199.0,76.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEF.STATUS.SU - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#000000;fill:#CCCCCC;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#696969">
+    <polyline points="138.0,123.0,161.0,198.0,100.0,152.0,38.0,198.0,61.0,123.0,0.0,76.0,76.0,76.0,100.0,0.0,123.0,76.0,199.0,76.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEFECT.CAT.1 - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#0000FF;fill:#FF0000;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <circle cx="0" cy="0" r="5.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEFECT.CAT.2 - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#0000FF;fill:#FF9900;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <circle cx="0" cy="0" r="5.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEFECT.CAT.2.1 - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#0000FF;fill:#FFFF33;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <circle cx="0" cy="0" r="5.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEFECT.CAT.2.2 - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#0000FF;fill:#3333FF;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <circle cx="0" cy="0" r="5.0" />
+  </g>
+</svg>|
+null|
+M.EXOR.DEFECT.CAT.2.3 - V1.0|
+MARKER|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" standalone="yes"?>
+<svg width="1in" height="1in">
+  <desc></desc>
+  <g class="marker" style="stroke:#0000FF;fill:#33CC00;width:15;height:15;font-family:Dialog;font-size:12;font-fill:#FF0000">
+    <circle cx="0" cy="0" r="0" />
+  </g>
+</svg>|
+null|
+V.EXOR.DEFECT.CATEGORY - V1.0|
+ADVANCED|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" ?>
+<AdvancedStyle>
+   <BucketStyle>
+    <Buckets default_style="M.EXOR.DEF.CAT.DEFAULT - V1.0">
+      <CollectionBucket seq="0" label="Category 1" type="string" style="M.EXOR.DEFECT.CAT.1 - V1.0">1</CollectionBucket>
+      <CollectionBucket seq="1" label="Category 2" type="string" style="M.EXOR.DEFECT.CAT.2 - V1.0">2</CollectionBucket>
+      <CollectionBucket seq="2" label="Category 2.1" type="string" style="M.EXOR.DEFECT.CAT.2.1 - V1.0">2.1</CollectionBucket>
+      <CollectionBucket seq="3" label="Category 2.2" type="string" style="M.EXOR.DEFECT.CAT.2.2 - V1.0">2.2</CollectionBucket>
+      <CollectionBucket seq="4" label="Category 2.3" type="string" style="M.EXOR.DEFECT.CAT.2.3 - V1.0">2.3</CollectionBucket>
+      <CollectionBucket seq="5" label="Other" type="string" style="M.EXOR.DEF.CAT.DEFAULT - V1.0">#DEFAULT#</CollectionBucket>
+    </Buckets>
+   </BucketStyle>
+</AdvancedStyle>
+|
+null|
+V.EXOR.DEFECT.STATUS - V1.0|
+ADVANCED|
+DO NOT EDIT - If you wish to change a style please duplicate, edit the duplicate and use that|
+<?xml version="1.0" ?>
+<AdvancedStyle>
+   <BucketStyle>
+    <Buckets default_style="M.EXOR.DEF.STATUS.DEFAULT - V1.0">
+      <CollectionBucket seq="0" label="Available to be instructed" type="string" style="M.EXOR.DEF.STATUS.AV - V1.0">AVAILABLE</CollectionBucket>
+      <CollectionBucket seq="1" label="Instructed" type="string" style="M.EXOR.DEF.STATUS.IN - V1.0">INSTRUCTED</CollectionBucket>
+      <CollectionBucket seq="2" label="Completed" type="string" style="M.EXOR.DEF.STATUS.CO - V1.0">COMPLETED</CollectionBucket>
+      <CollectionBucket seq="3" label="Repaired by Structural Maint" type="string" style="M.EXOR.DEF.STATUS.SM - V1.0">STR MAINT</CollectionBucket>
+      <CollectionBucket seq="4" label="Superseded, not instructed" type="string" style="M.EXOR.DEF.STATUS.SU - V1.0">SUPERSEDED</CollectionBucket>
+      <CollectionBucket seq="5" label="Other" type="string" style="M.EXOR.DEF.STATUS.DEFAULT - V1.0">#DEFAULT#</CollectionBucket>
+    </Buckets>
+   </BucketStyle>
+</AdvancedStyle>
+|
+null|
+--------STYLES END--------
