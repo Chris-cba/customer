@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/NSG Themes/create_nsg_themes.sql-arc   1.0   Jul 19 2010 09:33:22   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/NSG Themes/create_nsg_themes.sql-arc   1.1   Jul 20 2010 14:37:22   Ian.Turnbull  $
 --       Module Name      : $Workfile:   create_nsg_themes.sql  $
---       Date into PVCS   : $Date:   Jul 19 2010 09:33:22  $
---       Date fetched Out : $Modtime:   Jul 19 2010 09:32:32  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jul 20 2010 14:37:22  $
+--       Date fetched Out : $Modtime:   Jul 20 2010 13:59:44  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -201,6 +201,27 @@ begin
      end if; 
      
      nm_debug.debug('Completed ASD Layer Creation');
+     
+     -- add locator function
+     nm_debug.debug('Add Locator function');
+     insert into nm_theme_functions_all
+          select nth_theme_id, 'NM0572', 'GIS_SESSION_ID', 'LOCATOR', 'N'
+            from nm_themes_all
+           where nth_feature_table in ( 'V_NM_NAT_NSGN_OFFN_SDO_DT',
+                                        'V_NM_NAT_NSGN_RDNM_SDO_DT',
+                                        'V_NM_NAT_NSGN_UOFF_SDO_DT',
+                                        'V_NM_NIT_TP21_SDO_DT', 
+                                        'V_NM_NIT_TP22_SDO_DT',
+                                        'V_NM_NIT_TP23_SDO_DT',
+                                        'V_NM_NIT_TP64_SDO_DT')
+                  and not exists (select 1 
+                                    from nm_theme_functions_all 
+                                   where NTF_NTH_THEME_ID  =   NTH_THEME_ID
+                                    and  NTF_HMO_MODULE = 'NM0572');    
+     
+     commit;
+     
+     nm_debug.debug('All done');
 
    end if; -- ESU layer present
   
