@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/update_nsg_nm_themes_all_metadata.sql-arc   3.0   Feb 23 2010 09:53:08   iturnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/update_nsg_nm_themes_all_metadata.sql-arc   3.1   Jul 20 2010 13:35:28   Ian.Turnbull  $
 --       Module Name      : $Workfile:   update_nsg_nm_themes_all_metadata.sql  $
---       Date into PVCS   : $Date:   Feb 23 2010 09:53:08  $
---       Date fetched Out : $Modtime:   Feb 23 2010 09:52:50  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jul 20 2010 13:35:28  $
+--       Date fetched Out : $Modtime:   Jul 20 2010 13:23:38  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 
 --
@@ -48,7 +48,7 @@ update nm_themes_all
        nth_end_chain_column = null,
        nth_start_date_column = 'IIT_START_DATE',
        nth_end_date_column = 'IIT_END_DATE'
- where nth_table_name in ('V_NM_TP21', 'V_NM_TP22', 'V_NM_TP23', V_NM_TP64');  
+ where nth_table_name in ('V_NM_TP21', 'V_NM_TP22', 'V_NM_TP23', 'V_NM_TP64');  
   
 update nm_themes_all 
    set nth_rse_fk_column  = null,
