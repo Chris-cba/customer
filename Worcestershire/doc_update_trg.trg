@@ -11,11 +11,11 @@ ON DOCS REFERENCING OLD AS OLD NEW AS NEW FOR EACH ROW DECLARE
 --         
 --   SCCS Identifiers :-         
 --         
---       pvcsid           : $Header:   //vm_latest/archives/customer/Worcestershire/doc_update_trg.trg-arc   3.1   Aug 23 2010 09:52:12   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Worcestershire/doc_update_trg.trg-arc   3.2   Aug 23 2010 13:41:20   Ian.Turnbull  $
 --       Module Name      : $Workfile:   doc_update_trg.trg  $
---       Date into PVCS   : $Date:   Aug 23 2010 09:52:12  $
---       Date fetched Out : $Modtime:   Aug 23 2010 09:50:40  $
---       PVCS Version     : $Revision:   3.1  $       
+--       Date into PVCS   : $Date:   Aug 23 2010 13:41:20  $
+--       Date fetched Out : $Modtime:   Aug 23 2010 13:41:02  $
+--       PVCS Version     : $Revision:   3.2  $       
 --         
 -- This version produced Thur 15 Dec 2005         
 -- doesn't check if old and new values are the same.         
@@ -145,7 +145,7 @@ BEGIN
          OR         
           :NEW.doc_status_code != nvl(:OLD.doc_status_code,'~')         
          OR         
-          :NEW.doc_compl_user_id != nvl(:OLD.doc_compl_user_id,'~')         
+          :NEW.doc_compl_user_id != :OLD.doc_compl_user_id
          OR         
           :NEW.doc_compl_location != nvl(:OLD.doc_compl_location,'~')         
          OR         
