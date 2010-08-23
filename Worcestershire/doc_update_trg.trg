@@ -1,20 +1,21 @@
 create or replace TRIGGER DOC_UPDATE_TRG AFTER
 UPDATE OF DOC_COMPL_ACTION
-               , DOC_COMPL_CPR_ID
-               , DOC_COMPL_USER_ID
-               , DOC_STATUS_CODE 
+        , DOC_COMPL_CPR_ID
+		, DOC_COMPL_USER_ID
+		, DOC_STATUS_CODE 
+		, DOC_COMPL_LOCATION
+		, DOC_DESCR
 ON DOCS REFERENCING OLD AS OLD NEW AS NEW FOR EACH ROW DECLARE         
 --         
+-----------------------------------------------------------------------------         
 --         
--------------------------------------------------------------------------
---   PVCS Identifiers :-
---
---       PVCS id          : $Header:   //vm_latest/archives/customer/Worcestershire/doc_update_trg.trg-arc   3.0   Aug 19 2010 15:35:26   Mike.Alexander  $
+--   SCCS Identifiers :-         
+--         
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Worcestershire/doc_update_trg.trg-arc   3.1   Aug 23 2010 09:52:12   Ian.Turnbull  $
 --       Module Name      : $Workfile:   doc_update_trg.trg  $
---       Date into PVCS   : $Date:   Aug 19 2010 15:35:26  $
---       Date fetched Out : $Modtime:   Aug 19 2010 15:34:52  $
---       Version          : $Revision:   3.0  $
--------------------------------------------------------------------------   
+--       Date into PVCS   : $Date:   Aug 23 2010 09:52:12  $
+--       Date fetched Out : $Modtime:   Aug 23 2010 09:50:40  $
+--       PVCS Version     : $Revision:   3.1  $       
 --         
 -- This version produced Thur 15 Dec 2005         
 -- doesn't check if old and new values are the same.         
@@ -40,14 +41,14 @@ ON DOCS REFERENCING OLD AS OLD NEW AS NEW FOR EACH ROW DECLARE
 -- added the pem id and crm ref to the error output file.
 --         
     
-    
+	
 --    
 -- Removed odd characters from the replace section for Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â£ etc    
 -- 'Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â£' changed to 'Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â?Ã?Â£'    
 --    
 --    
 -----------------------------------------------------------------------------         
---    Copyright (c) exor corporation ltd, 2010         
+--	Copyright (c) exor corporation ltd, 2005         
 -----------------------------------------------------------------------------         
 --         
 -- Trigger to create a xml file when columns are updated in the DOCS table         
@@ -61,7 +62,7 @@ ON DOCS REFERENCING OLD AS OLD NEW AS NEW FOR EACH ROW DECLARE
 --priority decription -- doc_compl_cpr_id hig_codes domain = 'COMPLAINT_SOURCE'         
 --status description  -- doc_status_code lookup from hig_status_codes domain = 'COMPLAINTS'         
 --responsibility of   -- doc_compl_user_id look up to hig_users         
--- <ns0:exortrigger xmlns:ns0="http://IncidentSchemas.eXorTrigger">         
+-- <ns0:exortrigger xmlns:ns0=http://IncidentSchemas.eXorTrigger>         
 --   <exorpemid>8000</exorpemid>         
 --   <datetimechanged>12092005</datetimechanged>         
 --   <actionremarks>actionremarks</actionremarks>         
@@ -145,6 +146,10 @@ BEGIN
           :NEW.doc_status_code != nvl(:OLD.doc_status_code,'~')         
          OR         
           :NEW.doc_compl_user_id != nvl(:OLD.doc_compl_user_id,'~')         
+         OR         
+          :NEW.doc_compl_location != nvl(:OLD.doc_compl_location,'~')         
+         OR         
+          :NEW.doc_descr != nvl(:OLD.doc_descr,'~')         
      THEN         
    --         
          OPEN c_max_doc_hist( :NEW.doc_id);         
@@ -175,7 +180,7 @@ BEGIN
         l_reason := REPLACE(l_reason,'>','gt');         
          
          
-         l_xml := '<ns0:eXorTrigger xmlns:ns0="http://IncidentSchemas.eXorTrigger">';         
+         l_xml := '<ns0:eXorTrigger xmlns:ns0=http://IncidentSchemas.eXorTrigger>';         
          l_xml := l_xml || '<eXorPEMId>'||:OLD.doc_id||'</eXorPEMId>' ;         
          l_xml := l_xml || '<DateTimeChanged>'||TO_CHAR(SYSDATE,'YYYY-MM-DD HH24:MI:SS') ||'</DateTimeChanged>' ;         
          l_xml := l_xml || '<ActionRemarks>'||l_doc_compl_action||'</ActionRemarks>' ;         
@@ -197,11 +202,11 @@ BEGIN
         l_xml := replace(l_xml,'¿','euro');            
         l_xml := REPLACE(l_xml,'¦','squiggle');            
          
-        l_xml := REPLACE(l_xml,chr(39),'apos');            
-        l_xml := REPLACE(l_xml,chr(96),'apos');                    
+		l_xml := REPLACE(l_xml,chr(39),'apos');            
+		l_xml := REPLACE(l_xml,chr(96),'apos');            		
     --         
     -- This is the live eShop URL                           
- --        l_url := 'http://biz/WCC_ExorTrigger_Receive/BTSHTTPReceive.dll';         
+ --		l_url := 'http://biz/WCC_ExorTrigger_Receive/BTSHTTPReceive.dll';         
              
    -- This is the eShop Development         
    -- l_url := 'http://172.17.17.68/WCC_ExorTrigger_Receive/BTSHTTPReceive.dll';         
@@ -212,12 +217,12 @@ BEGIN
 --dev url
 l_url := 'http://172.17.17.80/WCC_ExorTrigger_Receive/BTSHTTPReceive.dll';
      for crec in ( select instance_name from v$instance)
-     loop
-        if lower(crec.instance_name) = 'highways'
-         then 
-            l_url := 'http://172.17.16.219/WCC_ExorTrigger_Receive/BTSHTTPReceive.dll';  
-        end if;
-     end loop;
+	 loop
+	    if lower(crec.instance_name) = 'highways'
+		 then 
+			l_url := 'http://172.17.16.219/WCC_ExorTrigger_Receive/BTSHTTPReceive.dll';  
+		end if;
+	 end loop;
      
          
         /* DO NOT request that exceptions are raised for error Status Codes */         
@@ -233,7 +238,7 @@ l_url := 'http://172.17.17.80/WCC_ExorTrigger_Receive/BTSHTTPReceive.dll';
          UTL_HTTP.SET_HEADER(l_http_req, 'Content-Length', LENGTH(l_xml));         
          UTL_HTTP.WRITE_TEXT(l_http_req, l_xml);         
    --         
-   --    HP Addition Dont't end the request or we can't ask for a response.         
+   --	HP Addition Dont't end the request or we can't ask for a response.         
    --      UTL_HTTP.END_REQUEST( l_http_req );         
          
          l_http_resp := UTL_HTTP.GET_RESPONSE ( r => l_http_req );         
@@ -274,7 +279,7 @@ EXCEPTION
 --         
       UTL_FILE.PUT_LINE(l_file, 'doc update trigger has raised an error '||TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS'));         
       utl_file.put_line(l_file, 'PEM_ID : ' || :OLD.doc_id || ' REF : '|| :old.doc_reference_code);
-      UTL_FILE.PUT_LINE(l_file, l_err_msg);         
+	  UTL_FILE.PUT_LINE(l_file, l_err_msg);         
 --         
       UTL_FILE.FCLOSE(l_file);         
          
@@ -287,7 +292,7 @@ EXCEPTION
 --         
       UTL_FILE.PUT_LINE(l_file, 'doc update trigger has raised an error '||TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS'));         
       utl_file.put_line(l_file, 'PEM_ID : ' || :OLD.doc_id || ' REF : '|| :old.doc_reference_code);
-      UTL_FILE.PUT_LINE(l_file, l_err_msg);         
+	  UTL_FILE.PUT_LINE(l_file, l_err_msg);         
 --         
       UTL_FILE.FCLOSE(l_file);         
          
@@ -299,7 +304,7 @@ EXCEPTION
       l_file := UTL_FILE.FOPEN(l_location, l_filename, 'W', 1023);         
 --         
       UTL_FILE.PUT_LINE(l_file, 'doc update trigger has raised an error '||TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS'));     
-      utl_file.put_line(l_file, 'PEM_ID : ' || :OLD.doc_id || ' REF : '|| :old.doc_reference_code);
+	  utl_file.put_line(l_file, 'PEM_ID : ' || :OLD.doc_id || ' REF : '|| :old.doc_reference_code);
       UTL_FILE.PUT_LINE(l_file, l_err_msg);         
 --         
       UTL_FILE.FCLOSE(l_file);         
@@ -318,5 +323,5 @@ EXCEPTION
 --         
       UTL_FILE.FCLOSE(l_file);         
 --         
-END;
-/    
+END;    
+/
