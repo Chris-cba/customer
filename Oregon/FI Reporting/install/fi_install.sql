@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/FI Reporting/Project1/fi_install.sql-arc   3.0   Sep 06 2010 11:14:00   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/FI Reporting/Project1/fi_install.sql-arc   3.1   Sep 08 2010 15:51:20   Ian.Turnbull  $
 --       Module Name      : $Workfile:   fi_install.sql  $
---       Date into PVCS   : $Date:   Sep 06 2010 11:14:00  $
---       Date fetched Out : $Modtime:   Aug 31 2010 16:44:58  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 08 2010 15:51:20  $
+--       Date fetched Out : $Modtime:   Sep 08 2010 15:51:04  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -105,7 +105,7 @@ prompt Package Headers...
 SET TERM OFF
 SET DEFINE ON
 select '&exor_base'||'fi_reporting'||'&terminator'||'admin'||
-        '&terminator'||'pck'||'&terminator'||'XODOT_FI_REPORT.pkh' run_file
+        '&terminator'||'pck'||'&terminator'||'xodot_fi_report.pkh' run_file
 from dual
 /
 SET FEEDBACK ON
@@ -119,7 +119,7 @@ prompt Package Bodies...
 SET TERM OFF
 SET DEFINE ON
 select '&exor_base'||'fi_reporting'||'&terminator'||'admin'||
-        '&terminator'||'pck'||'&terminator'||'XODOT_FI_REPORT.pkb' run_file
+        '&terminator'||'pck'||'&terminator'||'xodot_fi_report.pkb' run_file
 from dual
 /
 SET FEEDBACK ON
