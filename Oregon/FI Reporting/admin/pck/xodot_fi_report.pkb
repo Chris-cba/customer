@@ -4,11 +4,11 @@ create or replace PACKAGE BODY XODOT_FI_REPORT AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/FI Reporting/admin/pck/xodot_fi_report.pkb-arc   3.0   Sep 06 2010 11:14:38   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/FI Reporting/admin/pck/xodot_fi_report.pkb-arc   3.1   Sep 08 2010 15:50:22   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xodot_fi_report.pkb  $
---       Date into PVCS   : $Date:   Sep 06 2010 11:14:38  $
---       Date fetched Out : $Modtime:   Sep 03 2010 15:44:42  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 08 2010 15:50:22  $
+--       Date fetched Out : $Modtime:   Sep 08 2010 15:50:10  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 --
 --
@@ -26,7 +26,7 @@ create or replace PACKAGE BODY XODOT_FI_REPORT AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.0  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
 
   g_package_name CONSTANT varchar2(30) := 'XODOT_FI_REPORT';
 --
@@ -357,7 +357,8 @@ BEGIN
 	
    END LOOP;
    CLOSE c_cursor;
-    
+    EXCEPTION WHEN OTHERS THEN
+	    nm_debug.debug(v_query);
    
 END summary_process;
 --
@@ -438,7 +439,8 @@ BEGIN
 	
    END LOOP;
    CLOSE c_cursor;
-    
+    EXCEPTION WHEN OTHERS THEN
+	    nm_debug.debug(v_query);
 
 END count_process;
 --
@@ -491,7 +493,8 @@ BEGIN
 	
    END LOOP;
    CLOSE c_cursor;
-
+EXCEPTION WHEN OTHERS THEN
+	    nm_debug.debug(v_query);
 
 END length_process;
 -----------------------------------------------------------------------------
@@ -517,7 +520,8 @@ FOR i IN get_crews LOOP
   execute immediate(l_stmt);
   
 END LOOP;
-
+EXCEPTION WHEN OTHERS THEN
+	    nm_debug.debug(l_stmt);
 END;	
 -----------------------------------------------------------------------------
 --
@@ -527,10 +531,11 @@ END;
 -- Regenerate HBUD data
 PROCEDURE regenerate_tables IS
 BEGIN
+nm_debug.debug_on;
   delete from XODOT_HBUD_FI_REPORT;
   commit;
   
-  GET_CREW_ACT;
+ GET_CREW_ACT;
   determine_asset_storage;
   create_fi_views;
   
