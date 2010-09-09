@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/FI Reporting/admin/Project1/fi_reporting.tab-arc   3.0   Sep 06 2010 11:15:32   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/FI Reporting/admin/Project1/fi_reporting.tab-arc   3.1   Sep 09 2010 11:01:26   Ian.Turnbull  $
 --       Module Name      : $Workfile:   fi_reporting.tab  $
---       Date into PVCS   : $Date:   Sep 06 2010 11:15:32  $
---       Date fetched Out : $Modtime:   Sep 01 2010 15:46:18  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 09 2010 11:01:26  $
+--       Date fetched Out : $Modtime:   Sep 09 2010 10:58:00  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -41,6 +41,9 @@ CREATE TABLE XODOT_HBUD_FI_REPORT
  )
 /
 
+PROMPT Creating INDEX 'XODOT_FI_REPORT_IDX'
+CREATE INDEX XODOT_FI_REPORT_IDX ON XODOT_HBUD_FI_REPORT (COUNT_SECTION_ID, CREW, ACTIVITY)LOGGING TABLESPACE HIGHWAYS NOPARALLEL
+/
 
 COMMENT ON TABLE XODOT_HBUD_FI_REPORT IS 'Table for storing the HBUD EXTRACT data for FI reporting'
 /
