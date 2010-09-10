@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/hbud/install/hbud.tab-arc   3.0   Sep 09 2010 14:52:44   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/hbud/install/hbud.tab-arc   3.1   Sep 10 2010 14:50:54   Ian.Turnbull  $
 --       Module Name      : $Workfile:   hbud.tab  $
---       Date into PVCS   : $Date:   Sep 09 2010 14:52:44  $
---       Date fetched Out : $Modtime:   Sep 09 2010 14:39:46  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 10 2010 14:50:54  $
+--       Date fetched Out : $Modtime:   Sep 10 2010 12:43:30  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -23,7 +23,7 @@ CREATE TABLE XODOT_HBUD_EXTRACT
    ,ACTIVITY	VARCHAR2(3)
    ,TIME_TYPE	VARCHAR2(2)
    ,UNIT_OF_MEASURE	VARCHAR2(20)
-   ,FEATURE_TYPE	VARCHAR2(30)
+   ,FEATURE_TYPE	   VARCHAR2(50)
    ,FEATURE_COUNT 	Number
  )
 /
@@ -31,7 +31,6 @@ CREATE TABLE XODOT_HBUD_EXTRACT
 
 ALTER table XODOT_HBUD_EXTRACT add CONSTRAINT XHE_PK PRIMARY KEY (CREW, ACTIVITY, FEATURE_TYPE)
 /
---CREATE INDEX XODOT_HBUD_EXTRACT_IDX ON XODOT_HBUD_EXTRACT (CREW, ACTIVITY, FEATURE_TYPE)LOGGING TABLESPACE HIGHWAYS NOPARALLEL
---/
+
 COMMENT ON TABLE XODOT_HBUD_EXTRACT IS 'Table for storing the HBUD EXTRACT'
 /
