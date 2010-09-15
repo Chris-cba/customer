@@ -1,0 +1,42 @@
+-
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/gasb34/install/gasb34_tab.tab-arc   3.0   Sep 15 2010 09:58:00   ian.turnbull  $
+--       Module Name      : $Workfile:   gasb34_tab.tab  $
+--       Date into PVCS   : $Date:   Sep 15 2010 09:58:00  $
+--       Date fetched Out : $Modtime:   Sep 15 2010 09:54:06  $
+--       PVCS Version     : $Revision:   3.0  $
+--
+--
+--   Author : P Stanton
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+CREATE TABLE xodot_gasb34 
+(HWY_UNIQUE                  VARCHAR2(30),
+ HIGHWAY_NUMBER              VARCHAR2(4),
+ SUFFIX                      VARCHAR2(2),
+ ROADWAY_ID                  VARCHAR2(4),
+ MILEAGE_TYPE                VARCHAR2(80),
+ OVERLAP_MILEAGE_CODE        VARCHAR2(80),
+ ROAD_DIRECTION              VARCHAR2(8),
+ ROAD_TYPE                   VARCHAR2(30),
+ TRANS_UNIQUE                VARCHAR2(30),
+ PREVIOUS_INCR_MILEAGE        NUMBER,
+ PREVIOUS_DECR_MILEAGE    NUMBER,
+ POST_INCR_MILEAGE            NUMBER,
+ POST_DECR_MILEAGE        NUMBER,
+ OFFICIAL_TRANSFER_DATE      VARCHAR2(80),
+ OFFICIAL_TRANSFER_ID        VARCHAR2(30),
+ OFFICIAL_TRANSFER_TYPE      VARCHAR2(8),
+ AGREEMENT_TRANSFER_COMMENT  VARCHAR2(200),
+ TRANSFER_FROM               VARCHAR2(80),
+ TRANSFER_TO                 VARCHAR2(80)
+ );
+ 
+ 
+ 
+ 
