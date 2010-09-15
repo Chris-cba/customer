@@ -1,0 +1,64 @@
+CREATE OR REPLACE PACKAGE xodot_gasb34_package as
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/gasb34/admin/pck/xodot_gasb34_package.pkh-arc   3.0   Sep 15 2010 09:57:54   ian.turnbull  $
+--       Module Name      : $Workfile:   xodot_gasb34_package.pkh  $
+--       Date into PVCS   : $Date:   Sep 15 2010 09:57:54  $
+--       Date fetched Out : $Modtime:   Sep 15 2010 09:54:02  $
+--       PVCS Version     : $Revision:   3.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : Pstanton
+--
+--    xodot_gasb34_package
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   3.0  $"';
+
+--</GLOBVAR>	
+    type fldArray is table of nm_elements%rowtype index by binary_integer; 
+    newRows fldArray; 
+    empty   fldArray; 
+	
+ 
+  
+  g_in_process			BOOLEAN;
+
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+
+PROCEDURE clear_table;
+
+PROCEDURE pop_table( p_NE_VERSION_NO nm_elements.NE_VERSION_NO%TYPE,
+			         p_NE_NSG_REF nm_elements.NE_NSG_REF%TYPE,
+			         p_ne_id nm_elements.NE_ID%TYPE);
+
+PROCEDURE update_elements;	
+
+PROCEDURE refresh_gasb34;									 
+ 
+end xodot_gasb34_package; 
+/ 
