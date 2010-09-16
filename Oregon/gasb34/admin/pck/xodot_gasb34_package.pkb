@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xodot_gasb34_package as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/gasb34/admin/pck/xodot_gasb34_package.pkb-arc   3.1   Sep 16 2010 08:42:42   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/gasb34/admin/pck/xodot_gasb34_package.pkb-arc   3.2   Sep 16 2010 10:27:04   ian.turnbull  $
 --       Module Name      : $Workfile:   xodot_gasb34_package.pkb  $
---       Date into PVCS   : $Date:   Sep 16 2010 08:42:42  $
---       Date fetched Out : $Modtime:   Sep 15 2010 18:13:40  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Sep 16 2010 10:27:04  $
+--       Date fetched Out : $Modtime:   Sep 16 2010 10:02:12  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --
@@ -26,7 +26,7 @@ CREATE OR REPLACE PACKAGE BODY xodot_gasb34_package as
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.2  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xodot_gasb34_package';
 --
@@ -248,7 +248,7 @@ commit;
    
 FOR i IN get_rows LOOP
    
-    FOR i2 IN prev_add_mil (p_ne_unique => i.trans_unique,
+    FOR i2 IN prev_add_mil (p_ne_unique => i.hwy_unique,
                             p_date => to_date(i.official_transfer_date,'DD/MM/YYYY') ) LOOP
 
        UPDATE xodot_gasb34
@@ -258,7 +258,7 @@ FOR i IN get_rows LOOP
 	END LOOP;
 	
 	
-	FOR i2 IN post_add_mil (p_ne_unique => i.trans_unique,
+	FOR i2 IN post_add_mil (p_ne_unique => i.hwy_unique,
                             p_date => to_date(i.official_transfer_date,'DD/MM/YYYY')) LOOP
 
        UPDATE xodot_gasb34
@@ -268,7 +268,7 @@ FOR i IN get_rows LOOP
 	END LOOP;
 	
 	
-	FOR i2 IN prev_non_add_mil (p_ne_unique => i.trans_unique,
+	FOR i2 IN prev_non_add_mil (p_ne_unique => i.hwy_unique,
                                 p_date => to_date(i.official_transfer_date,'DD/MM/YYYY')) LOOP
 
        UPDATE xodot_gasb34
@@ -278,7 +278,7 @@ FOR i IN get_rows LOOP
 	END LOOP;
 	
 	
-	FOR i2 IN post_non_add_mil (p_ne_unique => i.trans_unique,
+	FOR i2 IN post_non_add_mil (p_ne_unique => i.hwy_unique,
                                 p_date => to_date(i.official_transfer_date,'DD/MM/YYYY')) LOOP
 
        UPDATE xodot_gasb34
