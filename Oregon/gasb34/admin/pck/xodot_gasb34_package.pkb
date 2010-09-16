@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xodot_gasb34_package as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/gasb34/admin/pck/xodot_gasb34_package.pkb-arc   3.0   Sep 15 2010 09:57:54   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/gasb34/admin/pck/xodot_gasb34_package.pkb-arc   3.1   Sep 16 2010 08:42:42   ian.turnbull  $
 --       Module Name      : $Workfile:   xodot_gasb34_package.pkb  $
---       Date into PVCS   : $Date:   Sep 15 2010 09:57:54  $
---       Date fetched Out : $Modtime:   Sep 15 2010 09:54:00  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 16 2010 08:42:42  $
+--       Date fetched Out : $Modtime:   Sep 15 2010 18:13:40  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 --
 --
@@ -26,7 +26,7 @@ CREATE OR REPLACE PACKAGE BODY xodot_gasb34_package as
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.0  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xodot_gasb34_package';
 --
@@ -225,7 +225,7 @@ delete from xodot_gasb34;
 		 ,i2.ne_name_2
 		 ,i2.ne_number
 		 ,i2.ne_group
-		 ,i.ne_name_2
+		 ,to_char(to_date(i.ne_name_2),'MM/DD/YYYY') 
 		 ,i.ne_nsg_ref
 		 ,i.ne_number
 		 ,i.ne_name_1
@@ -249,7 +249,7 @@ commit;
 FOR i IN get_rows LOOP
    
     FOR i2 IN prev_add_mil (p_ne_unique => i.trans_unique,
-                            p_date => to_date(i.official_transfer_date)) LOOP
+                            p_date => to_date(i.official_transfer_date,'DD/MM/YYYY') ) LOOP
 
        UPDATE xodot_gasb34
 	   SET PREVIOUS_INCR_MILEAGE = i2.l_sum
@@ -259,7 +259,7 @@ FOR i IN get_rows LOOP
 	
 	
 	FOR i2 IN post_add_mil (p_ne_unique => i.trans_unique,
-                            p_date => to_date(i.official_transfer_date)) LOOP
+                            p_date => to_date(i.official_transfer_date,'DD/MM/YYYY')) LOOP
 
        UPDATE xodot_gasb34
 	   SET POST_INCR_MILEAGE = i2.l_sum
@@ -269,7 +269,7 @@ FOR i IN get_rows LOOP
 	
 	
 	FOR i2 IN prev_non_add_mil (p_ne_unique => i.trans_unique,
-                                p_date => to_date(i.official_transfer_date)) LOOP
+                                p_date => to_date(i.official_transfer_date,'DD/MM/YYYY')) LOOP
 
        UPDATE xodot_gasb34
 	   SET PREVIOUS_DECR_MILEAGE = i2.l_sum
@@ -279,7 +279,7 @@ FOR i IN get_rows LOOP
 	
 	
 	FOR i2 IN post_non_add_mil (p_ne_unique => i.trans_unique,
-                                p_date => to_date(i.official_transfer_date)) LOOP
+                                p_date => to_date(i.official_transfer_date,'DD/MM/YYYY')) LOOP
 
        UPDATE xodot_gasb34
 	   SET POST_DECR_MILEAGE  = i2.l_sum
