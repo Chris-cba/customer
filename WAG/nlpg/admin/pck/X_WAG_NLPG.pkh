@@ -23,7 +23,7 @@ CREATE OR REPLACE PACKAGE X_WAG_NLPG AS
   g_debug integer := 0; -- 1 turns begug_print on
   g_radius number;
   g_address_count number;
-  g_sccsid CONSTANT varchar2(2000) := '"$Revision:   3.0  $"';
+  g_sccsid CONSTANT varchar2(2000) := '"$Revision:   3.1  $"';
 -----------------------------------------------------------------------------
 -- FUNCTIONS AND PROCEDURES
 -----------------------------------------------------------------------------
@@ -100,8 +100,7 @@ FUNCTION get_street_info (v_usrn     IN nlpg_street_descriptor.USRN%TYPE,
 PROCEDURE get_addresses_from_bng( v_easting         in number,
                                  v_northing        in number,
                                  v_search_radius   in number DEFAULT 100,  -- in metres
-                                 v_language        in nlpg_lpi.language%type DEFAULT 'ENG',
-                                 v_address_table in out address_rec_table_type);
+                                 v_language        in nlpg_lpi.language%type DEFAULT 'ENG');
 --</PROC>
 --
 -----------------------------------------------------------------------------
