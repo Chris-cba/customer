@@ -3,14 +3,14 @@ CREATE OR REPLACE PACKAGE BODY X_WAG_NLPG AS
 -------------------------------------------------------------------------
          --   PVCS Identifiers :-
          --
-         --       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/nlpg/admin/pck/X_WAG_NLPG.pkb-arc   3.0   Jun 29 2010 08:56:14   Ian.Turnbull  $
+         --       PVCS id          : $Header:   //vm_latest/archives/customer/WAG/nlpg/admin/pck/X_WAG_NLPG.pkb-arc   3.1   Sep 20 2010 14:35:32   Chris.Baugh  $
          --       Module Name      : $Workfile:   X_WAG_NLPG.pkb  $
-         --       Date into PVCS   : $Date:   Jun 29 2010 08:56:14  $
-         --       Date fetched Out : $Modtime:   Jun 28 2010 16:57:46  $
-         --       Version          : $Revision:   3.0  $
+         --       Date into PVCS   : $Date:   Sep 20 2010 14:35:32  $
+         --       Date fetched Out : $Modtime:   Sep 20 2010 14:07:16  $
+         --       Version          : $Revision:   3.1  $
          -- created by Aileen Heal for WAG planning app
 -------------------------------------------------------------------------
-g_body_sccsid   CONSTANT varchar2(200) := '$Revision:   3.0  $';
+g_body_sccsid   CONSTANT varchar2(200) := '$Revision:   3.1  $';
 -- ****************************************************************************
 --           Private PROCS/Functions definitions
 --
@@ -219,8 +219,7 @@ END;
 procedure get_addresses_from_bng( v_easting         in number,
                                  v_northing        in number,
                                  v_search_radius   in number DEFAULT 100,  -- in metres
-                                 v_language        in nlpg_lpi.language%type DEFAULT 'ENG' ,
-                                 v_address_table in out address_rec_table_type)
+                                 v_language        in nlpg_lpi.language%type DEFAULT 'ENG' )
 as
 
    TYPE uprn_table_type is table of nlpg_blpu.uprn%type INDEX BY BINARY_INTEGER;
@@ -330,6 +329,8 @@ g_radius := p_radius;
   p_total_num_addresses := 0;
 --  nm_debug.debug('nlpg6) number - '||p_uprn_table.count);
 
+  DELETE FROM nlpg_address_temp;
+
   for p_i in 1..p_uprn_table.count
   loop
      if sign(p_uprn_table(p_i)) = -1 then
@@ -338,19 +339,27 @@ g_radius := p_radius;
      else
        p_uprn_addresses := get_nlpg_addresses(p_uprn_table(p_i), v_language );
      end if;
+
      for p_j in 1..p_uprn_addresses.count
      loop
 --        nm_debug.debug('nlpg7) address count('||p_j||'/'||p_i||') - '||p_uprn_addresses(p_j).uprn||' = '||p_uprn_addresses(p_j).address);
         p_total_num_addresses := p_total_num_addresses + 1;
         debug_print( 'get_addresses_from_bng: address(' || p_total_num_addresses  || ').uprn;' || p_uprn_addresses(p_j).uprn);
         debug_print( 'get_addresses_from_bng: address(' || p_total_num_addresses  || ').address;' || p_uprn_addresses(p_j).address);
-        p_all_addresses(p_total_num_addresses).uprn := p_uprn_addresses(p_j).uprn;
-        p_all_addresses(p_total_num_addresses).address := p_uprn_addresses(p_j).address;
+        --p_all_addresses(p_total_num_addresses).uprn := p_uprn_addresses(p_j).uprn;
+        --p_all_addresses(p_total_num_addresses).address := p_uprn_addresses(p_j).address;
+        INSERT INTO nlpg_address_temp
+           (nat_uprn
+           ,nat_address)
+        VALUES
+           (p_uprn_addresses(p_j).uprn
+           ,p_uprn_addresses(p_j).address);
+           
      end loop;
   end loop;
 
   debug_print( 'get_addresses_from_bng: ' || p_total_num_addresses || ' UPRNs found.');
-  v_address_table := p_all_addresses;
+--  v_address_table := p_all_addresses;
   nm_debug.debug_off;
   --v_search_radius := p_radius;
   --return p_all_addresses;
