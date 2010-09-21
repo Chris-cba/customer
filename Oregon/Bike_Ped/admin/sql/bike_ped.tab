@@ -1,0 +1,159 @@
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/bike_ped.tab-arc   3.0   Sep 21 2010 14:28:34   Ian.Turnbull  $
+--       Module Name      : $Workfile:   bike_ped.tab  $
+--       Date into PVCS   : $Date:   Sep 21 2010 14:28:34  $
+--       Date fetched Out : $Modtime:   Sep 21 2010 14:24:26  $
+--       PVCS Version     : $Revision:   3.0  $
+--
+--
+--   Author : P Stanton
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--
+drop table XODOT_BKPD_MRG_RESULT;
+
+CREATE TABLE XODOT_BKPD_MRG_RESULT 
+( 
+BIKE_R_TYP_CD		VARCHAR2 (120)	
+,BIKE_R_COND_CD		VARCHAR2 (120)	
+,BIKE_R_NEED_IND		VARCHAR2 (120)	
+,BIKE_R_WD_MEAS		NUMBER	
+,BIKE_R_INSP_YR		NUMBER	
+,BIKE_R_NOTE		VARCHAR2 (200)
+,BIKE_L_TYP_CD		VARCHAR2 (120)	
+,BIKE_L_COND_CD		VARCHAR2 (120)	
+,BIKE_L_NEED_IND		VARCHAR2(120)	
+,BIKE_L_WD_MEAS		NUMBER	
+,BIKE_L_INSP_YR		NUMBER	
+,BIKE_L_NOTE		VARCHAR2 (200)
+,CURB_R_TYP_CD		VARCHAR2 (120)	
+,CURB_R_HT_CD		VARCHAR2 (120)	
+,CURB_R_COND_CD		VARCHAR2 (120)	
+,CURB_R_INSP_YR		NUMBER	
+,CURB_R_SRCE_TYP	VARCHAR2 (120)
+,CURB_R_NOTE	    VARCHAR2 (40)
+,CURB_CD_TYP_CD		VARCHAR2 (120)	
+,CURB_CD_HT_CD		VARCHAR2 (120)	
+,CURB_CD_COND_CD	VARCHAR2 (120)	
+,CURB_CD_INSP_YR	NUMBER
+,CURB_CD_SRCE_TYP	VARCHAR2 (120)
+,CURB_CD_NOTE	    VARCHAR2 (40)
+,CURB_CI_TYP_CD		VARCHAR2 (120)	
+,CURB_CI_HT_CD		VARCHAR2 (120)	
+,CURB_CI_COND_CD		VARCHAR2 (120)	
+,CURB_CI_INSP_YR		NUMBER	
+,CURB_CI_SRCE_TYP	VARCHAR2 (120)
+,CURB_CI_NOTE	    VARCHAR2 (40)
+,CURB_L_TYP_CD		VARCHAR2 (120)	
+,CURB_L_HT_CD		VARCHAR2 (120)	
+,CURB_L_COND_CD		VARCHAR2 (120)	
+,CURB_L_INSP_YR		NUMBER	
+,CURB_L_SRCE_TYP	VARCHAR2 (120)
+,CURB_L_NOTE	    VARCHAR2 (40)
+,PARK_R_COND_CD		VARCHAR2 (120)	
+,PARK_R_WD_MEAS		VARCHAR2 (5)	
+,PARK_R_TYP_CD		VARCHAR2 (120)	
+,PARK_R_INSP_YR		NUMBER	
+,PARK_R_SRCE_TYP	VARCHAR2 (120)
+,PARK_R_NOTE		VARCHAR2 (200)
+,PARK_L_COND_CD		VARCHAR2 (120)	
+,PARK_L_WD_MEAS		VARCHAR2 (5)	
+,PARK_L_TYP_CD		VARCHAR2 (120)	
+,PARK_L_INSP_YR		NUMBER	
+,PARK_L_SRCE_TYP	VARCHAR2 (120)
+,PARK_L_NOTE		VARCHAR2 (200)
+,CITY_R_NM	 	VARCHAR2 (120)
+,CITY_L_NM	 	VARCHAR2 (120)
+,SHUP_R_SURF_CD		VARCHAR2 (120)
+,SHUP_R_COND_CD		VARCHAR2 (120)
+,SHUP_R_INSP_YR		NUMBER	
+,SHUP_R_WD_MEAS		NUMBER	
+,SHUP_L_SURF_CD		VARCHAR2 (120)
+,SHUP_L_COND_CD		VARCHAR2 (120)
+,SHUP_L_INSP_YR		NUMBER	
+,SHUP_L_WD_MEAS		NUMBER	
+,SWLK_R_SURF_CD		VARCHAR2 (120)
+,SWLK_R_COND_CD		VARCHAR2 (120)
+,SWLK_R_BUF_IND		VARCHAR2 (120)
+,SWLK_R_NEED_IND		VARCHAR2 (120)
+,SWLK_R_INSP_YR		NUMBER	
+,SWLK_R_WD_MEAS		NUMBER	
+,SWLK_L_SURF_CD		VARCHAR2 (120)
+,SWLK_L_COND_CD		VARCHAR2 (120)
+,SWLK_L_BUF_IND		VARCHAR2 (120)
+,SWLK_L_NEED_IND		VARCHAR2 (120)
+,SWLK_L_INSP_YR		NUMBER	
+,SWLK_L_WD_MEAS		NUMBER	
+,HWY		        VARCHAR2 (30)	
+,BEGIN_MP		       NUMBER	
+,END_MP		           NUMBER	
+,HIGHWAY_NUMBER		   VARCHAR2 (4)	
+,SUFFIX		           VARCHAR2 (2)	
+,ROADWAY_ID		       VARCHAR2 (4)	
+,MILEAGE_TYPE		   VARCHAR2 (80)	
+,OVERLAP_MILEAGE_CODE  VARCHAR2 (80)	
+,ROAD_DIRECTION		   VARCHAR2 (8)		
+,ROAD_TYPE   VARCHAR2(30)
+,RTE_TYPE_IS	VARCHAR2 (4)	
+,RTE_TYPE_US_1	VARCHAR2 (4)	
+,RTE_TYPE_US_2	VARCHAR2 (4)	
+,RTE_TYPE_OR_1	VARCHAR2 (4)	
+,RTE_TYPE_OR_2	VARCHAR2 (4)
+,DISTRICT       VARCHAR2(30)
+,REGION VARCHAR2(30)
+,MRG_SECTION_ID NUMBER
+,ne_id NUMBER
+,SCNS_HWY_EA_NO VARCHAR2 (120)
+);
+
+drop table XODOT_BKPD_POINT_RESULT;
+
+CREATE TABLE XODOT_BKPD_POINT_RESULT
+(
+adar_primary_key VARCHAR2(50)
+,adar_ramp_typ_cd          VARCHAR2(2)
+,adar_xsp	              VARCHAR2 (4)
+,adar_cross_st_nm          VARCHAR2 (50)
+,adar_ramp_FUNC_COND_CD	  VARCHAR2 (1)	
+,adar_RAMP_PHYS_COND_CD	  VARCHAR2 (1)	
+,adar_RAMP_NEED_IND	      VARCHAR2 (1)	
+,adar_RAMP_INSP_YR		  NUMBER (6)	
+,adar_RAMP_NOTE            VARCHAR2 (200)
+,mbxg_primary_key          VARCHAR2(50)
+,fips_city_id_left        VARCHAR2(50)	
+,city_gnis_id_left        VARCHAR2(50)
+,city_pop_cnt_left        VARCHAR2(50)
+,fips_city_id_right       VARCHAR2(50)	
+,city_gnis_id_right       VARCHAR2(50)
+,city_pop_cnt_right       VARCHAR2(50)
+,urban_area               VARCHAR2 (80)
+,ea                       VARCHAR2 (120)
+,DISTRICT                 VARCHAR2(30)
+,region                   VARCHAR2(30)
+,HWY		               VARCHAR2 (30)	
+,BEGIN_MP		           NUMBER	
+,END_MP		               NUMBER	
+,HIGHWAY_NUMBER		       VARCHAR2 (4)	
+,SUFFIX		               VARCHAR2 (2)	
+,ROADWAY_ID		           VARCHAR2 (4)	
+,MILEAGE_TYPE		       VARCHAR2 (80)	
+,OVERLAP_MILEAGE_CODE      VARCHAR2 (80)	
+,ROAD_DIRECTION		       VARCHAR2 (8)		
+,ROAD_TYPE                 VARCHAR2(30)
+,RTE_TYPE_IS	VARCHAR2 (4)	
+,RTE_TYPE_US_1	VARCHAR2 (4)	
+,RTE_TYPE_US_2	VARCHAR2 (4)	
+,RTE_TYPE_OR_1	VARCHAR2 (4)	
+,RTE_TYPE_OR_2	VARCHAR2 (4)
+);
+
+CREATE INDEX xodot_bkp_point_idx ON XODOT_BKPD_POINT_RESULT
+(HWY, BEGIN_MP)
+LOGGING
+NOPARALLEL;
