@@ -4,11 +4,11 @@ AS
 --------------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/Task 0109724 - FTP Solution 4210/x_tfl_tma_ftp.pkb-arc   3.0   Sep 20 2010 10:46:50   Ade.Edwards  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/Task 0109724 - FTP Solution 4210/x_tfl_tma_ftp.pkb-arc   3.1   Sep 21 2010 08:53:50   Ade.Edwards  $
 --       Module Name      : $Workfile:   x_tfl_tma_ftp.pkb  $
---       Date into PVCS   : $Date:   Sep 20 2010 10:46:50  $
---       Date fetched Out : $Modtime:   Sep 20 2010 10:45:06  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 21 2010 08:53:50  $
+--       Date fetched Out : $Modtime:   Sep 21 2010 08:53:06  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --------------------------------------------------------------------------------
 --
@@ -18,11 +18,13 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT varchar2(2000) := '"$Revision:   3.0  $"';
+  g_body_sccsid    CONSTANT varchar2(2000) := '"$Revision:   3.1  $"';
 
   g_package_name   CONSTANT varchar2(30) := 'x_tfl_tma_ftp';
 
-  c_dir_sep        CONSTANT VARCHAR2(200) := hig.get_user_or_sys_opt('DIRREPSTRN');
+  --c_dir_sep        CONSTANT VARCHAR2(200) := hig.get_user_or_sys_opt('DIRREPSTRN');
+--
+  c_dir_sep        CONSTANT VARCHAR2(200) := '/';  -- always unix style on FTP sites
   b_is_unix                 BOOLEAN       := c_dir_sep = '/';
 
   l_in_dir                  VARCHAR2(30) := 'TMA_INSP_IMPORT_DIRECTORY';
@@ -181,7 +183,7 @@ BEGIN
     --
         nm3ftp.get
                     (p_conn      => l_conn,
-                     p_from_file => l_rec_xtfd.hfc_ftp_in_dir||c_dir_sep||l_filename,
+                     p_from_file => l_rec_xtfd.hfc_ftp_in_dir||l_filename,
                      p_to_dir    => l_in_dir,
                      p_to_file   => l_filename);
     --
@@ -227,7 +229,7 @@ BEGIN
                                    , l_rec_xtfd.hfc_ftp_username
                                    , l_rec_xtfd.hfc_ftp_password);
             nm3ftp.delete(p_conn   => l_conn2,
-                              p_file   => l_rec_xtfd.hfc_ftp_in_dir||c_dir_sep||l_filename2);
+                              p_file   => l_rec_xtfd.hfc_ftp_in_dir||l_filename2);
             l_delete_count := l_delete_count + 1;
           EXCEPTION
             WHEN OTHERS
