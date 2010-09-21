@@ -4,11 +4,11 @@ AS
 --------------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/tfl/Task 0109724 - FTP Solution 4210/x_tfl_tma_ftp.pkb-arc   3.1   Sep 21 2010 08:53:50   Ade.Edwards  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/tfl/Task 0109724 - FTP Solution 4210/x_tfl_tma_ftp.pkb-arc   3.2   Sep 21 2010 15:02:36   Ade.Edwards  $
 --       Module Name      : $Workfile:   x_tfl_tma_ftp.pkb  $
---       Date into PVCS   : $Date:   Sep 21 2010 08:53:50  $
---       Date fetched Out : $Modtime:   Sep 21 2010 08:53:06  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Sep 21 2010 15:02:36  $
+--       Date fetched Out : $Modtime:   Sep 21 2010 15:02:18  $
+--       PVCS Version     : $Revision:   3.2  $
 --
 --------------------------------------------------------------------------------
 --
@@ -18,7 +18,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT varchar2(2000) := '"$Revision:   3.1  $"';
+  g_body_sccsid    CONSTANT varchar2(2000) := '"$Revision:   3.2  $"';
 
   g_package_name   CONSTANT varchar2(30) := 'x_tfl_tma_ftp';
 
@@ -29,7 +29,8 @@ AS
 
   l_in_dir                  VARCHAR2(30) := 'TMA_INSP_IMPORT_DIRECTORY';
   
-  l_log_prefix_get          VARCHAR2(100) := 'get_inspection_files : ';
+  --l_log_prefix_get          VARCHAR2(100) := 'get_inspection_files : ';
+  l_log_prefix_get          VARCHAR2(100) := '';  -- dont really need this anymore
 --
 -----------------------------------------------------------------------------
 --
@@ -99,17 +100,25 @@ FUNCTION next_tfl_id_seq RETURN NUMBER
 --
 -----------------------------------------------------------------------------
 --
-PROCEDURE log_it (pi_text IN VARCHAR2) 
+PROCEDURE log_it ( pi_text IN VARCHAR2
+                 , pi_mode IN VARCHAR2 DEFAULT 'Y'
+                 , pi_type IN VARCHAR2 DEFAULT NULL
+                 ) 
 IS
-  PRAGMA autonomous_transaction;
+--  PRAGMA autonomous_transaction;
 BEGIN
 --
-  INSERT INTO xtfl_ftp_log
-       VALUES (next_tfl_id_seq
-              ,sysdate
-              ,substr(pi_text,0,4000)
-              );
-  COMMIT;
+--  INSERT INTO xtfl_ftp_log
+--       VALUES (next_tfl_id_seq
+--              ,sysdate
+--              ,substr(pi_text,0,4000)
+--              );
+--  COMMIT;
+--
+  hig_process_api.log_it
+      ( pi_message      => pi_text
+      , pi_summary_flag => pi_mode 
+      , pi_message_type => CASE WHEN pi_type IS NULL THEN 'I' ELSE pi_type END);
 --
 END log_it;
 --
@@ -133,12 +142,15 @@ IS
   ex_no_directory  EXCEPTION;
 --
 BEGIN
+----
+--  nm_debug.debug_on;
+--  nm_debug.debug('Process id = '||hig_process_api.get_current_process_id||' - '||hig_process_api.get_current_job_run_seq  );
 --
   nm3ctx.set_context('NM3FTPPASSWORD','Y');
 --
-  log_it (l_log_prefix_get||'==============================================================');
-  log_it (l_log_prefix_get||'Start TMA Inspection File Get Process started by '||USER|| ' at '||to_char(SYSDATE,'DD-MON-YYYY HH24:MI:SS'));
-  log_it (l_log_prefix_get||'==============================================================');
+  log_it (pi_text => l_log_prefix_get||'==============================================================');
+  log_it (pi_text => l_log_prefix_get||'Start TMA Inspection File Get Process started by '||USER|| ' at '||to_char(SYSDATE,'DD-MON-YYYY HH24:MI:SS'));
+  log_it (pi_text => l_log_prefix_get||'==============================================================');
 --
   IF NOT does_directory_exist ( pi_directory_name => l_directory )
   THEN
@@ -148,7 +160,7 @@ BEGIN
 -- Get FTP info
   l_rec_xtfd := get_xtfd ( pi_ftp_type => l_ftp_type );
 --
-  log_it (l_log_prefix_get||'Derived FTP connection details');
+  log_it (pi_text => l_log_prefix_get||'Derived FTP connection details');
 --
 -- connection
   l_conn := nm3ftp.login( l_rec_xtfd.hfc_ftp_host
@@ -156,10 +168,10 @@ BEGIN
                         , l_rec_xtfd.hfc_ftp_username
                         , nm3ftp.get_password(l_rec_xtfd.hfc_ftp_password));
 --
-  log_it (l_log_prefix_get||'Connected to FTP site [ '||l_rec_xtfd.hfc_ftp_host||':'
-                                                      ||l_rec_xtfd.hfc_ftp_port||' ]');
+  log_it (pi_text => l_log_prefix_get||'Connected to FTP site [ '||l_rec_xtfd.hfc_ftp_host||':'
+                                                                 ||l_rec_xtfd.hfc_ftp_port||' ]');
 -- set to ascii transfer
-  nm3ftp.ascii(p_conn => l_conn);
+  --nm3ftp.ascii(p_conn => l_conn);
 --
 -- list files in folder
   nm3ftp.list (p_conn  => l_conn,
@@ -168,7 +180,7 @@ BEGIN
 --
   l_total := ftplist.COUNT;
 --
-  log_it (l_log_prefix_get||'Listed '||l_total||' files for transfer');
+  log_it (pi_text => l_log_prefix_get||'Listed '||l_total||' files for transfer');
 --
 -- go through the files
 --
@@ -187,8 +199,8 @@ BEGIN
                      p_to_dir    => l_in_dir,
                      p_to_file   => l_filename);
     --
-        log_it (l_log_prefix_get||'Downloaded '||l_filename||' to '||l_rec_xtfd.hfc_ftp_in_dir||c_dir_sep||l_filename);
-        log_it (l_log_prefix_get||'File details :'||ftplist(i));
+        log_it (pi_text => l_log_prefix_get||'Downloaded '||l_in_dir||':'||l_filename||' from '||l_rec_xtfd.hfc_ftp_in_dir||c_dir_sep||l_filename);
+        log_it (pi_text => l_log_prefix_get||'File details :'||ftplist(i));
     --
         l_count := l_count + 1;
     --
@@ -198,7 +210,8 @@ BEGIN
       EXCEPTION
         WHEN OTHERS
         THEN
-          log_it (l_log_prefix_get||'Error :'||l_filename||' - '||SQLERRM);
+          log_it (pi_text => l_log_prefix_get||'Error :'||l_filename||' - '||SQLERRM
+                 ,pi_type => 'E');
       END;
     --
     END LOOP;
@@ -224,71 +237,76 @@ BEGIN
           l_filename2 := ltrim(substr(ftplist(d), instr(ftplist(d),chr(32),-1,1),length(ftplist(d))));
         --
           BEGIN
+          --
             l_conn2 := nm3ftp.login( l_rec_xtfd.hfc_ftp_host
                                    , l_rec_xtfd.hfc_ftp_port
                                    , l_rec_xtfd.hfc_ftp_username
-                                   , l_rec_xtfd.hfc_ftp_password);
+                                   , nm3ftp.get_password(l_rec_xtfd.hfc_ftp_password));
+          --
             nm3ftp.delete(p_conn   => l_conn2,
-                              p_file   => l_rec_xtfd.hfc_ftp_in_dir||l_filename2);
+                          p_file   => l_rec_xtfd.hfc_ftp_in_dir||l_filename2);
             l_delete_count := l_delete_count + 1;
           EXCEPTION
             WHEN OTHERS
             THEN
             -- close and clear connections
+              log_it (pi_text => l_log_prefix_get||'Delete file error : '||l_filename2||' - '||SQLERRM
+                     ,pi_type => 'E');
+            --
               nm3ftp.logout(l_conn2);
             --
               utl_tcp.close_all_connections;
-              log_it (l_log_prefix_get||'Delete file error : '||l_filename2||' - '||SQLERRM);
-              
+            --
           END;
         --
         END LOOP;
+      --
+        nm3ftp.logout(l_conn2);
+        utl_tcp.close_all_connections;
       --
         log_it (l_log_prefix_get||'Finished running deletion from FTP site');
       --
       EXCEPTION
         WHEN OTHERS
-        THEN log_it (l_log_prefix_get||'Delete file error : '||l_filename2||' - '||SQLERRM);
+        THEN log_it (pi_text => l_log_prefix_get||'Delete file error : '||l_filename2||' - '||SQLERRM
+                    ,pi_type => 'E');
       END;
     --
     END IF; 
   --
   END IF;
 --
-  log_it (l_log_prefix_get||'==============================================================');
-  log_it (l_log_prefix_get||'Finish TMA Inspection File Get Process performed by '||USER||' at '||to_char(SYSDATE,'DD-MON-YYYY HH24:MI:SS'));
-  log_it (l_log_prefix_get||'Total of '||l_count||' files out of '||l_total||' processed without error to directory '||l_in_dir );
+  log_it (pi_text => l_log_prefix_get||'==============================================================');
+  log_it (pi_text => l_log_prefix_get||'Finish TMA Inspection File Get Process performed by '||USER||' at '||to_char(SYSDATE,'DD-MON-YYYY HH24:MI:SS'));
+  log_it (pi_text => l_log_prefix_get||'Total of '||l_count||' files out of '||l_total||' processed without error to directory '||l_in_dir );
   IF pi_delete_files
   THEN
-    log_it (l_log_prefix_get||'Deleted '||l_delete_count||' files out of '||l_total||' from the FTP site');
+    log_it (pi_text => l_log_prefix_get||'Deleted '||l_delete_count||' files out of '||l_total||' from the FTP site');
   END IF;
-  log_it (l_log_prefix_get||'==============================================================');
+  log_it (pi_text => l_log_prefix_get||'==============================================================');
 --
 EXCEPTION
   WHEN TOO_MANY_ROWS
   THEN
   --
-    log_it (l_log_prefix_get||'==============================================================');
-    log_it (l_log_prefix_get||'FTP Metadata failure : '||l_ftp_type||' returns too many rows from hig_ftp_connections table');
-    log_it (l_log_prefix_get||'==============================================================');
+    log_it (pi_text => l_log_prefix_get||'FTP Metadata failure : '||l_ftp_type||' returns too many rows from hig_ftp_connections table'
+           ,pi_type => 'E' );
     utl_tcp.close_all_connections;
   WHEN ex_no_directory
   THEN
     --
-    log_it (l_log_prefix_get||'==============================================================');
-    log_it (l_log_prefix_get||'Oracle Directory failure : '||l_directory||' either does not exist or is not set correctly');
-    log_it (l_log_prefix_get||'==============================================================');
+    log_it ( pi_text => l_log_prefix_get||'Oracle Directory failure : '||l_directory||' either does not exist or is not set correctly'
+           , pi_type => 'E' );
     utl_tcp.close_all_connections;
   WHEN OTHERS
   THEN
     -- close and clear connections
     --nm3mcp_ftp.logout(l_conn);
     --
-    utl_tcp.close_all_connections;
+    log_it (pi_text => l_log_prefix_get||'General failure : '||SQLERRM
+           ,pi_type => 'E');
     --
-    log_it (l_log_prefix_get||'==============================================================');
-    log_it (l_log_prefix_get||'General failure : '||SQLERRM);
-    log_it (l_log_prefix_get||'==============================================================');
+    utl_tcp.close_all_connections;
 --
 END get_inspection_files;
 --
@@ -296,3 +314,4 @@ END get_inspection_files;
 --
 END x_tfl_tma_ftp;
 /
+
