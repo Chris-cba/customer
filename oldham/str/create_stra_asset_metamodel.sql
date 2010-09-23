@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/oldham/str/create_stra_asset_metamodel.sql-arc   3.0   Sep 10 2010 08:24:46   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/oldham/str/create_stra_asset_metamodel.sql-arc   3.1   Sep 23 2010 13:27:14   Ian.Turnbull  $
 --       Module Name      : $Workfile:   create_stra_asset_metamodel.sql  $
---       Date into PVCS   : $Date:   Sep 10 2010 08:24:46  $
---       Date fetched Out : $Modtime:   Sep 10 2010 08:22:36  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 23 2010 13:27:14  $
+--       Date fetched Out : $Modtime:   Sep 23 2010 09:50:10  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : Aileen Heal
@@ -22,7 +22,7 @@
 Insert into NM_INV_DOMAINS_ALL
    (ID_DOMAIN, ID_TITLE, ID_START_DATE, ID_DATATYPE)
  Values
-   ('STRA_ADDOPTED_YN', 'ADDOPTED HWAY Y N P', TO_DATE('01/01/1901 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'VARCHAR2') 
+   ('STRA_ADDOPTED_YN', 'ADDOPTED HWAY Y N P', TO_DATE('01/01/1901 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'VARCHAR2')
 /
 
 Insert into NM_INV_DOMAINS_ALL
@@ -80,11 +80,13 @@ Insert into NM_INV_ATTRI_LOOKUP_ALL
 /
 
 Insert into NM_INV_ATTRI_LOOKUP_ALL
+   (IAL_DOMAIN, IAL_VALUE, IAL_MEANING, IAL_START_DATE, IAL_SEQ)
  Values
    ('STRA_ADDOPTED_YN', 'P', 'P?', TO_DATE('01/01/1901 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 3)
 /
 
 Insert into NM_INV_ATTRI_LOOKUP_ALL
+   (IAL_DOMAIN, IAL_VALUE, IAL_MEANING, IAL_START_DATE, IAL_SEQ)
  Values
    ('STRA_APPENDIX', 'A', '(a)', TO_DATE('01/01/1901 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 1)
 /
@@ -680,7 +682,7 @@ Insert into NM_INV_TYPE_ATTRIBS_ALL
     'VARCHAR2', 200, 'Parapet Material', 
     'N', 'PARAPET_MATERIAL', 
     'PARAPET_MATERIAL', TO_DATE('01/01/1901 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 
-    'N', 'N','ATLAS', 'ATLAS', 'Y', 5, 'N', 'MIXED')
+    'N', 'N', 'Y', 5, 'N', 'MIXED')
 /
 
 Insert into NM_INV_TYPE_ATTRIBS_ALL
@@ -748,7 +750,7 @@ Insert into NM_INV_TYPE_ATTRIBS_ALL
     'NUMBER', 22, 'Number of Spans', 
     'N', 'NUM_SPANS', 
     'NUM_SPANS', TO_DATE('01/01/1901 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 
-    'N', 'N', 'ATLAS', 'ATLAS', 'Y', 3, 'N', 'UPPER')
+    'N', 'N', 'Y', 3, 'N', 'UPPER')
 /
 
 Insert into NM_INV_TYPE_ATTRIBS_ALL
