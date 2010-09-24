@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/install/bike_ped_install.sql-arc   3.0   Sep 21 2010 14:28:40   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/install/bike_ped_install.sql-arc   3.1   Sep 24 2010 16:00:02   Ian.Turnbull  $
 --       Module Name      : $Workfile:   bike_ped_install.sql  $
---       Date into PVCS   : $Date:   Sep 21 2010 14:28:40  $
---       Date fetched Out : $Modtime:   Sep 21 2010 14:24:30  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 24 2010 16:00:02  $
+--       Date fetched Out : $Modtime:   Sep 24 2010 15:18:06  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -136,7 +136,7 @@ SET TERM OFF
 SET DEFINE ON
 
 select '&exor_base'||'bike_ped'||'&terminator'||'admin'||'&terminator'||'views'||
-        '&terminator'||'xodot_cont_bkd_v.vw' run_file
+        '&terminator'||'xodot_cont_bkpd_v.vw' run_file
 from dual
 /
 SET FEEDBACK ON
