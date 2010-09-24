@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/uninstall_bike_ped.sql-arc   3.0   Sep 21 2010 14:28:34   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/uninstall_bike_ped.sql-arc   3.1   Sep 24 2010 16:00:46   Ian.Turnbull  $
 --       Module Name      : $Workfile:   uninstall_bike_ped.sql  $
---       Date into PVCS   : $Date:   Sep 21 2010 14:28:34  $
---       Date fetched Out : $Modtime:   Sep 21 2010 14:24:26  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Sep 24 2010 16:00:46  $
+--       Date fetched Out : $Modtime:   Sep 24 2010 15:31:00  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -25,7 +25,7 @@ drop package xodot_bike_ped;
 
 drop view bike_ped_ROAD_SEG_RTE;
 
-drop view XODOT_CONT_BKD_V;
+drop view XODOT_CONT_BKPD_V;
 
 drop view XODOT_POINT_BKPD_V;
 
