@@ -1,0 +1,177 @@
+create or replace package xhants_pem_bespoke as
+  --
+  const_email_header CONSTANT varchar2(2000) := '<html>
+        <head>
+            <style type="text/css">
+                body{font-family: Arial, Helvetica, sans-serif;
+                    font-size:10pt;
+                    margin:5px;
+                    background-color:#ffffff;}
+
+                span.sig{font-style:italic;
+                    font-weight:bold;
+                    color:#811919;}
+             </style>
+         </head>
+         <body>';
+  --
+  v_doc_id           docs.doc_id%type;
+  v_doc_status_code  docs.doc_status_code%type;
+  v_doc_source       docs.doc_compl_source%type;
+  v_hct_id           hig_contacts.hct_id%type;
+  --
+  procedure clear_doc_globals;
+  --
+  function get_mail_recipient( p_name in nm_mail_users.nmu_name%type
+                              ,p_email in nm_mail_users.nmu_email_address%type) return number;
+  --
+  procedure set_null_contact_email (p_doc_id     in docs.doc_id%type,
+                                    p_resp_user  in docs.doc_compl_user_id%type); 
+  --
+  procedure set_line_auth;
+  --
+  procedure set_routine (p_defect in work_order_lines.wol_def_defect_id%type,
+                         p_wo_no  in work_order_lines.wol_works_order_no%type);
+  --
+  procedure set_authorised (p_defect in work_order_lines.wol_def_defect_id%type);
+  --
+  procedure set_complete_3rd_party (p_defect in work_order_lines.wol_def_defect_id%type,
+                                    p_wo_no  in work_order_lines.wol_works_order_no%type,
+                                    p_descr  in work_order_lines.wol_descr%type);
+  --
+  procedure set_cancelled (p_defect in work_order_lines.wol_def_defect_id%type,
+                           p_descr  in work_order_lines.wol_descr%type);
+  --
+  procedure set_no_main_reqd (p_defect in defects.def_defect_id%type,
+                              p_reason in defects.def_special_instr%type);
+  --
+  procedure set_via_defect (p_defect in defects.def_defect_id%type,
+                            p_reason in defects.def_special_instr%type,
+                            p_status in defects.def_status_code%type);
+  --
+  procedure auto_ackwnowledge_status;
+  --
+  procedure auto_ackwnowledge_status2;
+  --
+  procedure auto_ackwnowledge_status3;
+  --
+  procedure auto_acknowledge_status;
+  --
+  procedure auto_close_pem;
+  --
+  procedure auto_ready_lines;
+  --
+  procedure mail_auto_ack (p_pem_id in docs.doc_id%type,
+                           p_ref    in docs.doc_reference_code%type,
+                           p_description in docs.doc_descr%type,
+                           p_location in docs.doc_compl_location%type);
+  --                         
+  procedure mail_3rd_party (p_pem_id in docs.doc_id%type,
+                            p_ref    in docs.doc_reference_code%type,
+                            p_description in docs.doc_descr%type,
+                            p_location in docs.doc_compl_location%type,
+                            p_new_resp in docs.doc_compl_user_id%type,
+                            p_new_resp_type in docs.doc_compl_user_type%type);  
+  --
+  procedure mail_unknown_3rd_party (p_pem_id in docs.doc_id%type,
+                                    p_ref    in docs.doc_reference_code%type,
+                                    p_description in docs.doc_descr%type,
+                                    p_location in docs.doc_compl_location%type);  
+  --
+  procedure mail_olg_3rd_party (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_description in docs.doc_descr%type,
+                                p_location in docs.doc_compl_location%type,
+                                p_new_resp in docs.doc_compl_user_id%type,
+                                p_new_resp_type in docs.doc_compl_user_type%type);  
+  --
+  procedure mail_maint_gang    (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_description in docs.doc_descr%type,
+                                p_location in docs.doc_compl_location%type); 
+  --
+  procedure mail_made_safe     (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_description in docs.doc_descr%type,
+                                p_location in docs.doc_compl_location%type); 
+  --
+  procedure mail_planned_work  (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_description in docs.doc_descr%type,
+                                p_location in docs.doc_compl_location%type); 
+  --
+  procedure mail_passed_contractor (p_pem_id in docs.doc_id%type,
+                                    p_ref    in docs.doc_reference_code%type,
+                                    p_description in docs.doc_descr%type,
+                                    p_location in docs.doc_compl_location%type); 
+  --
+  procedure mail_new_resp      (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_description in docs.doc_descr%type,
+                                p_location in docs.doc_compl_location%type,
+                                p_category in docs.doc_dtp_code%type,
+                                p_class in docs.doc_dcl_code%type,
+                                p_type in docs.doc_compl_type%type,
+                                p_remarks in docs.doc_reason%type, 
+                                p_new_resp in docs.doc_compl_user_id%type,
+                                p_new_resp_type in docs.doc_compl_user_type%type);
+  --
+  procedure mail_new_ext_resp      (p_pem_id in docs.doc_id%type,
+                                    p_ref    in docs.doc_reference_code%type,
+                                    p_description in docs.doc_descr%type,
+                                    p_location in docs.doc_compl_location%type,
+                                    p_category in docs.doc_dtp_code%type,
+                                    p_class in docs.doc_dcl_code%type,
+                                    p_type in docs.doc_compl_type%type,
+                                    p_remarks in docs.doc_reason%type, 
+                                    p_new_resp in docs.doc_compl_user_id%type,
+                                    p_new_resp_type in docs.doc_compl_user_type%type);
+  --
+  procedure mail_inform_3rd        (p_pem_id in docs.doc_id%type,
+                                    p_ref    in docs.doc_reference_code%type,
+                                    p_description in docs.doc_descr%type,
+                                    p_location in docs.doc_compl_location%type,
+                                    p_category in docs.doc_dtp_code%type,
+                                    p_class in docs.doc_dcl_code%type,
+                                    p_type in docs.doc_compl_type%type,
+                                    p_remarks in docs.doc_reason%type, 
+                                    p_new_resp in docs.doc_compl_user_id%type,
+                                    p_new_resp_type in docs.doc_compl_user_type%type);
+  --
+  procedure mail_no_work_reqd  (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_description in docs.doc_descr%type,
+                                p_location in docs.doc_compl_location%type); 
+  --
+  procedure mail_no_def_found  (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_description in docs.doc_descr%type,
+                                p_location in docs.doc_compl_location%type); 
+  --
+  procedure mail_rejected_wo   (p_wol_id in work_order_lines.wol_id%type,
+                                p_road  in work_order_lines.wol_rse_he_id%type,
+                                p_wo_ref in work_order_lines.wol_works_order_no%type,
+                                p_defect in work_order_lines.wol_def_defect_id%type); 
+  --
+    --
+  procedure mail_ready_auth    (p_wol_id in work_order_lines.wol_id%type,
+                                p_road  in work_order_lines.wol_rse_he_id%type,
+                                p_wo_ref in work_order_lines.wol_works_order_no%type,
+                                p_defect in work_order_lines.wol_def_defect_id%type); 
+  --
+  procedure mail_queried_wo    (p_wol_id in work_order_lines.wol_id%type,
+                                p_road  in work_order_lines.wol_rse_he_id%type,
+                                p_wo_ref in work_order_lines.wol_works_order_no%type,
+                                p_defect in work_order_lines.wol_def_defect_id%type,
+                                p_descr in work_order_lines.wol_descr%type,
+                                p_locn_descr in work_order_lines.wol_locn_descr%type); 
+  --
+  procedure mail_poss_recharge (p_pem_id in docs.doc_id%type,
+                                p_ref    in docs.doc_reference_code%type,
+                                p_user_id in docs.doc_compl_user_id%type);
+  --
+  procedure email_job_alert;
+  --
+  procedure set_via_linked_defect (p_defect in defects.def_defect_id%type,
+                                   p_pem    in docs.doc_id%type);
+end xhants_pem_bespoke;
