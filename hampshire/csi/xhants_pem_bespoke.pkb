@@ -1,5 +1,23 @@
 create or replace package body xhants_pem_bespoke as
   --
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_pem_bespoke.pkb-arc   1.1   Oct 07 2010 21:38:44   ian.turnbull  $
+--       Module Name      : $Workfile:   xhants_pem_bespoke.pkb  $
+--       Date into PVCS   : $Date:   Oct 07 2010 21:38:44  $
+--       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
+--       PVCS Version     : $Revision:   1.1  $
+--       Based on SCCS version :
+--
+--
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+
   procedure clear_doc_globals is
   begin
     v_doc_id := null;
