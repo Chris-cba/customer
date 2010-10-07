@@ -3,6 +3,24 @@ after update
 on     docs
 for    each row
 --
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_ack_mail.trg-arc   1.1   Oct 07 2010 21:38:40   ian.turnbull  $
+--       Module Name      : $Workfile:   xhants_ack_mail.trg  $
+--       Date into PVCS   : $Date:   Oct 07 2010 21:38:40  $
+--       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
+--       PVCS Version     : $Revision:   1.1  $
+--       Based on SCCS version :
+--
+--
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+
 declare
 --
 begin
