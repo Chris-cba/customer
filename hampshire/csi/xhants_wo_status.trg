@@ -2,6 +2,24 @@ create or replace TRIGGER xhants_wo_status
 After update of wol_status_code on work_order_lines
 For each row
 declare
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_wo_status.trg-arc   1.1   Oct 07 2010 21:38:46   ian.turnbull  $
+--       Module Name      : $Workfile:   xhants_wo_status.trg  $
+--       Date into PVCS   : $Date:   Oct 07 2010 21:38:46  $
+--       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
+--       PVCS Version     : $Revision:   1.1  $
+--       Based on SCCS version :
+--
+--
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+
 begin
 --  if :new.wol_status_code = 'ROUTINE' and :old.wol_status_code != 'ROUTINE' then
 --    xhants_pem_bespoke.set_routine(:new.wol_def_defect_id);
