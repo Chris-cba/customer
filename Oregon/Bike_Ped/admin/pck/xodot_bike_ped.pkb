@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/pck/xodot_bike_ped.pkb-arc   3.1   Sep 30 2010 19:01:56   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/pck/xodot_bike_ped.pkb-arc   3.2   Oct 11 2010 14:24:30   ian.turnbull  $
 --       Module Name      : $Workfile:   xodot_bike_ped.pkb  $
---       Date into PVCS   : $Date:   Sep 30 2010 19:01:56  $
---       Date fetched Out : $Modtime:   Sep 27 2010 14:56:44  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Oct 11 2010 14:24:30  $
+--       Date fetched Out : $Modtime:   Oct 11 2010 11:44:52  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.2  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xodot_bike_ped';
 --
@@ -177,6 +177,17 @@ CURSOR get_reg_dist (p_ea_number varchar2)IS
 select * from XODOT_EA_CW_DIST_REG_LOOKUP
 where ea_number = p_ea_number;
 
+
+CURSOR get_city_r is
+select distinct(CITY_R_NM) from XODOT_BKPD_MRG_RESULT;
+
+CURSOR get_city_l is
+select distinct(CITY_L_NM) from XODOT_BKPD_MRG_RESULT;
+ 
+CURSOR get_city_details(p_name VARCHAR2) is
+select fips_id, gnis_id, pop_cnt from v_nm_cilk
+where nm = p_name;
+
 BEGIN
 
 
@@ -258,6 +269,8 @@ BEGIN
     ,SWLK_L_NEED_IND
     ,SWLK_L_INSP_YR
     ,SWLK_L_WD_MEAS
+	,URBN_SMALL_URBAN
+    ,URBN_URBAN_AREA 
     ,HWY
     ,HIGHWAY_NUMBER
     ,SUFFIX
@@ -344,6 +357,8 @@ BEGIN
     ,i.SWLK_L_NEED_IND
     ,i.SWLK_L_INSP_YR
     ,i.SWLK_L_WD_MEAS
+	,i.URBN_SMALL_URBAN
+    ,i.URBN_URBAN_AREA 
     ,i.ne_unique
     ,i.ne_owner
     ,i.ne_sub_type
@@ -392,6 +407,35 @@ BEGIN
 	commit;
   END LOOP;
 
+     
+	 FOR i in get_city_r LOOP
+	 
+	   FOR i2 in get_city_details(i.CITY_R_NM) LOOP
+	     
+		 UPDATE XODOT_BKPD_MRG_RESULT
+	     set CITY_R_FIPS_ID  = i2.fips_id
+	     ,CITY_R_GNIS_ID = i2.gnis_id
+	     ,CITY_R_POP_COUNT = i2.pop_cnt
+         WHERE CITY_R_NM = i.CITY_R_NM;
+	  
+	  END LOOP;
+	 
+	 END LOOP;
+	 
+	 FOR i in get_city_l LOOP
+	 
+	    FOR i2 in get_city_details(i.CITY_L_NM) LOOP
+	   
+	      UPDATE XODOT_BKPD_MRG_RESULT
+	      set CITY_L_FIPS_ID  = i2.fips_id
+	     ,CITY_L_GNIS_ID = i2.gnis_id
+	     ,CITY_L_POP_COUNT = i2.pop_cnt
+         WHERE CITY_L_NM = i.CITY_L_NM;
+	   
+	   END LOOP;
+	 END LOOP;
+	commit;
+  
 END pop_mrg_result_table;
 --
 ---------------------------------------------------------------------------------------------------
@@ -552,7 +596,7 @@ where ea_number = (select ne_unique from nm_elements
                                   and rownum = 1 ));
 
 CURSOR get_urban (p_ne_id_of number) IS
-select ne_unique from nm_elements
+select ne_unique,ne_name_2 from nm_elements
 where ne_id in (select nm_ne_id_in from nm_members
                         where  nm_obj_type = 'URBN'
                         and nm_ne_id_of = p_ne_id_of);
@@ -736,6 +780,7 @@ FOR i in get_mbxg_det LOOP
    FOR i2 IN get_urban(i.ne_id_of) LOOP
       UPDATE XODOT_BKPD_POINT_RESULT
 	  SET urban_area = i2.ne_unique
+	  ,small_urban = i2.ne_name_2
 	  WHERE mbxg_primary_key = i.iit_primary_key;
 
    END LOOP;
