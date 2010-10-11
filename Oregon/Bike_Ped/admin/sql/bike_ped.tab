@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/bike_ped.tab-arc   3.0   Sep 21 2010 14:28:34   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/bike_ped.tab-arc   3.1   Oct 11 2010 14:24:52   ian.turnbull  $
 --       Module Name      : $Workfile:   bike_ped.tab  $
---       Date into PVCS   : $Date:   Sep 21 2010 14:28:34  $
---       Date fetched Out : $Modtime:   Sep 21 2010 14:24:26  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 11 2010 14:24:52  $
+--       Date fetched Out : $Modtime:   Oct 11 2010 11:05:34  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -69,7 +69,13 @@ BIKE_R_TYP_CD		VARCHAR2 (120)
 ,PARK_L_SRCE_TYP	VARCHAR2 (120)
 ,PARK_L_NOTE		VARCHAR2 (200)
 ,CITY_R_NM	 	VARCHAR2 (120)
+,CITY_R_FIPS_ID   VARCHAR2 (120)
+,CITY_R_GNIS_ID   VARCHAR2 (120)
+,CITY_R_POP_COUNT NUMBER
 ,CITY_L_NM	 	VARCHAR2 (120)
+,CITY_L_FIPS_ID   VARCHAR2 (120)
+,CITY_L_GNIS_ID   VARCHAR2 (120)
+,CITY_L_POP_COUNT NUMBER
 ,SHUP_R_SURF_CD		VARCHAR2 (120)
 ,SHUP_R_COND_CD		VARCHAR2 (120)
 ,SHUP_R_INSP_YR		NUMBER	
@@ -90,6 +96,8 @@ BIKE_R_TYP_CD		VARCHAR2 (120)
 ,SWLK_L_NEED_IND		VARCHAR2 (120)
 ,SWLK_L_INSP_YR		NUMBER	
 ,SWLK_L_WD_MEAS		NUMBER	
+,URBN_SMALL_URBAN   VARCHAR2(80)
+,URBN_URBAN_AREA    VARCHAR2(80)
 ,HWY		        VARCHAR2 (30)	
 ,BEGIN_MP		       NUMBER	
 ,END_MP		           NUMBER	
@@ -133,6 +141,7 @@ adar_primary_key VARCHAR2(50)
 ,city_gnis_id_right       VARCHAR2(50)
 ,city_pop_cnt_right       VARCHAR2(50)
 ,urban_area               VARCHAR2 (80)
+,small_urban              VARCHAR2 (80)
 ,ea                       VARCHAR2 (120)
 ,DISTRICT                 VARCHAR2(30)
 ,region                   VARCHAR2(30)
