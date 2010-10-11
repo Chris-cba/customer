@@ -16,6 +16,7 @@ CREATE OR REPLACE FORCE VIEW XODOT_POINT_BKPD_V
    CITY_GNIS_ID_RIGHT,
    CITY_POP_CNT_RIGHT,
    URBAN_AREA,
+   small_urban,
    EA,
    DISTRICT,
    REGION,
@@ -42,11 +43,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/views/xodot_point_bkpd_v.vw-arc   3.0   Sep 21 2010 14:28:36   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/views/xodot_point_bkpd_v.vw-arc   3.1   Oct 11 2010 14:26:40   ian.turnbull  $
 --       Module Name      : $Workfile:   xodot_point_bkpd_v.vw  $
---       Date into PVCS   : $Date:   Sep 21 2010 14:28:36  $
---       Date fetched Out : $Modtime:   Sep 21 2010 14:24:28  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 11 2010 14:26:40  $
+--       Date fetched Out : $Modtime:   Oct 11 2010 11:47:32  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -71,6 +72,7 @@ AS
           CITY_GNIS_ID_RIGHT,
           CITY_POP_CNT_RIGHT,
           URBAN_AREA,
+		  small_urban,
           EA,
           DISTRICT,
           REGION,
