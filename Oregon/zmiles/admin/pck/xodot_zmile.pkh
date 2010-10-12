@@ -1,0 +1,63 @@
+CREATE OR REPLACE PACKAGE xodot_z_mileage AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Oregon/zmiles/admin/pck/xodot_zmile.pkh-arc   1.0   Oct 12 2010 11:52:10   Ian.Turnbull  $
+--       Module Name      : $Workfile:   xodot_zmile.pkh  $
+--       Date into PVCS   : $Date:   Oct 12 2010 11:52:10  $
+--       Date fetched Out : $Modtime:   Oct 12 2010 11:51:08  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author :
+--
+--    packagebody
+--
+-----------------------------------------------------------------------------
+--    Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  G_SCCSID CONSTANT VARCHAR2(2000):='"$Revision:   1.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--<PROC NAME="MAINTAIN_Z_MILEAGE">
+Procedure Maintain_Z_Mileage;
+--</PROC>
+-----------------------------------------------------------------------------
+
+--<PRAGMA>
+   PRAGMA RESTRICT_REFERENCES (get_version, RNDS, WNPS, WNDS);
+   PRAGMA RESTRICT_REFERENCES (get_body_version, RNDS, WNPS, WNDS);
+  -- PRAGMA RESTRICT_REFERENCES (check_z_mileage_data, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xodot_z_mileage;
+/
