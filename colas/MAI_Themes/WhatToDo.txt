@@ -1,0 +1,31 @@
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/colas/MAI_Themes/WhatToDo.txt-arc   3.0   Oct 18 2010 15:50:48   Ian.Turnbull  $
+--       Module Name      : $Workfile:   WhatToDo.txt  $
+--       Date into PVCS   : $Date:   Oct 18 2010 15:50:48  $
+--       Date fetched Out : $Modtime:   Oct 18 2010 14:51:50  $
+--       PVCS Version     : $Revision:   3.0  $
+--
+--
+--   Author : Aileen Heal
+--
+--   WhatToDo.txt
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+-- Instructions on how to create the themes 'BLACK WORK CARRIAGEWAY', 'BLACK WORK FOOTWAY',
+-- 'GULLIES' & 'WHITE WORK' for Colas as part of BRS 2495 (October 2010)
+--
+
+1. Create all the themes using the script included in this zip file. Remember to issue a commit after running the script.
+
+2. Open Up MapBuilder and add the new themes to the map. They will be
+   BLACK WORK CARRIAGEWAY
+   BLACK WORK FOOTWAY
+   GULLIES
+   WHITE WORK
+
+3. Reastart MapViewer
