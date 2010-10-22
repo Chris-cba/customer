@@ -77,6 +77,7 @@ CREATE OR REPLACE FORCE VIEW XODOT_CONT_BKPD_V (
    SWLK_WD_MEAS_L,
    SMALL_URBAN,
    URBAN_AREA,
+   SPZN_SPEED_DESIG,
    HWY,
    BEGIN_MP,
    END_MP,
@@ -102,11 +103,11 @@ SELECT
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/views/xodot_cont_bkpd_v.vw-arc   3.0   Oct 11 2010 16:28:52   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/views/xodot_cont_bkpd_v.vw-arc   3.1   Oct 22 2010 09:34:00   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xodot_cont_bkpd_v.vw  $
---       Date into PVCS   : $Date:   Oct 11 2010 16:28:52  $
---       Date fetched Out : $Modtime:   Oct 11 2010 12:20:26  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 22 2010 09:34:00  $
+--       Date fetched Out : $Modtime:   Oct 20 2010 21:15:34  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -193,6 +194,7 @@ SELECT
           "SWLK_L_WD_MEAS",
 		  "URBN_SMALL_URBAN",
           "URBN_URBAN_AREA",
+		  "SPZN_SPEED_DESIG",
           "HWY",
           "BEGIN_MP",
           "END_MP",
