@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/roadside_barrier/admin/sql/uninstall_roadside_barrier.sql-arc   1.0   Oct 22 2010 10:20:38   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/roadside_barrier/admin/sql/uninstall_roadside_barrier.sql-arc   1.1   Oct 22 2010 10:53:04   Ian.Turnbull  $
 --       Module Name      : $Workfile:   uninstall_roadside_barrier.sql  $
---       Date into PVCS   : $Date:   Oct 22 2010 10:20:38  $
+--       Date into PVCS   : $Date:   Oct 22 2010 10:53:04  $
 --       Date fetched Out : $Modtime:   Oct 22 2010 10:17:14  $
---       PVCS Version     : $Revision:   1.0  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --
 --   Author : P Stanton
