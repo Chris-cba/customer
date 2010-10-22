@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/bike_ped_mrg_metadata.sql-arc   3.0   Sep 21 2010 14:28:32   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/bike_ped_mrg_metadata.sql-arc   3.1   Oct 22 2010 09:33:02   Ian.Turnbull  $
 --       Module Name      : $Workfile:   bike_ped_mrg_metadata.sql  $
---       Date into PVCS   : $Date:   Sep 21 2010 14:28:32  $
---       Date fetched Out : $Modtime:   Sep 21 2010 14:24:26  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 22 2010 09:33:02  $
+--       Date fetched Out : $Modtime:   Oct 20 2010 21:10:44  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -83,6 +83,7 @@ BEGIN
 	   ,'CITY'
 	   ,'URBN'
 	   ,'SCNS'
+	   ,'SPZN'
         );
         commit;
 		
@@ -224,7 +225,21 @@ BEGIN
         and NQT_NMQ_ID = l_merge_id
         and ita_inv_type = 'SCNS'
             and ITA_VIEW_ATTRI in
-            ('HWY_EA_NO');      
+            ('HWY_EA_NO');  
+
+INSERT INTO NM_MRG_QUERY_ATTRIBS (NQA_NMQ_ID, NQA_NQT_SEQ_NO, NQA_ATTRIB_NAME)    
+        select     NQT_NMQ_ID 
+            , NQT_SEQ_NO
+            , ita_attrib_name
+        from nm_inv_type_attribs,
+        NM_MRG_QUERY_TYPES,
+        NM_MRG_QUERY
+        where ita_inv_type(+) = NQT_INV_TYPE
+        and NQT_NMQ_ID = NMQ_ID
+        and NQT_NMQ_ID = l_merge_id
+        and ita_inv_type = 'SPZN'
+            and ITA_VIEW_ATTRI in
+            ('SPEED_DESIG'); 			
  			
               -- NM_MRG_QUERY_VALUES attribute values.
             
