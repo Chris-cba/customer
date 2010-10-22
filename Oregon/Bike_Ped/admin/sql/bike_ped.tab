@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/bike_ped.tab-arc   3.1   Oct 11 2010 14:24:52   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/sql/bike_ped.tab-arc   3.2   Oct 22 2010 09:32:28   Ian.Turnbull  $
 --       Module Name      : $Workfile:   bike_ped.tab  $
---       Date into PVCS   : $Date:   Oct 11 2010 14:24:52  $
---       Date fetched Out : $Modtime:   Oct 11 2010 11:05:34  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Oct 22 2010 09:32:28  $
+--       Date fetched Out : $Modtime:   Oct 20 2010 21:14:34  $
+--       PVCS Version     : $Revision:   3.2  $
 --
 --
 --   Author : P Stanton
@@ -98,6 +98,7 @@ BIKE_R_TYP_CD		VARCHAR2 (120)
 ,SWLK_L_WD_MEAS		NUMBER	
 ,URBN_SMALL_URBAN   VARCHAR2(80)
 ,URBN_URBAN_AREA    VARCHAR2(80)
+,SPZN_SPEED_DESIG   NUMBER
 ,HWY		        VARCHAR2 (30)	
 ,BEGIN_MP		       NUMBER	
 ,END_MP		           NUMBER	
