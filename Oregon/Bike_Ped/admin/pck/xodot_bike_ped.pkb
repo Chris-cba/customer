@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/pck/xodot_bike_ped.pkb-arc   3.2   Oct 11 2010 14:24:30   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/admin/pck/xodot_bike_ped.pkb-arc   3.3   Oct 22 2010 09:34:38   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xodot_bike_ped.pkb  $
---       Date into PVCS   : $Date:   Oct 11 2010 14:24:30  $
---       Date fetched Out : $Modtime:   Oct 11 2010 11:44:52  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Oct 22 2010 09:34:38  $
+--       Date fetched Out : $Modtime:   Oct 20 2010 21:18:48  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Based on SCCS version :
 --
 --
@@ -27,7 +27,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.2  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.3  $"';
 
   g_package_name CONSTANT varchar2(30) := 'xodot_bike_ped';
 --
@@ -271,6 +271,7 @@ BEGIN
     ,SWLK_L_WD_MEAS
 	,URBN_SMALL_URBAN
     ,URBN_URBAN_AREA 
+	,SPZN_SPEED_DESIG
     ,HWY
     ,HIGHWAY_NUMBER
     ,SUFFIX
@@ -359,6 +360,7 @@ BEGIN
     ,i.SWLK_L_WD_MEAS
 	,i.URBN_SMALL_URBAN
     ,i.URBN_URBAN_AREA 
+	,i.SPZN_SPEED_DESIG
     ,i.ne_unique
     ,i.ne_owner
     ,i.ne_sub_type
