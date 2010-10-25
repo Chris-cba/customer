@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/tfl/wo_worktrays/install/tfl_wo_worktrays_install.sql-arc   3.0   Oct 25 2010 10:21:36   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/tfl/wo_worktrays/install/tfl_wo_worktrays_install.sql-arc   3.1   Oct 25 2010 13:00:22   Ian.Turnbull  $
 --       Module Name      : $Workfile:   tfl_wo_worktrays_install.sql  $
---       Date into PVCS   : $Date:   Oct 25 2010 10:21:36  $
---       Date fetched Out : $Modtime:   Oct 25 2010 10:17:12  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 25 2010 13:00:22  $
+--       Date fetched Out : $Modtime:   Oct 25 2010 12:58:52  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : P Stanton
@@ -120,6 +120,7 @@ select '&exor_base'||'wo_worktrays'||'&terminator'||'admin'||'&terminator'||'sql
 from dual
 /
 
+commit;
 
 spool off
 exit
