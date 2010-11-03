@@ -4,11 +4,11 @@ create or replace PACKAGE BODY XODOT_HBUD_EXTRACT_PROCESS AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/hbud/admin/pck/xodot_hbud_extract_process.pkb-arc   3.0   Sep 09 2010 14:52:38   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Oregon/hbud/admin/pck/xodot_hbud_extract_process.pkb-arc   3.1   Nov 03 2010 13:26:24   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xodot_hbud_extract_process.pkb  $
---       Date into PVCS   : $Date:   Sep 09 2010 14:52:38  $
---       Date fetched Out : $Modtime:   Sep 09 2010 14:39:44  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Nov 03 2010 13:26:24  $
+--       Date fetched Out : $Modtime:   Nov 03 2010 12:09:00  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 --
 --
@@ -26,7 +26,7 @@ create or replace PACKAGE BODY XODOT_HBUD_EXTRACT_PROCESS AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.0  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
 --
  g_package_name    CONSTANT  varchar2(30)   := 'xodot_hbud_extract_process';
 -----------------------------------------------------------------------------
@@ -52,39 +52,60 @@ END get_body_version;
 FUNCTION equiv_bit_miles (p_ne_id  nm_elements.ne_id%TYPE
 						 ) return NUMBER IS
 
-CURSOR get_greater_than	(p_ne_id  nm_elements.ne_id%TYPE) IS					 
-SELECT SUM(nm3net.get_ne_length(iit_ne_id)) l_result FROM v_nm_rdgm
-WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members 
-                   WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements 
-                                          WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members 
-                                                          WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements 
-                                                                                WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members 
-                                                                                                WHERE nm_ne_id_in = p_ne_id ))))
-                    AND nm_type     = 'I' 
-                  AND nm_obj_type = 'PVMT'  ) 
-AND matl_typ_cd IN ('A', 'AP', 'AT', 'AU', 'B', 'C', 'D', 'E', 'F')                -- For these matl types, this list contains those types I believe = Asphalt
-AND iit_x_sect in ('RS2I', 'RS2D', 'RS1I', 'RS1D','LS1D','LS1I','LS2D','LS2I')     -- Restricting to shoulders
-AND wd_meas > 4                                                                    -- and greater than  4
-AND layer = 1;                                                                     -- and only for layer 1
 
+CURSOR get_greater_than	(p_ne_id  nm_elements.ne_id%TYPE) IS					 
+select nvl(sum (least(r.nm_end_mp, sm.nm_end_mp) - greatest(r.nm_begin_mp, sm.nm_begin_mp)),0)  
+from (select nm_ne_id_of ne_id_of,nm_end_mp,nm_begin_mp from v_nm_rdgm, nm_members 
+         where iit_ne_id = nm_ne_id_in   and nm_obj_type = 'RDGM' and  matl_typ_cd IN ('AU','A' ,'AU','B','C','CP','CS','D','DS','E','EA','F','FS','HR','HS','L','M','MS','R','SL','SM','SS','Z')      
+AND iit_x_sect in ('OS2I', 'OS2D', 'OS1I', 'OS1D','IS1D','IS1I','IS2D','IS2I')      -- Restricting to shoulders
+AND wd_meas > 4                                                                    -- and greater than  4
+AND layer = 1 ) r, nm_elements s, nm_members sm
+where ne_id = nm_ne_id_in and nm_ne_id_of = ne_id_of and ne_id in
+     (select cm.nm_ne_id_of 
+     from nm_members cm, nm_elements c 
+     where c.ne_id = p_ne_id 
+     and ne_id = nm_ne_id_in
+     ) 
+and r.nm_end_mp >= sm.nm_begin_mp and r.nm_begin_mp <= sm.nm_end_mp;
 
 CURSOR get_less_than (p_ne_id  nm_elements.ne_id%TYPE) IS
-SELECT sum(nm3net.get_ne_length(iit_ne_id)) l_result FROM v_nm_rdgm
-WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members 
-                    WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements 
-                                          WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members 
-                                                          WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements 
-                                                                                WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members 
-                                                                                                WHERE nm_ne_id_in = p_ne_id ))))
-                    AND nm_type     = 'I' 
-                  AND nm_obj_type = 'PVMT'  ) 
-AND matl_typ_cd IN ('A', 'AP', 'AT', 'AU', 'B', 'C', 'D', 'E', 'F')                -- For these matl types, this list contains those types I believe = Asphalt
-AND iit_x_sect in ('RS2I', 'RS2D', 'RS1I', 'RS1D','LS1D','LS1I','LS2D','LS2I')     -- Restricting to shoulders
-AND wd_meas <= 4                                                                   -- and less than or equal to 4
-AND layer = 1;                                                                     -- and only for layer 1
+select nvl(sum (least(r.nm_end_mp, sm.nm_end_mp) - greatest(r.nm_begin_mp, sm.nm_begin_mp)) ,0) 
+from (select nm_ne_id_of ne_id_of,nm_end_mp,nm_begin_mp from v_nm_rdgm, nm_members 
+         where iit_ne_id = nm_ne_id_in   and nm_obj_type = 'RDGM'
+         and  matl_typ_cd IN ('AU','A' ,'AU','B','C','CP','CS','D','DS','E','EA','F','FS','HR','HS','L','M','MS','R','SL','SM','SS','Z')
+             
+AND iit_x_sect in ('OS2I', 'OS2D', 'OS1I', 'OS1D','IS1D','IS1I','IS2D','IS2I')     -- Restricting to shoulders
+AND wd_meas <= 4                                                                    -- and less than  4
+AND layer = 1 ) r, nm_elements s, nm_members sm
+where ne_id = nm_ne_id_in and nm_ne_id_of = ne_id_of and ne_id in 
+(select cm.nm_ne_id_of from nm_members cm, nm_elements c 
+where c.ne_id = p_ne_id 
+and ne_id = nm_ne_id_in) and r.nm_end_mp >= sm.nm_begin_mp and r.nm_begin_mp <= sm.nm_end_mp;
 
-l_greater_than NUMBER;
-l_less_than    NUMBER;
+CURSOR get_the_rest	(p_ne_id  nm_elements.ne_id%TYPE) IS		 
+select nvl(sum (least(r.nm_end_mp, sm.nm_end_mp) - greatest(r.nm_begin_mp, sm.nm_begin_mp)) ,0) 
+from (select nm_ne_id_of ne_id_of,nm_end_mp,nm_begin_mp from v_nm_rdgm, nm_members 
+         where iit_ne_id = nm_ne_id_in   and nm_obj_type = 'RDGM' 
+         and  matl_typ_cd IN ('AU','A' ,'AU','B','C','CP','CS','D','DS','E','EA','F','FS','HR','HS','L','M','MS','R','SL','SM','SS','Z')          
+AND iit_x_sect like 'LN%' -- =NOT IN ('RS2I', 'RS2D', 'RS1I', 'RS1D','LS1D','LS1I','LS2D','LS2I')                                                                        
+AND layer = 1 ) r, nm_elements s, nm_members sm
+where ne_id = nm_ne_id_in 
+and nm_ne_id_of = ne_id_of 
+and ne_id in
+     (select cm.nm_ne_id_of 
+        from nm_members cm, nm_elements c 
+        where c.ne_id = p_ne_id 
+        and ne_id = nm_ne_id_in
+     ) and r.nm_end_mp >= sm.nm_begin_mp and r.nm_begin_mp <= sm.nm_end_mp;
+
+
+--select ne_id, ne_nt_type from nm_elements where ne_unique = '1101'  
+
+
+
+l_greater_than_shoulder NUMBER;
+l_less_than_shoulder    NUMBER;
+l_the_rest     number;
 l_final_total  NUMBER;
 
 BEGIN
@@ -92,14 +113,18 @@ BEGIN
 --Take the lenth of the shoulder, if it's 4 feet wide or less multiply  the length by 0.3333 if it's greater multiply by 0.666666
    
    OPEN get_greater_than(p_ne_id);
-   FETCH get_greater_than INTO l_greater_than;
+   FETCH get_greater_than INTO l_greater_than_shoulder;
    CLOSE get_greater_than;
    
    OPEN get_less_than(p_ne_id);
-   FETCH get_less_than INTO l_less_than;
+   FETCH get_less_than INTO l_less_than_shoulder;
    CLOSE get_less_than;
+   
+   OPEN get_the_rest(p_ne_id);
+   FETCH get_the_rest INTO l_the_rest;
+   CLOSE get_the_rest;
 
-   l_final_total := (l_less_than*0.3333) + (l_greater_than*0.666666);
+   l_final_total := (l_less_than_shoulder*0.3333) + (l_greater_than_shoulder*0.666666) + l_the_rest;
    
    RETURN l_final_total;
    
@@ -158,6 +183,7 @@ END GET_CREW_ACT;
 PROCEDURE determine_asset_storage is
 --
    CURSOR get_data IS
+   
    SELECT a.crew,c.ne_id, a.activity, b.feature_type,b.asset_type,b.calculation_type,b.attribute_type,b.attribute_values, d.ita_attrib_name,d.ita_units
    FROM XODOT_HBUD_EXTRACT a  ,nm_elements c, V_NM_HACT b full outer join  nm_inv_type_attribs d
    on ( d.ita_inv_type = b.asset_type and d.ita_view_col_name = b.attribute_type  )
@@ -165,6 +191,7 @@ PROCEDURE determine_asset_storage is
    AND a.feature_type = b.feature_type
    AND c.ne_unique = a.crew
    AND b.crew_type = c.ne_nt_type
+   
    ORDER BY crew;
 --
  l_feature_count VARCHAR2(4000);
@@ -381,17 +408,39 @@ FUNCTION length_process (p_asset_type nm_inv_items.iit_inv_type%TYPE
   
 BEGIN
 
-    IF p_attribute_name IS NOT NULL AND p_attribute_values is not null THEN
-       -- Format the attribute values string
-	   l_attribute_values := REPLACE(p_attribute_values,'"','''');
+    IF  p_asset_type = 'RDGM' THEN
+	    -- Need to Restrict by layer and XSP
+		IF p_attribute_name IS NOT NULL AND p_attribute_values is not null THEN
+          -- Format the attribute values string
+	      l_attribute_values := REPLACE(p_attribute_values,'"','''');
 	        
-       v_query := 'SELECT sum(nm3net.get_ne_length(iit_ne_id)) FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||'  ) and '||p_attribute_name||' in ('||l_attribute_values||')';
-    
-	ELSE
+--       v_query := 'SELECT sum(nm3net.get_ne_length(iit_ne_id)) FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||'  ) and '||p_attribute_name||' in ('||l_attribute_values||')';
+          v_query := 'select sum (least(r.nm_end_mp, sm.nm_end_mp) - greatest(r.nm_begin_mp, sm.nm_begin_mp)) from (select nm_ne_id_of ne_id_of,nm_end_mp,nm_begin_mp from nm_inv_items, nm_members where iit_ne_id = nm_ne_id_in   and nm_obj_type = '||''''||p_asset_type||''''||' and '||p_attribute_name||' in ('||l_attribute_values||') and iit_no_of_units = 1 and iit_x_sect like '||''''||'LN%'||''''||' ) r, nm_elements s, nm_members sm where ne_id = nm_ne_id_in and nm_ne_id_of = ne_id_of and ne_id in (select cm.nm_ne_id_of from nm_members cm, nm_elements c where c.ne_id = '||p_ne_id||' and ne_id = nm_ne_id_in) and r.nm_end_mp >= sm.nm_begin_mp and r.nm_begin_mp <= sm.nm_end_mp';
+	   
+	   ELSE
 	  -- query is going ignore the asset attributes and just count all existing assets of the specified type
-	  v_query := 'SELECT sum(nm3net.get_ne_length(iit_ne_id)) FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||')';
+	  --v_query := 'SELECT sum(nm3net.get_ne_length(iit_ne_id)) FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||')';
+          v_query := 'select sum (least(r.nm_end_mp, sm.nm_end_mp) - greatest(r.nm_begin_mp, sm.nm_begin_mp)) from (select nm_ne_id_of ne_id_of,nm_end_mp,nm_begin_mp from nm_inv_items, nm_members where iit_ne_id = nm_ne_id_in   and nm_obj_type = '||''''||p_asset_type||''''||' and iit_no_of_units = 1 and iit_x_sect like '||''''||'LN%'||''''||') r, nm_elements s, nm_members sm where ne_id = nm_ne_id_in and nm_ne_id_of = ne_id_of and ne_id in (select cm.nm_ne_id_of from nm_members cm, nm_elements c where c.ne_id = '||p_ne_id||' and ne_id = nm_ne_id_in) and r.nm_end_mp >= sm.nm_begin_mp and r.nm_begin_mp <= sm.nm_end_mp';
+
+	   END IF;
     
-	END IF;
+	ELSE 
+    
+	   IF p_attribute_name IS NOT NULL AND p_attribute_values is not null THEN
+          -- Format the attribute values string
+	      l_attribute_values := REPLACE(p_attribute_values,'"','''');
+	        
+--       v_query := 'SELECT sum(nm3net.get_ne_length(iit_ne_id)) FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||'  ) and '||p_attribute_name||' in ('||l_attribute_values||')';
+          v_query := 'select sum (least(r.nm_end_mp, sm.nm_end_mp) - greatest(r.nm_begin_mp, sm.nm_begin_mp)) from (select nm_ne_id_of ne_id_of,nm_end_mp,nm_begin_mp from nm_inv_items, nm_members where iit_ne_id = nm_ne_id_in   and nm_obj_type = '||''''||p_asset_type||''''||' and '||p_attribute_name||' in ('||l_attribute_values||') ) r, nm_elements s, nm_members sm where ne_id = nm_ne_id_in and nm_ne_id_of = ne_id_of and ne_id in (select cm.nm_ne_id_of from nm_members cm, nm_elements c where c.ne_id = '||p_ne_id||' and ne_id = nm_ne_id_in) and r.nm_end_mp >= sm.nm_begin_mp and r.nm_begin_mp <= sm.nm_end_mp';
+	   
+	   ELSE
+	  -- query is going ignore the asset attributes and just count all existing assets of the specified type
+	  --v_query := 'SELECT sum(nm3net.get_ne_length(iit_ne_id)) FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||')';
+          v_query := 'select sum (least(r.nm_end_mp, sm.nm_end_mp) - greatest(r.nm_begin_mp, sm.nm_begin_mp)) from (select nm_ne_id_of ne_id_of,nm_end_mp,nm_begin_mp from nm_inv_items, nm_members where iit_ne_id = nm_ne_id_in   and nm_obj_type = '||''''||p_asset_type||''''||') r, nm_elements s, nm_members sm where ne_id = nm_ne_id_in and nm_ne_id_of = ne_id_of and ne_id in (select cm.nm_ne_id_of from nm_members cm, nm_elements c where c.ne_id = '||p_ne_id||' and ne_id = nm_ne_id_in) and r.nm_end_mp >= sm.nm_begin_mp and r.nm_begin_mp <= sm.nm_end_mp';
+
+	   END IF;
+	   
+	 END IF;
    
    OPEN c_cursor FOR v_query;
    LOOP
@@ -530,6 +579,8 @@ PROCEDURE hbud_report IS
   c_sysdate      CONSTANT date         := SYSDATE;
   c_content_type CONSTANT varchar2(4)  := 'BLOB';
   c_dad_charset  CONSTANT varchar2(5)  := 'ascii';
+  v_clob clob;
+  v_tmp_clob clob;
 
   l_tab             nm3type.tab_varchar32767;  
   
@@ -573,9 +624,19 @@ nm_debug.debug('in the second procedure');
   
  
      
-       nm_debug.debug_clob(nm3clob.tab_varchar_to_clob (pi_tab_vc => l_tab));
+       --nm_debug.debug_clob(nm3clob.tab_varchar_to_clob (pi_tab_vc => l_tab));
 
-       l_rec_nuf.blob_content           := nm3clob.clob_to_blob(nm3clob.tab_varchar_to_clob (pi_tab_vc => l_tab));
+      
+    -- l_rec_nuf.blob_content           := nm3clob.clob_to_blob(nm3clob.tab_varchar_to_clob (pi_tab_vc => l_tab));
+    
+        for a in  1 .. l_tab.count 
+        loop  
+            v_tmp_clob :=   l_tab(a); 
+            v_clob := v_clob || v_tmp_clob; 
+        end loop; 
+        
+        l_rec_nuf.blob_content           := nm3clob.clob_to_blob(v_clob); 
+        
         delete from nm_upload_files
         where name= l_rec_nuf.name;
 
