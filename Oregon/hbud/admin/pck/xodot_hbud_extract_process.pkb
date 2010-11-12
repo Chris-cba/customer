@@ -4,11 +4,11 @@ create or replace PACKAGE BODY XODOT_HBUD_EXTRACT_PROCESS AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/Oregon/hbud/admin/pck/xodot_hbud_extract_process.pkb-arc   3.1   Nov 03 2010 13:26:24   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Oregon/hbud/admin/pck/xodot_hbud_extract_process.pkb-arc   3.2   Nov 12 2010 09:09:16   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xodot_hbud_extract_process.pkb  $
---       Date into PVCS   : $Date:   Nov 03 2010 13:26:24  $
---       Date fetched Out : $Modtime:   Nov 03 2010 12:09:00  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Nov 12 2010 09:09:16  $
+--       Date fetched Out : $Modtime:   Nov 11 2010 19:59:28  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --
@@ -26,7 +26,7 @@ create or replace PACKAGE BODY XODOT_HBUD_EXTRACT_PROCESS AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
+  g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   3.2  $"';
 --
  g_package_name    CONSTANT  varchar2(30)   := 'xodot_hbud_extract_process';
 -----------------------------------------------------------------------------
@@ -302,7 +302,24 @@ FUNCTION summary_process (p_asset_type nm_inv_items.iit_inv_type%TYPE
   
 BEGIN
 
-   v_query := 'SELECT sum('||p_attribute_name||') FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||'  )';
+  --v_query := 'SELECT sum('||p_attribute_name||') FROM nm_inv_items WHERE iit_ne_id in (SELECT nm_ne_id_in FROM nm_members WHERE nm_ne_id_of in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in in (SELECT ne_id FROM nm_elements WHERE ne_id in (SELECT nm_ne_id_of FROM nm_members WHERE nm_ne_id_in = '||p_ne_id||')))) AND nm_type     = '||''''||'I'||''''||' AND nm_obj_type = '||''''||p_asset_type||''''||'  )';
+
+    -- RE -- Changed the query to check crew is in the same location in the datum
+   v_query := '    
+    select sum('||p_attribute_name||') 
+from nm_inv_items where iit_ne_id in (
+select distinct am.nm_ne_id_in
+from nm_members cm,
+nm_members em,
+nm_members am,
+nm_inv_items_all
+where  cm.nm_ne_id_in =  '||p_ne_id||' 
+and cm.nm_ne_id_of = em.nm_ne_id_in
+and em.nm_ne_id_of = am.nm_ne_id_of
+and am.nm_end_mp > em.nm_begin_mp and am.nm_begin_mp < em.nm_end_mp
+and am.nm_obj_type = '||''''||p_asset_type||''''||' 
+and iit_inv_type =   '||''''||p_asset_type||''''||' 
+)';
 
    OPEN c_cursor FOR v_query;
    LOOP
