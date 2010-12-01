@@ -1,6 +1,24 @@
-drop table XODT_BKPD_POINT_RESULT;
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Oregon/Bike_Ped/Bike_ped_point.sql-arc   3.1   Dec 01 2010 10:08:30   Ian.Turnbull  $
+--       Module Name      : $Workfile:   Bike_ped_point.sql  $
+--       Date into PVCS   : $Date:   Dec 01 2010 10:08:30  $
+--       Date fetched Out : $Modtime:   Dec 01 2010 09:26:42  $
+--       PVCS Version     : $Revision:   3.1  $
+--
+--
+--   Author : P Stanton
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--
+drop table XODOT_BKPD_POINT_RESULT;
 
-CREATE TABLE XODT_BKPD_POINT_RESULT
+CREATE TABLE XODOT_BKPD_POINT_RESULT
 (
 adar_primary_key VARCHAR2(50)
 ,adar_ramp_TYP_CD          VARCHAR2(2)
@@ -45,7 +63,7 @@ adar_primary_key VARCHAR2(50)
 ,RTE_TYPE_OR_2	VARCHAR2 (4)
 );
 
-CREATE OR REPLACE FORCE VIEW XODOT_POINT_BKPD_V
+CREATE OR REPLACE FORCE VIEW TRANSINFO.XODOT_POINT_BKPD_V
 (
    ADAR_RAMP_TYP_CD,
    ADAR_XSP,
@@ -117,4 +135,4 @@ AS
           "RTE_TYPE_US_2",
           "RTE_TYPE_OR_1",
           "RTE_TYPE_OR_2"
-     FROM XODT_BKPD_POINT_RESULT;
+     FROM XODOT_BKPD_POINT_RESULT;
