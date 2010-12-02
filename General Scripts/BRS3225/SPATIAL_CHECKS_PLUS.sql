@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.0   Nov 16 2010 12:14:20   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.1   Dec 02 2010 10:08:40   Ian.Turnbull  $
 --       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.sql  $
---       Date into PVCS    : $Date:   Nov 16 2010 12:14:20  $
---       Date fetched Out : $Modtime:   Nov 16 2010 09:00:04  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Dec 02 2010 10:08:40  $
+--       Date fetched Out : $Modtime:   Dec 02 2010 10:07:56  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -40,6 +40,16 @@ set echo on
    from nm_themes_all , NM_THEME_GTYPES
 WHERE NTH_THEME_ID = NTG_THEME_ID(+)  
      and ntg_gtype is null;
+
+
+-- ============================================================
+-- Find all orphaned views
+-- Identfy views in nm_themes that are ot referencing their base theme tables
+-- ============================================================  
+   select nth_theme_id, nth_theme_name, nth_feature_table
+     from nm_themes_all, user_views
+    where nth_base_table_theme is null
+      and nth_feature_table = view_name;
 
 -- ============================================================
 -- Themes missing from USER_SDO_GEOM_METADATA
@@ -76,12 +86,14 @@ where nth_feature_table = object_name
 ORDER BY NTH_THEME_ID;
 
 -- ============================================================
- -- spatial tables/views with a null srid (may not be in nm_theme_all)
+-- spatial tables/views with a null srid (may not be in nm_theme_all)
 -- ============================================================
     select table_name, column_name 
-     from user_sdo_geom_metadata 
-   where srid is null
-order by table_name, column_name
+      from user_sdo_geom_metadata 
+     where srid is null
+     order by table_name, column_name;
+
+
 
 spool off
 
