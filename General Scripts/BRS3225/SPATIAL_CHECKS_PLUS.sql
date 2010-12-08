@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.1   Dec 02 2010 10:08:40   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.2   Dec 08 2010 15:37:18   Ian.Turnbull  $
 --       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.sql  $
---       Date into PVCS   : $Date:   Dec 02 2010 10:08:40  $
---       Date fetched Out : $Modtime:   Dec 02 2010 10:07:56  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Dec 08 2010 15:37:18  $
+--       Date fetched Out : $Modtime:   Dec 08 2010 11:30:24  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -92,6 +92,13 @@ ORDER BY NTH_THEME_ID;
       from user_sdo_geom_metadata 
      where srid is null
      order by table_name, column_name;
+
+-- ============================================================
+-- spatial tables/views with a feature table that doesnt exist (drop the theme, or correct the metadata to an object that does exist)
+-- ============================================================
+
+select  nth_theme_id, nth_theme_name, nth_feature_table  from nm_themes_all
+where not  nth_feature_table in    (select table_name from user_tables union select view_name from user_views);
 
 
 
