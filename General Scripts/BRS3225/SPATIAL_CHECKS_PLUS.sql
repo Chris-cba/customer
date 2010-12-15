@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.2   Dec 08 2010 15:37:18   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.3   Dec 15 2010 12:19:58   Ian.Turnbull  $
 --       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.sql  $
---       Date into PVCS   : $Date:   Dec 08 2010 15:37:18  $
---       Date fetched Out : $Modtime:   Dec 08 2010 11:30:24  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Dec 15 2010 12:19:58  $
+--       Date fetched Out : $Modtime:   Dec 15 2010 11:19:50  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -100,6 +100,14 @@ ORDER BY NTH_THEME_ID;
 select  nth_theme_id, nth_theme_name, nth_feature_table  from nm_themes_all
 where not  nth_feature_table in    (select table_name from user_tables union select view_name from user_views);
 
+-- ============================================================
+-- Entries in USer_sdo_geom_metadata that dont relate to an object in the database (delete the entry)
+-- ============================================================
+
+
+select table_name from user_sdo_geom_metadata 
+where table_name not in (select object_name from user_objects where object_type in ('VIEW', 'TABLE'))
+order by 1;
 
 
 spool off
