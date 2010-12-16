@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.8   Mar 18 2010 09:14:50   iturnbull  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/xnor_may_gurney_interface.pkb-arc   2.9   Dec 16 2010 09:08:08   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xnor_may_gurney_interface.pkb  $
---       Date into SCCS   : $Date:   Mar 18 2010 09:14:50  $
---       Date fetched Out : $Modtime:   Mar 18 2010 09:11:40  $
---       PVCS Version     : $Revision:   2.8  $
+--       Date into SCCS   : $Date:   Dec 16 2010 09:08:08  $
+--       Date fetched Out : $Modtime:   Dec 16 2010 08:21:52  $
+--       PVCS Version     : $Revision:   2.9  $
 --       Originally based on SCCS version 1.6
 --
 --
@@ -60,7 +60,7 @@ CREATE OR REPLACE PACKAGE BODY xnor_may_gurney_interface AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.8  $';
+  g_body_sccsid                CONSTANT varchar2(2000) := '$Revision:   2.9  $';
 
   g_package_name               CONSTANT varchar2(30) := 'xnor_may_gurney_interface';
   
@@ -915,6 +915,7 @@ BEGIN
   FROM   (SELECT   iwol.iwol_cost_code cost_code
           FROM     interface_wol iwol
           WHERE    iwol_id = pi_wol_id
+          AND      iwol.iwol_cost_code IS NOT NULL
           ORDER BY iwol_transaction_id DESC)
   WHERE ROWNUM = 1;
 
