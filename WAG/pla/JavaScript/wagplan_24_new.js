@@ -4,11 +4,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/pla/JavaScript/wagplan_24_new.js-arc   3.0   Jun 18 2010 13:54:44   iturnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/pla/JavaScript/wagplan_24_new.js-arc   3.1   Jan 05 2011 13:57:02   Ian.Turnbull  $
 --       Module Name      : $Workfile:   wagplan_24_new.js  $
---       Date into PVCS   : $Date:   Jun 18 2010 13:54:44  $
---       Date fetched Out : $Modtime:   Jun 18 2010 13:52:36  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jan 05 2011 13:57:02  $
+--       Date fetched Out : $Modtime:   Jan 05 2011 13:53:56  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 
 --
@@ -182,10 +182,11 @@ function initMap(){
 	
    mapview.setZoomLevel(mapZoom);
 
-   var centre_mark = MVFOI.createMarkerFOI("1",mpoint,"/i/centre_mark.gif");
-   centre_mark.setWidth(50);
-   centre_mark.setHeight(50);
-   mapview.addFOI(centre_mark);
+   //var centre_mark = MVFOI.createMarkerFOI("1",mpoint,"/i/centre_mark.gif");
+   //centre_mark.setWidth(50);
+   //centre_mark.setHeight(50);
+   //mapview.addFOI(centre_mark);
+  // mapview.setCenterMark("/i/centre_mark.gif", 50, 50);
     
     //mapview.attachEventListener(MVEvent.ZOOM_LEVEL_CHANGE, getCurrentMapState);
     //mapview.attachEventListener(MVEvent.RECENTER, getCurrentMapState);
@@ -214,12 +215,12 @@ function getCurrentMapState(bZoom, aZoom){
   
   
   
-function showMap(xpos, ypos)
+function showMap(xpos, ypos, docID)
 {
    initMap();
 
    
-   PEMbyCAT('PLAN');
+   PEMbyCAT('PLAN',docID);
    mapview.display();
 
 }
@@ -247,18 +248,29 @@ function zoomToPEM(doc_id)
    mapview.addThemeBasedFOI(xthemebasedfoi);
 }
 
-function PEMbyCAT(doc_category)
+function PEMbyCAT(doc_category,docID)
 {
    removeTemplated();
 
-   var xthemebasedfoi = new MVThemeBasedFOI('locator',dataSource + '.' +'ENQUIRIES BY CAT TEMPLATED');
-   xthemebasedfoi.setQueryParameters(doc_category);
+   //var xthemebasedfoi = new MVThemeBasedFOI('locator',dataSource + '.' +'ENQUIRIES BY CAT TEMPLATED');
+   
+   var xthemebasedfoi = new MVThemeBasedFOI('locator',dataSource + '.' +'ENQUIRIES_TEMPLATED');
+   
+   
+   //xthemebasedfoi.setQueryParameters(doc_category);
+   xthemebasedfoi.setQueryParameters(docID);
+   
    xthemebasedfoi.setBringToTopOnMouseOver(true);
    xthemebasedfoi.enableInfoTip(true);
    xthemebasedfoi.setVisible(true);
    xthemebasedfoi.setInfoWindowStyle("MVInfoWindowStyle1");
-//   xthemebasedfoi.setBoundingTheme(true);
+   xthemebasedfoi.setBoundingTheme(true);
    mapview.addThemeBasedFOI(xthemebasedfoi);
+   
+   
+   
+   
+   
 }
 
 function mapPrint()
