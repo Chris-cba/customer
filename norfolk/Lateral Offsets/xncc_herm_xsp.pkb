@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.0   Dec 24 2010 14:12:24   Ade.Edwards  $
---       Module Name      : $Workfile:   xncc_herm_xsp.pkb  $
---       Date into PVCS   : $Date:   Dec 24 2010 14:12:24  $
---       Date fetched Out : $Modtime:   Dec 23 2010 14:02:08  $
---       Version          : $Revision:   3.0  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.1   Jan 10 2011 11:14:52   Chris.Strettle  $
+--       Module Name      : $Workfile:   XNCC_HERM_XSP_fix.pkb  $
+--       Date into PVCS   : $Date:   Jan 10 2011 11:14:52  $
+--       Date fetched Out : $Modtime:   Jan 10 2011 11:13:58  $
+--       Version          : $Revision:   3.1  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.0  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.1  $';
 
   g_package_name CONSTANT varchar2(30) := 'XNCC_HERM_XSP';
 --
@@ -115,8 +115,8 @@ PROCEDURE populate_herm_xsp( p_ne_id nm_elements.ne_id%TYPE
                          , p_effective_date DATE DEFAULT SYSDATE) AS
 BEGIN
 
-if nm3get.get_ne(p_ne_id_new).ne_nt_type = 'ESU' then
-         insert into herm_xsp( hxo_ne_id_of
+IF nm3get.get_ne(p_ne_id_new).ne_nt_type = 'ESU' THEN
+         INSERT INTO herm_xsp( hxo_ne_id_of
                              , hxo_nwx_x_sect
                              , hxo_start_date
                              , hxo_offset
@@ -124,7 +124,7 @@ if nm3get.get_ne(p_ne_id_new).ne_nt_type = 'ESU' then
                              , hxo_xsp_offset
                              , hxo_herm_dir_flag
                              , hxo_xsp_descr)
-         select p_ne_id_new
+         SELECT p_ne_id_new
               , nwx_x_sect
               , p_effective_date
               , nwx_offset*nm_cardinality
@@ -132,18 +132,21 @@ if nm3get.get_ne(p_ne_id_new).ne_nt_type = 'ESU' then
               , nwx_offset
               , nm_cardinality 
               , nwx_descr
-  from nm_nw_xsp, nm_elements, nm_members_all
-  where ne_id = nm_ne_id_in
-  and   nwx_nsc_sub_class = ne_sub_class
-  and nm_ne_id_of = p_ne_id
-  and nm_obj_type = 'SECT'
-  and nwx_nw_type = 'HERM'
-  and nm_end_date IS NULL
-  and NOT EXISTS (SELECT 'X' 
+  FROM nm_nw_xsp, nm_elements, nm_members_all
+  WHERE ne_id = nm_ne_id_in
+  AND   nwx_nsc_sub_class = ne_sub_class
+  AND nm_ne_id_of = p_ne_id
+  AND nm_obj_type = 'SECT'
+  AND nwx_nw_type = 'HERM'
+  AND nm_end_date IS NULL
+  AND NOT EXISTS (SELECT 'X' 
                     FROM herm_xsp 
                    WHERE hxo_ne_id_of = p_ne_id_new 
                      AND hxo_nwx_x_sect = nwx_x_sect
                      AND hxo_start_date = p_effective_date);
+--
+  close_herm_xsp(p_ne_id => p_ne_id);
+--
 end if;       
 
 END;
@@ -153,12 +156,44 @@ END;
 PROCEDURE delete_herm_xsp( p_ne_id nm_elements.ne_id%TYPE
                          ) AS
 BEGIN
-  if nm3get.get_ne(p_ne_id).ne_nt_type = 'ESU' 
-  then
-           delete from herm_xsp
-           where hxo_ne_id_of = p_ne_id;
+  IF nm3get.get_ne_all(p_ne_id).ne_nt_type = 'ESU' 
+  THEN
+           DELETE FROM herm_xsp
+           WHERE hxo_ne_id_of = p_ne_id;
            
-  end if;       
+  END IF;
 END;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE close_herm_xsp( p_ne_id nm_elements.ne_id%TYPE
+                        ) AS
+BEGIN
+  IF nm3get.get_ne_all(p_ne_id).ne_nt_type = 'ESU' 
+  THEN
+     UPDATE herm_xsp
+        SET hxo_end_date = nm3user.get_effective_date
+      WHERE hxo_ne_id_of = p_ne_id
+        AND hxo_end_date IS NULL;
+           
+  END IF;
+END;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE unclose_herm_xsp( p_ne_id nm_elements.ne_id%TYPE
+                         ) AS
+BEGIN
+  IF nm3get.get_ne_all(p_ne_id).ne_nt_type = 'ESU' 
+  THEN
+     UPDATE herm_xsp
+     SET hxo_end_date = NULL
+     where hxo_ne_id_of = p_ne_id;
+           
+  END IF;
+END;
+--
+-----------------------------------------------------------------------------
+--
 END XNCC_HERM_XSP;
 /
