@@ -13,8 +13,8 @@ prompt  APPLICATION 624 - wag_planning_v24
 -- Application Export:
 --   Application:     624
 --   Name:            wag_planning_v24
---   Date and Time:   14:01 Wednesday January 5, 2011
---   Exported By:     ITURNBULL
+--   Date and Time:   12:42 Friday January 7, 2011
+--   Exported By:     WAG
 --   Flashback:       0
 --   Export Type:     Application Export
 --   Version: 3.2.1.00.11
@@ -26,7 +26,7 @@ prompt  APPLICATION 624 - wag_planning_v24
  
 -- Application Statistics:
 --   Pages:                 6
---     Items:              38
+--     Items:              37
 --     Computations:        0
 --     Validations:         0
 --     Processes:          13
@@ -145,7 +145,7 @@ wwv_flow_api.create_flow(
   p_default_region_template=> 63125835672599618 + wwv_flow_api.g_id_offset,
   p_error_template    => 63118740619599608 + wwv_flow_api.g_id_offset,
   p_page_protection_enabled_y_n=> 'Y',
-  p_checksum_salt_last_reset => '20110105121409',
+  p_checksum_salt_last_reset => '20110107114759',
   p_max_session_length_sec=> 28800,
   p_home_link         => 'f?p=&APP_ID.:1:&SESSION.',
   p_flow_language     => 'en-gb',
@@ -187,11 +187,11 @@ wwv_flow_api.create_flow(
   p_default_menur_template => 63121954153599613 + wwv_flow_api.g_id_offset,
   p_default_listr_template => 63125835672599618 + wwv_flow_api.g_id_offset,
   p_substitution_string_01 => 'FRAMEWORK_VERSION',
-  p_substitution_value_01  => '$Revision:   3.6  $',
+  p_substitution_value_01  => '$Revision:   3.7  $',
   p_substitution_string_02 => 'MSG_COPYRIGHT',
   p_substitution_value_02  => '&copy: copyright exor corporation ltd 2009',
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss=> '20110105121409',
+  p_last_upd_yyyymmddhh24miss=> '20110107114759',
   p_required_roles=> wwv_flow_utilities.string_to_table2(''));
  
  
@@ -624,7 +624,7 @@ wwv_flow_api.create_page(
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20101216140201',
+  p_last_upd_yyyymmddhh24miss => '20090706145042',
   p_page_is_public_y_n=> 'N',
   p_protection_level=> 'N',
   p_page_comment  => '');
@@ -928,7 +928,6 @@ wwv_flow_api.create_page_item(
   p_item_plug_id => 78963422633904346+wwv_flow_api.g_id_offset,
   p_use_cache_before_default=> 'YES',
   p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_prompt=>'prop ref',
   p_source=>'P101_PROPERTY_REF_PARAMETER',
   p_source_type=> 'ITEM',
   p_display_as=> 'TEXT',
@@ -1049,7 +1048,7 @@ wwv_flow_api.create_page(
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20101216142603',
+  p_last_upd_yyyymmddhh24miss => '20110107114759',
   p_page_comment  => '');
  
 wwv_flow_api.set_page_help_text(p_flow_id=>wwv_flow.g_flow_id,p_flow_step_id=>1,p_text=>h);
@@ -1081,9 +1080,9 @@ s:=s||'select '||chr(10)||
 '     hig_users'||chr(10)||
 'where doc_id = wprcl_doc_id'||chr(10)||
 'and   doc_compl_user_id = hus_user_id'||chr(10)||
-'and   wprcl_wprc_uprn = :P0_PROPERTY_REF_PARAM';
+'and   wprcl_wprc_uprn = :p0_property_ref_param';
 
-s:=s||'ETER'||chr(10)||
+s:=s||'eter'||chr(10)||
 'order by wprcl_seq';
 
 wwv_flow_api.create_report_region (
@@ -1605,45 +1604,6 @@ wwv_flow_api.create_page_item(
   p_field_alignment  => 'LEFT',
   p_field_template => 63136755972599641+wwv_flow_api.g_id_offset,
   p_is_persistent=> 'Y',
-  p_item_comment => '');
- 
- 
-end;
-/
-
-declare
-    h varchar2(32767) := null;
-begin
-wwv_flow_api.create_page_item(
-  p_id=>2461719824838375 + wwv_flow_api.g_id_offset,
-  p_flow_id=> wwv_flow.g_flow_id,
-  p_flow_step_id=> 1,
-  p_name=>'P1_PROPERTY_REF',
-  p_data_type=> 'VARCHAR',
-  p_accept_processing=> 'REPLACE_EXISTING',
-  p_item_sequence=> 1029,
-  p_item_plug_id => 21099205192790367+wwv_flow_api.g_id_offset,
-  p_use_cache_before_default=> 'YES',
-  p_item_default_type => 'STATIC_TEXT_WITH_SUBSTITUTIONS',
-  p_source_type=> 'STATIC',
-  p_display_as=> 'TEXT',
-  p_lov_columns=> 1,
-  p_lov_display_null=> 'NO',
-  p_lov_translated=> 'N',
-  p_cSize=> 30,
-  p_cMaxlength=> 2000,
-  p_cHeight=> 1,
-  p_cAttributes=> 'nowrap',
-  p_begin_on_new_line => 'YES',
-  p_begin_on_new_field=> 'YES',
-  p_colspan => 1,
-  p_rowspan => 1,
-  p_label_alignment  => 'LEFT',
-  p_field_alignment  => 'LEFT',
-  p_display_when_type=>'NEVER',
-  p_is_persistent=> 'Y',
-  p_lov_display_extra=>'NO',
-  p_protection_level => 'N',
   p_item_comment => '');
  
  
@@ -2238,28 +2198,22 @@ p:=p||'er := :p101_doc_id_parameter;'||chr(10)||
 'from wag_plan_record_card_lines'||chr(10)||
 'where wprcl_wprc_uprn = :p0_property_ref_parameter;'||chr(10)||
 ''||chr(10)||
-'begin'||chr(10)||
 'select dec_ref'||chr(10)||
 'into :p1_la_ref'||chr(10)||
 'from doc_enquiry_contacts'||chr(10)||
 'where dec_doc_id = :p0_doc_id_parameter'||chr(10)||
 'and rownum = 1;'||chr(10)||
-'exception'||chr(10)||
-'when no_data_found then'||chr(10)||
-'  null;'||chr(10)||
-'end;'||chr(10)||
 ''||chr(10)||
 'select count(1)'||chr(10)||
 'into :p0_doc_assoc_count'||chr(10)||
 'from   docs,'||chr(10)||
-'   ';
-
-p:=p||'    doc_assocs,'||chr(10)||
+'       doc_assocs,'||chr(10)||
 '       doc_locations'||chr(10)||
-'where  das_rec_id = :P0_DOC_ID_PARAMETER'||chr(10)||
+'where  das_rec_i';
+
+p:=p||'d = :P0_DOC_ID_PARAMETER'||chr(10)||
 'and    das_doc_id = doc_id'||chr(10)||
 'and    doc_dlc_id = dlc_id;'||chr(10)||
-''||chr(10)||
 ''||chr(10)||
 'insert into wag_plan_record_card'||chr(10)||
 '  (wprc_uprn,'||chr(10)||
@@ -2271,34 +2225,34 @@ p:=p||'    doc_assocs,'||chr(10)||
 'select :p0_property_ref_parameter,'||chr(10)||
 '       administrative_area,'||chr(10)||
 '       location,'||chr(10)||
-'       ''CZ-701-''||:p0_doc_id_parameter,'||chr(10)||
-'       x_coordina';
-
-p:=p||'te,'||chr(10)||
+'       ''CZ-701-''||hco_code||''-''||:p0_doc_id_parameter,'||chr(10)||
+'       x_coordinate,'||chr(10)||
 '       y_coordinate'||chr(10)||
-'from nlpg_properties_v'||chr(10)||
-'where uprn = :p0_property_ref_parameter'||chr(10)||
-'and not exists ('||chr(10)||
-'select ''x'''||chr(10)||
-'from wag_plan_record_card'||chr(10)||
-'where wprc_uprn = :p0_property_ref_parameter);'||chr(10)||
+'from  nlpg_prop';
+
+p:=p||'erties_v'||chr(10)||
+'    , hig_codes'||chr(10)||
+'where uprn        = :p0_property_ref_parameter'||chr(10)||
+'and   hco_domain  = ''PLANAPPS_REGIONS'''||chr(10)||
+'and   hco_meaning = administrative_area'||chr(10)||
+'and not exists ( select ''x'''||chr(10)||
+'                 from   wag_plan_record_card'||chr(10)||
+'                 where  wprc_uprn = :p0_property_ref_parameter);'||chr(10)||
 ''||chr(10)||
 'insert into wag_plan_record_card_lines'||chr(10)||
 '   (wprcl_wprc_uprn,'||chr(10)||
 '    wprcl_seq,'||chr(10)||
 '    wprcl_doc_id)'||chr(10)||
-'select :p0_property_ref_parameter,:P1_LAST_LINE_SEQ+1,:p0_doc_id_parameter'||chr(10)||
+'select :p0_proper';
+
+p:=p||'ty_ref_parameter,:P1_LAST_LINE_SEQ+1,:p0_doc_id_parameter'||chr(10)||
 'from dual'||chr(10)||
 'where not exists ('||chr(10)||
 'select ''x'''||chr(10)||
-'fro';
-
-p:=p||'m wag_plan_record_card_lines'||chr(10)||
+'from wag_plan_record_card_lines'||chr(10)||
 'where wprcl_wprc_uprn = :p0_property_ref_parameter'||chr(10)||
 'and wprcl_doc_id = :p0_doc_id_parameter);'||chr(10)||
-''||chr(10)||
 'end;'||chr(10)||
-''||chr(10)||
 'end;';
 
 wwv_flow_api.create_page_process(
@@ -2311,8 +2265,6 @@ wwv_flow_api.create_page_process(
   p_process_name=> 'pre_populate_record_card',
   p_process_sql_clob => p, 
   p_process_error_message=> '',
-  p_process_when=>'',
-  p_process_when_type=>'ALWAYS',
   p_process_success_message=> '',
   p_process_is_stateful_y_n=>'N',
   p_process_comment=>'');
@@ -2466,7 +2418,7 @@ wwv_flow_api.create_page(
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
   p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20101216155549',
+  p_last_upd_yyyymmddhh24miss => '20100223115116',
   p_page_comment  => '');
  
 end;
@@ -3273,7 +3225,7 @@ p:=p||'begin'||chr(10)||
 'select administrative_area,'||chr(10)||
 '       ''CZ-701-''||:p2_doc_id,'||chr(10)||
 '       doc_date_issued,'||chr(10)||
-'--       hus_name,'||chr(10)||
+'       hus_name,'||chr(10)||
 '       x_coordinate,'||chr(10)||
 '       y_coordinate,'||chr(10)||
 '       location,'||chr(10)||
@@ -3283,20 +3235,20 @@ p:=p||'begin'||chr(10)||
 ':P2_LPA,'||chr(10)||
 ':P2_FILE_REF,'||chr(10)||
 ':P2_DATE,'||chr(10)||
-'--:P2_APPLICANT,'||chr(10)||
+':P2_APPLICANT,'||chr(10)||
 ':P2_OSGR_X,'||chr(10)||
 ':P2_OSGR_Y,'||chr(10)||
 ':P2_LOCATION,'||chr(10)||
 ':P2_PROPOSAL,'||chr(10)||
 ':P2_TARGET'||chr(10)||
 'from (select * from nlpg_properties_v order by logical_status),'||chr(10)||
-'     docs'||chr(10)||
-'';
+'     docs,'||chr(10)||
+'   ';
 
-p:=p||'--,    hig_users'||chr(10)||
+p:=p||'  hig_users'||chr(10)||
 'where uprn = :p0_property_ref_parameter'||chr(10)||
 'and   doc_id = :p2_doc_id'||chr(10)||
-'--and   doc_compl_user_id = hus_user_id'||chr(10)||
+'and   doc_compl_user_id = hus_user_id'||chr(10)||
 'and rownum = 1;'||chr(10)||
 ''||chr(10)||
 'select wprcl_registry_file'||chr(10)||
@@ -3317,8 +3269,6 @@ wwv_flow_api.create_page_process(
   p_process_name=> 'populate_front_sheet',
   p_process_sql_clob => p, 
   p_process_error_message=> '',
-  p_process_when=>'',
-  p_process_when_type=>'ALWAYS',
   p_process_success_message=> '',
   p_process_is_stateful_y_n=>'N',
   p_process_comment=>'');
@@ -3339,22 +3289,12 @@ begin
 p:=p||'begin'||chr(10)||
 ':p2_doc_id := :P0_doc_id_parameter;'||chr(10)||
 ''||chr(10)||
-'/*select dec_ref'||chr(10)||
+'select dec_ref'||chr(10)||
 'into :p2_la_ref'||chr(10)||
 'from doc_enquiry_contacts'||chr(10)||
 'where dec_doc_id = :p2_doc_id'||chr(10)||
 'and rownum = 1;'||chr(10)||
-'*/'||chr(10)||
 ''||chr(10)||
-'select dec_ref,RTRIM (hct_first_name) || '' '' || hct_surname'||chr(10)||
-'into :p2_la_ref, :p2_applicant'||chr(10)||
-'from doc_enquiry_contacts,hig_contacts h'||chr(10)||
-'where dec_doc_id = :p2_doc_id'||chr(10)||
-'and dec_hct_id=hct_id'||chr(10)||
-'and rownum = 1;'||chr(10)||
-''||chr(10)||
-'exception when no_data_found then'||chr(10)||
-'  null;'||chr(10)||
 'end;';
 
 wwv_flow_api.create_page_process(
@@ -3912,7 +3852,7 @@ wwv_flow_api.create_page(
   p_name   => 'Map',
   p_alias  => 'MAP',
   p_step_title=> 'Map',
-  p_html_page_onload=>'onload="showMap(&P0_OSGR_X. , &P0_OSGR_Y., &P0_DOC_ID_PARAMETER.);first_field()"'||chr(10)||
+  p_html_page_onload=>'onload="showMap(&P0_OSGR_X. , &P0_OSGR_Y.);first_field()"'||chr(10)||
 '',
   p_step_sub_title_type => 'TEXT_WITH_SUBSTITUTIONS',
   p_first_item=> 'NO_FIRST_ITEM',
@@ -3922,8 +3862,8 @@ wwv_flow_api.create_page(
   p_html_page_header => ' ',
   p_step_template => '',
   p_required_patch=> null + wwv_flow_api.g_id_offset,
-  p_last_updated_by => 'WAG',
-  p_last_upd_yyyymmddhh24miss => '20110105121409',
+  p_last_updated_by => 'ITURNBULL',
+  p_last_upd_yyyymmddhh24miss => '20100803094539',
   p_page_is_public_y_n=> 'N',
   p_protection_level=> 'N',
   p_page_comment  => '');
