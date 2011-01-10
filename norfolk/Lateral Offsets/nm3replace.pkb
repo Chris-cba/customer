@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.1   Jan 10 2011 10:35:42   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.2   Jan 10 2011 10:40:06   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3replace.pkb  $
---       Date into PVCS   : $Date:   Jan 10 2011 10:35:42  $
---       Date fetched Out : $Modtime:   Jan 10 2011 10:33:38  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Jan 10 2011 10:40:06  $
+--       Date fetched Out : $Modtime:   Jan 10 2011 10:38:56  $
+--       PVCS Version     : $Revision:   3.2  $
 --
 --
 --   Author : ITurnbull
@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --	Copyright (c) exor corporation ltd, 2000
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.1  $"';
+   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.2  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name    CONSTANT  VARCHAR2(30)   := 'nm3replace';
 ------------------------------------------------------------------------------------------------
@@ -658,7 +658,6 @@ END check_other_products;
        -- CWS MOVED HERE SO MEMBERS CAN BE UPDATED BEFORE CREATING SPATIAL DATA. THIS CAUSED LAT OFFSET ISSUE
        nm3sdm.replace_element_shape( p_ne_id_old => p_ne_id
                                    , p_ne_id_new => p_ne_id_new);
-       --NM3SDO.Change_Affected_Shapes(p_layer => nm3sdm.get_nt_theme ('ESU'), p_ne_id => p_ne_id_new );
  
 	     replace_other_products ( p_ne_id
                                  ,p_ne_id_new
