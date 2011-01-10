@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.0   Dec 24 2010 14:12:26   Ade.Edwards  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.1   Jan 10 2011 10:35:42   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3replace.pkb  $
---       Date into PVCS   : $Date:   Dec 24 2010 14:12:26  $
---       Date fetched Out : $Modtime:   Dec 21 2010 12:59:32  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jan 10 2011 10:35:42  $
+--       Date fetched Out : $Modtime:   Jan 10 2011 10:33:38  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : ITurnbull
@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --	Copyright (c) exor corporation ltd, 2000
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.0  $"';
+   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.1  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name    CONSTANT  VARCHAR2(30)   := 'nm3replace';
 ------------------------------------------------------------------------------------------------
@@ -234,6 +234,7 @@ END get_body_version;
          l_rec_neh.neh_old_ne_length  := l_orig_ne_length;
          l_rec_neh.neh_new_ne_length  := v_ne_length;
          l_rec_neh.neh_descr          := p_neh_descr; --CWS 0108990 12/03/2010
+         
          nm3nw_edit.ins_neh(l_rec_neh); --CWS 0108990 12/03/2010
       END;
    END;
@@ -602,7 +603,6 @@ END check_other_products;
                      );
    END IF;
 --
-
 --      if check_inv_items_replaceable( p_ne_id ) then
          create_new_element( p_ne_id
                             ,p_ne_id_new
@@ -628,23 +628,23 @@ END check_other_products;
                             ,p_ne_version_no
                             ,p_neh_descr --CWS 0108990 12/03/2010
                            );
-       -- CWS
+       -- CWS Lateral Offsets
        xncc_herm_xsp.populate_herm_xsp( p_ne_id          => p_ne_id 
                                       , p_ne_id_new      => p_ne_id_new
                                       , p_effective_date => p_effective_date
                                       );
-                                                         
+       
        /*IF HIG.GET_SYSOPT(
        EXECUTE IMMEDIATE 'xncc_herm_xsp.populate_herm_xsp( p_ne_id => p_ne_id 
                                                          , p_ne_id_new => p_ne_id_new
                                                          , p_effective_date => p_effective_date
                                                          );'*/
 
-       --RAC - Replicate the shape of the original element.
+       /*--RAC - Replicate the shape of the original element.
        --AE - added code
          nm3sdm.replace_element_shape
                               (p_ne_id_old => p_ne_id
-                             , p_ne_id_new => p_ne_id_new);
+                             , p_ne_id_new => p_ne_id_new);*/
 
          replace_group_members( p_ne_id
                                ,p_ne_id_new
@@ -655,7 +655,11 @@ END check_other_products;
                              ,p_ne_id_new
                              ,p_effective_date
                             );
-
+       -- CWS MOVED HERE SO MEMBERS CAN BE UPDATED BEFORE CREATING SPATIAL DATA. THIS CAUSED LAT OFFSET ISSUE
+       nm3sdm.replace_element_shape( p_ne_id_old => p_ne_id
+                                   , p_ne_id_new => p_ne_id_new);
+       --NM3SDO.Change_Affected_Shapes(p_layer => nm3sdm.get_nt_theme ('ESU'), p_ne_id => p_ne_id_new );
+ 
 	     replace_other_products ( p_ne_id
                                  ,p_ne_id_new
 	        					 ,p_effective_date
@@ -672,7 +676,8 @@ END check_other_products;
          end_date_element ( p_ne_id
                            ,p_effective_date
                           );
-                                 
+        
+        
      -- end if;
      -- Insert the stored NM_MEMBER_HISTORY records   
         nm3merge.ins_nmh;
