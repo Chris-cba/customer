@@ -4,11 +4,11 @@ IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3undo.pkb-arc   3.0   Dec 24 2010 14:12:26   Ade.Edwards  $
---       Module Name      : $Workfile:   nm3undo.pkb  $
---       Date into PVCS   : $Date:   Dec 24 2010 14:12:26  $
---       Date fetched Out : $Modtime:   Dec 21 2010 14:10:58  $
---       PVCS Version     : $Revision:   3.0  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3undo.pkb-arc   3.1   Jan 10 2011 10:50:26   Chris.Strettle  $
+--       Module Name      : $Workfile:   NM3UNDO.pkb  $
+--       Date into PVCS   : $Date:   Jan 10 2011 10:50:26  $
+--       Date fetched Out : $Modtime:   Jan 10 2011 10:48:12  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --   Author : ITurnbull
 --
@@ -19,7 +19,7 @@ IS
 -- Copyright (c) exor corporation ltd, 2004
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid    CONSTANT VARCHAR2 (2000) := '"$Revision:   3.0  $"';
+   g_body_sccsid    CONSTANT VARCHAR2 (2000) := '"$Revision:   3.1  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name   CONSTANT VARCHAR2 (2000) := 'nm3undo';
 --
@@ -1252,9 +1252,10 @@ END undo_scheme;
                              );
 
          error_loc := 43 ;
-         --CWS
+         --CWS Lateral Offsets
          xncc_herm_xsp.delete_herm_xsp(l_ne_id_1);
          xncc_herm_xsp.delete_herm_xsp(l_ne_id_2);
+         xncc_herm_xsp.unclose_herm_xsp(p_ne_id);
          --
          IF Nm3net.element_is_a_datum (pi_ne_id => p_ne_id)
          THEN
@@ -1652,8 +1653,10 @@ END undo_scheme;
                               pi_ne_id_new1      => v_ne_id,
                               pi_ne_id_new2      => NULL
                              );
-         --CWS
+         --CWS Lateral Offsets
          xncc_herm_xsp.delete_herm_xsp(v_ne_id);
+         xncc_herm_xsp.unclose_herm_xsp(p_ne_id_1);
+         xncc_herm_xsp.unclose_herm_xsp(p_ne_id_2);
          --
          IF Nm3net.element_is_a_datum (pi_ne_id => v_ne_id)
          THEN
@@ -1802,31 +1805,32 @@ END undo_scheme;
                Nm3nwad.do_ad_unreplace (pi_old_ne_id => v_ne_id);
             END IF;
 
---            UPDATE NM_MEMBERS_ALL
---            SET nm_end_date = NULL
---            WHERE nm_ne_id_of = p_ne_id
---         AND nm_type = 'G'
---              AND TRUNC(nm_date_modified) = ( SELECT MAX(TRUNC(nm_date_modified))
---                                       FROM NM_MEMBERS_ALL
---                                       WHERE nm_ne_id_of = p_ne_id
---                                     );
---
---            -- unclose nm_members p_ne_id
---       -- inv items that are not  closed
---            UPDATE NM_MEMBERS_ALL
---            SET nm_end_date = NULL
---            WHERE nm_ne_id_of = p_ne_id
---         AND nm_type = 'I'
---         AND nm_ne_id_in IN ( SELECT iit_ne_id
---                              FROM NM_INV_ITEMS_ALL
---                         WHERE iit_end_date IS NULL
---                           AND iit_inv_type = nm_obj_type);
+          --            UPDATE NM_MEMBERS_ALL
+          --            SET nm_end_date = NULL
+          --            WHERE nm_ne_id_of = p_ne_id
+          --         AND nm_type = 'G'
+          --              AND TRUNC(nm_date_modified) = ( SELECT MAX(TRUNC(nm_date_modified))
+          --                                       FROM NM_MEMBERS_ALL
+          --                                       WHERE nm_ne_id_of = p_ne_id
+          --                                     );
+          --
+          --            -- unclose nm_members p_ne_id
+          --       -- inv items that are not  closed
+          --            UPDATE NM_MEMBERS_ALL
+          --            SET nm_end_date = NULL
+          --            WHERE nm_ne_id_of = p_ne_id
+          --         AND nm_type = 'I'
+          --         AND nm_ne_id_in IN ( SELECT iit_ne_id
+          --                              FROM NM_INV_ITEMS_ALL
+          --                         WHERE iit_end_date IS NULL
+          --                           AND iit_inv_type = nm_obj_type);
             -- delete the history
             delete_element_history (p_ne_id, c_replace);
             --
             delete_element_history_for_new(pi_ne_id_new => v_ne_id);
-            -- CWS
+            -- CWS lateral offsets
             xncc_herm_xsp.delete_herm_xsp(v_ne_id);
+            xncc_herm_xsp.unclose_herm_xsp(p_ne_id);
             --
             -- delete nm_elements v_ne_id
             delete_element (v_ne_id);
