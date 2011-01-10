@@ -1,12 +1,12 @@
-CREATE OR REPLACE PACKAGE BODY Nm3split IS
+CREATE OR REPLACE PACKAGE BODY NORFOLK.Nm3split IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3split.pkb-arc   3.0   Dec 24 2010 14:12:26   Ade.Edwards  $
---       Module Name      : $Workfile:   nm3split.pkb  $
---       Date into PVCS   : $Date:   Dec 24 2010 14:12:26  $
---       Date fetched Out : $Modtime:   Oct 19 2010 17:00:32  $
---       PVCS Version     : $Revision:   3.0  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3split.pkb-arc   3.1   Jan 10 2011 10:18:08   Chris.Strettle  $
+--       Module Name      : $Workfile:   NM3SPLIT.pkb  $
+--       Date into PVCS   : $Date:   Jan 10 2011 10:18:08  $
+--       Date fetched Out : $Modtime:   Jan 07 2011 17:34:12  $
+--       PVCS Version     : $Revision:   3.1  $
 --
 --
 --   Author : ITurnbull
@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE BODY Nm3split IS
 -- 03.06.08 PT added p_no_purpose parameter throughout where node is created.
 
 --
-   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.0  $"';
+   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.1  $"';
 --  g_body_sccsid is the SCCS ID for the package body
 --
    g_package_name    CONSTANT  VARCHAR2(2000) := 'nm3split';
@@ -1252,18 +1252,28 @@ BEGIN
                  ,p_ne_version_no_2     => p_ne_version_no_2
                  ,p_neh_descr           => p_neh_descr --CWS 0108990 12/03/2010
                  );
+    -- CWS Lateral Offsets
+    xncc_herm_xsp.populate_herm_xsp( p_ne_id => p_ne_id 
+                                   , p_ne_id_new => p_ne_id_1
+                                   , p_effective_date => p_effective_date
+                                   );
 
+
+    xncc_herm_xsp.populate_herm_xsp( p_ne_id => p_ne_id 
+                                   , p_ne_id_new => p_ne_id_2
+                                   , p_effective_date => p_effective_date
+                                   );
 --
 -- RAC - split the shapes
 -- AE - put changes in
 --
-
-   Nm3sdm.split_element_shapes( p_ne_id => p_ne_id,
+                                                         
+/*   Nm3sdm.split_element_shapes( p_ne_id => p_ne_id,
                                 p_measure => l_split_measure,
                                 p_ne_id_1 => p_ne_id_1,
                                 p_ne_id_2 => p_ne_id_2,
                                 p_x => l_grid_east,
-                                p_y => l_grid_north);
+                                p_y => l_grid_north);*/
 --
    split_members (p_ne_id          => p_ne_id
                  ,p_ne_id_1        => p_ne_id_1
@@ -1271,6 +1281,14 @@ BEGIN
                  ,p_split_measure  => l_split_measure
                  ,p_effective_date => p_effective_date
                  );
+--
+ -- CWS MOVED HERE FOR LAT OFFSETS
+   Nm3sdm.split_element_shapes( p_ne_id => p_ne_id,
+                                p_measure => l_split_measure,
+                                p_ne_id_1 => p_ne_id_1,
+                                p_ne_id_2 => p_ne_id_2,
+                                p_x => l_grid_east,
+                                p_y => l_grid_north);
 --
    split_other_products (p_ne_id          => p_ne_id
                         ,p_ne_id_1        => p_ne_id_1
