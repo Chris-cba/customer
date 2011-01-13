@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.0   Dec 21 2010 15:55:48   Ade.Edwards  $
---       Module Name      : $Workfile:   nm3sdo_dynseg.pkb  $
---       Date into PVCS   : $Date:   Dec 21 2010 15:55:48  $
---       Date fetched Out : $Modtime:   Dec 21 2010 15:30:20  $
---       Version          : $Revision:   3.0  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.1   Jan 13 2011 10:55:42   Chris.Strettle  $
+--       Module Name      : $Workfile:   NM3SDO_DYNSEG.pkb  $
+--       Date into PVCS   : $Date:   Jan 13 2011 10:55:42  $
+--       Date fetched Out : $Modtime:   Jan 13 2011 10:52:42  $
+--       Version          : $Revision:   3.1  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,9 +16,9 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.0  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.1  $';
 
-  g_package_name CONSTANT varchar2(30) := 'nm3sdo_dynseg';
+  g_package_name CONSTANT varchar2(30) := '%YourObjectName%';
 --
 -----------------------------------------------------------------------------
 --
@@ -126,14 +126,14 @@ BEGIN
                                                     l_begin (i),
                                                     l_end (i),
                                                     l_offset (i),
-                                                    0.05)); --, 'arc_tolerance=0.05');
+                                                    g_base_tol)); --, 'arc_tolerance=0.05');
               ELSE
                  l_shape (i) :=
                     SDO_LRS.OFFSET_GEOM_SEGMENT (l_shape (i),
                                                  l_begin (i),
                                                  l_end (i),
                                                  l_offset (i),
-                                                 0.05); --, 'arc_tolerance=0.05');
+                                                 g_base_tol); --, 'arc_tolerance=0.05');
               END IF;
            EXCEPTION
               WHEN OTHERS
@@ -142,7 +142,7 @@ BEGIN
                     SDO_LRS.CLIP_GEOM_SEGMENT (l_shape (i),
                                                l_begin (i),
                                                l_end (i),
-                                               0.00005);
+                                               g_base_tol);
            END;
         END LOOP;
 
@@ -244,6 +244,7 @@ BEGIN
 
         CLOSE c1;
      ELSE
+        
         OPEN c2 (p_of, p_xsp);
 
         FETCH c2 INTO l_offset;
@@ -271,6 +272,8 @@ BEGIN
   nm_debug.debug (l_begin || ',' || l_end);
 
   --
+  nm_debug.
+      debug ('PRElayer = ' || p_layer || ', set offset = ' || l_offset || ' p_in: ' || p_in || ' p_of: ' || p_of || ' p_begin: ' || p_begin || 'p_end: ' || p_end );
   IF l_offset IS NOT NULL
   THEN
      nm_debug.
@@ -281,7 +284,8 @@ BEGIN
                               p_begin,
                               p_end,
                               l_offset,
-                              0.000005);       --, 'arc_tolerance=0.05' );
+                              g_base_tol
+                              );       --, 'arc_tolerance=0.05' );
   END IF;
 
   --
@@ -307,7 +311,7 @@ IS
                                          c_begin_mp,
                                          c_end_mp,
                                          hxo_offset,
-                                         0.005)
+                                         g_base_tol)
        FROM nm_inv_items, herm_xsp_dt, nm_nsg_esu_shapes
       WHERE     iit_ne_id = c_iit_ne_id
             AND hxo_ne_id_of = c_ne_id_of
@@ -465,5 +469,5 @@ END set_offset_flag_off;
 --
 -----------------------------------------------------------------------------
 --
-END nm3sdo_dynseg;
+END;
 /
