@@ -4,11 +4,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkh-arc   3.1   Jan 10 2011 11:19:48   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkh-arc   3.2   Jan 13 2011 11:10:56   Chris.Strettle  $
 --       Module Name      : $Workfile:   xncc_herm_xsp.pkh  $
---       Date into PVCS   : $Date:   Jan 10 2011 11:19:48  $
---       Date fetched Out : $Modtime:   Jan 10 2011 11:18:46  $
---       Version          : $Revision:   3.1  $ 
+--       Date into PVCS   : $Date:   Jan 13 2011 11:10:56  $
+--       Date fetched Out : $Modtime:   Jan 13 2011 11:10:30  $
+--       Version          : $Revision:   3.2  $ 
 -------------------------------------------------------------------------
 --</PACKAGE>
 --<GLOBVAR>
@@ -17,7 +17,7 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.1  $';
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.2  $';
 
 --</GLOBVAR>
 --
@@ -48,12 +48,24 @@ PROCEDURE gen_herm_xsp;
 --
 -----------------------------------------------------------------------------
 --
+PROCEDURE gen_xncc_herm_xsp_temp;
+--
+-----------------------------------------------------------------------------
+--
 PROCEDURE ins_herm_xsp;
 --
 -----------------------------------------------------------------------------
 --
 PROCEDURE populate_herm_xsp( p_ne_id nm_elements.ne_id%TYPE 
                            , p_ne_id_new nm_elements.ne_id%TYPE
+                           , p_effective_date DATE DEFAULT SYSDATE
+                           );
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE populate_herm_xsp( p_ne_id_in nm_elements.ne_id%TYPE 
+                           , p_ne_id_of nm_elements.ne_id%TYPE
+                           , p_nm_cardinality nm_members_all.nm_cardinality%TYPE
                            , p_effective_date DATE DEFAULT SYSDATE
                            );
 --
