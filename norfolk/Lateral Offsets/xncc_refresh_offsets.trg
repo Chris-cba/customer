@@ -1,19 +1,19 @@
-DROP TRIGGER XNCC_REFRESH_OFFSETS;
+DROP TRIGGER xncc_refresh_offsets;
 
 CREATE OR REPLACE TRIGGER xncc_refresh_offsets
    AFTER INSERT OR UPDATE
-   ON NORFOLK.NM_MEMBERS_ALL 
+   ON NM_MEMBERS_ALL 
 DECLARE
 --
 -----------------------------------------------------------------------------
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_refresh_offsets.trg-arc   3.0   Jan 13 2011 14:17:02   Mike.Alexander  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_refresh_offsets.trg-arc   3.1   Jan 13 2011 16:00:52   Chris.Strettle  $
 --       Module Name      : $Workfile:   xncc_refresh_offsets.trg  $
---       Date into PVCS   : $Date:   Jan 13 2011 14:17:02  $
---       Date fetched Out : $Modtime:   Jan 13 2011 14:16:34  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jan 13 2011 16:00:52  $
+--       Date fetched Out : $Modtime:   Jan 13 2011 16:00:38  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version : 
 --
 --   Author : Chris Strettle
