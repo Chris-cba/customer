@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.2   Jan 10 2011 10:40:06   Chris.Strettle  $
---       Module Name      : $Workfile:   nm3replace.pkb  $
---       Date into PVCS   : $Date:   Jan 10 2011 10:40:06  $
---       Date fetched Out : $Modtime:   Jan 10 2011 10:38:56  $
---       PVCS Version     : $Revision:   3.2  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.3   Jan 13 2011 10:36:54   Chris.Strettle  $
+--       Module Name      : $Workfile:   NM3REPLACE.pkb  $
+--       Date into PVCS   : $Date:   Jan 13 2011 10:36:54  $
+--       Date fetched Out : $Modtime:   Jan 13 2011 10:09:26  $
+--       PVCS Version     : $Revision:   3.3  $
 --
 --
 --   Author : ITurnbull
@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --	Copyright (c) exor corporation ltd, 2000
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.2  $"';
+   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.3  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name    CONSTANT  VARCHAR2(30)   := 'nm3replace';
 ------------------------------------------------------------------------------------------------
@@ -628,23 +628,26 @@ END check_other_products;
                             ,p_ne_version_no
                             ,p_neh_descr --CWS 0108990 12/03/2010
                            );
-       -- CWS Lateral Offsets
+       -- CWS
+
        xncc_herm_xsp.populate_herm_xsp( p_ne_id          => p_ne_id 
                                       , p_ne_id_new      => p_ne_id_new
                                       , p_effective_date => p_effective_date
                                       );
        
+   /* nm3sdo.change_affected_shapes (p_layer      => g_nth.nth_theme_id,
+                                   p_ne_id      => p_ne_id_new);*/
        /*IF HIG.GET_SYSOPT(
        EXECUTE IMMEDIATE 'xncc_herm_xsp.populate_herm_xsp( p_ne_id => p_ne_id 
                                                          , p_ne_id_new => p_ne_id_new
                                                          , p_effective_date => p_effective_date
                                                          );'*/
 
-       /*--RAC - Replicate the shape of the original element.
+       --RAC - Replicate the shape of the original element.
        --AE - added code
          nm3sdm.replace_element_shape
                               (p_ne_id_old => p_ne_id
-                             , p_ne_id_new => p_ne_id_new);*/
+                             , p_ne_id_new => p_ne_id_new);
 
          replace_group_members( p_ne_id
                                ,p_ne_id_new
@@ -655,9 +658,6 @@ END check_other_products;
                              ,p_ne_id_new
                              ,p_effective_date
                             );
-       -- CWS MOVED HERE SO MEMBERS CAN BE UPDATED BEFORE CREATING SPATIAL DATA. THIS CAUSED LAT OFFSET ISSUE
-       nm3sdm.replace_element_shape( p_ne_id_old => p_ne_id
-                                   , p_ne_id_new => p_ne_id_new);
  
 	     replace_other_products ( p_ne_id
                                  ,p_ne_id_new
