@@ -1,0 +1,76 @@
+<oracle-webservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xmlns.oracle.com/oracleas/schema/oracle-webservices-10_0.xsd">
+    <webservice-description name="intren">
+        <port-component name="intrenSoap12HttpPort">
+            <implementor type="database">
+                <param name="databaseJndiName">jdbc/intrenDS</param>
+            </implementor>
+            <runtime enabled="auditing logging">
+                <logging>
+                    <namespaces/>
+                </logging>
+            </runtime>
+            <operations>
+                <operation name="createNewMarker" input="{http://intren/Intren.wsdl/types/}createNewMarkerElement">
+                    <runtime>
+                        <auditing request="true" response="true" fault="true"/>
+                        <logging>
+                            <request enabled="true"/>
+                            <response enabled="true"/>
+                            <fault enabled="true"/>
+                        </logging>
+                    </runtime>
+                </operation>
+                <operation name="deleteMarker" input="{http://intren/Intren.wsdl/types/}deleteMarkerElement">
+                    <runtime>
+                        <auditing request="true" response="true" fault="true"/>
+                        <logging>
+                            <request enabled="true"/>
+                            <response enabled="true"/>
+                            <fault enabled="true"/>
+                        </logging>
+                    </runtime>
+                </operation>
+                <operation name="getListOfMarkers" input="{http://intren/Intren.wsdl/types/}getListOfMarkersElement">
+                    <runtime>
+                        <auditing request="true" response="true" fault="true"/>
+                        <logging>
+                            <request enabled="true"/>
+                            <response enabled="true"/>
+                            <fault enabled="true"/>
+                        </logging>
+                    </runtime>
+                </operation>
+                <operation name="getMarker" input="{http://intren/Intren.wsdl/types/}getMarkerElement">
+                    <runtime>
+                        <auditing request="true" response="true" fault="true"/>
+                        <logging>
+                            <request enabled="true"/>
+                            <response enabled="true"/>
+                            <fault enabled="true"/>
+                        </logging>
+                    </runtime>
+                </operation>
+                <operation name="ping" input="{http://intren/Intren.wsdl/types/}pingElement">
+                    <runtime>
+                        <auditing request="true" response="true" fault="true"/>
+                        <logging>
+                            <request enabled="true"/>
+                            <response enabled="true"/>
+                            <fault enabled="true"/>
+                        </logging>
+                    </runtime>
+                </operation>
+                <operation name="updateMarker" input="{http://intren/Intren.wsdl/types/}updateMarkerElement">
+                    <runtime>
+                        <auditing request="true" response="true" fault="true"/>
+                        <logging>
+                            <request enabled="true"/>
+                            <response enabled="true"/>
+                            <fault enabled="true"/>
+                        </logging>
+                    </runtime>
+                </operation>
+            </operations>
+        </port-component>
+    </webservice-description>
+</oracle-webservices>
