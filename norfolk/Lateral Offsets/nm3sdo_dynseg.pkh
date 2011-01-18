@@ -4,11 +4,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkh-arc   3.2   Jan 18 2011 11:26:14   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkh-arc   3.3   Jan 18 2011 16:47:04   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdo_dynseg.pkh  $
---       Date into PVCS   : $Date:   Jan 18 2011 11:26:14  $
---       Date fetched Out : $Modtime:   Jan 18 2011 11:25:48  $
---       Version          : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 18 2011 16:47:04  $
+--       Date fetched Out : $Modtime:   Jan 18 2011 16:45:32  $
+--       Version          : $Revision:   3.3  $
 -------------------------------------------------------------------------
 --</PACKAGE>
 --<GLOBVAR>
@@ -17,9 +17,9 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid      CONSTANT VARCHAR2(2000) := '$Revision:   3.2  $';
+  g_sccsid      CONSTANT VARCHAR2(2000) := '$Revision:   3.3  $';
   g_use_offset  BOOLEAN := FALSE;
-  g_base_tol    CONSTANT NUMBER := NM3SDO.GET_TABLE_DIMINFO('NM_NSG_ESU_SHAPES_TABLE', 'SHAPE')(1).sdo_tolerance;
+  g_base_tol    NUMBER := NM3SDO.GET_TABLE_DIMINFO('NM_NSG_ESU_SHAPES_TABLE', 'SHAPE')(1).sdo_tolerance;
 --</GLOBVAR>
 --
 -----------------------------------------------------------------------------
@@ -91,10 +91,5 @@ PROCEDURE set_offset_flag_off;
 --
 -----------------------------------------------------------------------------
 --
---<PRAGMA>
-  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
-  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
---</PRAGMA>
-
 END nm3sdo_dynseg;
 /
