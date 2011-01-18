@@ -1,0 +1,92 @@
+create or replace
+package intren_ws as 
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //vm_latest/archives/customer/intren/admin/pck/intren_ws.pkh-arc   3.0   Jan 18 2011 12:38:10   Ian.Turnbull  $
+--       Module Name      : $Workfile:   intren_ws.pkh  $
+--       Date into PVCS   : $Date:   Jan 18 2011 12:38:10  $
+--       Date fetched Out : $Modtime:   Oct 17 2010 17:53:32  $
+--       PVCS Version     : $Revision:   3.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : ITurnbull
+--
+--    imf_framework
+--
+-----------------------------------------------------------------------------
+--    Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  G_SCCSID CONSTANT VARCHAR2(2000):='"$Revision:   3.0  $"';
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION GET_VERSION RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION GET_BODY_VERSION RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+
+function GET_LIST_OF_MARKERS
+return INTREN_resp_MARKER_LIST;
+--
+-----------------------------------------------------------------------------
+--
+function delete_marker(pi_marker_id intren_marker_id_type)
+return intren_responce_rec;
+--
+-----------------------------------------------------------------------------
+--
+function get_marker(pi_marker_id intren_marker_id_type)
+return INTREN_resp_MARKER_REC;
+--
+-----------------------------------------------------------------------------
+--
+function create_new_marker(pi_marker intren_marker_rec)
+return intren_responce_rec;
+--
+-----------------------------------------------------------------------------
+--
+function update_marker(pi_marker intren_marker_rec)
+return intren_responce_rec;
+--
+-----------------------------------------------------------------------------
+--
+function ping
+return intren_responce_rec;
+--
+-----------------------------------------------------------------------------
+--
+function decode_base64(pi_source in blob)
+return blob;
+--
+-----------------------------------------------------------------------------
+--
+function encode_base64(pi_source in blob)
+return blob;
+--
+-----------------------------------------------------------------------------
+--
+
+end intren_ws;
