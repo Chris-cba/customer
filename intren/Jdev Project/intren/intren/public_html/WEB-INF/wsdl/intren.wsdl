@@ -1,0 +1,339 @@
+<definitions
+     name="intren"
+     targetNamespace="http://intren/Intren.wsdl"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://intren/Intren.wsdl"
+     xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+     xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+     xmlns:tns0="http://intren/Intren.wsdl/types/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://intren/Intren.wsdl/types/"
+             elementFormDefault="qualified" xmlns:tns="http://intren/Intren.wsdl/types/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:soap12-enc="http://www.w3.org/2003/05/soap-encoding">
+            <complexType name="IntrenMarkerRecUser">
+                <complexContent>
+                    <extension base="tns:IntrenMarkerRecBase">
+                        <sequence>
+                            <element name="jobReference" type="string" nillable="true"/>
+                            <element name="surveyMethod" type="string" nillable="true"/>
+                            <element name="town" type="string" nillable="true"/>
+                            <element name="dimOfAsset" type="string" nillable="true"/>
+                            <element name="material" type="string" nillable="true"/>
+                            <element name="geographicLocation" type="string" nillable="true"/>
+                            <element name="surveyJobNo" type="string" nillable="true"/>
+                            <element name="dateDecomissioned" type="string" nillable="true"/>
+                            <element name="kerbOffset" type="string" nillable="true"/>
+                            <element name="streetName" type="string" nillable="true"/>
+                            <element name="northing" type="string" nillable="true"/>
+                            <element name="uboAssetType" type="string" nillable="true"/>
+                            <element name="fittingType" type="string" nillable="true"/>
+                            <element name="domainOwner" type="string" nillable="true"/>
+                            <element name="images" type="tns:IntrenImageList" nillable="true"/>
+                            <element name="contractorOrganisation" type="string" nillable="true"/>
+                            <element name="depth" type="string" nillable="true"/>
+                            <element name="photoType" type="string" nillable="true"/>
+                            <element name="markerId" type="string" nillable="true"/>
+                            <element name="jobType" type="string" nillable="true"/>
+                            <element name="previuosMarker" type="string" nillable="true"/>
+                            <element name="constructionType" type="string" nillable="true"/>
+                            <element name="uboInTrench" type="string" nillable="true"/>
+                            <element name="easting" type="string" nillable="true"/>
+                            <element name="shapeOfAsset" type="string" nillable="true"/>
+                            <element name="dateInstalled" type="string" nillable="true"/>
+                            <element name="natureOfAsset" type="string" nillable="true"/>
+                        </sequence>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="IntrenImageList">
+                <sequence>
+                    <element name="array" type="tns:IntrenImageRecUser" nillable="true" minOccurs="0"
+                         maxOccurs="unbounded"/>
+                </sequence>
+            </complexType>
+            <complexType name="IntrenImageRecUser">
+                <complexContent>
+                    <extension base="tns:IntrenImageRecBase">
+                        <sequence>
+                            <element name="filename" type="string" nillable="true"/>
+                            <element name="filesize" type="string" nillable="true"/>
+                            <element name="filecontents" type="base64Binary" nillable="true"/>
+                        </sequence>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="IntrenImageRecBase">
+                <sequence/>
+            </complexType>
+            <complexType name="IntrenMarkerRecBase">
+                <sequence/>
+            </complexType>
+            <complexType name="IntrenMarkerIdTypeUser">
+                <complexContent>
+                    <extension base="tns:IntrenMarkerIdTypeBase">
+                        <sequence>
+                            <element name="markerId" type="string" nillable="true"/>
+                        </sequence>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="IntrenMarkerIdTypeBase">
+                <sequence/>
+            </complexType>
+            <element name="createNewMarkerElement">
+                <complexType>
+                    <sequence>
+                        <element name="piMarker" type="tns:IntrenMarkerRecUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="createNewMarkerResponseElement">
+                <complexType>
+                    <sequence>
+                        <element name="result" type="tns:IntrenResponceRecUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <complexType name="IntrenResponceRecUser">
+                <complexContent>
+                    <extension base="tns:IntrenResponceRecBase">
+                        <sequence>
+                            <element name="codeversion" type="string" nillable="true"/>
+                            <element name="responceCode" type="string" nillable="true"/>
+                            <element name="datetime" type="string" nillable="true"/>
+                            <element name="message" type="string" nillable="true"/>
+                        </sequence>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="IntrenResponceRecBase">
+                <sequence/>
+            </complexType>
+            <element name="deleteMarkerElement">
+                <complexType>
+                    <sequence>
+                        <element name="piMarkerId" type="tns:IntrenMarkerIdTypeUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="deleteMarkerResponseElement">
+                <complexType>
+                    <sequence>
+                        <element name="result" type="tns:IntrenResponceRecUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="getListOfMarkersElement">
+                <complexType>
+                    <sequence/>
+                </complexType>
+            </element>
+            <element name="getListOfMarkersResponseElement">
+                <complexType>
+                    <sequence>
+                        <element name="result" type="tns:IntrenRespMarkerListUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <complexType name="IntrenRespMarkerListUser">
+                <complexContent>
+                    <extension base="tns:IntrenRespMarkerListBase">
+                        <sequence>
+                            <element name="markers" type="tns:IntrenMarkerRecList" nillable="true"/>
+                            <element name="responce" type="tns:IntrenResponceRecUser" nillable="true"/>
+                        </sequence>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="IntrenMarkerRecList">
+                <sequence>
+                    <element name="array" type="tns:IntrenMarkerRecUser" nillable="true" minOccurs="0"
+                         maxOccurs="unbounded"/>
+                </sequence>
+            </complexType>
+            <complexType name="IntrenRespMarkerListBase">
+                <sequence/>
+            </complexType>
+            <element name="getMarkerElement">
+                <complexType>
+                    <sequence>
+                        <element name="piMarkerId" type="tns:IntrenMarkerIdTypeUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="getMarkerResponseElement">
+                <complexType>
+                    <sequence>
+                        <element name="result" type="tns:IntrenRespMarkerRecUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <complexType name="IntrenRespMarkerRecUser">
+                <complexContent>
+                    <extension base="tns:IntrenRespMarkerRecBase">
+                        <sequence>
+                            <element name="marker" type="tns:IntrenMarkerRecUser" nillable="true"/>
+                            <element name="responce" type="tns:IntrenResponceRecUser" nillable="true"/>
+                        </sequence>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="IntrenRespMarkerRecBase">
+                <sequence/>
+            </complexType>
+            <element name="pingElement">
+                <complexType>
+                    <sequence/>
+                </complexType>
+            </element>
+            <element name="pingResponseElement">
+                <complexType>
+                    <sequence>
+                        <element name="result" type="tns:IntrenResponceRecUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="updateMarkerElement">
+                <complexType>
+                    <sequence>
+                        <element name="piMarker" type="tns:IntrenMarkerRecUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="updateMarkerResponseElement">
+                <complexType>
+                    <sequence>
+                        <element name="result" type="tns:IntrenResponceRecUser" nillable="true"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </schema>
+    </types>
+    <message name="Intren_createNewMarker">
+        <part name="parameters" element="tns0:createNewMarkerElement"/>
+    </message>
+    <message name="Intren_createNewMarkerResponse">
+        <part name="parameters" element="tns0:createNewMarkerResponseElement"/>
+    </message>
+    <message name="Intren_deleteMarker">
+        <part name="parameters" element="tns0:deleteMarkerElement"/>
+    </message>
+    <message name="Intren_deleteMarkerResponse">
+        <part name="parameters" element="tns0:deleteMarkerResponseElement"/>
+    </message>
+    <message name="Intren_getListOfMarkers">
+        <part name="parameters" element="tns0:getListOfMarkersElement"/>
+    </message>
+    <message name="Intren_getListOfMarkersResponse">
+        <part name="parameters" element="tns0:getListOfMarkersResponseElement"/>
+    </message>
+    <message name="Intren_getMarker">
+        <part name="parameters" element="tns0:getMarkerElement"/>
+    </message>
+    <message name="Intren_getMarkerResponse">
+        <part name="parameters" element="tns0:getMarkerResponseElement"/>
+    </message>
+    <message name="Intren_ping">
+        <part name="parameters" element="tns0:pingElement"/>
+    </message>
+    <message name="Intren_pingResponse">
+        <part name="parameters" element="tns0:pingResponseElement"/>
+    </message>
+    <message name="Intren_updateMarker">
+        <part name="parameters" element="tns0:updateMarkerElement"/>
+    </message>
+    <message name="Intren_updateMarkerResponse">
+        <part name="parameters" element="tns0:updateMarkerResponseElement"/>
+    </message>
+    <portType name="intren">
+        <operation name="createNewMarker">
+            <input message="tns:Intren_createNewMarker"/>
+            <output message="tns:Intren_createNewMarkerResponse"/>
+        </operation>
+        <operation name="deleteMarker">
+            <input message="tns:Intren_deleteMarker"/>
+            <output message="tns:Intren_deleteMarkerResponse"/>
+        </operation>
+        <operation name="getListOfMarkers">
+            <input message="tns:Intren_getListOfMarkers"/>
+            <output message="tns:Intren_getListOfMarkersResponse"/>
+        </operation>
+        <operation name="getMarker">
+            <input message="tns:Intren_getMarker"/>
+            <output message="tns:Intren_getMarkerResponse"/>
+        </operation>
+        <operation name="ping">
+            <input message="tns:Intren_ping"/>
+            <output message="tns:Intren_pingResponse"/>
+        </operation>
+        <operation name="updateMarker">
+            <input message="tns:Intren_updateMarker"/>
+            <output message="tns:Intren_updateMarkerResponse"/>
+        </operation>
+    </portType>
+    <binding name="intrenSoap12Http" type="tns:intren">
+        <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="createNewMarker">
+            <soap12:operation soapAction="http://intren/Intren.wsdl/createNewMarker" soapActionRequired="false"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="deleteMarker">
+            <soap12:operation soapAction="http://intren/Intren.wsdl/deleteMarker" soapActionRequired="false"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="getListOfMarkers">
+            <soap12:operation soapAction="http://intren/Intren.wsdl/getListOfMarkers" soapActionRequired="false"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="getMarker">
+            <soap12:operation soapAction="http://intren/Intren.wsdl/getMarker" soapActionRequired="false"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="ping">
+            <soap12:operation soapAction="http://intren/Intren.wsdl/ping" soapActionRequired="false"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="updateMarker">
+            <soap12:operation soapAction="http://intren/Intren.wsdl/updateMarker" soapActionRequired="false"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="intren">
+        <port name="intrenSoap12HttpPort" binding="tns:intrenSoap12Http">
+            <soap12:address location="http://172.16.39.78:8888/intren-intren-context-root/intrenSoap12HttpPort"/>
+        </port>
+    </service>
+</definitions>

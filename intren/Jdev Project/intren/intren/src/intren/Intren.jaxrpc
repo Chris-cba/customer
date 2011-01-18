@@ -1,0 +1,296 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<jdevws:WebService xmlns:jdevws="http://xmlns.oracle.com/jdeveloper/10130/webservice">
+   <list n="CHILD_NODES">
+      <url path="Intren.java"/>
+      <url path="IntrenBase.java"/>
+      <url path="IntrenMarkerIdType.java"/>
+      <url path="IntrenMarkerIdTypeBase.java"/>
+      <url path="IntrenMarkerIdTypeUser.java"/>
+      <url path="IntrenMarkerIdTypeUserRef.java"/>
+      <url path="IntrenMarkerRec.java"/>
+      <url path="IntrenMarkerRecBase.java"/>
+      <url path="IntrenMarkerRecList.java"/>
+      <url path="IntrenMarkerRecUser.java"/>
+      <url path="IntrenMarkerRecUserRef.java"/>
+      <url path="IntrenRespMarkerList.java"/>
+      <url path="IntrenRespMarkerListBase.java"/>
+      <url path="IntrenRespMarkerListUser.java"/>
+      <url path="IntrenRespMarkerListUserRef.java"/>
+      <url path="IntrenRespMarkerRec.java"/>
+      <url path="IntrenRespMarkerRecBase.java"/>
+      <url path="IntrenRespMarkerRecUser.java"/>
+      <url path="IntrenRespMarkerRecUserRef.java"/>
+      <url path="IntrenResponceRec.java"/>
+      <url path="IntrenResponceRecBase.java"/>
+      <url path="IntrenResponceRecUser.java"/>
+      <url path="IntrenResponceRecUserRef.java"/>
+      <url path="IntrenUser.java"/>
+      <url path="../../public_html/WEB-INF/wsdl/intren.wsdl"/>
+      <url path="../../public_html/WEB-INF/intren-java-wsdl-mapping.xml"/>
+      <url path="IntrenImageList.java"/>
+      <url path="IntrenImageRec.java"/>
+      <url path="IntrenImageRecBase.java"/>
+      <url path="IntrenImageRecUser.java"/>
+      <url path="IntrenImageRecUserRef.java"/>
+   </list>
+   <hash n="DATA_MODEL">
+      <value n="ATTACHMENT_ENCODING" v="ATTACHMENT_MIME"/>
+      <list n="BD_">
+         <hash>
+            <value n="BD_SOAP_VERSION" v="1.2"/>
+            <value n="BOUND_PORT_TYPE" v="{USE_OWNER_TNS}intren"/>
+            <value n="DEFAULT_NAME" v="true"/>
+            <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPBinding"/>
+            <value n="NAME" v="{USE_OWNER_TNS}intrenSoap12Http"/>
+            <list n="OP_BINDINGS">
+               <hash>
+                  <value n="BOUND_OPERATION" v="createNewMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPOperationBinding"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="BOUND_OPERATION" v="deleteMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPOperationBinding"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="BOUND_OPERATION" v="getListOfMarkers"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPOperationBinding"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="BOUND_OPERATION" v="getMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPOperationBinding"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="BOUND_OPERATION" v="ping"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPOperationBinding"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="BOUND_OPERATION" v="updateMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPOperationBinding"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+            </list>
+            <hash n="PROPERTY_GROUPS"/>
+         </hash>
+      </list>
+      <value n="GUID" v="a9440f22-012a-1000-8001-ac10274e5c4b"/>
+      <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLWebService"/>
+      <list n="PLSQL_WS_GENERATED_JAVA">
+         <string v="D:\development\intren\intren\src\intren\Intren.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenBase.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenImageList.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenImageRec.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenImageRecBase.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenImageRecUser.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenImageRecUserRef.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerIdType.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerIdTypeBase.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerIdTypeUser.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerIdTypeUserRef.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerRec.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerRecBase.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerRecList.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerRecUser.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenMarkerRecUserRef.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerList.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerListBase.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerListUser.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerListUserRef.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerRec.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerRecBase.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerRecUser.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenRespMarkerRecUserRef.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenResponceRec.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenResponceRecBase.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenResponceRecUser.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenResponceRecUserRef.java"/>
+         <string v="D:\development\intren\intren\src\intren\IntrenUser.java"/>
+      </list>
+      <list n="PO_">
+         <hash>
+            <value n="DEFAULT_NAME" v="true"/>
+            <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.SOAPPort"/>
+            <value n="NAME" v="intrenSoap12HttpPort"/>
+            <value n="PORT_BINDING_NAME" v="{USE_OWNER_TNS}intrenSoap12Http"/>
+            <list n="PORT_OPS">
+               <hash>
+                  <value n="EXPOSED_BD_OPERATION" v="createNewMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.PortOperation"/>
+                  <hash n="PROPERTY_GROUPS">
+                     <hash n="WS_AUDITING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.AuditingProperties"/>
+                        <value n="WSAU_DEFAULT_FAULTS" v="true"/>
+                        <value n="WSAU_DEFAULT_REQUEST" v="true"/>
+                        <value n="WSAU_DEFAULT_RESPONSE" v="true"/>
+                     </hash>
+                     <hash n="WS_LOGGING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.LoggingProperties"/>
+                     </hash>
+                  </hash>
+               </hash>
+               <hash>
+                  <value n="EXPOSED_BD_OPERATION" v="deleteMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.PortOperation"/>
+                  <hash n="PROPERTY_GROUPS">
+                     <hash n="WS_AUDITING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.AuditingProperties"/>
+                        <value n="WSAU_DEFAULT_FAULTS" v="true"/>
+                        <value n="WSAU_DEFAULT_REQUEST" v="true"/>
+                        <value n="WSAU_DEFAULT_RESPONSE" v="true"/>
+                     </hash>
+                     <hash n="WS_LOGGING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.LoggingProperties"/>
+                     </hash>
+                  </hash>
+               </hash>
+               <hash>
+                  <value n="EXPOSED_BD_OPERATION" v="getListOfMarkers"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.PortOperation"/>
+                  <hash n="PROPERTY_GROUPS">
+                     <hash n="WS_AUDITING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.AuditingProperties"/>
+                        <value n="WSAU_DEFAULT_FAULTS" v="true"/>
+                        <value n="WSAU_DEFAULT_REQUEST" v="true"/>
+                        <value n="WSAU_DEFAULT_RESPONSE" v="true"/>
+                     </hash>
+                     <hash n="WS_LOGGING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.LoggingProperties"/>
+                     </hash>
+                  </hash>
+               </hash>
+               <hash>
+                  <value n="EXPOSED_BD_OPERATION" v="getMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.PortOperation"/>
+                  <hash n="PROPERTY_GROUPS">
+                     <hash n="WS_AUDITING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.AuditingProperties"/>
+                        <value n="WSAU_DEFAULT_FAULTS" v="true"/>
+                        <value n="WSAU_DEFAULT_REQUEST" v="true"/>
+                        <value n="WSAU_DEFAULT_RESPONSE" v="true"/>
+                     </hash>
+                     <hash n="WS_LOGGING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.LoggingProperties"/>
+                     </hash>
+                  </hash>
+               </hash>
+               <hash>
+                  <value n="EXPOSED_BD_OPERATION" v="ping"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.PortOperation"/>
+                  <hash n="PROPERTY_GROUPS">
+                     <hash n="WS_AUDITING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.AuditingProperties"/>
+                        <value n="WSAU_DEFAULT_FAULTS" v="true"/>
+                        <value n="WSAU_DEFAULT_REQUEST" v="true"/>
+                        <value n="WSAU_DEFAULT_RESPONSE" v="true"/>
+                     </hash>
+                     <hash n="WS_LOGGING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.LoggingProperties"/>
+                     </hash>
+                  </hash>
+               </hash>
+               <hash>
+                  <value n="EXPOSED_BD_OPERATION" v="updateMarker"/>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.PortOperation"/>
+                  <hash n="PROPERTY_GROUPS">
+                     <hash n="WS_AUDITING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.AuditingProperties"/>
+                        <value n="WSAU_DEFAULT_FAULTS" v="true"/>
+                        <value n="WSAU_DEFAULT_REQUEST" v="true"/>
+                        <value n="WSAU_DEFAULT_RESPONSE" v="true"/>
+                     </hash>
+                     <hash n="WS_LOGGING">
+                        <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.LoggingProperties"/>
+                     </hash>
+                  </hash>
+               </hash>
+            </list>
+            <hash n="PROPERTY_GROUPS">
+               <hash n="WS_AUDITING">
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.AuditingProperties"/>
+                  <value n="WSAU_DEFAULT_FAULTS" v="true"/>
+                  <value n="WSAU_DEFAULT_REQUEST" v="true"/>
+                  <value n="WSAU_DEFAULT_RESPONSE" v="true"/>
+               </hash>
+               <hash n="WSM_NAMESPACE_PROPERTIES">
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.management.NamespaceProperties"/>
+               </hash>
+            </hash>
+         </hash>
+      </list>
+      <hash n="PROPERTY_GROUPS"/>
+      <list n="PT_">
+         <hash>
+            <value n="DEFAULT_NAME" v="true"/>
+            <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLPortType"/>
+            <value n="NAME" v="{USE_OWNER_TNS}intren"/>
+            <list n="OP_">
+               <hash>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLOperation"/>
+                  <value n="OP_NAME" v="createNewMarker"/>
+                  <value n="OP_PLSQL_NAME" v="CREATE_NEW_MARKER"/>
+                  <value n="OP_PLSQL_PARAM_LIST" v="IN INTREN_MARKER_REC"/>
+                  <value n="OP_PLSQL_RTN_TYPE" v="INTREN_RESPONCE_REC"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLOperation"/>
+                  <value n="OP_NAME" v="deleteMarker"/>
+                  <value n="OP_PLSQL_NAME" v="DELETE_MARKER"/>
+                  <value n="OP_PLSQL_PARAM_LIST" v="IN INTREN_MARKER_ID_TYPE"/>
+                  <value n="OP_PLSQL_RTN_TYPE" v="INTREN_RESPONCE_REC"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLOperation"/>
+                  <value n="OP_NAME" v="getListOfMarkers"/>
+                  <value n="OP_PLSQL_NAME" v="GET_LIST_OF_MARKERS"/>
+                  <value n="OP_PLSQL_PARAM_LIST" v=""/>
+                  <value n="OP_PLSQL_RTN_TYPE" v="INTREN_RESP_MARKER_LIST"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLOperation"/>
+                  <value n="OP_NAME" v="getMarker"/>
+                  <value n="OP_PLSQL_NAME" v="GET_MARKER"/>
+                  <value n="OP_PLSQL_PARAM_LIST" v="IN INTREN_MARKER_ID_TYPE"/>
+                  <value n="OP_PLSQL_RTN_TYPE" v="INTREN_RESP_MARKER_REC"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLOperation"/>
+                  <value n="OP_NAME" v="ping"/>
+                  <value n="OP_PLSQL_NAME" v="PING"/>
+                  <value n="OP_PLSQL_PARAM_LIST" v=""/>
+                  <value n="OP_PLSQL_RTN_TYPE" v="INTREN_RESPONCE_REC"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+               <hash>
+                  <value n="MODEL_CLASS" v="oracle.jdeveloper.webservices.model.plsql.PLSQLOperation"/>
+                  <value n="OP_NAME" v="updateMarker"/>
+                  <value n="OP_PLSQL_NAME" v="UPDATE_MARKER"/>
+                  <value n="OP_PLSQL_PARAM_LIST" v="IN INTREN_MARKER_REC"/>
+                  <value n="OP_PLSQL_RTN_TYPE" v="INTREN_RESPONCE_REC"/>
+                  <hash n="PROPERTY_GROUPS"/>
+               </hash>
+            </list>
+            <hash n="PROPERTY_GROUPS"/>
+            <value n="PT_BUILTIN_TYPES" v="jdbc"/>
+            <value n="PT_JAVA_PACKAGE" v="intren"/>
+            <value n="PT_JAVA_WRAPPER" v="intren.IntrenUser"/>
+            <value n="PT_LOB_TYPES" v="oracle"/>
+            <value n="PT_NUMERIC_TYPES" v="objectjdbc"/>
+            <value n="PT_PLSQL_CONNECTION" v="intren"/>
+            <value n="PT_PLSQL_PACKAGE" v="INTREN_WS"/>
+            <value n="PT_SQL_TO_JAVA_DATA_MAPS" v=""/>
+            <value n="PT_SQL_USER_TYPE_MAPS" v=""/>
+            <value n="PT_USER_DEFINED_TYPES" v="oracle"/>
+         </hash>
+      </list>
+      <url n="TARGET_PROJECT" path="../../intren.jpr"/>
+      <value n="WS_URI" v="intren"/>
+   </hash>
+</jdevws:WebService>
