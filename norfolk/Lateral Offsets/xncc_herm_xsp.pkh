@@ -4,11 +4,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkh-arc   3.2   Jan 13 2011 11:10:56   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkh-arc   3.3   Jan 18 2011 13:54:10   Chris.Strettle  $
 --       Module Name      : $Workfile:   xncc_herm_xsp.pkh  $
---       Date into PVCS   : $Date:   Jan 13 2011 11:10:56  $
---       Date fetched Out : $Modtime:   Jan 13 2011 11:10:30  $
---       Version          : $Revision:   3.2  $ 
+--       Date into PVCS   : $Date:   Jan 18 2011 13:54:10  $
+--       Date fetched Out : $Modtime:   Jan 18 2011 13:53:14  $
+--       Version          : $Revision:   3.3  $ 
 -------------------------------------------------------------------------
 --</PACKAGE>
 --<GLOBVAR>
@@ -17,7 +17,7 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.2  $';
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.3  $';
 
 --</GLOBVAR>
 --
@@ -41,14 +41,6 @@ FUNCTION get_body_version RETURN varchar2;
   PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
   PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
 --</PRAGMA>
---
------------------------------------------------------------------------------
---
-PROCEDURE gen_herm_xsp;
---
------------------------------------------------------------------------------
---
-PROCEDURE gen_xncc_herm_xsp_temp;
 --
 -----------------------------------------------------------------------------
 --
