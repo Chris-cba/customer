@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.2   Jan 18 2011 11:24:26   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.3   Jan 18 2011 16:47:02   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdo_dynseg.pkb  $
---       Date into PVCS   : $Date:   Jan 18 2011 11:24:26  $
---       Date fetched Out : $Modtime:   Jan 18 2011 11:24:02  $
---       Version          : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 18 2011 16:47:02  $
+--       Date fetched Out : $Modtime:   Jan 18 2011 16:43:48  $
+--       Version          : $Revision:   3.3  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.2  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.3  $';
 
   g_package_name CONSTANT varchar2(30) := 'nm3sdo_dynseg';
 --
@@ -92,7 +92,6 @@ IS
 --
 BEGIN
   nm_debug.debug_on;
-
   --
   OPEN geocur FOR curstr;
 
@@ -107,8 +106,6 @@ BEGIN
        l_end_date,
        l_offset
   LIMIT 100;
-
-  nm_debug.debug ('Objectid count = ' || l_objectid.COUNT  || ', first value = '  || l_objectid (1));
 
   BEGIN
      --
