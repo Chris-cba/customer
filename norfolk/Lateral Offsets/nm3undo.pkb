@@ -4,11 +4,11 @@ IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3undo.pkb-arc   3.2   Jan 10 2011 11:03:12   Chris.Strettle  $
---       Module Name      : $Workfile:   NM3UNDO.pkb  $
---       Date into PVCS   : $Date:   Jan 10 2011 11:03:12  $
---       Date fetched Out : $Modtime:   Jan 10 2011 10:48:12  $
---       PVCS Version     : $Revision:   3.2  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3undo.pkb-arc   3.3   Jan 19 2011 14:25:04   Chris.Strettle  $
+--       Module Name      : $Workfile:   nm3undo.pkb  $
+--       Date into PVCS   : $Date:   Jan 19 2011 14:25:04  $
+--       Date fetched Out : $Modtime:   Jan 19 2011 14:19:06  $
+--       PVCS Version     : $Revision:   3.3  $
 --
 --   Author : ITurnbull
 --
@@ -19,7 +19,7 @@ IS
 -- Copyright (c) exor corporation ltd, 2004
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid    CONSTANT VARCHAR2 (2000) := '"$Revision:   3.2  $"';
+   g_body_sccsid    CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.3  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name   CONSTANT VARCHAR2 (2000) := 'nm3undo';
 --
