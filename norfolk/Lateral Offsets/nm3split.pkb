@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY Nm3split IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3split.pkb-arc   3.2   Jan 13 2011 10:38:24   Chris.Strettle  $
---       Module Name      : $Workfile:   NM3SPLIT.pkb  $
---       Date into PVCS   : $Date:   Jan 13 2011 10:38:24  $
---       Date fetched Out : $Modtime:   Jan 13 2011 10:08:44  $
---       PVCS Version     : $Revision:   3.2  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3split.pkb-arc   3.3   Jan 19 2011 14:27:24   Chris.Strettle  $
+--       Module Name      : $Workfile:   nm3split.pkb  $
+--       Date into PVCS   : $Date:   Jan 19 2011 14:27:24  $
+--       Date fetched Out : $Modtime:   Jan 19 2011 14:23:38  $
+--       PVCS Version     : $Revision:   3.3  $
 --
 --
 --   Author : ITurnbull
@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE BODY Nm3split IS
 -- 03.06.08 PT added p_no_purpose parameter throughout where node is created.
 
 --
-   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.2  $"';
+   g_body_sccsid     CONSTANT  VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.3  $"';
 --  g_body_sccsid is the SCCS ID for the package body
 --
    g_package_name    CONSTANT  VARCHAR2(2000) := 'nm3split';
