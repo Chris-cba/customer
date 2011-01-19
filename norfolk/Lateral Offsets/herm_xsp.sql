@@ -4,11 +4,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.0   Jan 19 2011 11:40:16   Mike.Alexander  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.1   Jan 19 2011 16:44:14   Chris.Strettle  $
 --       Module Name      : $Workfile:   herm_xsp.sql  $
---       Date into PVCS   : $Date:   Jan 19 2011 11:40:16  $
---       Date fetched Out : $Modtime:   Jan 19 2011 11:39:54  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jan 19 2011 16:44:14  $
+--       Date fetched Out : $Modtime:   Jan 19 2011 16:18:44  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version : 
 --
 --   Author : Chris Strettle
@@ -59,13 +59,19 @@ EXCEPTION
       END;
 END;
 /
-
-DROP TABLE xncc_herm_xsp_temp CASCADE CONSTRAINTS;
+DECLARE
+   table_not_found   EXCEPTION;
+   PRAGMA EXCEPTION_INIT (table_not_found, -942);
+BEGIN
+   EXECUTE IMMEDIATE 'DROP TABLE xncc_herm_xsp_temp CASCADE CONSTRAINTS';
+EXCEPTION
+WHEN table_not_found THEN
+   NULL;
+END;
 /
 
 CREATE GLOBAL TEMPORARY TABLE XNCC_HERM_XSP_TEMP
 (NM_NE_ID_OF  INTEGER    NOT NULL)
 ON COMMIT DELETE ROWS
 NOCACHE;
-/
 
