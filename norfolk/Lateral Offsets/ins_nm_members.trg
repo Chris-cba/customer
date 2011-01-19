@@ -1,5 +1,3 @@
-DROP TRIGGER INS_NM_MEMBERS;
-
 CREATE OR REPLACE TRIGGER ins_nm_members
        BEFORE  INSERT OR UPDATE
        ON      NM_MEMBERS_ALL
@@ -10,11 +8,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.0   Jan 13 2011 14:17:02   Mike.Alexander  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.1   Jan 19 2011 16:39:34   Chris.Strettle  $
 --       Module Name      : $Workfile:   ins_nm_members.trg  $
---       Date into PVCS   : $Date:   Jan 13 2011 14:17:02  $
---       Date fetched Out : $Modtime:   Jan 13 2011 14:16:34  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Jan 19 2011 16:39:34  $
+--       Date fetched Out : $Modtime:   Jan 19 2011 16:38:40  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version : 
 --
 --   Author : Chris Strettle
@@ -80,23 +78,18 @@ if :new.nm_obj_type = 'SECT' then
 --
     insert into xncc_herm_xsp_temp
     values ( :new.nm_ne_id_of );
---  
-    
+--
   elsif INSERTING then
     begin
-      --
-      
-      xncc_herm_xsp.populate_herm_xsp( p_ne_id_in       => :new.nm_ne_id_in 
-                                     , p_ne_id_of       => :new.nm_ne_id_of
-                                     , p_nm_cardinality => :new.nm_cardinality
-                                     , p_effective_date => :new.nm_start_date );
-     
-     /*xncc_herm_xsp.populate_herm_xsp( p_ne_id       => :new.nm_ne_id_of 
-                                     , p_ne_id_new       => null
-                                     , p_effective_date => :new.nm_start_date );*/                                
+    --
+    
+    xncc_herm_xsp.populate_herm_xsp( p_ne_id_in       => :new.nm_ne_id_in 
+                                   , p_ne_id_of       => :new.nm_ne_id_of
+                                   , p_nm_cardinality => :new.nm_cardinality
+                                   , p_effective_date => :new.nm_start_date );
+    --
     insert into xncc_herm_xsp_temp
     values ( :new.nm_ne_id_of );
-    
 --  
     exception
       when others then 
