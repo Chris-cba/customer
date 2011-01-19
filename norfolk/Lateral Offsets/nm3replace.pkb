@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.3   Jan 13 2011 10:36:54   Chris.Strettle  $
---       Module Name      : $Workfile:   NM3REPLACE.pkb  $
---       Date into PVCS   : $Date:   Jan 13 2011 10:36:54  $
---       Date fetched Out : $Modtime:   Jan 13 2011 10:09:26  $
---       PVCS Version     : $Revision:   3.3  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3replace.pkb-arc   3.4   Jan 19 2011 14:27:28   Chris.Strettle  $
+--       Module Name      : $Workfile:   nm3replace.pkb  $
+--       Date into PVCS   : $Date:   Jan 19 2011 14:27:28  $
+--       Date fetched Out : $Modtime:   Jan 19 2011 14:22:12  $
+--       PVCS Version     : $Revision:   3.4  $
 --
 --
 --   Author : ITurnbull
@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE BODY nm3replace IS
 --	Copyright (c) exor corporation ltd, 2000
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid     CONSTANT  VARCHAR2(2000) := '"$Revision:   3.3  $"';
+   g_body_sccsid     CONSTANT  VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.4  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name    CONSTANT  VARCHAR2(30)   := 'nm3replace';
 ------------------------------------------------------------------------------------------------
