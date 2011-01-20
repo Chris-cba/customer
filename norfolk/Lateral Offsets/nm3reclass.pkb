@@ -4,11 +4,12 @@ CREATE OR REPLACE PACKAGE BODY Nm3reclass AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3reclass.pkb-arc   3.1   Jan 19 2011 14:27:30   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3reclass.pkb-arc   3.2   Jan 20 2011 15:52:26   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3reclass.pkb  $
---       Date into PVCS   : $Date:   Jan 19 2011 14:27:30  $
---       Date fetched Out : $Modtime:   Jan 19 2011 14:22:06  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Jan 20 2011 15:52:26  $
+--       Date fetched Out : $Modtime:   Jan 20 2011 14:55:56  $
+--       PVCS Version     : $Revision:   3.2  $
+--       Norfolk Specific Based on Main Branch revision : 2.8
 --
 --
 --   Author : R.A. Coupe
@@ -21,7 +22,7 @@ CREATE OR REPLACE PACKAGE BODY Nm3reclass AS
 --
 --all global package variables here
 --
-   g_body_sccsid     CONSTANT  VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.1  $"';
+   g_body_sccsid     CONSTANT  VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.2  $"';
 -- g_body_sccsid is the SCCS ID for the package body
 --
    g_package_name    CONSTANT  VARCHAR2(30)   := 'nm3reclass';
