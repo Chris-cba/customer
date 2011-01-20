@@ -4,12 +4,12 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 --
 ---   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.1   Jan 19 2011 14:27:24   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.2   Jan 20 2011 15:52:26   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdo.pkb  $
---       Date into PVCS   : $Date:   Jan 19 2011 14:27:24  $
---       Date fetched Out : $Modtime:   Jan 19 2011 14:23:46  $
---       PVCS Version     : $Revision:   3.1  $
---       Based on
+--       Date into PVCS   : $Date:   Jan 20 2011 15:52:26  $
+--       Date fetched Out : $Modtime:   Jan 20 2011 15:18:02  $
+--       PVCS Version     : $Revision:   3.2  $
+--       Norfolk Specific Based on Main Branch revision : 2.48
 
 --
 --   Author : Rob Coupe
@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 -- Copyright (c) 2011 RAC
 -----------------------------------------------------------------------------
 
-   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.1  $"';
+   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.2  $"';
    g_package_name    CONSTANT VARCHAR2 (30)  := 'NM3SDO';
    g_batch_size      INTEGER                 := NVL( TO_NUMBER(Hig.get_sysopt('SDOBATSIZE')), 10);
    g_clip_type       VARCHAR2(30)            := NVL(Hig.get_sysopt('SDOCLIPTYP'),'SDO');
@@ -5812,7 +5812,9 @@ CURSOR c1( c_nth_id IN NUMBER ) IS
   AND   sdo_owner = Hig.get_application_owner
   AND   nth_theme_id = c_nth_id;
 
-dummy  sdo_geom_metadata_table%ROWTYPE; -- assumes synonym exists
+-- AE
+-- Task 0108674 - Add MDSYS prefix
+dummy  mdsys.sdo_geom_metadata_table%ROWTYPE; -- assumes synonym exists
 
 retval user_sdo_geom_metadata%ROWTYPE;
 
@@ -9600,7 +9602,9 @@ END;
       RETURN user_sdo_geom_metadata%ROWTYPE
    IS
       l_rec_usgm   user_sdo_geom_metadata%ROWTYPE;
-      dummy        sdo_geom_metadata_table%ROWTYPE;
+-- AE
+-- Task 0108674 - Add MDSYS prefix
+      dummy        mdsys.sdo_geom_metadata_table%ROWTYPE;
    BEGIN
       SELECT *
         INTO dummy
