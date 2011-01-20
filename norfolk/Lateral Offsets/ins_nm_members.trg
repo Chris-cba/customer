@@ -8,12 +8,12 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.1   Jan 19 2011 16:39:34   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.2   Jan 20 2011 15:52:24   Chris.Strettle  $
 --       Module Name      : $Workfile:   ins_nm_members.trg  $
---       Date into PVCS   : $Date:   Jan 19 2011 16:39:34  $
---       Date fetched Out : $Modtime:   Jan 19 2011 16:38:40  $
---       PVCS Version     : $Revision:   3.1  $
---       Based on SCCS version : 
+--       Date into PVCS   : $Date:   Jan 20 2011 15:52:24  $
+--       Date fetched Out : $Modtime:   Jan 20 2011 14:55:22  $
+--       PVCS Version     : $Revision:   3.2  $
+--       Norfolk Specific Based on Main Branch revision : 2.0
 --
 --   Author : Chris Strettle
 --
