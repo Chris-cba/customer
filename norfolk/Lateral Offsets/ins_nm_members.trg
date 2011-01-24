@@ -8,11 +8,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.2   Jan 20 2011 15:52:24   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.3   Jan 24 2011 10:53:24   Chris.Strettle  $
 --       Module Name      : $Workfile:   ins_nm_members.trg  $
---       Date into PVCS   : $Date:   Jan 20 2011 15:52:24  $
---       Date fetched Out : $Modtime:   Jan 20 2011 14:55:22  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 24 2011 10:53:24  $
+--       Date fetched Out : $Modtime:   Jan 24 2011 10:53:00  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Norfolk Specific Based on Main Branch revision : 2.0
 --
 --   Author : Chris Strettle
@@ -99,3 +99,4 @@ if :new.nm_obj_type = 'SECT' then
 end if;
 --
 END ins_nm_members;
+/
