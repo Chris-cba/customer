@@ -4,11 +4,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.2   Jan 25 2011 11:57:54   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.3   Jan 25 2011 12:24:56   Chris.Strettle  $
 --       Module Name      : $Workfile:   herm_xsp.sql  $
---       Date into PVCS   : $Date:   Jan 25 2011 11:57:54  $
---       Date fetched Out : $Modtime:   Jan 25 2011 11:54:02  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 25 2011 12:24:56  $
+--       Date fetched Out : $Modtime:   Jan 25 2011 12:24:28  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Based on SCCS version : 
 --
 --   Author : Chris Strettle
@@ -70,12 +70,6 @@ WHEN table_not_found THEN
 END;
 /
 
-CREATE GLOBAL TEMPORARY TABLE XNCC_HERM_XSP_TEMP
-(NM_NE_ID_OF  INTEGER    NOT NULL)
-ON COMMIT DELETE ROWS
-NOCACHE;
-/
-
 CREATE OR REPLACE FORCE VIEW HERM_XSP_DT
 (
    HXO_NE_ID_OF,
@@ -92,11 +86,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.2   Jan 25 2011 11:57:54   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.3   Jan 25 2011 12:24:56   Chris.Strettle  $
 --       Module Name      : $Workfile:   herm_xsp.sql  $
---       Date into PVCS   : $Date:   Jan 25 2011 11:57:54  $
---       Date fetched Out : $Modtime:   Jan 25 2011 11:54:02  $
---       Version          : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 25 2011 12:24:56  $
+--       Date fetched Out : $Modtime:   Jan 25 2011 12:24:28  $
+--       Version          : $Revision:   3.3  $
 -------------------------------------------------------------------------
 --
    SELECT HXO_NE_ID_OF,
@@ -111,5 +105,9 @@ AS
     WHERE hxo_start_date <= (SELECT nm3context.get_effective_date FROM DUAL)
           AND NVL (hxo_end_date, TO_DATE ('99991231', 'YYYYMMDD')) >
                  (SELECT nm3context.get_effective_date FROM DUAL);
-/
+
+CREATE GLOBAL TEMPORARY TABLE XNCC_HERM_XSP_TEMP
+(NM_NE_ID_OF  INTEGER    NOT NULL)
+ON COMMIT DELETE ROWS
+NOCACHE;
 
