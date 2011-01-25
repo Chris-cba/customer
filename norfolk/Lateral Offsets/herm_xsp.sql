@@ -4,11 +4,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.1   Jan 19 2011 16:44:14   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.2   Jan 25 2011 11:57:54   Chris.Strettle  $
 --       Module Name      : $Workfile:   herm_xsp.sql  $
---       Date into PVCS   : $Date:   Jan 19 2011 16:44:14  $
---       Date fetched Out : $Modtime:   Jan 19 2011 16:18:44  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Jan 25 2011 11:57:54  $
+--       Date fetched Out : $Modtime:   Jan 25 2011 11:54:02  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version : 
 --
 --   Author : Chris Strettle
@@ -74,4 +74,42 @@ CREATE GLOBAL TEMPORARY TABLE XNCC_HERM_XSP_TEMP
 (NM_NE_ID_OF  INTEGER    NOT NULL)
 ON COMMIT DELETE ROWS
 NOCACHE;
+/
+
+CREATE OR REPLACE FORCE VIEW HERM_XSP_DT
+(
+   HXO_NE_ID_OF,
+   HXO_NWX_X_SECT,
+   HXO_START_DATE,
+   HXO_OFFSET,
+   HXO_END_DATE,
+   HXO_XSP_OFFSET,
+   HXO_HERM_DIR_FLAG,
+   HXO_XSP_DESCR
+)
+AS
+--
+-------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/herm_xsp.sql-arc   3.2   Jan 25 2011 11:57:54   Chris.Strettle  $
+--       Module Name      : $Workfile:   herm_xsp.sql  $
+--       Date into PVCS   : $Date:   Jan 25 2011 11:57:54  $
+--       Date fetched Out : $Modtime:   Jan 25 2011 11:54:02  $
+--       Version          : $Revision:   3.2  $
+-------------------------------------------------------------------------
+--
+   SELECT HXO_NE_ID_OF,
+          HXO_NWX_X_SECT,
+          HXO_START_DATE,
+          HXO_OFFSET,
+          HXO_END_DATE,
+          HXO_XSP_OFFSET,
+          HXO_HERM_DIR_FLAG,
+          HXO_XSP_DESCR
+     FROM herm_xsp
+    WHERE hxo_start_date <= (SELECT nm3context.get_effective_date FROM DUAL)
+          AND NVL (hxo_end_date, TO_DATE ('99991231', 'YYYYMMDD')) >
+                 (SELECT nm3context.get_effective_date FROM DUAL);
+/
 
