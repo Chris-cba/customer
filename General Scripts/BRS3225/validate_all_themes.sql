@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                  : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/validate_all_themes.sql-arc   3.0   Nov 16 2010 12:14:20   Ian.Turnbull  $
+--       pvcsid                  : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/validate_all_themes.sql-arc   3.1   Jan 26 2011 07:56:52   Ian.Turnbull  $
 --       Module Name       : $Workfile:   validate_all_themes.sql  $
---       Date into PVCS     : $Date:   Nov 16 2010 12:14:20  $
---       Date fetched Out  : $Modtime:   Nov 10 2010 12:21:16  $
---       PVCS Version      : $Revision:   3.0  $
+--       Date into PVCS     : $Date:   Jan 26 2011 07:56:52  $
+--       Date fetched Out  : $Modtime:   Dec 10 2010 10:48:54  $
+--       PVCS Version      : $Revision:   3.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -96,8 +96,12 @@ begin
           end;
               
           l_num_invalid_rows := nm3sdo.VALIDATE_THEME(c1rec.nth_theme_id);
-          nm_debug.debug(c1rec.nth_feature_table|| ' has '||l_num_invalid_rows || ' invalid geometries');
+          if l_num_invalid_rows>0 then
+            nm_debug.debug(c1rec.nth_feature_table|| ' has '||l_num_invalid_rows || ' invalid geometries');
+--          else
+--            nm_debug.debug('******'||c1rec.nth_feature_table|| ' has '||l_num_invalid_rows || ' invalid geometries');
           
+          end if;       
     exception
       when others then
         nm_debug.debug('Error validating ' || c1rec.nth_feature_table|| ': '||sqlerrm);
