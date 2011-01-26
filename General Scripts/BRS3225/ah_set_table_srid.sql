@@ -5,11 +5,11 @@ CREATE OR REPLACE PROCEDURE AH_SET_TABLE_SRID(p_table  IN VARCHAR2
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/ah_set_table_srid.sql-arc   3.0   Nov 16 2010 12:14:22   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/ah_set_table_srid.sql-arc   3.1   Jan 26 2011 07:55:56   Ian.Turnbull  $
 --       Module Name      : $Workfile:   ah_set_table_srid.sql  $
---       Date into PVCS   : $Date:   Nov 16 2010 12:14:22  $
+--       Date into PVCS   : $Date:   Jan 26 2011 07:55:56  $
 --       Date fetched Out : $Modtime:   Nov 08 2010 13:01:00  $
---       PVCS Version     : $Revision:   3.0  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
