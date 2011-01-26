@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.3   Dec 15 2010 12:19:58   Ian.Turnbull  $
---       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.sql  $
---       Date into PVCS   : $Date:   Dec 15 2010 12:19:58  $
---       Date fetched Out : $Modtime:   Dec 15 2010 11:19:50  $
---       PVCS Version     : $Revision:   3.3  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.4   Jan 26 2011 07:56:32   Ian.Turnbull  $
+--       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.SQL  $
+--       Date into PVCS   : $Date:   Jan 26 2011 07:56:32  $
+--       Date fetched Out : $Modtime:   Jan 19 2011 10:25:08  $
+--       PVCS Version     : $Revision:   3.4  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -16,18 +16,20 @@
 ---------------------------------------------------------------------------------------------------
 
 col         log_extension new_value log_extension noprint
-select  TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.HTM' log_extension from dual
+select  instance_name||'_spatial_checks_plus_'||TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.HTM' log_extension from v$instance
 /
 ---------------------------------------------------------------------------------------------------
 -- Spool to Logfile
 
-define logfile1='spatial_checks_plus_&log_extension'
+define logfile1='&log_extension'
 set pages 0
 set lines 200
+set echo on
 SET SERVEROUTPUT ON size 1000000
 
 
 spool &logfile1
+
 
 Set markup html on 
 
@@ -77,12 +79,12 @@ where nth_feature_table = object_name
 -- ============================================================
 -- report of themes and their SRIDS
 -- ============================================================
-   SELECT NTH_THEME_ID,NTH_THEME_NAME, NTH_FEATURE_TABLE, 
-               NTH_FEATURE_SHAPE_COLUMN, table_name USGM_TABLE_NAME, 
-               decode (srid, null, 'NULL', to_char(srid)) SRID
-      FROM NM_THEMES_ALL, USER_SDO_GEOM_METADATA
-    WHERE NTH_FEATURE_TABLE = TABLE_NAME(+)
-         and NTH_FEATURE_SHAPE_COLUMN = COLUMN_NAME(+)
+SELECT NTH_THEME_ID,NTH_THEME_NAME, NTH_FEATURE_TABLE, 
+       NTH_FEATURE_SHAPE_COLUMN, table_name USGM_TABLE_NAME, 
+       decode (srid, null, 'NULL', to_char(srid)) SRID, DIMINFO
+  FROM NM_THEMES_ALL, USER_SDO_GEOM_METADATA
+ WHERE NTH_FEATURE_TABLE = TABLE_NAME(+)
+   and NTH_FEATURE_SHAPE_COLUMN = COLUMN_NAME(+)
 ORDER BY NTH_THEME_ID;
 
 -- ============================================================
@@ -101,14 +103,26 @@ select  nth_theme_id, nth_theme_name, nth_feature_table  from nm_themes_all
 where not  nth_feature_table in    (select table_name from user_tables union select view_name from user_views);
 
 -- ============================================================
--- Entries in USer_sdo_geom_metadata that dont relate to an object in the database (delete the entry)
+-- Entries in user_sdo_geom_metadata that dont relate to an object in the database (delete the entry)
 -- ============================================================
-
 
 select table_name from user_sdo_geom_metadata 
 where table_name not in (select object_name from user_objects where object_type in ('VIEW', 'TABLE'))
 order by 1;
 
+-- ============================================================
+-- Failed spatial indexes
+-- ============================================================
+select index_name, table_name, STATUS, domidx_status, domidx_opstatus from user_indexes
+where ityp_name = 'SPATIAL_INDEX' and domidx_opstatus = 'FAILED';
+
+-- ============================================================
+-- broken Spatial Views
+-- ============================================================
+SELECT  owner, NAME, TYPE, text 
+FROM ALL_ERRORS a, user_sdo_geom_metadata
+where type = 'VIEW'
+and name = table_name;
 
 spool off
 
