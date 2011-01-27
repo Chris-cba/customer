@@ -8,11 +8,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.3   Jan 24 2011 10:53:24   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/ins_nm_members.trg-arc   3.4   Jan 27 2011 10:23:08   Chris.Strettle  $
 --       Module Name      : $Workfile:   ins_nm_members.trg  $
---       Date into PVCS   : $Date:   Jan 24 2011 10:53:24  $
---       Date fetched Out : $Modtime:   Jan 24 2011 10:53:00  $
---       PVCS Version     : $Revision:   3.3  $
+--       Date into PVCS   : $Date:   Jan 27 2011 10:23:08  $
+--       Date fetched Out : $Modtime:   Jan 27 2011 10:16:48  $
+--       PVCS Version     : $Revision:   3.4  $
 --       Norfolk Specific Based on Main Branch revision : 2.0
 --
 --   Author : Chris Strettle
@@ -68,7 +68,7 @@ BEGIN
 --
 --ensure the herm_xsp table is consistet with thehermis memberships  
 --
-if :new.nm_obj_type = 'SECT' then
+IF :new.nm_obj_type = 'SECT' THEN
 
   IF UPDATING and :old.nm_cardinality != :new.nm_cardinality then
     update herm_xsp
@@ -95,8 +95,22 @@ if :new.nm_obj_type = 'SECT' then
       when others then 
         nm_debug.debug(sqlerrm);
     end;                                     
-  END IF;    
-end if;
+  END IF;
+  --
+  IF UPDATING
+  THEN
+    IF :NEW.nm_end_date IS NOT NULL 
+    AND :OLD.nm_end_date IS NULL
+    THEN
+      xncc_herm_xsp.close_herm_xsp(:NEW.nm_ne_id_of, :NEW.nm_end_date);
+    ELSIF :NEW.nm_end_date IS NULL 
+    AND   :OLD.nm_end_date IS NOT NULL
+    THEN
+      xncc_herm_xsp.unclose_herm_xsp(:NEW.nm_ne_id_of, :OLD.nm_end_date);
+    END IF;
+  END IF;
+  --
+END IF;
 --
 END ins_nm_members;
 /

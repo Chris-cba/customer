@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.3   Jan 18 2011 16:47:02   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.4   Jan 27 2011 10:23:08   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdo_dynseg.pkb  $
---       Date into PVCS   : $Date:   Jan 18 2011 16:47:02  $
---       Date fetched Out : $Modtime:   Jan 18 2011 16:43:48  $
---       Version          : $Revision:   3.3  $
+--       Date into PVCS   : $Date:   Jan 27 2011 10:23:08  $
+--       Date fetched Out : $Modtime:   Jan 27 2011 10:14:24  $
+--       Version          : $Revision:   3.4  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.3  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.4  $';
 
   g_package_name CONSTANT varchar2(30) := 'nm3sdo_dynseg';
 --
@@ -212,7 +212,8 @@ IS
      c_of    NUMBER)
   IS
      SELECT hxo_offset
-       FROM herm_xsp, nm_inv_items
+       FROM herm_xsp_dt
+          , nm_inv_items
       WHERE     iit_ne_id = c_in
             AND hxo_ne_id_of = c_of
             AND iit_x_sect = hxo_nwx_x_sect;
@@ -221,8 +222,9 @@ IS
   CURSOR c2 (c_of IN NUMBER, c_xsp IN VARCHAR2)
   IS
      SELECT hxo_offset
-       FROM herm_xsp
-      WHERE hxo_nwx_x_sect = c_xsp AND hxo_ne_id_of = c_of;
+       FROM herm_xsp_dt
+      WHERE hxo_nwx_x_sect = c_xsp 
+        AND hxo_ne_id_of = c_of;
 
   --
   l_offset   NUMBER;
