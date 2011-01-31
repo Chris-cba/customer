@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.2   Jan 20 2011 15:52:26   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.3   Jan 31 2011 16:43:54   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdm.pkb  $
---       Date into PVCS   : $Date:   Jan 20 2011 15:52:26  $
---       Date fetched Out : $Modtime:   Jan 20 2011 14:56:42  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 31 2011 16:43:54  $
+--       Date fetched Out : $Modtime:   Jan 31 2011 16:20:50  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Norfolk Specific Based on Main Branch revision : 2.37
 --
 --   Author : R.A. Coupe
@@ -22,7 +22,7 @@ AS
 --
 --all global package variables here
 --
-   g_body_sccsid     CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.2  $"';
+   g_body_sccsid     CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.3  $"';
 --  g_body_sccsid is the SCCS ID for the package body
 --
    g_package_name    CONSTANT VARCHAR2 (30)   := 'NM3SDM';
@@ -3071,30 +3071,7 @@ PROCEDURE make_nt_spatial_layer
                             );
 
       l_themes := l_themes.add_element( l_theme_id );
-							
----------------------------------------------------------------
--- Populate the SDO table and create (clone) the SDO metadata
--- for table and date tracked view
---   (   NM_NIT_<ASSET_TYPE>_SDO )
---   ( V_NM_NIT_<ASSET_TYPE>_SDO )
----------------------------------------------------------------
 
-
-      IF pi_create_flag = 'TRUE'
-      THEN
-         Nm3sdo.create_inv_data (p_table_name      => l_tab,
-                                 p_inv_type        => pi_nit_inv_type,
-                                 p_seq_name        => l_inv_seq,
-         p_pnt_or_cont     => l_nit.nit_pnt_or_cont,
-         p_job_id          => p_job_id
-                                        );
-
-      END IF;
-
----------------------------------------------------------------
--- Table needs a spatial index
----------------------------------------------------------------
-      create_inv_spatial_idx (pi_nit_inv_type, l_tab);
 ---------------------------------------------------------------
 -- Need a join view between spatial table history view and Inv view
 ---------------------------------------------------------------
@@ -3137,7 +3114,27 @@ PROCEDURE make_nt_spatial_layer
 							   l_themes := l_themes.add_element( l_theme_id );
 							   
       END IF;
+---------------------------------------------------------------
+-- Populate the SDO table and create (clone) the SDO metadata
+-- for table and date tracked view
+--   (   NM_NIT_<ASSET_TYPE>_SDO )
+--   ( V_NM_NIT_<ASSET_TYPE>_SDO )
+---------------------------------------------------------------
 
+      IF pi_create_flag = 'TRUE'
+      THEN
+         Nm3sdo.create_inv_data (p_table_name      => l_tab,
+                                 p_inv_type        => pi_nit_inv_type,
+                                 p_seq_name        => l_inv_seq,
+         p_pnt_or_cont     => l_nit.nit_pnt_or_cont,
+         p_job_id          => p_job_id
+                                        );
+
+      END IF;
+---------------------------------------------------------------
+-- Table needs a spatial index
+---------------------------------------------------------------
+      create_inv_spatial_idx (pi_nit_inv_type, l_tab);
 ---------------------------------------------------------------
 -- Analyze spatial table
 ---------------------------------------------------------------
@@ -3153,14 +3150,14 @@ PROCEDURE make_nt_spatial_layer
           RAISE e_no_analyse_privs;
       END;
 
-      IF NM3SDO_DYNSEG.G_USE_OFFSET then
+    /*  IF NM3SDO_DYNSEG.G_USE_OFFSET then
         update nm_themes_all
         set nth_xsp_column = 'IIT_X_SECT'
         where nth_theme_id in ( select column_value from table ( l_themes.ia ) );
         
         NM3SDO_DYNSEG.SET_OFFSET_FLAG_OFF;
         
-      END IF;
+      END IF;*/
 	  
       --
       Nm_Debug.proc_end (g_package_name, 'make_ona_inv_spatial_layer');
@@ -7648,11 +7645,11 @@ end;
    */
    --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.2   Jan 20 2011 15:52:26   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.3   Jan 31 2011 16:43:54   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdm.pkb  $
---       Date into PVCS   : $Date:   Jan 20 2011 15:52:26  $
---       Date fetched Out : $Modtime:   Jan 20 2011 14:56:42  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 31 2011 16:43:54  $
+--       Date fetched Out : $Modtime:   Jan 31 2011 16:20:50  $
+--       PVCS Version     : $Revision:   3.3  $
 
       append ('--   PVCS Identifiers :-');
       append ('--');
