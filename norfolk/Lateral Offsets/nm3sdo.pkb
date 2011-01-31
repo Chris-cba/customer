@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 --
 ---   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.2   Jan 20 2011 15:52:26   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.3   Jan 31 2011 16:43:56   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdo.pkb  $
---       Date into PVCS   : $Date:   Jan 20 2011 15:52:26  $
---       Date fetched Out : $Modtime:   Jan 20 2011 15:18:02  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Jan 31 2011 16:43:56  $
+--       Date fetched Out : $Modtime:   Jan 31 2011 11:18:02  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Norfolk Specific Based on Main Branch revision : 2.48
 
 --
@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 -- Copyright (c) 2011 RAC
 -----------------------------------------------------------------------------
 
-   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.2  $"';
+   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.3  $"';
    g_package_name    CONSTANT VARCHAR2 (30)  := 'NM3SDO';
    g_batch_size      INTEGER                 := NVL( TO_NUMBER(Hig.get_sysopt('SDOBATSIZE')), 10);
    g_clip_type       VARCHAR2(30)            := NVL(Hig.get_sysopt('SDOCLIPTYP'),'SDO');
@@ -2802,9 +2802,22 @@ BEGIN
                                    ,p_seq_name      => p_seq_name
                                    ,p_pnt_or_cont   => p_pnt_or_cont
                                    ,p_job_id        => p_job_id );
+  --
+    update nm_themes_all
+    set nth_xsp_column = 'IIT_X_SECT'
+    where nth_theme_id in (SELECT nth_theme_id 
+                             FROM nm_themes_all
+                            WHERE nth_feature_table = p_table_name
+                        UNION ALL
+                           SELECT b.nth_theme_id 
+                             FROM nm_themes_all a, nm_themes_all b
+                            WHERE a.nth_feature_table = p_table_name
+                              AND b.nth_base_table_theme = a.nth_theme_id);
+  --
+    NM3SDO_DYNSEG.SET_OFFSET_FLAG_OFF;
+  --
   ELSE
-
-
+  --
   IF l_nit.nit_table_name IS NULL THEN
 
      cur_string1 :=  ' select ptr( rownum, m.nm_ne_id_in), ptr( rownum, m.nm_ne_id_of), nm_placement( m.nm_ne_id_of, m.nm_begin_mp, m.nm_end_mp, 0), m.nm_start_date, nm_end_date '||
