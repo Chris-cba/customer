@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/set_all_null_srids.sql-arc   3.1   Jan 26 2011 07:56:16   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/set_all_null_srids.sql-arc   3.2   Jan 31 2011 15:05:16   Ian.Turnbull  $
 --       Module Name      : $Workfile:   set_all_null_srids.sql  $
---       Date into PVCS   : $Date:   Jan 26 2011 07:56:16  $
---       Date fetched Out : $Modtime:   Jan 18 2011 18:22:46  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Jan 31 2011 15:05:16  $
+--       Date fetched Out : $Modtime:   Jan 27 2011 10:08:56  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -206,17 +206,9 @@ begin
     if l_table_type = 'TABLE' and c1rec.srid is null then
       nm_debug.debug('Setting SRID for ' || c1rec.nth_feature_table|| ' to  '|| l_default_srid );
       ah_set_table_srid(c1rec.nth_feature_table, c1rec.nth_feature_shape_column, l_default_srid );
+      ah_set_dependent_views_srids(c1rec.nth_feature_table, c1rec.nth_feature_shape_column, c1rec.nth_theme_id, l_default_srid );
     end if;  
 --end check     
-
-/* -- remove to seperate procedure
-    nm_debug.debug('Refreshing SDO metadata for ' || c1rec.nth_feature_table  );
-    nm3layer_tool.refresh_sdo_metadata( c1rec.nth_theme_id);--, 'ALL_DATA');
-     if (l_reg_sde_layer = 'Y')  then
-        nm_debug.debug('Refreshing SDE metadata for ' || c1rec.nth_feature_table );
-        nm3layer_tool.refresh_sde_metadata( c1rec.nth_theme_id);--, 'ALL_DATA');
-     end if;
-*/
 
      commit;
   end loop;
