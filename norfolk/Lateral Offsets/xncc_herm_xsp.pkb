@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.3   Jan 18 2011 13:54:10   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.4   Jan 31 2011 16:50:46   Chris.Strettle  $
 --       Module Name      : $Workfile:   xncc_herm_xsp.pkb  $
---       Date into PVCS   : $Date:   Jan 18 2011 13:54:10  $
---       Date fetched Out : $Modtime:   Jan 18 2011 13:50:40  $
---       Version          : $Revision:   3.3  $
+--       Date into PVCS   : $Date:   Jan 31 2011 16:50:46  $
+--       Date fetched Out : $Modtime:   Jan 31 2011 16:49:18  $
+--       Version          : $Revision:   3.4  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.3  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.4  $';
 
   g_package_name CONSTANT varchar2(30) := 'XNCC_HERM_XSP';
 --
@@ -72,7 +72,7 @@ end;
 --
 PROCEDURE populate_herm_xsp( p_ne_id nm_elements.ne_id%TYPE 
                          , p_ne_id_new nm_elements.ne_id%TYPE
-                         , p_effective_date DATE DEFAULT SYSDATE) AS
+                         , p_effective_date DATE DEFAULT TRUNC(SYSDATE)) AS
 BEGIN
 
 IF  nm3get.get_ne(pi_ne_id => p_ne_id_new, pi_raise_not_found => FALSE).ne_nt_type = 'ESU'
@@ -102,7 +102,7 @@ THEN
   AND nwx_nw_type = 'HERM'
   AND nm_end_date IS NULL
   AND NOT EXISTS (SELECT 'X'
-                    FROM herm_xsp 
+                    FROM herm_xsp_dt
                    WHERE hxo_ne_id_of = p_ne_id_new 
                      AND hxo_nwx_x_sect = nwx_x_sect
                      AND hxo_start_date = p_effective_date);
@@ -118,30 +118,34 @@ END;
 PROCEDURE populate_herm_xsp( p_ne_id_in nm_elements.ne_id%TYPE 
                            , p_ne_id_of nm_elements.ne_id%TYPE
                            , p_nm_cardinality nm_members_all.nm_cardinality%TYPE
-                           , p_effective_date DATE DEFAULT SYSDATE) AS
+                           , p_effective_date DATE DEFAULT TRUNC(SYSDATE)) AS
 BEGIN
 --
-         INSERT INTO herm_xsp( hxo_ne_id_of
-                             , hxo_nwx_x_sect
-                             , hxo_start_date
-                             , hxo_offset
-                             , hxo_end_date
-                             , hxo_xsp_offset
-                             , hxo_herm_dir_flag
-                             , hxo_xsp_descr)
-         SELECT p_ne_id_of
-              , nwx_x_sect
-              , p_effective_date
-              , nwx_offset*p_nm_cardinality
-              , NULL nm_end_date
-              , nwx_offset
-              , p_nm_cardinality nm_cardinality 
-              , nwx_descr
+   DELETE FROM herm_xsp 
+   WHERE hxo_start_date = p_effective_date
+   AND hxo_ne_id_of = p_ne_id_of;
+   
+   INSERT INTO herm_xsp( hxo_ne_id_of
+                       , hxo_nwx_x_sect
+                       , hxo_start_date
+                       , hxo_offset
+                       , hxo_end_date
+                       , hxo_xsp_offset
+                       , hxo_herm_dir_flag
+                       , hxo_xsp_descr)
+   SELECT p_ne_id_of
+        , nwx_x_sect
+        , p_effective_date
+        , nwx_offset*p_nm_cardinality
+        , NULL nm_end_date
+        , nwx_offset
+        , p_nm_cardinality nm_cardinality 
+        , nwx_descr
   FROM nm_nw_xsp, nm_elements
   WHERE ne_id = p_ne_id_in
   AND  nwx_nsc_sub_class = ne_sub_class
   AND NOT EXISTS (SELECT 'X'
-                    FROM herm_xsp 
+                    FROM herm_xsp_dt
                    WHERE hxo_ne_id_of = p_ne_id_of 
                      AND hxo_nwx_x_sect = nwx_x_sect
                      AND hxo_start_date = p_effective_date);
@@ -164,6 +168,7 @@ END;
 -----------------------------------------------------------------------------
 --
 PROCEDURE close_herm_xsp( p_ne_id nm_elements.ne_id%TYPE
+                        , p_end_date nm_elements.ne_end_date%TYPE DEFAULT NULL
                         ) AS
 BEGIN
   IF nm3get.get_ne_all(p_ne_id).ne_nt_type = 'ESU' 
@@ -179,7 +184,8 @@ END;
 -----------------------------------------------------------------------------
 --
 PROCEDURE unclose_herm_xsp( p_ne_id nm_elements.ne_id%TYPE
-                         ) AS
+                          , p_end_date nm_elements.ne_end_date%TYPE DEFAULT NULL
+                          ) AS
 BEGIN
   IF nm3get.get_ne_all(p_ne_id).ne_nt_type = 'ESU' 
   THEN
