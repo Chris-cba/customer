@@ -6,11 +6,11 @@ CREATE OR REPLACE PROCEDURE AH_SET_DEPENDENT_VIEWS_SRIDS( p_table  IN VARCHAR2
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                    : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/AH_SET_DEPENDENT_VIEWS_SRIDS.sql-arc   1.0   Feb 01 2011 09:23:00   Ian.Turnbull  $
+--       pvcsid                    : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/AH_SET_DEPENDENT_VIEWS_SRIDS.sql-arc   1.1   Feb 01 2011 09:23:50   Ian.Turnbull  $
 --       Module Name        : $Workfile:   AH_SET_DEPENDENT_VIEWS_SRIDS.sql  $
---       Date into PVCS     : $Date:   Feb 01 2011 09:23:00  $
+--       Date into PVCS     : $Date:   Feb 01 2011 09:23:50  $
 --       Date fetched Out  : $Modtime:   Jan 27 2011 14:04:44  $
---       PVCS Version       : $Revision:   1.0  $
+--       PVCS Version       : $Revision:   1.1  $
 --
 --
 --   Author : Aileen Heal
