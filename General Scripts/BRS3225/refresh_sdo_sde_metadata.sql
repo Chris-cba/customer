@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/refresh_sdo_sde_metadata.sql-arc   1.0   Jan 26 2011 07:58:12   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/refresh_sdo_sde_metadata.sql-arc   1.1   Feb 02 2011 15:17:26   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_sdo_sde_metadata.sql  $
---       Date into PVCS   : $Date:   Jan 26 2011 07:58:12  $
---       Date fetched Out : $Modtime:   Jan 18 2011 18:46:48  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Feb 02 2011 15:17:26  $
+--       Date fetched Out : $Modtime:   Feb 01 2011 16:22:22  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -38,12 +38,21 @@ begin
   hig.set_opt('ALLOWDEBUG', 'Y');
   nm_debug.debug_on;
 
-  for rec in (select nth_theme_id,nth_theme_name, nth_feature_table, nth_feature_shape_column  
-                 from nm_themes_all
-                 where exists ( select 1 from user_tables where  table_name = nth_feature_table )
-                 and not exists ( select 1 from user_objects 
-                                   where object_name = nth_feature_table 
-                                       and object_type =  'MATERIALIZED VIEW'))
+  for rec in (SELECT nth_theme_id, nth_theme_name, nth_feature_table, nth_feature_shape_column
+                    FROM nm_themes_all
+                  WHERE nth_base_table_theme IS NULL
+                       AND EXISTS (SELECT 1 FROM v_nm_net_themes_all
+                                            WHERE vnnt_nth_theme_id = nth_theme_id
+                                                AND vnnt_lr_type = 'D')
+                 UNION
+                SELECT nth_theme_id, nth_theme_name, nth_feature_table, nth_feature_shape_column
+                   FROM nm_themes_all
+                 WHERE nth_theme_id NOT IN 
+                                        ( SELECT nbth_theme_id FROM nm_base_themes
+                                            WHERE nbth_base_theme IN (SELECT vnnt_nth_theme_id FROM v_nm_net_themes_all
+                                            WHERE vnnt_lr_type = 'D'))
+                   AND nth_base_table_theme IS NULL
+                )
    loop
         nm_debug.debug('Refreshing SDO metadata for ' || rec.nth_theme_name );
       nm3layer_tool.refresh_sdo_metadata( rec.nth_theme_id, 'ALL_DATA');
@@ -71,12 +80,21 @@ begin
 
    if (l_reg_sde_layer = 'Y')  then
 
-    for rec in (select nth_theme_id,nth_theme_name, nth_feature_table, nth_feature_shape_column  
-                from nm_themes_all
-                where exists ( select 1 from user_tables where  table_name = nth_feature_table ) 
-                 and not exists ( select 1 from user_objects 
-                                  where object_name = nth_feature_table 
-                                       and object_type =  'MATERIALIZED VIEW'))
+    for rec in (SELECT nth_theme_id, nth_theme_name, nth_feature_table, nth_feature_shape_column
+                    FROM nm_themes_all
+                  WHERE nth_base_table_theme IS NULL
+                       AND EXISTS (SELECT 1 FROM v_nm_net_themes_all
+                                            WHERE vnnt_nth_theme_id = nth_theme_id
+                                                AND vnnt_lr_type = 'D')
+                 UNION
+                SELECT nth_theme_id, nth_theme_name, nth_feature_table, nth_feature_shape_column
+                   FROM nm_themes_all
+                 WHERE nth_theme_id NOT IN 
+                                        ( SELECT nbth_theme_id FROM nm_base_themes
+                                            WHERE nbth_base_theme IN (SELECT vnnt_nth_theme_id FROM v_nm_net_themes_all
+                                            WHERE vnnt_lr_type = 'D'))
+                   AND nth_base_table_theme IS NULL
+                )
    loop
         nm_debug.debug('Refreshing SDE metadata for ' || rec.nth_theme_name );
         nm3layer_tool.refresh_sde_metadata( rec.nth_theme_id,'ALL_DATA');
