@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm_4300_fix7.sql-arc   3.0   Feb 02 2011 11:59:34   mike.alexander  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm_4300_fix7.sql-arc   3.1   Feb 02 2011 12:02:10   mike.alexander  $
 --       Module Name      : $Workfile:   nm_4300_fix7.sql  $
---       Date into PVCS   : $Date:   Feb 02 2011 11:59:34  $
---       Date fetched Out : $Modtime:   Feb 02 2011 11:59:10  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Feb 02 2011 12:02:10  $
+--       Date fetched Out : $Modtime:   Feb 02 2011 12:00:56  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version : 
 --
 --   Author : Chris Strettle
@@ -35,7 +35,7 @@ set term on
 --
 -- Spool to Logfile
 --
-define logfile1='nm_4300_fix7_&log_extension'
+define logfile1='nm_4300_fix7_1_&log_extension'
 spool &logfile1
 --
 --------------------------------------------------------------------------------
@@ -242,18 +242,6 @@ start 'nm3invval.pkw'
 SET FEEDBACK OFF
 --
 --------------------------------------------------------------------------------
--- Metadata
---------------------------------------------------------------------------------
---
-SET TERM ON 
-PROMPT xspoffset metadata.sql
-SET TERM OFF
---
-SET FEEDBACK ON
-start 'xspoffset metadata.sql'
-SET FEEDBACK OFF
---
---------------------------------------------------------------------------------
 -- Triggers
 --------------------------------------------------------------------------------
 --
@@ -273,6 +261,55 @@ SET TERM OFF
 --
 SET FEEDBACK ON
 start 'ins_nm_members.trg'
+SET FEEDBACK OFF
+--
+--------------------------------------------------------------------------------
+-- Compile Schema (there are some invalid objects)
+--------------------------------------------------------------------------------
+--
+SET TERM ON
+Prompt Compiling Schema
+SET TERM OFF
+--
+SPOOL OFF
+--
+SET DEFINE ON
+SET FEEDBACK ON
+start compile_schema.sql
+SET FEEDBACK OFF
+--
+-- SPOOL to Logfile
+--
+DEFINE logfile='nm_4300_fix7_2_&log_extension'
+SPOOL &logfile
+--
+--
+SELECT 'Install Running on ' ||LOWER(USER||'@'||instance_name||'.'||host_name)||' - DB ver : '||version details
+FROM v$instance;
+--
+--
+SELECT 'Current version of '||hpr_product||' ' ||hpr_version details
+FROM hig_products
+WHERE hpr_product IN ('HIG','NET');
+--
+--
+START compile_all.sql
+--
+--
+alter view network_node compile;
+--
+alter synonym road_seg_membs_partial compile;
+--
+--------------------------------------------------------------------------------
+-- Metadata
+--------------------------------------------------------------------------------
+--
+SET TERM ON 
+PROMPT xspoffset metadata.sql
+SET TERM OFF
+--
+SET FEEDBACK ON
+start 'xspoffset metadata.sql'
 SET FEEDBACK OFF
 --
 --------------------------------------------------------------------------------
