@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/set_all_null_srids.sql-arc   3.2   Jan 31 2011 15:05:16   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/set_all_null_srids.sql-arc   3.3   Feb 10 2011 17:59:20   Ian.Turnbull  $
 --       Module Name      : $Workfile:   set_all_null_srids.sql  $
---       Date into PVCS   : $Date:   Jan 31 2011 15:05:16  $
---       Date fetched Out : $Modtime:   Jan 27 2011 10:08:56  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Feb 10 2011 17:59:20  $
+--       Date fetched Out : $Modtime:   Feb 10 2011 17:58:32  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -62,6 +62,9 @@ select instance_name  from v$instance
 
 
 @AH_SET_TABLE_SRID.sql
+
+@AH_SET_DEPENDENT_VIEWS_SRIDS.sql
+
 
 prompt
 accept   pv_default_srid   default 81989 prompt "Enter the default srid to use: "
