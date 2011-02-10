@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                  : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/validate_all_themes.sql-arc   3.1   Jan 26 2011 07:56:52   Ian.Turnbull  $
+--       pvcsid                  : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/validate_all_themes.sql-arc   3.2   Feb 10 2011 17:59:18   Ian.Turnbull  $
 --       Module Name       : $Workfile:   validate_all_themes.sql  $
---       Date into PVCS     : $Date:   Jan 26 2011 07:56:52  $
---       Date fetched Out  : $Modtime:   Dec 10 2010 10:48:54  $
---       PVCS Version      : $Revision:   3.1  $
+--       Date into PVCS     : $Date:   Feb 10 2011 17:59:18  $
+--       Date fetched Out  : $Modtime:   Feb 10 2011 17:58:16  $
+--       PVCS Version      : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -38,13 +38,13 @@
 -- 
 ---------------------------------------------------------------------------------------------------
 
-col         log_extension new_value log_extension noprint
-select  TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.LOG' log_extension from dual
+col     log_name new_value log_name noprint
+select  instance_name||'_validate_all_themes_'||TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.log' log_name from v$instance
 /
 ---------------------------------------------------------------------------------------------------
 -- Spool to Logfile
 
-define logfile1='validate_all_themes&log_extension'
+define logfile1='&log_name'
 set pages 0
 set lines 200
 SET SERVEROUTPUT ON size 1000000
