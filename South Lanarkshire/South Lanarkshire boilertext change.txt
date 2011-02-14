@@ -1,0 +1,130 @@
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :- 
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/South Lanarkshire/South Lanarkshire boilertext change.txt-arc   3.0   Feb 14 2011 16:09:54   Mike.Alexander  $
+--       Module Name      : $Workfile:   South Lanarkshire boilertext change.txt  $
+--       Date into PVCS   : $Date:   Feb 14 2011 16:09:54  $
+--       Date fetched Out : $Modtime:   Feb 14 2011 16:09:06  $
+--       PVCS Version     : $Revision:   3.0  $
+--
+--
+--   Author : P Stanton
+--
+--
+--  South Lanarkshire have a bespoke version of DOC0150 that has different boilertext to the standard form.
+--  To produce the bespoke version add code below to the bottom of instantaite_static_text procedure in the DOC0150_util 
+--  package in the DOC0150 module.
+--  
+
+----   Version 1.0 - Created for 4300. DOC0150 version 4.18
+
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2011
+-----------------------------------------------------------------------------
+--
+--  South Lanarkshire have a bespoke version of DOC0150 that has different boilertext to the standard form.
+--  To produce the bespoke version add code below to the bottom of instantaite_static_text procedure in the DOC0150_util 
+--  package in the DOC0150 module.
+
+
+
+-- South Lanarks Boilerplate changes
+  plib$set_item_prompt( 'boilertext.b1respof' ,'Allocate/Redirect');
+  plib$set_item_prompt( 'boilertext.b1adminunit' ,'Office');
+  plib$set_item_prompt( 'boilertext.b11hct_organisation' ,'Company');
+  plib$set_item_prompt( 'boilertext.b15had_dep_thoroughfare' ,'Street');
+  plib$set_item_prompt( 'boilertext.b11dec_type' ,'Int/Scr');
+  plib$set_item_prompt( 'boilertext.b11hct_home_phone' ,'Phone No.');
+  plib$set_item_prompt( 'boilertext.b11hct_vip' ,'Mail');
+  plib$set_item_prompt( 'boilertext.b1dtp_code' ,'Service');
+  plib$set_item_prompt( 'boilertext.b1complainttype' ,'Cheque Inc?');
+  plib$set_item_prompt( 'boilertext.b1location' ,'Cheque Amount?');
+  plib$set_item_prompt( 'boilertext.b1complainttext' ,'Abstract');
+  plib$set_item_prompt( 'boilertext.b1dcl_code' ,'Section');
+  plib$set_item_prompt( 'boilertext.b1woolf1' ,'Letter Date');
+  plib$set_item_prompt( 'boilertext.b1complaintpriority' ,'Category');
+  plib$set_item_prompt( 'boilertext.b1incident_date' ,'Date Received');
+  plib$set_item_prompt( 'boilertext.b1ack_date' ,'Ack. Sent');
+  plib$set_item_prompt( 'boilertext.b1targetdate' ,'Reply Due');
+  plib$set_item_prompt( 'boilertext.b1corresp_date' ,'#');
+  plib$set_item_prompt( 'boilertext.b1follow_up2' ,'Hold/Refuse');
+  plib$set_item_prompt( 'boilertext.b1completedate' ,'Reply Sent');
+  plib$set_item_prompt( 'boilertext.b1corresp_deliv_date' ,'#');
+  plib$set_item_prompt( 'boilertext.b1woolf3' ,'CCd.to Gen/Corp');
+  plib$set_item_prompt( 'boilertext.b1east' ,'#');
+  plib$set_item_prompt( 'boilertext.b1north' ,'#');
+  plib$set_item_prompt( 'boilertext.b1est_cost' ,'Fee Due');
+  plib$set_item_prompt( 'boilertext.b1adv_cost' ,'Fee Received');
+  plib$set_item_prompt( 'boilertext.b1act_cost' ,'Outst.Fee');
+  plib$set_item_prompt( 'boilertext.b1from' ,'Fee Date');
+  plib$set_item_prompt( 'boilertext.b1to' ,'Outst.Letter');
+  plib$set_item_prompt( 'boilertext.b1insurance_claim' ,'#');
+  plib$set_item_prompt( 'boilertext.b1summons' ,'#');
+  plib$set_item_prompt( 'boilertext.b1police_notif' ,'#');
+  plib$set_item_prompt( 'boilertext.b1litigation_flag' ,'#');
+  plib$set_item_prompt( 'boilertext.b1claim_no' ,'#' );
+  plib$set_item_prompt( 'boilertext.b1notif_date' ,'#');
+  plib$set_item_prompt( 'boilertext.b1litigation_reason' ,'Receipt No');
+  plib$set_item_prompt( 'boilertext.b1determination' ,'#');
+  plib$set_item_prompt( 'boilertext.b1remarks' ,'#');
+  plib$set_item_prompt( 'boilertext.b1no_of_petitioners' ,'#');
+  plib$set_item_prompt( 'boilertext.b6status' ,'#');
+  plib$set_item_prompt( 'boilertext.b6security' ,'#');
+  plib$set_item_prompt( 'boilertext.b6reference' ,'#');
+  plib$set_item_prompt( 'boilertext.b6priority' ,'#');
+  plib$set_item_prompt( 'boilertext.b6seq' ,'#');
+  plib$set_item_prompt( 'boilertext.b6parallel' ,'#');
+  plib$set_item_prompt( 'boilertext.b6target' ,'#');
+  plib$set_item_prompt( 'boilertext.b6date_assigned' ,'Start Date');
+  plib$set_item_prompt( 'boilertext.b6completion' ,'Comp. Date');
+  plib$set_item_prompt( 'boilertext.b6status2' ,'#');
+  plib$set_item_prompt( 'boilertext.b6security2' ,'#');
+  plib$set_item_prompt( 'boilertext.b6reference2' ,'#');
+  plib$set_item_prompt( 'boilertext.b6priority2' ,'#');
+  plib$set_item_prompt( 'boilertext.b6seq2' ,'#');
+  plib$set_item_prompt( 'boilertext.b6parallel2' ,'#');
+  plib$set_item_prompt( 'boilertext.b6target2' ,'#');
+  plib$set_item_prompt( 'boilertext.b6date_assigned2' ,'Start Date');
+  plib$set_item_prompt( 'boilertext.b6completion2' ,'Comp. Date');
+  plib$set_item_prompt( 'boilertext.b6status3' ,'#');
+  plib$set_item_prompt( 'boilertext.b6security3' ,'#');
+  plib$set_item_prompt( 'boilertext.b6reference3' ,'#');
+  plib$set_item_prompt( 'boilertext.b6priority3' ,'#');
+  plib$set_item_prompt( 'boilertext.b6seq3' ,'#');
+  plib$set_item_prompt( 'boilertext.b6parallel3' ,'#');
+  plib$set_item_prompt( 'boilertext.b6target3' ,'#');
+  plib$set_item_prompt( 'boilertext.b6date_assigned3' ,'Start Date');
+  plib$set_item_prompt( 'boilertext.b6completion3' ,'Comp. Date');
+  plib$set_item_prompt( 'boilertext.b6status4' ,'#');
+  plib$set_item_prompt( 'boilertext.b6security4' ,'#');
+  plib$set_item_prompt( 'boilertext.b6reference4' ,'#');
+  plib$set_item_prompt( 'boilertext.b6priority4' ,'#');
+  plib$set_item_prompt( 'boilertext.b6seq4' ,'#');
+  plib$set_item_prompt( 'boilertext.b6parallel4' ,'#');
+  plib$set_item_prompt( 'boilertext.b6target4' ,'#');
+  plib$set_item_prompt( 'boilertext.b6date_assigned4' ,'Start Date');
+  plib$set_item_prompt( 'boilertext.b6completion4' ,'Comp. Date');
+  plib$set_item_prompt( 'boilertext.b7date_assigned' ,'Start Date');
+  plib$set_item_prompt( 'boilertext.b7completion' ,'Comp. Date');
+  plib$set_item_prompt( 'boilertext.b7priority' ,'#');
+  plib$set_item_prompt( 'boilertext.b7status' ,'#');
+  plib$set_item_prompt( 'boilertext.b7outcome' ,'Comments');
+  plib$set_item_prompt( 'boilertext.b7assignee' ,'Officer');
+  plib$set_item_prompt( 'boilertext.b1follow_up3' ,'CCd.to Gen/Corp');
+  plib$set_item_prompt( 'boilertext.b11depstreet' ,'Street');
+  plib$set_item_prompt( 'boilertext.b1follow_up1' ,'Letter Date');
+  plib$set_item_prompt( 'boilertext.b6descr' ,'Outcome');
+  plib$set_item_prompt( 'boilertext.b6assignee' ,'Officer');
+  plib$set_item_prompt( 'boilertext.b6outcome' ,'Comments');
+  plib$set_item_prompt( 'boilertext.b6descr2' ,'Outcome');
+  plib$set_item_prompt( 'boilertext.b6assignee2' ,'Officer');
+  plib$set_item_prompt( 'boilertext.b6outcome2' ,'Comments');
+  plib$set_item_prompt( 'boilertext.b6descr3' ,'Outcome');
+  plib$set_item_prompt( 'boilertext.b6assignee3' ,'Officer');
+  plib$set_item_prompt( 'boilertext.b6outcome3' ,'Comments');
+  plib$set_item_prompt( 'boilertext.b6descr4' ,'Outcome');
+  plib$set_item_prompt( 'boilertext.b6assignee4' ,'Officer');
+  plib$set_item_prompt( 'boilertext.b6outcome4' ,'Comments');
+  
