@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.4   Jan 31 2011 16:50:46   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.5   Feb 14 2011 12:09:08   Rob.Coupe  $
 --       Module Name      : $Workfile:   xncc_herm_xsp.pkb  $
---       Date into PVCS   : $Date:   Jan 31 2011 16:50:46  $
---       Date fetched Out : $Modtime:   Jan 31 2011 16:49:18  $
---       Version          : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Feb 14 2011 12:09:08  $
+--       Date fetched Out : $Modtime:   Feb 14 2011 12:07:46  $
+--       Version          : $Revision:   3.5  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.4  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.5  $';
 
   g_package_name CONSTANT varchar2(30) := 'XNCC_HERM_XSP';
 --
@@ -54,9 +54,16 @@ INSERT INTO herm_xsp
             AND nm_ne_id_in = ne_id
             AND ne_sub_class = nwx_nsc_sub_class
             AND nwx_nw_type = 'HERM')
-   SELECT   nm_ne_id_of, nwx_x_sect, MIN (nm_start_date), MAX (nm_end_date),
+   SELECT   nm_ne_id_of, nwx_x_sect, MIN (nm_start_date) nm_start_date, MAX (nvl(nm_end_date, to_date('31-DEC-9999'))) nm_end_date,
             herm_x_sect, offset, nm_cardinality, nwx_descr
-       FROM (SELECT *
+       FROM (SELECT nm_ne_id_of, 
+                    nwx_x_sect, 
+                    nm_start_date, 
+                    decode(nm_end_date, to_date( '31-DEC-9999', 'DD-MON-YYYY'), NULL, nm_end_date ) nm_end_date, 
+                    herm_x_sect, 
+                    offset, 
+                    nm_cardinality, 
+                    nwx_descr
                FROM datum_xsp
               WHERE rn = 1)
    GROUP BY nm_ne_id_of,
