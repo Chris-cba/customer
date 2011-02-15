@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.5   Feb 14 2011 12:09:08   Rob.Coupe  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.6   Feb 15 2011 10:00:24   Rob.Coupe  $
 --       Module Name      : $Workfile:   xncc_herm_xsp.pkb  $
---       Date into PVCS   : $Date:   Feb 14 2011 12:09:08  $
---       Date fetched Out : $Modtime:   Feb 14 2011 12:07:46  $
---       Version          : $Revision:   3.5  $
+--       Date into PVCS   : $Date:   Feb 15 2011 10:00:24  $
+--       Date fetched Out : $Modtime:   Feb 15 2011 09:54:32  $
+--       Version          : $Revision:   3.6  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.5  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.6  $';
 
   g_package_name CONSTANT varchar2(30) := 'XNCC_HERM_XSP';
 --
@@ -36,43 +36,82 @@ END get_body_version;
 --
 -----------------------------------------------------------------------------
 --
-PROCEDURE ins_herm_xsp AS
+PROCEDURE ins_herm_xsp1
+AS
 BEGIN
-INSERT INTO herm_xsp
-            (hxo_ne_id_of, hxo_nwx_x_sect, hxo_start_date, hxo_end_date,
-             hxo_offset, hxo_xsp_offset, hxo_herm_dir_flag, hxo_xsp_descr)
-   WITH datum_xsp AS
-        (SELECT nm_ne_id_of, nwx_x_sect,
-                NVL (nwx_offset, 0) * nm_cardinality herm_x_sect, nwx_descr,
-                NVL (nwx_offset, 0) offset, nm_cardinality,
-                nm_start_date nm_start_date, nm_end_date,
-                ROW_NUMBER () OVER (
-                     PARTITION BY 
-                         nm_ne_id_of, nwx_x_sect, nm_start_date ORDER BY nm_start_date,nm_end_date DESC) rn
-           FROM nm_members_all, nm_elements_all, nm_xsp
-          WHERE nm_obj_type = 'SECT'
-            AND nm_ne_id_in = ne_id
-            AND ne_sub_class = nwx_nsc_sub_class
-            AND nwx_nw_type = 'HERM')
-   SELECT   nm_ne_id_of, nwx_x_sect, MIN (nm_start_date) nm_start_date, MAX (nvl(nm_end_date, to_date('31-DEC-9999'))) nm_end_date,
-            herm_x_sect, offset, nm_cardinality, nwx_descr
-       FROM (SELECT nm_ne_id_of, 
-                    nwx_x_sect, 
-                    nm_start_date, 
-                    decode(nm_end_date, to_date( '31-DEC-9999', 'DD-MON-YYYY'), NULL, nm_end_date ) nm_end_date, 
-                    herm_x_sect, 
-                    offset, 
-                    nm_cardinality, 
-                    nwx_descr
-               FROM datum_xsp
-              WHERE rn = 1)
-   GROUP BY nm_ne_id_of,
-            nwx_x_sect,
-            herm_x_sect,
-            nwx_descr,
-            offset,
-            nm_cardinality;
-
+   INSERT INTO herm_xsp (hxo_ne_id_of,
+                         hxo_nwx_x_sect,
+                         hxo_start_date,
+                         hxo_end_date,
+                         hxo_offset,
+                         hxo_xsp_offset,
+                         hxo_herm_dir_flag,
+                         hxo_xsp_descr)
+      WITH datum_xsp
+              AS (SELECT nm_ne_id_of,
+                         nwx_x_sect,
+                         NVL (nwx_offset, 0) * nm_cardinality herm_x_sect,
+                         nwx_descr,
+                         NVL (nwx_offset, 0) offset,
+                         nm_cardinality,
+                         nm_start_date nm_start_date,
+                         nm_end_date,
+                         ROW_NUMBER ()
+                         OVER (
+                            PARTITION BY nm_ne_id_of,
+                                         nwx_x_sect,
+                                         nm_start_date
+                            ORDER BY nm_start_date, nm_end_date DESC)
+                            rn
+                    FROM nm_members_all, nm_elements_all, nm_xsp
+                   WHERE     nm_obj_type = 'SECT'
+                         AND nm_ne_id_in = ne_id
+                         AND ne_sub_class = nwx_nsc_sub_class
+                         AND nwx_nw_type = 'HERM')
+      SELECT DISTINCT
+             nm_ne_id_of,
+             nwx_x_sect,
+             -- nm_start_date, nm_end_date,
+             FIRST_VALUE (
+                nm_start_date)
+             OVER (PARTITION BY nm_ne_id_of, nwx_x_sect, herm_x_sect, offset
+                   ORDER BY nm_start_date
+                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+                nm_start_date,
+             FIRST_VALUE (
+                nm_end_date)
+             OVER (PARTITION BY nm_ne_id_of, nwx_x_sect, herm_x_sect, offset
+                   ORDER BY nm_end_date DESC NULLS FIRST
+                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+                nm_end_date,
+             LAST_VALUE (
+                herm_x_sect)
+             OVER (PARTITION BY nm_ne_id_of, nwx_x_sect, herm_x_sect, offset
+                   ORDER BY nm_start_date ASC, nm_end_date DESC
+                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+                herm_x_sect,
+             LAST_VALUE (
+                offset)
+             OVER (PARTITION BY nm_ne_id_of, nwx_x_sect, herm_x_sect, offset
+                   ORDER BY nm_start_date ASC, nm_end_date DESC
+                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+                offset,
+             LAST_VALUE (
+                nm_cardinality)
+             OVER (PARTITION BY nm_ne_id_of, nwx_x_sect, herm_x_sect, offset
+                   ORDER BY nm_start_date ASC, nm_end_date DESC
+                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+                nm_cardinality,
+             LAST_VALUE (
+                nwx_descr)
+             OVER (PARTITION BY nm_ne_id_of, nwx_x_sect, herm_x_sect, offset
+                   ORDER BY nm_start_date ASC, nm_end_date DESC
+                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+                nwx_descr
+        FROM datum_xsp
+       WHERE (nm_start_date != nm_end_date OR nm_end_date IS NULL)
+           LOG ERRORS INTO herm_xsp_errlog ('herm_xsp_iot') REJECT LIMIT 2000;
+END;
 end;
 --
 -----------------------------------------------------------------------------
