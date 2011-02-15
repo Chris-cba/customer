@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.7   Feb 15 2011 11:46:38   Rob.Coupe  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.8   Feb 15 2011 11:49:32   Rob.Coupe  $
 --       Module Name      : $Workfile:   xncc_herm_xsp.pkb  $
---       Date into PVCS   : $Date:   Feb 15 2011 11:46:38  $
---       Date fetched Out : $Modtime:   Feb 15 2011 11:45:06  $
---       Version          : $Revision:   3.7  $
+--       Date into PVCS   : $Date:   Feb 15 2011 11:49:32  $
+--       Date fetched Out : $Modtime:   Feb 15 2011 11:48:56  $
+--       Version          : $Revision:   3.8  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.7  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.8  $';
 
   g_package_name CONSTANT varchar2(30) := 'XNCC_HERM_XSP';
 --
@@ -36,7 +36,7 @@ END get_body_version;
 --
 -----------------------------------------------------------------------------
 --
-create or replace PROCEDURE ins_herm_xsp2
+PROCEDURE ins_herm_xsp
 AS
 cursor c1 is 
       WITH datum_xsp
