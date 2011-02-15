@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.6   Feb 15 2011 10:00:24   Rob.Coupe  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/xncc_herm_xsp.pkb-arc   3.7   Feb 15 2011 11:46:38   Rob.Coupe  $
 --       Module Name      : $Workfile:   xncc_herm_xsp.pkb  $
---       Date into PVCS   : $Date:   Feb 15 2011 10:00:24  $
---       Date fetched Out : $Modtime:   Feb 15 2011 09:54:32  $
---       Version          : $Revision:   3.6  $
+--       Date into PVCS   : $Date:   Feb 15 2011 11:46:38  $
+--       Date fetched Out : $Modtime:   Feb 15 2011 11:45:06  $
+--       Version          : $Revision:   3.7  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.6  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.7  $';
 
   g_package_name CONSTANT varchar2(30) := 'XNCC_HERM_XSP';
 --
@@ -36,17 +36,9 @@ END get_body_version;
 --
 -----------------------------------------------------------------------------
 --
-PROCEDURE ins_herm_xsp1
+create or replace PROCEDURE ins_herm_xsp2
 AS
-BEGIN
-   INSERT INTO herm_xsp (hxo_ne_id_of,
-                         hxo_nwx_x_sect,
-                         hxo_start_date,
-                         hxo_end_date,
-                         hxo_offset,
-                         hxo_xsp_offset,
-                         hxo_herm_dir_flag,
-                         hxo_xsp_descr)
+cursor c1 is 
       WITH datum_xsp
               AS (SELECT nm_ne_id_of,
                          nwx_x_sect,
@@ -108,11 +100,41 @@ BEGIN
                    ORDER BY nm_start_date ASC, nm_end_date DESC
                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
                 nwx_descr
-        FROM datum_xsp
-       WHERE (nm_start_date != nm_end_date OR nm_end_date IS NULL)
-           LOG ERRORS INTO herm_xsp_errlog ('herm_xsp_iot') REJECT LIMIT 2000;
+        FROM datum_xsp;
+--
+BEGIN
+--
+--  cursor for loop chosen in preference to a singular insert since logging errors on an IOT fails in Oracle 10gR2
+--  also, norfolk have ESU records that violate the exclusivity rules - so the insert fails with a dup-val-on-index
+--  error which cannot be handled.
+--
+  for irec in c1 loop
+   begin
+     INSERT INTO herm_xsp (hxo_ne_id_of,
+                         hxo_nwx_x_sect,
+                         hxo_start_date,
+                         hxo_end_date,
+                         hxo_offset,
+                         hxo_xsp_offset,
+                         hxo_herm_dir_flag,
+                         hxo_xsp_descr)
+      values
+      ( irec.nm_ne_id_of,
+        irec.nwx_x_sect,
+        irec.nm_start_date,
+        irec.nm_end_date,
+        irec.herm_x_sect,
+        irec.offset,
+        irec.nm_cardinality,
+        irec.nwx_descr );
+--
+      commit;		
+   exception
+     when dup_val_on_index then
+     null;
+   end;        
+ end loop;   
 END;
-end;
 --
 -----------------------------------------------------------------------------
 --
