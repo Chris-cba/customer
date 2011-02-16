@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm_4300_fix7.sql-arc   3.2   Feb 15 2011 15:14:22   Mike.Alexander  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm_4300_fix7.sql-arc   3.3   Feb 16 2011 14:30:02   Mike.Alexander  $
 --       Module Name      : $Workfile:   nm_4300_fix7.sql  $
---       Date into PVCS   : $Date:   Feb 15 2011 15:14:22  $
---       Date fetched Out : $Modtime:   Feb 15 2011 15:14:02  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Feb 16 2011 14:30:02  $
+--       Date fetched Out : $Modtime:   Feb 16 2011 14:29:34  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Based on SCCS version : 
 --
 --   Author : Chris Strettle
@@ -271,6 +271,16 @@ SET TERM OFF
 --
 SET FEEDBACK ON
 start 'ins_nm_members.trg'
+SET FEEDBACK OFF
+--
+--------------------------------------------------------------------------------
+--
+SET TERM ON 
+PROMPT nm_inv_items_all_xsp_shape.trg
+SET TERM OFF
+--
+SET FEEDBACK ON
+start 'nm_inv_items_all_xsp_shape.trg'
 SET FEEDBACK OFF
 --
 --------------------------------------------------------------------------------
