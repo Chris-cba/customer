@@ -5,17 +5,17 @@ package body intren_ws as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/intren/admin/pck/intren_ws.pkb-arc   3.0   Jan 18 2011 12:38:08   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/intren/admin/pck/intren_ws.pkb-arc   3.1   Feb 18 2011 13:22:26   Ian.Turnbull  $
 --       Module Name      : $Workfile:   intren_ws.pkb  $
---       Date into PVCS   : $Date:   Jan 18 2011 12:38:08  $
---       Date fetched Out : $Modtime:   Jan 18 2011 11:51:26  $
---       PVCS Version     : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Feb 18 2011 13:22:26  $
+--       Date fetched Out : $Modtime:   Feb 18 2011 13:22:06  $
+--       PVCS Version     : $Revision:   3.1  $
 --       Based on SCCS version :
 --
 --
 --   Author : ITurnbull
 --
---   imf_framework body
+--
 --
 -----------------------------------------------------------------------------
 --	Copyright (c) exor corporation ltd, 2009
@@ -27,7 +27,7 @@ package body intren_ws as
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  G_BODY_SCCSID  CONSTANT varchar2(2000) :='"$Revision:   3.0  $"';
+  G_BODY_SCCSID  CONSTANT varchar2(2000) :='"$Revision:   3.1  $"';
 
   g_package_name constant varchar2(30) := 'intren_ws';
 
@@ -547,7 +547,8 @@ begin
                                   ,pf_survey_job_no => l_intr_rec.survey_job_no      
                                   ,pf_survey_method => l_intr_rec.survey_method);   
   else
-    nm3api_inv_intr.insert_rowtype ( p_rec_intr => l_intr_rec);
+    NM3API_INV_INTR.INSERT_ROWTYPE ( P_REC_INTR => L_INTR_REC);
+    l_iit_ne_id := L_INTR_REC.iit_ne_id;
   end if;
   
   l_images := new intren_image_list(new intren_image_rec(null,null,null));
@@ -571,6 +572,7 @@ begin
         values
           (l_images(i).filename,'image/pjpeg',l_filesize,'ascii',sysdate, 'BLOB',decode_base64(l_images(i).filecontents));
        -- create doc_assocs
+       d := null;
        DOC_API.CREATE_DOCUMENT( CE_REFERENCE_NO => l_images(i).filename --pi_marker.marker_id --l_iit_ne_id
                               , ce_title        => l_images(i).filename
                               , ce_descr        => l_images(i).filename
@@ -581,16 +583,17 @@ begin
                               , error_value     => ev
                               , error_text      => et
                               ) ;
+      -- insert into ian_doc_assoc_err values(sysdate, 'doc',ev, et);                              
        doc_api.create_doc_assoc ( ce_doc_id     => d
                                 , ce_table_name => 'NM_INV_ITEMS'
                                 , ce_unique_id  => l_iit_ne_id
                                 , error_value   => ev
                                 , error_text    => et
                                );
+      -- insert into ian_doc_assoc_err values(sysdate, 'assoc',ev, et|| ' : ' || l_iit_ne_id);                               
                               
    end if;   
-  end loop;
-  
+  end loop;  
   return l_resp;
   
   exception 
