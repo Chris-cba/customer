@@ -4,11 +4,11 @@ IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3undo.pkb-arc   3.4   Jan 20 2011 15:52:28   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3undo.pkb-arc   3.5   Feb 22 2011 11:24:28   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3undo.pkb  $
---       Date into PVCS   : $Date:   Jan 20 2011 15:52:28  $
---       Date fetched Out : $Modtime:   Jan 20 2011 14:57:26  $
---       PVCS Version     : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Feb 22 2011 11:24:28  $
+--       Date fetched Out : $Modtime:   Feb 22 2011 11:23:22  $
+--       PVCS Version     : $Revision:   3.5  $
 --       Norfolk Specific Based on Main Branch revision : 2.11
 --
 --   Author : ITurnbull
@@ -20,7 +20,7 @@ IS
 -- Copyright (c) exor corporation ltd, 2004
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid    CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.4  $"';
+   g_body_sccsid    CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.5  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name   CONSTANT VARCHAR2 (2000) := 'nm3undo';
 --
@@ -1021,10 +1021,6 @@ END undo_scheme;
          BEGIN
             error_loc := 6 ;
 
-            nm_debug.set_level(3);
-            nm_debug.debug_on;
-            nm_debug.debug('pi_ne_id = ' || pi_ne_id || ', pi_ne_id_1 = ' || pi_ne_id_1 || ', pi_ne_id_2 = ' || pi_ne_id_2);
-
             OPEN cs_nmh (pi_ne_id, pi_ne_id_1, pi_ne_id_2);
 
             FETCH cs_nmh
@@ -1190,13 +1186,11 @@ END undo_scheme;
          Nm3sdm.delete_route_shape (p_ne_id => pi_ne_id_2);
          error_loc := 29 ;
 
-         Nm_Debug.DEBUG ('Checking for AD data to unsplit');
          IF Nm3nwad.ad_data_exist (pi_ne_id)
          -- CWS 01/JUN/2010 0109668
          OR Nm3nwad.ad_data_exist (pi_ne_id_1)
          OR Nm3nwad.ad_data_exist (pi_ne_id_2)
          THEN
-            Nm_Debug.DEBUG ('Unsplitting - '||pi_ne_id_1||'-'||pi_ne_id_2||'-'||pi_ne_id);
             error_loc := 30 ;
             Nm3nwad.do_ad_unsplit (pi_new_ne_id1      => pi_ne_id_1,
                                    pi_new_ne_id2      => pi_ne_id_2,
