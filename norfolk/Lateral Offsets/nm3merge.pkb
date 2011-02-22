@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY nm3merge IS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3merge.pkb-arc   3.2   Jan 20 2011 15:52:26   Chris.Strettle  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3merge.pkb-arc   3.3   Feb 22 2011 11:01:34   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3merge.pkb  $
---       Date into PVCS   : $Date:   Jan 20 2011 15:52:26  $
---       Date fetched Out : $Modtime:   Jan 20 2011 14:55:40  $
---       PVCS Version     : $Revision:   3.2  $
+--       Date into PVCS   : $Date:   Feb 22 2011 11:01:34  $
+--       Date fetched Out : $Modtime:   Feb 22 2011 10:58:12  $
+--       PVCS Version     : $Revision:   3.3  $
 --       Norfolk Specific Based on Main Branch revision : 2.9
 --
 --   Author : ITurnbull
@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE BODY nm3merge IS
 --   Copyright (c) exor corporation ltd, 2000
 -----------------------------------------------------------------------------
 --
-   g_body_sccsid     CONSTANT  varchar2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.2  $"';
+   g_body_sccsid     CONSTANT  varchar2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.3  $"';
 --  g_body_sccsid is the SCCS ID for the package body
    g_package_name    CONSTANT  varchar2(30)   := 'nm3merge';
 --
@@ -503,10 +503,6 @@ BEGIN
 --
    g_new_element_length        := g_rec_ne1.ne_length + v_ne_length_2;
 --
-nm_debug.debug('calling insert element');
-nm_debug.debug('g_rec_ne2.ne_no_start='||NVL(g_rec_ne2.ne_no_start,p_ne_no_start_new));
-nm_debug.debug('g_rec_ne2.ne_no_end='||NVL(g_rec_ne2.ne_no_end,p_ne_no_end_new));
-
    nm3net.insert_element (p_ne_id             => p_ne_id_new
                          ,p_ne_unique         => g_rec_ne2.ne_unique
                          ,p_ne_length         => g_new_element_length
@@ -530,7 +526,6 @@ nm_debug.debug('g_rec_ne2.ne_no_end='||NVL(g_rec_ne2.ne_no_end,p_ne_no_end_new))
                          ,p_ne_version_no     => g_rec_ne2.ne_version_no
                          ,p_auto_include      => 'N'
                          );
-nm_debug.debug('done calling insert element');
 --
 -- CWS
    xncc_herm_xsp.populate_herm_xsp( p_ne_id          => p_ne_id_1 
@@ -833,8 +828,6 @@ BEGIN
    IF hig.is_product_licensed(nm3type.c_mai)
     THEN
 --
-      nm_debug.debug('Check MAI before merge');
---
       l_block :=            'BEGIN'
                  ||CHR(10)||'    maimerge.check_data'
                  ||CHR(10)||'              (p_rse_he_id_1    => :p_ne_id1'
@@ -853,12 +846,10 @@ BEGIN
         ,IN OUT p_errors
         ,IN OUT p_err_text;
 --
-	  nm_debug.debug('Check MAI finished');
 --
   END IF;
 --
    nm_debug.proc_end(g_package_name,'check_other_products');
-   nm_debug.debug_off;
 --
 END check_other_products;
 --
