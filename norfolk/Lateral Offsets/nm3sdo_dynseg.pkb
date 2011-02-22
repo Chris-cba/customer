@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.4   Jan 27 2011 10:23:08   Chris.Strettle  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo_dynseg.pkb-arc   3.5   Feb 22 2011 11:20:28   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdo_dynseg.pkb  $
---       Date into PVCS   : $Date:   Jan 27 2011 10:23:08  $
---       Date fetched Out : $Modtime:   Jan 27 2011 10:14:24  $
---       Version          : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Feb 22 2011 11:20:28  $
+--       Date fetched Out : $Modtime:   Feb 22 2011 11:18:26  $
+--       Version          : $Revision:   3.5  $
 -------------------------------------------------------------------------
 --
 --all global package variables here
@@ -16,7 +16,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.4  $';
+  g_body_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   3.5  $';
 
   g_package_name CONSTANT varchar2(30) := 'nm3sdo_dynseg';
 --
@@ -91,7 +91,6 @@ IS
   PRAGMA EXCEPTION_INIT (dml_errors, -24381);
 --
 BEGIN
-  nm_debug.debug_on;
   --
   OPEN geocur FOR curstr;
 
@@ -168,9 +167,7 @@ BEGIN
            WHEN dml_errors
            THEN
               error_count := SQL%BULK_EXCEPTIONS.COUNT;
-              nm_debug.
-               debug (
-                 'Number of statements that failed: ' || error_count);
+              nm_debug.debug ('Number of statements that failed: ' || error_count);
 
               FOR i IN 1 .. error_count
               LOOP
@@ -266,17 +263,9 @@ BEGIN
 
   l_begin := SDO_LRS.GEOM_SEGMENT_START_MEASURE (l_geom);      -- + 0.001;
   l_end := SDO_LRS.GEOM_SEGMENT_END_MEASURE (l_geom);          -- - 0.001;
-
-  --nm_debug.debug_on;
-  nm_debug.debug (l_begin || ',' || l_end);
-
   --
-  nm_debug.
-      debug ('PRElayer = ' || p_layer || ', set offset = ' || l_offset || ' p_in: ' || p_in || ' p_of: ' || p_of || ' p_begin: ' || p_begin || 'p_end: ' || p_end );
   IF l_offset IS NOT NULL
   THEN
-     nm_debug.
-      debug ('layer = ' || p_layer || ', set offset = ' || l_offset);
      l_geom :=
         SDO_LRS.
          OFFSET_GEOM_SEGMENT (nm3sdo.GET_LAYER_ELEMENT_GEOMETRY (p_of),
@@ -345,9 +334,6 @@ IS
   l_dim_str    VARCHAR2 (100);
 --
 BEGIN
-  nm_debug.debug_on;
-  nm_debug.debug ('update to xsp');
-
   SELECT t.*
     INTO l_nth
     FROM nm_themes_all t, nm_inv_themes
@@ -361,11 +347,7 @@ BEGIN
     INTO l_base_nth
     FROM nm_base_themes
    WHERE nbth_theme_id = l_nth.nth_theme_id;
-
   --
-  nm_debug.debug ('Theme = ' || l_nth.nth_theme_id);
-
-
   IF get_dim (l_nth.nth_feature_table) > 2
   THEN
      l_dim_str := '(';
@@ -375,15 +357,11 @@ BEGIN
 
   IF l_nth.nth_xsp_column = 'IIT_X_SECT'
   THEN
-     nm_debug.debug ('set end date');
-
      EXECUTE IMMEDIATE   'update '
                       || l_nth.nth_feature_table
                       || ' set end_date = :edate '
                       || 'where ne_id  = :iit_ne_id and end_date is null '
         USING p_effective_date, p_iit_ne_id;
-
-     nm_debug.debug ('insert new ');
 
      EXECUTE IMMEDIATE 'insert into ' || l_nth.nth_feature_table
                       || ' ( objectid, ne_id, ne_id_of, nm_begin_mp, nm_end_mp, geoloc, start_date, end_date ) '
@@ -402,18 +380,13 @@ EXCEPTION
   WHEN NO_DATA_FOUND
   THEN
      NULL;                                       -- no need to do anything
-     nm_debug.debug ('no data found');
   WHEN DUP_VAL_ON_INDEX
   THEN
-     nm_debug.debug ('delete row');
 
      EXECUTE IMMEDIATE ' delete from ' || l_nth.nth_feature_table
                       || ' where ne_id = :iit_ne_id and start_date = :edate '
         USING p_iit_ne_id, p_effective_date;
-
      --
-     nm_debug.debug ('insert new row');
-
      EXECUTE IMMEDIATE 'insert into ' || l_nth.nth_feature_table
                       || ' ( objectid, ne_id, ne_id_of, nm_begin_mp, nm_end_mp, geoloc, start_date, end_date ) '
                       || '  select '
