@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 --
 ---   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.4   Feb 11 2011 16:11:14   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.5   Feb 22 2011 11:15:58   Chris.Strettle  $
 --       Module Name      : $Workfile:   nm3sdo.pkb  $
---       Date into PVCS   : $Date:   Feb 11 2011 16:11:14  $
---       Date fetched Out : $Modtime:   Feb 11 2011 16:06:38  $
---       PVCS Version     : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Feb 22 2011 11:15:58  $
+--       Date fetched Out : $Modtime:   Feb 22 2011 11:14:48  $
+--       PVCS Version     : $Revision:   3.5  $
 --       Norfolk Specific Based on Main Branch revision : 2.48
 
 --
@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 -- Copyright (c) 2011 RAC
 -----------------------------------------------------------------------------
 
-   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.4  $"';
+   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.5  $"';
    g_package_name    CONSTANT VARCHAR2 (30)  := 'NM3SDO';
    g_batch_size      INTEGER                 := NVL( TO_NUMBER(Hig.get_sysopt('SDOBATSIZE')), 10);
    g_clip_type       VARCHAR2(30)            := NVL(Hig.get_sysopt('SDOCLIPTYP'),'SDO');
@@ -2983,43 +2983,30 @@ BEGIN
 
                     IF l_g_len != l_len.pa(l_l_p).ptr_value THEN
 
-                IF p_job_id IS NULL THEN
+                      IF p_job_id IS NOT NULL THEN
 
-                        Nm_Debug.DEBUG( 'mismatch length I = '||TO_CHAR( v_it.pa(j).ptr_value )||' e = '||TO_CHAR(v_ne.pa(j).ptr_value)||
-                                     ' shape len = '||TO_CHAR(l_g_len)||' and elen = '||TO_CHAR(l_len.pa(l_l_p).ptr_value));
-
-                      ELSE
-
-                  add_dyn_seg_exception( 297, p_job_id, v_it.pa(j).ptr_value, v_ne.pa(j).ptr_value, l_g_len, l_len.pa(l_l_p).ptr_value );
+                        add_dyn_seg_exception( 297, p_job_id, v_it.pa(j).ptr_value, v_ne.pa(j).ptr_value, l_g_len, l_len.pa(l_l_p).ptr_value );
 
                       END IF;
 
                     ELSIF v_pl.npa_placement_array(j).pl_start < 0 OR
                           v_pl.npa_placement_array(j).pl_end > l_len.pa(l_l_p).ptr_value THEN
 
-                IF p_job_id IS NULL THEN
+                      IF p_job_id IS NOT NULL THEN
 
-                   Nm_Debug.DEBUG('from '||TO_CHAR(v_pl.npa_placement_array(j).pl_start)||' to '||
-                                  TO_CHAR(v_pl.npa_placement_array(j).pl_end)||' l = '||TO_CHAR(l_g_len));
-                      ELSE
+                        add_dyn_seg_exception( 298, p_job_id, v_it.pa(j).ptr_value, v_ne.pa(j).ptr_value, l_g_len, l_len.pa(l_l_p).ptr_value,
+                                          v_pl.npa_placement_array(j).pl_start, v_pl.npa_placement_array(j).pl_end );
 
-                  add_dyn_seg_exception( 298, p_job_id, v_it.pa(j).ptr_value, v_ne.pa(j).ptr_value, l_g_len, l_len.pa(l_l_p).ptr_value,
-                                    v_pl.npa_placement_array(j).pl_start, v_pl.npa_placement_array(j).pl_end );
-
-                  END IF;
+                      END IF;
 
                     ELSIF p_pnt_or_cont = 'C' and v_pl.npa_placement_array(j).pl_start >= v_pl.npa_placement_array(j).pl_end THEN
 
-                IF p_job_id IS NULL THEN
+                      IF p_job_id IS NOT NULL THEN
 
-                   Nm_Debug.DEBUG('from '||TO_CHAR(v_pl.npa_placement_array(j).pl_start)||' to '||
-                                  TO_CHAR(v_pl.npa_placement_array(j).pl_end)||' l = '||TO_CHAR(l_g_len));
-                      ELSE
+                        add_dyn_seg_exception( 299, p_job_id, v_it.pa(j).ptr_value, v_ne.pa(j).ptr_value, l_g_len, l_len.pa(l_l_p).ptr_value,
+                                          v_pl.npa_placement_array(j).pl_start, v_pl.npa_placement_array(j).pl_end, 'Point in Linear Feature Set');
 
-                  add_dyn_seg_exception( 299, p_job_id, v_it.pa(j).ptr_value, v_ne.pa(j).ptr_value, l_g_len, l_len.pa(l_l_p).ptr_value,
-                                    v_pl.npa_placement_array(j).pl_start, v_pl.npa_placement_array(j).pl_end, 'Point in Linear Feature Set');
-
-                  END IF;
+                      END IF;
 
                     ELSE --lengths should be OK - go and get the shape
 
@@ -7191,9 +7178,6 @@ end;
 
 BEGIN
 
-  Nm_Debug.debug_on;
-  nm_debug.debug('change affected - layer = '||p_layer||', ne = '||p_ne_id );
-
   FOR irec IN c_themes( p_layer ) LOOP
 
 --     Nm_Debug.DEBUG('layer = '||TO_CHAR( p_layer )||' affecting '||TO_CHAR( irec.nth_theme_id )||' '||irec.nth_feature_table );
@@ -7214,8 +7198,6 @@ BEGIN
           if irec.nth_xsp_column is null then
             get_shape_str := 'nm3sdo.get_shape_from_nm( '||TO_CHAR(p_layer)||', nm_ne_id_in, nm_ne_id_of, nm_begin_mp, nm_end_mp )';
           else
-            nm_debug.debug_on;
-            nm_debug.debug('change_affected - '||irec.nth_feature_table );
             get_shape_str := 'nm3sdo_dynseg.get_shape( '||TO_CHAR(p_layer)||', nm_ne_id_in, nm_ne_id_of, nm_begin_mp, nm_end_mp )';
           end if;
        END IF;
@@ -7269,8 +7251,6 @@ BEGIN
                           ' and nm_ne_id_in = nad_member_id';
 
          end if;
-
-       Nm_Debug.DEBUG('change_affected_shapes '||lstr );
 
          EXECUTE IMMEDIATE lstr USING p_ne_id, irec.objtype;
 
@@ -9579,8 +9559,6 @@ BEGIN
 
      IF l_ntl.ntl_theme_list.COUNT > 0 THEN
 
-        nm_debug.debug('Snapped and retrieved '||l_ntl.ntl_theme_list.count||' rows');
-
 /*
         FOR i IN l_ntl.ntl_theme_list.FIRST .. l_ntl.ntl_theme_list.LAST
         LOOP
@@ -10413,9 +10391,6 @@ BEGIN
 
   end if;
 
-  nm_debug.debug_on;
-  nm_debug.debug(curstr);
-  
   EXECUTE IMMEDIATE curstr BULK COLLECT INTO retval.ntl_theme_list
     --USING p_nth.nth_theme_id, p_nth.nth_theme_name, p_nth.nth_theme_name, p_ntl;
     --USING p_nth.nth_theme_id, p_nth.nth_label_column, p_nth.nth_theme_name, p_ntl;
