@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.4   Jan 26 2011 07:56:32   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.5   Mar 09 2011 07:44:56   Ian.Turnbull  $
 --       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.SQL  $
---       Date into PVCS   : $Date:   Jan 26 2011 07:56:32  $
---       Date fetched Out : $Modtime:   Jan 19 2011 10:25:08  $
---       PVCS Version     : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Mar 09 2011 07:44:56  $
+--       Date fetched Out : $Modtime:   Feb 15 2011 09:37:46  $
+--       PVCS Version     : $Revision:   3.5  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -42,6 +42,18 @@ set echo on
    from nm_themes_all , NM_THEME_GTYPES
 WHERE NTH_THEME_ID = NTG_THEME_ID(+)  
      and ntg_gtype is null;
+
+
+-- ============================================================
+-- spatial tables which appear more than once in nm_themes_all
+-- Two (OR MORE) themes should not reference the same spatial table/view,
+-- this casue problem in Spatial manager and with this scripts!
+-- ============================================================
+  select nth_theme_id, nth_theme_name, nth_feature_table 
+    from nm_themes_all
+   where nth_feature_table in 
+                (select nth_feature_table from (select nth_feature_table, count(*) num 
+                 from nm_themes_all group by nth_feature_table) where num > 1);
 
 
 -- ============================================================
