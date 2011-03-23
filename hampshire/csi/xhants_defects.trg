@@ -8,11 +8,11 @@ for    each row
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_defects.trg-arc   1.1   Oct 07 2010 21:38:44   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_defects.trg-arc   1.2   Mar 23 2011 18:07:56   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xhants_defects.trg  $
---       Date into PVCS   : $Date:   Oct 07 2010 21:38:44  $
+--       Date into PVCS   : $Date:   Mar 23 2011 18:07:56  $
 --       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
---       PVCS Version     : $Revision:   1.1  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
