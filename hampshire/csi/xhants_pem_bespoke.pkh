@@ -5,11 +5,11 @@ create or replace package xhants_pem_bespoke as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_pem_bespoke.pkh-arc   1.1   Oct 07 2010 21:38:46   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_pem_bespoke.pkh-arc   1.2   Mar 23 2011 18:08:00   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xhants_pem_bespoke.pkh  $
---       Date into PVCS   : $Date:   Oct 07 2010 21:38:46  $
---       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Mar 23 2011 18:08:00  $
+--       Date fetched Out : $Modtime:   Mar 23 2011 13:11:20  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -42,6 +42,11 @@ create or replace package xhants_pem_bespoke as
   --
   function get_mail_recipient( p_name in nm_mail_users.nmu_name%type
                               ,p_email in nm_mail_users.nmu_email_address%type) return number;
+  --
+  function get_no_reply return nm_mail_users.nmu_id%type;
+  --
+  function is_dup(p_doc_id docs.doc_id%type
+                     ,p_status docs.doc_status_code%type) return BOOLEAN;
   --
   procedure set_null_contact_email (p_doc_id     in docs.doc_id%type,
                                     p_resp_user  in docs.doc_compl_user_id%type); 
@@ -188,8 +193,12 @@ create or replace package xhants_pem_bespoke as
                                 p_ref    in docs.doc_reference_code%type,
                                 p_user_id in docs.doc_compl_user_id%type);
   --
+  procedure mail_held_wo       (p_pem_id in docs.doc_id%type,
+                                p_wor in work_orders.wor_works_order_no%type);
+  --
   procedure email_job_alert;
   --
   procedure set_via_linked_defect (p_defect in defects.def_defect_id%type,
                                    p_pem    in docs.doc_id%type);
+  --
 end xhants_pem_bespoke;

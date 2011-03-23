@@ -7,11 +7,11 @@ declare
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_wo_status.trg-arc   1.1   Oct 07 2010 21:38:46   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_wo_status.trg-arc   1.2   Mar 23 2011 18:08:00   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xhants_wo_status.trg  $
---       Date into PVCS   : $Date:   Oct 07 2010 21:38:46  $
+--       Date into PVCS   : $Date:   Mar 23 2011 18:08:00  $
 --       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
---       PVCS Version     : $Revision:   1.1  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
