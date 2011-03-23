@@ -1,0 +1,15 @@
+create or replace package xhants_dec_bespoke as
+
+  type dec is table of number
+  index by binary_integer;
+  
+  tab_dec dec;
+  
+  procedure clear_dec;
+  
+  procedure process_dec;
+  
+  procedure update_dec_email (p_dec_hct_id number);
+
+end xhants_dec_bespoke;
+/
