@@ -5,11 +5,11 @@ create or replace package body xhants_pem_bespoke as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_pem_bespoke.pkb-arc   1.1   Oct 07 2010 21:38:44   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_pem_bespoke.pkb-arc   1.2   Mar 23 2011 18:07:58   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xhants_pem_bespoke.pkb  $
---       Date into PVCS   : $Date:   Oct 07 2010 21:38:44  $
---       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Mar 23 2011 18:07:58  $
+--       Date fetched Out : $Modtime:   Mar 23 2011 14:32:40  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -50,6 +50,40 @@ create or replace package body xhants_pem_bespoke as
     return p_mail_id;
   end;
   --
+  function get_no_reply return nm_mail_users.nmu_id%type is
+    l_retval nm_mail_users.nmu_id%type;
+  begin
+    select nmu_id
+    into l_retval
+    from nm_mail_users
+    where nmu_name = 'NO REPLY';    
+  return l_retval;
+  exception
+    when no_data_found
+    then raise;
+  end get_no_reply;
+  --
+  function is_dup(p_doc_id docs.doc_id%type
+                     ,p_status docs.doc_status_code%type) return BOOLEAN is
+     cursor c1 (c_doc_id docs.doc_id%type
+                   ,c_status docs.doc_status_code%type) is
+     select 1 from doc_history
+     where dhi_doc_id = c_doc_id
+     and dhi_status_code = c_status
+     having count(dhi_status_code) > 1;
+     
+  dummy number := null;
+  l_retval BOOLEAN := TRUE;
+
+  begin
+    open c1(p_doc_id, p_status);
+    fetch c1 into dummy;
+    if c1%NOTFOUND then
+    l_retval := FALSE;
+    end if;
+    close c1;
+    return l_retval;
+  end is_dup;
   --
   procedure set_null_contact_email (p_doc_id     in docs.doc_id%type,
                                     p_resp_user  in docs.doc_compl_user_id%type) is
@@ -242,6 +276,9 @@ create or replace package body xhants_pem_bespoke as
   l_loc     docs.doc_compl_location%type;
   l_area    hig_user_options.huo_value%type;
   l_contact hig_contacts.hct_id%type;
+  RespOf    hig_users.hus_username%type;
+  UserOption  hig_user_options.huo_id%type :='PEMEMAIL';
+  EmailValue hig_user_options.huo_value%type;
   begin
     for c1 in (select doc_id from xhants_pem_auto_ack) loop
       begin
@@ -255,25 +292,30 @@ create or replace package body xhants_pem_bespoke as
         and    dec_hct_id = hct_id
         for update nowait;
         --
-        if l_source in ('EX','PX','TX','SX','WX') then
-          update docs set (doc_status_code, doc_reason) = (select 'AK','Acknowledged / Not Required' from dual) where doc_id = c1.doc_id;
-        end if;
+        -- changed as part of CSI changes #8 BRS 3547
+        --if l_source in ('EX','PX','TX','SX','WX') then
+        --  update docs set (doc_status_code, doc_reason) = (select 'AK','Acknowledged / Not Required' from dual) where doc_id = c1.doc_id;
+        --end if;
         --
-        if l_email is not null and l_source not in ('EX','PX','TX','SX','WX') then 
+        --if l_email is not null and l_source not in ('EX','PX','TX','SX','WX') then 
+        if l_email is not null then
           update docs set (doc_status_code, doc_reason) = (select 'AK','Acknowledged / Not Required' from dual) where doc_id = c1.doc_id;
           xhants_pem_bespoke.mail_auto_ack(c1.doc_id,nvl(l_doc_ref,c1.doc_id),l_descr,l_loc);
         end if;
         --
-        if l_email is null and l_check = 'USER' and l_source not in ('EX','PX','TX','SX','WX') then
+        --if l_email is null and l_check = 'USER' and l_source not in ('EX','PX','TX','SX','WX') then
+          if l_email is null and l_check = 'USER' then
           begin
-            select huo_value into l_area from hig_user_options where huo_hus_user_id = l_owner and huo_id = 'REP_AREA';
-            exception when others then l_area := 'Highways and Transport North';
+            --select huo_value into l_area from hig_user_options where huo_hus_user_id = l_owner and huo_id = 'REP_AREA';
+            --exception when others then l_area := 'Highways and Transport North';
+            RespOf := nm3get.get_hus(l_owner).hus_username;
+            EmailValue := NVL(hig.get_useopt(UserOption,RespOf), hig.get_sysopt(UserOption));
           end;
           --
-          if l_area not in ('Highways and Transport East','Highways and Transport South','Highways and Transport West','Highways and Transport North') then
-            l_area := 'Highways and Transport North';
-          end if;
-          if l_area in ('Highways and Transport East','Highways and Transport South','Highways and Transport West','Highways and Transport North') then
+          --if l_area not in ('Highways and Transport East','Highways and Transport South','Highways and Transport West','Highways and Transport North') then
+          --  l_area := 'Highways and Transport North';
+          --end if;
+          --if l_area in ('Highways and Transport East','Highways and Transport South','Highways and Transport West','Highways and Transport North') then
           --
             select hct_id into l_contact
             from   hig_contacts,
@@ -283,11 +325,12 @@ create or replace package body xhants_pem_bespoke as
             and    dec_hct_id = hct_id;
             --
             update hig_contacts 
-            set hct_email = case l_area  when 'Highways and Transport East' then 'highways-transport.east@hants.gov.uk'
-                                         when 'Highways and Transport South' then 'highways-transport.south@hants.gov.uk'
-                                         when 'Highways and Transport West' then 'highways-transport.west@hants.gov.uk'
-                                         when 'Highways and Transport North' then 'highways-transport.north@hants.gov.uk'
-                            end
+          --  set hct_email = case l_area  when 'Highways and Transport East' then 'highways-transport.east@hants.gov.uk'
+          --                               when 'Highways and Transport South' then 'highways-transport.south@hants.gov.uk'
+          --                               when 'Highways and Transport West' then 'highways-transport.west@hants.gov.uk'
+          --                               when 'Highways and Transport North' then 'highways-transport.north@hants.gov.uk'
+          --                  end
+            set hct_email = EmailValue
             where hct_id = l_contact and hct_email is null;
             --
             if l_source in ('W','P','T','E') then
@@ -298,13 +341,11 @@ create or replace package body xhants_pem_bespoke as
               update docs set (doc_status_code, doc_reason) = (select 'AR','Acknowledgement Required' from dual) where doc_id = c1.doc_id;
               xhants_pem_bespoke.mail_auto_ack(c1.doc_id,nvl(l_doc_ref,c1.doc_id),l_descr,l_loc);
             end if;
-          end if;
+          --end if;
         end if;
-        delete xhants_pem_auto_ack where doc_id = c1.doc_id;
-        exception when others then null;
       end;
       --
-      --delete xhants_pem_auto_ack where doc_id = c1.doc_id;
+      delete xhants_pem_auto_ack where doc_id = c1.doc_id;
     end loop;
   end;
   --
@@ -343,7 +384,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number; 
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -371,7 +413,7 @@ create or replace package body xhants_pem_bespoke as
       p_tab_to(1).rcpt_id:=l_rcp_id;
       p_tab_to(1).rcpt_type:='USER';
       --
-      nm3mail.write_mail_complete (p_from_user        => 38898
+      nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                   ,p_subject          => 'Enquiry Acknowledgement - Reference '||p_ref
                                   ,p_html_mail        => TRUE
                                   ,p_tab_to           => p_tab_to
@@ -395,6 +437,7 @@ create or replace package body xhants_pem_bespoke as
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
   l_rcp_id number; 
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_organisation hig_contacts.hct_surname%type;
   l_address1 varchar2(209);
   l_dep_tfare hig_address.had_dependent_thoroughfare%type;
@@ -467,7 +510,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -487,7 +530,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -512,7 +556,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -520,21 +564,23 @@ create or replace package body xhants_pem_bespoke as
                                 ,p_tab_bcc          => p_tab_cc
                                 ,p_tab_message_text => l_tab_varchar
                                 );
+    exception when others then null;
   end;
   --
   --
   procedure mail_olg_3rd_party (p_pem_id in docs.doc_id%type,
-                                    p_ref    in docs.doc_reference_code%type,
-                                    p_description in docs.doc_descr%type,
-                                    p_location in docs.doc_compl_location%type,
-                                p_new_resp in docs.doc_compl_user_id%type,
-                                p_new_resp_type in docs.doc_compl_user_type%type) as
+  				p_ref in docs.doc_reference_code%type,
+  				p_description in docs.doc_descr%type,
+  				p_location in docs.doc_compl_location%type,
+  				p_new_resp in docs.doc_compl_user_id%type,
+  				p_new_resp_type in docs.doc_compl_user_type%type) as
   p_tab_to nm3mail.tab_recipient;
   p_tab_cc nm3mail.tab_recipient;
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
   l_rcp_id number; 
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_organisation hig_contacts.hct_surname%type;
   l_address1 varchar2(209);
   l_dep_tfare hig_address.had_dependent_thoroughfare%type;
@@ -606,7 +652,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -614,6 +660,7 @@ create or replace package body xhants_pem_bespoke as
                                 ,p_tab_bcc          => p_tab_cc
                                 ,p_tab_message_text => l_tab_varchar
                                 );
+    exception when others then null;
   end;
   --
   --
@@ -626,7 +673,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number; 
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -650,7 +698,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -671,7 +719,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number;  
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -692,7 +741,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -700,6 +749,7 @@ create or replace package body xhants_pem_bespoke as
                                 ,p_tab_bcc          => p_tab_cc
                                 ,p_tab_message_text => l_tab_varchar
                                 );
+    exception when others then null;
   end;
   --
   --
@@ -712,7 +762,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number; 
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -733,7 +784,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -741,6 +792,7 @@ create or replace package body xhants_pem_bespoke as
                                 ,p_tab_bcc          => p_tab_cc
                                 ,p_tab_message_text => l_tab_varchar
                                 );
+    exception when others then null;
   end;
   --
   --
@@ -753,7 +805,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number; 
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -775,7 +828,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -783,6 +836,7 @@ create or replace package body xhants_pem_bespoke as
                                 ,p_tab_bcc          => p_tab_cc
                                 ,p_tab_message_text => l_tab_varchar
                                 );
+    exception when others then null;
   end;
   --
   --
@@ -801,7 +855,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;  
+  l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_category_descr doc_types.dtp_name%type;
   l_class_descr doc_class.dcl_name%type;
   l_type_descr doc_enquiry_types.det_name%type;
@@ -911,7 +966,7 @@ create or replace package body xhants_pem_bespoke as
       p_tab_to(1).rcpt_id:=l_rcp_id;
       p_tab_to(1).rcpt_type:='USER';
       --
-      nm3mail.write_mail_complete (p_from_user        => 38898
+      nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                   ,p_subject          => 'PEM Enquiry - Reference '||p_pem_id
                                   ,p_html_mail        => TRUE
                                   ,p_tab_to           => p_tab_to
@@ -938,7 +993,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;  
+  l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_category_descr doc_types.dtp_name%type;
   l_class_descr doc_class.dcl_name%type;
   l_type_descr doc_enquiry_types.det_name%type;
@@ -1046,7 +1102,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Highways Enquiry - Reference '||p_pem_id
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -1072,7 +1128,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;  
+  l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_category_descr doc_types.dtp_name%type;
   l_class_descr doc_class.dcl_name%type;
   l_type_descr doc_enquiry_types.det_name%type;
@@ -1170,7 +1227,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Highways Enquiry - Reference '||p_pem_id
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -1190,7 +1247,8 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number;  
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -1214,7 +1272,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -1222,6 +1280,7 @@ create or replace package body xhants_pem_bespoke as
                                 ,p_tab_bcc          => p_tab_cc
                                 ,p_tab_message_text => l_tab_varchar
                                 );
+    exception when others then null;
   end;
   --
   --
@@ -1235,6 +1294,7 @@ create or replace package body xhants_pem_bespoke as
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
   l_rcp_id number;    
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     select substr(initcap(hct_title)||' '||initcap(hct_first_name)||' '||initcap(hct_surname),1,100), hct_email into l_name, l_email
     from hig_contacts, 
@@ -1257,7 +1317,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Enquiry Update - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -1265,6 +1325,7 @@ create or replace package body xhants_pem_bespoke as
                                 ,p_tab_bcc          => p_tab_cc
                                 ,p_tab_message_text => l_tab_varchar
                                 );
+    exception when others then null;
   end;
   --
   --
@@ -1276,6 +1337,7 @@ create or replace package body xhants_pem_bespoke as
   p_tab_cc nm3mail.tab_recipient;
   l_tab_varchar nm3type.tab_varchar32767;
   l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_road   nm_elements.ne_unique%type;
   l_road_name nm_elements.ne_descr%type;
   l_location docs.doc_compl_location%type;
@@ -1318,7 +1380,7 @@ create or replace package body xhants_pem_bespoke as
       p_tab_to(1).rcpt_id:=l_rcp_id;
       p_tab_to(1).rcpt_type:='USER';
       --
-      nm3mail.write_mail_complete (p_from_user        => 38898
+      nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                   ,p_subject          => 'WO Line Rejected'
                                   ,p_html_mail        => TRUE
                                   ,p_tab_to           => p_tab_to
@@ -1338,6 +1400,7 @@ create or replace package body xhants_pem_bespoke as
   p_tab_cc nm3mail.tab_recipient;
   l_tab_varchar nm3type.tab_varchar32767;
   l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_road   nm_elements.ne_unique%type;
   l_road_name nm_elements.ne_descr%type;
   l_location docs.doc_compl_location%type;
@@ -1381,7 +1444,7 @@ create or replace package body xhants_pem_bespoke as
       p_tab_to(1).rcpt_id:=l_rcp_id;
       p_tab_to(1).rcpt_type:='USER';
       --
-      nm3mail.write_mail_complete (p_from_user        => 38898
+      nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                   ,p_subject          => 'WO Line Ready for Auth'
                                   ,p_html_mail        => TRUE
                                   ,p_tab_to           => p_tab_to
@@ -1408,6 +1471,7 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_rcp_id number;
   l_rcp_id_2 number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   l_road   nm_elements.ne_unique%type;
   l_road_name nm_elements.ne_descr%type;
   l_location docs.doc_compl_location%type;
@@ -1456,7 +1520,7 @@ create or replace package body xhants_pem_bespoke as
       p_tab_to(1).rcpt_id:=l_rcp_id;
       p_tab_to(1).rcpt_type:='USER';
       --
-      nm3mail.write_mail_complete (p_from_user        => 38898
+      nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                   ,p_subject          => 'Works Order Query - '||p_wo_ref
                                   ,p_html_mail        => TRUE
                                   ,p_tab_to           => p_tab_to
@@ -1467,7 +1531,7 @@ create or replace package body xhants_pem_bespoke as
       -- If Auth and Creator are same get errors so split out for now
       p_tab_to(1).rcpt_id:=l_rcp_id_2;
       if l_rcp_id_2 != l_rcp_id then
-        nm3mail.write_mail_complete (p_from_user        => 38898
+        nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                     ,p_subject          => 'Works Order Query - '||p_wo_ref
                                     ,p_html_mail        => TRUE
                                     ,p_tab_to           => p_tab_to
@@ -1488,9 +1552,14 @@ create or replace package body xhants_pem_bespoke as
   l_tab_varchar nm3type.tab_varchar32767;
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
-  l_rcp_id number;    
+  l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
+  RespOf hig_users.hus_username%type := nm3get.get_hus(p_user_id).hus_username;
+  UserOption  hig_user_options.huo_id%type   :='PEMEMAIL';
+  EmailValue hig_user_options.huo_value%type := NVL(hig.get_useopt(UserOption,RespOf), hig.get_sysopt(UserOption));
   begin
-    select case huo_value when 'Highways and Transport East' then 'highways-transport.east@hants.gov.uk'
+    -- The following has been commented out as part of CSI #1 and #13
+  /*  select case huo_value when 'Highways and Transport East' then 'highways-transport.east@hants.gov.uk'
                                          when 'Highways and Transport South' then 'highways-transport.south@hants.gov.uk'
                                          when 'Highways and Transport West' then 'highways-transport.west@hants.gov.uk'
                                          when 'Highways and Transport North' then 'highways-transport.north@hants.gov.uk'
@@ -1499,6 +1568,8 @@ create or replace package body xhants_pem_bespoke as
     where p_user_id = huo_hus_user_id
     and   huo_id = 'REP_AREA'
     and   huo_value in ('Highways and Transport East','Highways and Transport South','Highways and Transport West','Highways and Transport North');
+  */
+    l_email := EmailValue;
     --
     l_rcp_id := xhants_pem_bespoke.get_mail_recipient(l_email,l_email);
     -- Constuct Email
@@ -1512,7 +1583,7 @@ create or replace package body xhants_pem_bespoke as
     p_tab_to(1).rcpt_id:=l_rcp_id;
     p_tab_to(1).rcpt_type:='USER';
     --
-    nm3mail.write_mail_complete (p_from_user        => 38898
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                 ,p_subject          => 'Rechargeable Item - Reference '||p_ref
                                 ,p_html_mail        => TRUE
                                 ,p_tab_to           => p_tab_to
@@ -1524,6 +1595,69 @@ create or replace package body xhants_pem_bespoke as
   end;
   --
   --
+  procedure mail_held_wo    (p_pem_id in docs.doc_id%type,
+                             p_wor in work_orders.wor_works_order_no%type) is
+  p_tab_to nm3mail.tab_recipient;
+  p_tab_cc nm3mail.tab_recipient;
+  l_tab_varchar nm3type.tab_varchar32767;
+  l_rcp_id number;
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
+  l_wo work_orders.wor_works_order_no%type;
+  l_doc_id docs.doc_id%type;
+  l_dtp docs.doc_dtp_code%type;
+  l_originator work_orders.wor_peo_person_id%type;
+  l_orig_name hig_users.hus_name%type;
+  l_contact work_orders.wor_contact%type;
+  l_descr docs.doc_descr%type;
+  l_contact_text varchar2(50);
+  --
+  cursor c_pem is
+  select doc_descr,doc_dtp_code from docs where doc_id = p_pem_id;
+  cursor c_wor is
+  select wor_peo_person_id,wor_contact from work_orders where wor_works_order_no = p_wor;
+  --
+  begin
+  nm_debug.debug_on; 
+      begin
+        open c_pem;
+        fetch c_pem into l_descr,l_dtp;
+        close c_pem;
+        if l_dtp = 'HOLD' then
+        open c_wor;
+        fetch c_wor into l_originator,l_contact;
+        close c_wor;
+        end if;
+        exception when others then nm_debug.debug(sqlerrm);
+      end;
+    --
+    if l_contact is null then
+    l_contact_text := null;
+    else
+    l_contact_text := ' and '||l_contact;
+    end if;
+    l_orig_name := nm3get.get_hus(l_originator).hus_name;
+    --
+    l_rcp_id := nm3get.get_nmg('Works Order on Hold').nmg_id;
+    -- Construct Email
+    l_tab_varchar(1):=const_email_header||utl_tcp.crlf;
+    l_tab_varchar(2):='<p>The Payment for Order Number '||p_wor||' has been put on hold.  The reason given is '||l_descr||'.</p>'||utl_tcp.crlf;
+    l_tab_varchar(3):='<p>Please investigate as soon as possible and liaise with '||l_orig_name||l_contact_text||' as soon as possible to resolve.</p>'||utl_tcp.crlf;
+    p_tab_to(1).rcpt_id:=l_rcp_id;
+    p_tab_to(1).rcpt_type:='GROUP';
+    --
+    nm3mail.write_mail_complete (p_from_user        => l_no_reply
+                                ,p_subject          => 'Exor payment on hold'
+                                ,p_html_mail        => TRUE
+                                ,p_tab_to           => p_tab_to
+                                ,p_tab_cc           => p_tab_cc
+                                ,p_tab_bcc          => p_tab_cc
+                                ,p_tab_message_text => l_tab_varchar
+                                );
+    exception when others then null;
+   nm_debug.debug_off;
+   end;
+    --
+    --
   procedure email_job_alert as
   l_error varchar2(1) default 'N';
   p_tab_to nm3mail.tab_recipient;
@@ -1532,6 +1666,7 @@ create or replace package body xhants_pem_bespoke as
   l_name varchar2(100);
   l_email hig_contacts.hct_email%type;
   l_rcp_id number;   
+  l_no_reply  nm_mail_users.nmu_id%type := xhants_pem_bespoke.get_no_reply;
   begin
     begin
       select distinct 'Y' into l_error from user_jobs where broken = 'Y';
@@ -1548,7 +1683,7 @@ create or replace package body xhants_pem_bespoke as
       p_tab_to(1).rcpt_id:=l_rcp_id;
       p_tab_to(1).rcpt_type:='USER';
       --
-      nm3mail.write_mail_complete (p_from_user        => 38898
+      nm3mail.write_mail_complete (p_from_user        => l_no_reply
                                   ,p_subject          => 'Exor Jobs Are Broken'
                                   ,p_html_mail        => TRUE
                                   ,p_tab_to           => p_tab_to
@@ -1604,4 +1739,5 @@ create or replace package body xhants_pem_bespoke as
       where doc_id = p_pem;
    end if;
   end;
+
 end xhants_pem_bespoke;
