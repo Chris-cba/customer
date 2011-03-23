@@ -8,11 +8,11 @@ for    each row
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_ack_mail.trg-arc   1.1   Oct 07 2010 21:38:40   ian.turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/hampshire/csi/xhants_ack_mail.trg-arc   1.2   Mar 23 2011 18:07:48   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xhants_ack_mail.trg  $
---       Date into PVCS   : $Date:   Oct 07 2010 21:38:40  $
---       Date fetched Out : $Modtime:   Oct 07 2010 21:37:52  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Mar 23 2011 18:07:48  $
+--       Date fetched Out : $Modtime:   Mar 23 2011 13:27:26  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -90,19 +90,27 @@ begin
       if :new.doc_compl_source in ('F','S','L','W','E','P','T') then
         --
         if :new.doc_status_code = 'MG' and :old.doc_status_code != 'MG' then
+         if not xhants_pem_bespoke.is_dup(:new.doc_id,:new.doc_status_code) then
           xhants_pem_bespoke.mail_maint_gang(:new.doc_id,nvl(:new.doc_reference_code,:new.doc_id),:new.doc_descr,:new.doc_compl_location);
+         end if;
         end if;
         --
         if :new.doc_status_code = 'MS' and :old.doc_status_code != 'MS' then
+         if not xhants_pem_bespoke.is_dup(:new.doc_id,:new.doc_status_code) then
           xhants_pem_bespoke.mail_made_safe(:new.doc_id,nvl(:new.doc_reference_code,:new.doc_id),:new.doc_descr,:new.doc_compl_location);
+         end if;
         end if;
         --
         if :new.doc_status_code = 'PW' and :old.doc_status_code != 'PW' then
+         if not xhants_pem_bespoke.is_dup(:new.doc_id,:new.doc_status_code) then
           xhants_pem_bespoke.mail_planned_work(:new.doc_id,nvl(:new.doc_reference_code,:new.doc_id),:new.doc_descr,:new.doc_compl_location);
+         end if;
         end if;
         --
         if :new.doc_status_code = 'NM' and :old.doc_status_code != 'NM' then
+         if not xhants_pem_bespoke.is_dup(:new.doc_id,:new.doc_status_code) then
           xhants_pem_bespoke.mail_no_work_reqd(:new.doc_id,nvl(:new.doc_reference_code,:new.doc_id),:new.doc_descr,:new.doc_compl_location);
+         end if;
         end if;
         --
         if :new.doc_status_code = 'ND' and :old.doc_status_code != 'ND' then
@@ -110,7 +118,9 @@ begin
         end if;
         --
         if :new.doc_status_code = 'PC' and :old.doc_status_code != 'PC' then
+         if not xhants_pem_bespoke.is_dup(:new.doc_id,:new.doc_status_code) then
           xhants_pem_bespoke.mail_passed_contractor(:new.doc_id,nvl(:new.doc_reference_code,:new.doc_id),:new.doc_descr,:new.doc_compl_location);
+         end if;
         end if;
         --
       end if;
