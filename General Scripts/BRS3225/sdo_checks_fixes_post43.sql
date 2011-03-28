@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/sdo_checks_fixes_post43.sql-arc   1.0   Jan 26 2011 07:58:12   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/sdo_checks_fixes_post43.sql-arc   1.1   Mar 28 2011 11:59:18   Ian.Turnbull  $
 --       Module Name      : $Workfile:   sdo_checks_fixes_post43.sql  $
---       Date into PVCS   : $Date:   Jan 26 2011 07:58:12  $
+--       Date into PVCS   : $Date:   Mar 28 2011 11:59:18  $
 --       Date fetched Out : $Modtime:   Jan 18 2011 17:43:32  $
---       PVCS Version     : $Revision:   1.0  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 
 --

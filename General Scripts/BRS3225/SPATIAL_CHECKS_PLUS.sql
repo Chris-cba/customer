@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.5   Mar 09 2011 07:44:56   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.6   Mar 28 2011 11:59:18   Ian.Turnbull  $
 --       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.SQL  $
---       Date into PVCS   : $Date:   Mar 09 2011 07:44:56  $
---       Date fetched Out : $Modtime:   Feb 15 2011 09:37:46  $
---       PVCS Version     : $Revision:   3.5  $
+--       Date into PVCS   : $Date:   Mar 28 2011 11:59:18  $
+--       Date fetched Out : $Modtime:   Mar 28 2011 09:22:42  $
+--       PVCS Version     : $Revision:   3.6  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -34,6 +34,32 @@ spool &logfile1
 Set markup html on 
 
 set echo on
+-- ============================================================
+-- check version of SDE
+-- if inocrrect please recitfy before running scripts
+-- ============================================================
+--
+select release from sde.version; -- this should be 9.2 or higher
+--
+SELECT CASE
+         WHEN a.release LIKE '92%'
+         THEN
+           ( SELECT CASE
+                      WHEN text LIKE '%|| layer.owner ||%' THEN 'Wrong version of sde.sdo_util'
+                      ELSE 'Correct version of sde.sdo_util'
+                    END
+               FROM dba_source
+              WHERE owner = 'SDE'
+                AND name = 'SDO_UTIL'
+                AND TYPE = 'PACKAGE BODY'
+                AND text LIKE '%WHERE owner = %' )
+         ELSE
+           'Release ' ||a.release ||' is not affected with the SDO_UTIL issue'
+       END
+         result
+  FROM sde.version a;
+
+
 -- ============================================================
 -- themes without a sdo_gtype set
 -- if a gtype is not set then locator can be slow to start
