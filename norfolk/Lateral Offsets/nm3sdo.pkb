@@ -4,11 +4,11 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 --
 ---   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.5   Feb 22 2011 11:15:58   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdo.pkb-arc   3.6   Apr 01 2011 16:22:42   Rob.Coupe  $
 --       Module Name      : $Workfile:   nm3sdo.pkb  $
---       Date into PVCS   : $Date:   Feb 22 2011 11:15:58  $
---       Date fetched Out : $Modtime:   Feb 22 2011 11:14:48  $
---       PVCS Version     : $Revision:   3.5  $
+--       Date into PVCS   : $Date:   Apr 01 2011 16:22:42  $
+--       Date fetched Out : $Modtime:   Apr 01 2011 16:21:36  $
+--       PVCS Version     : $Revision:   3.6  $
 --       Norfolk Specific Based on Main Branch revision : 2.48
 
 --
@@ -20,7 +20,7 @@ CREATE OR REPLACE PACKAGE BODY nm3sdo AS
 -- Copyright (c) 2011 RAC
 -----------------------------------------------------------------------------
 
-   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.5  $"';
+   g_body_sccsid     CONSTANT VARCHAR2(2000) := 'Norfolk Specific: ' || '"$Revision:   3.6  $"';
    g_package_name    CONSTANT VARCHAR2 (30)  := 'NM3SDO';
    g_batch_size      INTEGER                 := NVL( TO_NUMBER(Hig.get_sysopt('SDOBATSIZE')), 10);
    g_clip_type       VARCHAR2(30)            := NVL(Hig.get_sysopt('SDOCLIPTYP'),'SDO');
@@ -5007,9 +5007,11 @@ BEGIN
   --   end of the datum would result in this failing with a null shape - i.e. cannot insert null
   --   into asset shape table. 
   -- 
-  -- CWS This needs to be run for lateral offsets
+  -- CWS This needs to be run for lateral offsets 
+  --RAC - this should not be run irrespective of the offset flag - if shortening an element, the memebrs 
+  -- will still be out of sync and lrs errors will result. Task 0110921
   IF NOT nm3merge.is_nw_operation_in_progress
-  OR NVL(hig.get_sysopt('XSPOFFSET'), 'N') = 'Y'
+--    OR NVL(hig.get_sysopt('XSPOFFSET'), 'N') = 'Y'
   THEN
     --
     -- Task 0108237
