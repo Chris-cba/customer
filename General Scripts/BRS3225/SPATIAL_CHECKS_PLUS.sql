@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.6   Mar 28 2011 11:59:18   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.7   May 03 2011 09:44:00   Ian.Turnbull  $
 --       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.SQL  $
---       Date into PVCS   : $Date:   Mar 28 2011 11:59:18  $
---       Date fetched Out : $Modtime:   Mar 28 2011 09:22:42  $
---       PVCS Version     : $Revision:   3.6  $
+--       Date into PVCS   : $Date:   May 03 2011 09:44:00  $
+--       Date fetched Out : $Modtime:   Mar 29 2011 10:33:48  $
+--       PVCS Version     : $Revision:   3.7  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -37,10 +37,11 @@ set echo on
 -- ============================================================
 -- check version of SDE
 -- if inocrrect please recitfy before running scripts
+-- this should be 9.2 or higher
 -- ============================================================
 --
-select release from sde.version; -- this should be 9.2 or higher
---
+select release from sde.version; 
+
 SELECT CASE
          WHEN a.release LIKE '92%'
          THEN
