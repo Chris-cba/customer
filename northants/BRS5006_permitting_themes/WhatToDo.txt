@@ -1,0 +1,24 @@
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/northants/BRS5006_permitting_themes/WhatToDo.txt-arc   1.0   May 10 2011 09:08:46   Ian.Turnbull  $
+--       Module Name      : $Workfile:   WhatToDo.txt  $
+--       Date into PVCS   : $Date:   May 10 2011 09:08:46  $
+--       Date fetched Out : $Modtime:   May 09 2011 18:31:08  $
+--       PVCS Version     : $Revision:   1.0  $
+--
+--
+--   Author : Aileen Heal
+--
+-----------------------------------------------------------------------------
+--    Copyright (c) exor corporation ltd, 2011
+-----------------------------------------------------------------------------
+-- Written by Aileen Heal to create the permiting themes for Northants (NHSWM)
+-- as part of BRS 5006
+unzip files into a folder.
+from that folder run CreateThemes.sql 
+then run BRS5006_sdo_styles_themes_and_map.SQL
+restart map viewer
+
