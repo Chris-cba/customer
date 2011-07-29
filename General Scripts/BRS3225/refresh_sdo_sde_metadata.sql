@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/refresh_sdo_sde_metadata.sql-arc   1.2   May 03 2011 09:43:56   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/refresh_sdo_sde_metadata.sql-arc   1.3   Jul 29 2011 08:12:36   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_sdo_sde_metadata.sql  $
---       Date into PVCS   : $Date:   May 03 2011 09:43:56  $
---       Date fetched Out : $Modtime:   Mar 28 2011 10:00:36  $
---       PVCS Version     : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   Jul 29 2011 08:12:36  $
+--       Date fetched Out : $Modtime:   Jul 28 2011 16:20:26  $
+--       PVCS Version     : $Revision:   1.3  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -15,6 +15,11 @@
 --	Copyright (c) exor corporation ltd, 2011
 -----------------------------------------------------------------------------
 -
+--
+-- These scripts are for use by exor consultants only. THey should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
+--
 col         log_extension new_value log_extension noprint
 select  instance_name||'_refresh_sdo_sde_metadata_'||TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.log' log_extension from v$instance
 /

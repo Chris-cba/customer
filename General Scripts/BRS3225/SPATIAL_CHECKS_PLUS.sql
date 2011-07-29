@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.7   May 03 2011 09:44:00   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/SPATIAL_CHECKS_PLUS.sql-arc   3.8   Jul 29 2011 08:12:36   Ian.Turnbull  $
 --       Module Name      : $Workfile:   SPATIAL_CHECKS_PLUS.SQL  $
---       Date into PVCS   : $Date:   May 03 2011 09:44:00  $
---       Date fetched Out : $Modtime:   Mar 29 2011 10:33:48  $
---       PVCS Version     : $Revision:   3.7  $
+--       Date into PVCS   : $Date:   Jul 29 2011 08:12:36  $
+--       Date fetched Out : $Modtime:   Jul 28 2011 16:20:40  $
+--       PVCS Version     : $Revision:   3.8  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -14,7 +14,11 @@
 ---------------------------------------------------------------------------------------------------
 --    Copyright (c) exor corporation ltd, 2010
 ---------------------------------------------------------------------------------------------------
-
+--
+-- These scripts are for use by exor consultants only. They should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
+--
 col         log_extension new_value log_extension noprint
 select  instance_name||'_spatial_checks_plus_'||TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.HTM' log_extension from v$instance
 /
@@ -156,12 +160,34 @@ select index_name, table_name, STATUS, domidx_status, domidx_opstatus from user_
 where ityp_name = 'SPATIAL_INDEX' and domidx_opstatus = 'FAILED';
 
 -- ============================================================
--- broken Spatial Views
+-- Broken Spatial Views
 -- ============================================================
 SELECT  owner, NAME, TYPE, text 
 FROM ALL_ERRORS a, user_sdo_geom_metadata
 where type = 'VIEW'
 and name = table_name;
+
+-- ============================================================
+-- Find any X,Y defect themes
+-- ============================================================
+select  NTH_THEME_ID,  NTH_THEME_NAME, nth_table_name, NTH_FEATURE_TABLE, NTH_BASE_TABLE_THEME from nm_themes_all 
+where nth_feature_table = 'MAI_DEFECTS_XY_SDO'
+or NTH_BASE_TABLE_THEME = (select nth_theme_id from nm_themes_all where nth_feature_table = 'MAI_DEFECTS_XY_SDO');
+
+
+-- ============================================================
+-- Find any PEM themes
+-- ============================================================
+select  NTH_THEME_ID,  NTH_THEME_NAME, nth_table_name, NTH_FEATURE_TABLE, NTH_BASE_TABLE_THEME from nm_themes_all 
+where nth_feature_table = 'ENQ_ENQUIRIES_XY_SDO'
+or NTH_BASE_TABLE_THEME = (select nth_theme_id from nm_themes_all where nth_feature_table = 'ENQ_ENQUIRIES_XY_SDO');
+
+-- ============================================================
+-- Find any DOCS themes
+-- ============================================================
+select  NTH_THEME_ID,  NTH_THEME_NAME, nth_table_name, NTH_FEATURE_TABLE, NTH_BASE_TABLE_THEME from nm_themes_all 
+where nth_feature_table = 'DOC_DOCUMENTS_XY_SDO'
+or NTH_BASE_TABLE_THEME = (select nth_theme_id from nm_themes_all where nth_feature_table = 'DOC_DOCUMENTS_XY_SDO');
 
 spool off
 

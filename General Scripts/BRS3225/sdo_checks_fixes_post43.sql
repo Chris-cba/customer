@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/sdo_checks_fixes_post43.sql-arc   1.1   Mar 28 2011 11:59:18   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/sdo_checks_fixes_post43.sql-arc   1.2   Jul 29 2011 08:12:36   Ian.Turnbull  $
 --       Module Name      : $Workfile:   sdo_checks_fixes_post43.sql  $
---       Date into PVCS   : $Date:   Mar 28 2011 11:59:18  $
---       Date fetched Out : $Modtime:   Jan 18 2011 17:43:32  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Jul 29 2011 08:12:36  $
+--       Date fetched Out : $Modtime:   Jul 28 2011 16:23:56  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 
 --
@@ -22,6 +22,11 @@
 --   * drop themes where the feature table/view does not actually exist
 --   * remove entries in user_sdo_geom_metadata where table/view does not exist
 --   
+--
+--
+-- These scripts are for use by exor consultants only. They should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
 --
 col         log_extension new_value log_extension noprint
 select  instance_name||'_fixes_post_43_'||TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.log' log_extension from v$instance

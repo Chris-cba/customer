@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/set_all_null_srids.sql-arc   3.3   Feb 10 2011 17:59:20   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/set_all_null_srids.sql-arc   3.4   Jul 29 2011 08:12:36   Ian.Turnbull  $
 --       Module Name      : $Workfile:   set_all_null_srids.sql  $
---       Date into PVCS   : $Date:   Feb 10 2011 17:59:20  $
---       Date fetched Out : $Modtime:   Feb 10 2011 17:58:32  $
---       PVCS Version     : $Revision:   3.3  $
+--       Date into PVCS   : $Date:   Jul 29 2011 08:12:36  $
+--       Date fetched Out : $Modtime:   Jul 28 2011 16:22:00  $
+--       PVCS Version     : $Revision:   3.4  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -27,6 +27,11 @@
 -- N.B. it is important after running this script to ** RESTART MAPVIEWER **
 --
 ---------------------------------------------------------------------------------------------------
+--
+-- These scripts are for use by exor consultants only. They should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
+--
 col diminfo format a30
 col column_name format a30
 
