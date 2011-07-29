@@ -5,11 +5,11 @@ CREATE OR REPLACE PROCEDURE AH_SET_TABLE_SRID(p_table  IN VARCHAR2
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/ah_set_table_srid.sql-arc   3.1   Jan 26 2011 07:55:56   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/ah_set_table_srid.sql-arc   3.2   Jul 29 2011 08:12:38   Ian.Turnbull  $
 --       Module Name      : $Workfile:   ah_set_table_srid.sql  $
---       Date into PVCS   : $Date:   Jan 26 2011 07:55:56  $
---       Date fetched Out : $Modtime:   Nov 08 2010 13:01:00  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Jul 29 2011 08:12:38  $
+--       Date fetched Out : $Modtime:   Jul 28 2011 16:24:54  $
+--       PVCS Version     : $Revision:   3.2  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -23,6 +23,11 @@ CREATE OR REPLACE PROCEDURE AH_SET_TABLE_SRID(p_table  IN VARCHAR2
 -- N.B. it will not reproject the data
 --      it disable the trigers first, sets the srid and then enables the triggers
 ---------------------------------------------------------------------------------------------------
+--
+-- These scripts are for use by exor consultants only. They should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
+--
    type trigger_name_tab is TABLE OF USER_TRIGGERS.TRIGGER_NAME%TYPE
           INDEX BY BINARY_INTEGER;
 

@@ -6,11 +6,11 @@ CREATE OR REPLACE PROCEDURE AH_SET_DEPENDENT_VIEWS_SRIDS( p_table  IN VARCHAR2
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                    : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/AH_SET_DEPENDENT_VIEWS_SRIDS.sql-arc   1.1   Feb 01 2011 09:23:50   Ian.Turnbull  $
+--       pvcsid                    : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/AH_SET_DEPENDENT_VIEWS_SRIDS.sql-arc   1.2   Jul 29 2011 08:12:38   Ian.Turnbull  $
 --       Module Name        : $Workfile:   AH_SET_DEPENDENT_VIEWS_SRIDS.sql  $
---       Date into PVCS     : $Date:   Feb 01 2011 09:23:50  $
---       Date fetched Out  : $Modtime:   Jan 27 2011 14:04:44  $
---       PVCS Version       : $Revision:   1.1  $
+--       Date into PVCS     : $Date:   Jul 29 2011 08:12:38  $
+--       Date fetched Out  : $Modtime:   Jul 28 2011 16:22:20  $
+--       PVCS Version       : $Revision:   1.2  $
 --
 --
 --   Author : Aileen Heal
@@ -19,6 +19,11 @@ CREATE OR REPLACE PROCEDURE AH_SET_DEPENDENT_VIEWS_SRIDS( p_table  IN VARCHAR2
 -----------------------------------------------------------------------------
 --    Copyright (c) exor corporation ltd, 2011
 -----------------------------------------------------------------------------
+--
+-- These scripts are for use by exor consultants only. They should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
+--
 -- set dependent views srid in user_sdo_geom_metadata
    l_reg_sde_layer  hig_options.HOP_VALUE%type;
 

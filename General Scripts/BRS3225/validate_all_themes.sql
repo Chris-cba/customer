@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                  : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/validate_all_themes.sql-arc   3.2   Feb 10 2011 17:59:18   Ian.Turnbull  $
+--       pvcsid                  : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/validate_all_themes.sql-arc   3.3   Jul 29 2011 08:12:38   Ian.Turnbull  $
 --       Module Name       : $Workfile:   validate_all_themes.sql  $
---       Date into PVCS     : $Date:   Feb 10 2011 17:59:18  $
---       Date fetched Out  : $Modtime:   Feb 10 2011 17:58:16  $
---       PVCS Version      : $Revision:   3.2  $
+--       Date into PVCS     : $Date:   Jul 29 2011 08:12:38  $
+--       Date fetched Out  : $Modtime:   Jul 28 2011 16:22:10  $
+--       PVCS Version      : $Revision:   3.3  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -37,7 +37,11 @@
 -- for all other errors do a google search for ORA-<error number>
 -- 
 ---------------------------------------------------------------------------------------------------
-
+--
+-- These scripts are for use by exor consultants only. They should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
+--
 col     log_name new_value log_name noprint
 select  instance_name||'_validate_all_themes_'||TO_CHAR(sysdate,'DDMONYYYY_HH24MISS')||'.log' log_name from v$instance
 /

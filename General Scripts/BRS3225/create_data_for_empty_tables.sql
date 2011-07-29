@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/create_data_for_empty_tables.sql-arc   1.0   Jan 26 2011 07:58:12   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/create_data_for_empty_tables.sql-arc   1.1   Jul 29 2011 08:12:38   Ian.Turnbull  $
 --       Module Name      : $Workfile:   create_data_for_empty_tables.sql  $
---       Date into PVCS   : $Date:   Jan 26 2011 07:58:12  $
---       Date fetched Out : $Modtime:   Jan 25 2011 17:11:22  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jul 29 2011 08:12:38  $
+--       Date fetched Out : $Modtime:   Jul 28 2011 16:23:10  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --
 --   Author : AIleen Heal
@@ -16,6 +16,11 @@
 -----------------------------------------------------------------------------
 --	Copyright (c) exor corporation ltd, 2011
 -----------------------------------------------------------------------------
+--
+-- These scripts are for use by exor consultants only. They should not be provided to customers 
+--
+---------------------------------------------------------------------------------------------------
+--
 DECLARE
 --
 CURSOR missing
