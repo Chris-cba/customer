@@ -2,11 +2,11 @@
 --------------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/nm_4301_fix11.sql-arc   3.1   Sep 02 2011 09:30:12   Mike.Alexander  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/nm_4301_fix11.sql-arc   3.2   Sep 02 2011 09:39:48   Mike.Alexander  $
 --       Module Name      : $Workfile:   nm_4301_fix11.sql  $
---       Date into PVCS   : $Date:   Sep 02 2011 09:30:12  $
---       Date fetched Out : $Modtime:   Sep 02 2011 09:27:44  $
---       PVCS Version     : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Sep 02 2011 09:39:48  $
+--       Date fetched Out : $Modtime:   Sep 02 2011 09:37:20  $
+--       PVCS Version     : $Revision:   3.2  $
 --
 --------------------------------------------------------------------------------
 --   Copyright (c) Bentley Systems Inc., 2011
@@ -55,6 +55,8 @@ BEGIN
  THEN
    RAISE_APPLICATION_ERROR(-20000,'You cannot install this product as ' || USER);
  END IF;
+END;
+/
 
 --
 -- Check that HIG has been installed @ v4.3.0.0 or v4.3.0.1
