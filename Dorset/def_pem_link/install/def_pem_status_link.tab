@@ -1,0 +1,25 @@
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Dorset/def_pem_link/install/def_pem_status_link.tab-arc   1.0   Sep 06 2011 16:23:16   Ian.Turnbull  $
+--       Module Name      : $Workfile:   def_pem_status_link.tab  $
+--       Date into PVCS   : $Date:   Sep 06 2011 16:23:16  $
+--       Date fetched Out : $Modtime:   Sep 06 2011 16:04:20  $
+--       PVCS Version     : $Revision:   1.0  $
+--
+--
+--   Author : P Stanton
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2011
+-----------------------------------------------------------------------------
+--
+CREATE table x_def_pem_status
+(defect_status VARCHAR2(20),
+pem_status varchar2(10));
+ 
+ALTER TABLE X_DEF_PEM_STATUS ADD (CONSTRAINT X_PK_DEF_PEM_STATUS UNIQUE (DEFECT_STATUS));
+ 
+ 
