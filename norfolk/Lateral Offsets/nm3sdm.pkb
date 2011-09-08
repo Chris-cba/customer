@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.4   Sep 08 2011 11:58:04   Rob.Coupe  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.5   Sep 08 2011 18:19:22   Rob.Coupe  $
 --       Module Name      : $Workfile:   nm3sdm.pkb  $
---       Date into PVCS   : $Date:   Sep 08 2011 11:58:04  $
---       Date fetched Out : $Modtime:   Sep 08 2011 11:54:08  $
---       PVCS Version     : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Sep 08 2011 18:19:22  $
+--       Date fetched Out : $Modtime:   Sep 08 2011 18:18:00  $
+--       PVCS Version     : $Revision:   3.5  $
 --       Norfolk Specific Based on Main Branch revision : 2.37
 --
 --   Author : R.A. Coupe
@@ -22,7 +22,7 @@ AS
 --
 --all global package variables here
 --
-   g_body_sccsid     CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.4  $"';
+   g_body_sccsid     CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.5  $"';
 --  g_body_sccsid is the SCCS ID for the package body
 --
    g_package_name    CONSTANT VARCHAR2 (30)   := 'NM3SDM';
@@ -4960,8 +4960,13 @@ end;
          END IF;
          
          if irec.nth_xsp_column is not null then
-
-           l_geom := nm3sdo_dynseg.get_shape( irec.nbth_base_theme, p_nm_ne_id_in, p_nm_ne_id_of, p_new_begin_mp, p_nm_end_mp );
+         
+           IF l_nit.nit_pnt_or_cont = 'P'
+           THEN
+              l_geom := sdo_lrs.convert_to_std_geom(nm3sdo_dynseg.get_shape( irec.nbth_base_theme, p_nm_ne_id_in, p_nm_ne_id_of, p_new_begin_mp, p_nm_end_mp ));
+           ELSE
+              l_geom := nm3sdo_dynseg.get_shape( irec.nbth_base_theme, p_nm_ne_id_in, p_nm_ne_id_of, p_new_begin_mp, p_nm_end_mp );
+           END IF;
 
          end if;
          EXECUTE IMMEDIATE upd_string
@@ -7685,11 +7690,11 @@ end;
    */
    --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.4   Sep 08 2011 11:58:04   Rob.Coupe  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.5   Sep 08 2011 18:19:22   Rob.Coupe  $
 --       Module Name      : $Workfile:   nm3sdm.pkb  $
---       Date into PVCS   : $Date:   Sep 08 2011 11:58:04  $
---       Date fetched Out : $Modtime:   Sep 08 2011 11:54:08  $
---       PVCS Version     : $Revision:   3.4  $
+--       Date into PVCS   : $Date:   Sep 08 2011 18:19:22  $
+--       Date fetched Out : $Modtime:   Sep 08 2011 18:18:00  $
+--       PVCS Version     : $Revision:   3.5  $
 
       append ('--   PVCS Identifiers :-');
       append ('--');
