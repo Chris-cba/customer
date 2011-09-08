@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.3   Jan 31 2011 16:43:54   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.4   Sep 08 2011 11:58:04   Rob.Coupe  $
 --       Module Name      : $Workfile:   nm3sdm.pkb  $
---       Date into PVCS   : $Date:   Jan 31 2011 16:43:54  $
---       Date fetched Out : $Modtime:   Jan 31 2011 16:20:50  $
---       PVCS Version     : $Revision:   3.3  $
+--       Date into PVCS   : $Date:   Sep 08 2011 11:58:04  $
+--       Date fetched Out : $Modtime:   Sep 08 2011 11:54:08  $
+--       PVCS Version     : $Revision:   3.4  $
 --       Norfolk Specific Based on Main Branch revision : 2.37
 --
 --   Author : R.A. Coupe
@@ -22,7 +22,7 @@ AS
 --
 --all global package variables here
 --
-   g_body_sccsid     CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.3  $"';
+   g_body_sccsid     CONSTANT VARCHAR2 (2000) := 'Norfolk Specific: ' || '"$Revision:   3.4  $"';
 --  g_body_sccsid is the SCCS ID for the package body
 --
    g_package_name    CONSTANT VARCHAR2 (30)   := 'NM3SDM';
@@ -30,6 +30,10 @@ AS
    l_dummy_package_variable   NUMBER;
 --
    qq                         CHAR (1)        := CHR (39);
+   
+   g_op     VARCHAR2(1);
+   g_type   VARCHAR2(1);
+   g_obj    VARCHAR2(4);
 
 -- nw modules - use 1 for all, 2 for GoG and 3 for GoS
    g_network_modules  ptr_vc_array := ptr_vc_array ( ptr_vc_array_type(
@@ -3042,7 +3046,7 @@ PROCEDURE make_nt_spatial_layer
                                                       || '_TAB'
                             );
       l_base_table_theme := l_theme_id;
-	  
+   
       l_themes.ia(1) := l_theme_id;
 
 ---------------------------------------------------------------
@@ -3111,8 +3115,8 @@ PROCEDURE make_nt_spatial_layer
                                 p_base_table_nth      => l_base_table_theme
                                );
 
-							   l_themes := l_themes.add_element( l_theme_id );
-							   
+          l_themes := l_themes.add_element( l_theme_id );
+          
       END IF;
 ---------------------------------------------------------------
 -- Populate the SDO table and create (clone) the SDO metadata
@@ -3158,7 +3162,7 @@ PROCEDURE make_nt_spatial_layer
         NM3SDO_DYNSEG.SET_OFFSET_FLAG_OFF;
         
       END IF;*/
-	  
+   
       --
       Nm_Debug.proc_end (g_package_name, 'make_ona_inv_spatial_layer');
    --
@@ -4853,6 +4857,10 @@ end;
    )
    IS
    BEGIN
+      g_op   := 'U';
+      g_type := p_nm_type;
+      g_obj  := p_nm_obj_type;
+      
       IF p_nm_type = 'I'
       THEN
          update_inv_shape (p_nm_ne_id_in         => p_nm_ne_id_in,
@@ -4878,6 +4886,10 @@ end;
                            p_nm_end_date         => p_nm_end_date
                           );
       END IF;
+   EXCEPTION
+     when others then
+       raise_application_error( -20001, sqlerrm||qq||
+                                     ' after '||g_op||' op on '||p_nm_ne_id_in||','||p_nm_ne_id_of||','||p_new_begin_mp||','||p_nm_end_mp );
    END;
 
 --
@@ -4960,6 +4972,7 @@ end;
                            p_nm_ne_id_of,
                            p_old_begin_mp;
       END LOOP;
+      
    END;
 
 
@@ -5102,6 +5115,10 @@ end;
    )
    IS
    BEGIN
+      g_op   := 'E';
+      g_type := p_nm_type;
+      g_obj  := p_nm_obj_type;
+   
       IF p_nm_type = 'I'
       THEN
          end_inv_shape (p_nm_ne_id_in        => p_nm_ne_id_in,
@@ -5123,6 +5140,11 @@ end;
                         p_nm_end_date        => p_nm_end_date
                        );
       END IF;
+   EXCEPTION
+     when others then
+       raise_application_error( -20001, sqlerrm||qq||
+                                     ' after '||g_op||' op on '||p_nm_ne_id_in||','||p_nm_ne_id_of||','||p_nm_begin_mp||','||p_nm_end_mp );
+      
    END;
 
 --
@@ -5291,6 +5313,10 @@ end;
    )
    IS
    BEGIN
+      g_op   := 'A';
+      g_type := p_nm_type;
+      g_obj  := p_nm_obj_type;
+   
       IF p_nm_type = 'I'
       THEN
          add_inv_shape (p_nm_ne_id_in        => p_nm_ne_id_in,
@@ -5312,6 +5338,11 @@ end;
                         p_nm_end_date        => p_nm_end_date
                        );
       END IF;
+   EXCEPTION
+     when others then
+       raise_application_error( -20001, sqlerrm||qq||
+                                     ' after '||g_op||' op on '||p_nm_ne_id_in||','||p_nm_ne_id_of||','||p_nm_begin_mp||','||p_nm_end_mp );
+
    END;
 
 --
@@ -5329,6 +5360,10 @@ end;
    )
    IS
    BEGIN
+      g_op   := 'D';
+      g_type := p_nm_type;
+      g_obj  := p_nm_obj_type;
+   
       IF p_nm_type = 'I'
       THEN
          remove_inv_shape (p_nm_ne_id_in        => p_nm_ne_id_in,
@@ -5350,6 +5385,11 @@ end;
                            p_nm_end_date        => p_nm_end_date
                           );
       END IF;
+   EXCEPTION
+     when others then
+       raise_application_error( -20001, sqlerrm||qq||
+                                     ' after '||g_op||' op on '||p_nm_ne_id_in||','||p_nm_ne_id_of||','||p_nm_begin_mp||','||p_nm_end_mp );
+      
    END;
 
 --
@@ -7645,11 +7685,11 @@ end;
    */
    --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.3   Jan 31 2011 16:43:54   Chris.Strettle  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/norfolk/Lateral Offsets/nm3sdm.pkb-arc   3.4   Sep 08 2011 11:58:04   Rob.Coupe  $
 --       Module Name      : $Workfile:   nm3sdm.pkb  $
---       Date into PVCS   : $Date:   Jan 31 2011 16:43:54  $
---       Date fetched Out : $Modtime:   Jan 31 2011 16:20:50  $
---       PVCS Version     : $Revision:   3.3  $
+--       Date into PVCS   : $Date:   Sep 08 2011 11:58:04  $
+--       Date fetched Out : $Modtime:   Sep 08 2011 11:54:08  $
+--       PVCS Version     : $Revision:   3.4  $
 
       append ('--   PVCS Identifiers :-');
       append ('--');
