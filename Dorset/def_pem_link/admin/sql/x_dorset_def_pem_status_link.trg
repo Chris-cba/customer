@@ -6,11 +6,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Dorset/def_pem_link/admin/sql/x_dorset_def_pem_status_link.trg-arc   1.0   Sep 06 2011 16:21:46   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Dorset/def_pem_link/admin/sql/x_dorset_def_pem_status_link.trg-arc   1.1   Sep 22 2011 14:59:26   Ian.Turnbull  $
 --       Module Name      : $Workfile:   x_dorset_def_pem_status_link.trg  $
---       Date into PVCS   : $Date:   Sep 06 2011 16:21:46  $
---       Date fetched Out : $Modtime:   Sep 06 2011 15:19:26  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Sep 22 2011 14:59:26  $
+--       Date fetched Out : $Modtime:   Sep 22 2011 14:45:24  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --
 --   Author : PStanton
@@ -20,6 +20,8 @@ DECLARE
 --  Bespoke Trigger to link defects to pems when not created via PEM from
 --  Trigger will create association on insert of defect, subsequnet updates to the defect status will be reflected in 
 --  the pem, using the data in  x_def_pem_status table. 
+--   
+--  version 2 - Added defect id to the history record 
 -----------------------------------------------------------------------------
 --    Copyright (c) exor corporation ltd, 2004
 -----------------------------------------------------------------------------
@@ -70,7 +72,7 @@ BEGIN
              
              PEM.update_enquiry ( ce_doc_id    => l_pem_id
                                            ,  ce_status    => 'DR'
-                                           ,  ce_status_reason => 'Automatic Defect Raised'  
+                                           ,  ce_status_reason => 'Automatic Defect Raised - Defect Id - '||:new.def_defect_id
                                            ,  error_value => n_error_value 
                                            ,  error_text => l_error_text 
                                            ) ;
@@ -96,7 +98,7 @@ BEGIN
                    
                       PEM.update_enquiry ( ce_doc_id    => l_pem_id
                                                     ,  ce_status    => i3.pem_status
-                                                    ,  ce_status_reason => 'Defect Status changed '  
+                                                    ,  ce_status_reason => 'Defect Status changed - Defect Id - '||:new.def_defect_id  
                                                     ,  error_value => n_error_value 
                                                     ,  error_text => l_error_text 
                                                    ) ;
