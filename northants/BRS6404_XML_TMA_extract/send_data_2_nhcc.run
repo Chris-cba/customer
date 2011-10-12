@@ -1,0 +1,7 @@
+open www2.northamptonshire.gov.uk
+anonymous
+EmpressFromExor
+cd Empress
+binary
+mput *.xml 
+quit
