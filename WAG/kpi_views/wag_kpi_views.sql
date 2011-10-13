@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -28,11 +28,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -69,11 +69,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -123,11 +123,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -384,11 +384,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -615,11 +615,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -681,11 +681,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -764,11 +764,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -829,11 +829,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -894,11 +894,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -969,11 +969,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -1231,11 +1231,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -1326,11 +1326,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -1575,11 +1575,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -1623,11 +1623,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -1872,11 +1872,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -1929,11 +1929,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -2192,11 +2192,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -2271,11 +2271,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -2328,11 +2328,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -2403,11 +2403,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -2527,11 +2527,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -2822,11 +2822,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -3088,11 +3088,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -3344,11 +3344,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -3465,11 +3465,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -3584,11 +3584,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -3712,11 +3712,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -3952,21 +3952,21 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
 -----------------------------------------------------------------------------
 --	Copyright (c) exor corporation ltd, 2011
 -----------------------------------------------------------------------------
-     SELECT hau_name,
+   SELECT hau_name,
             def_status_code,
             CASE
-               WHEN TO_CHAR (def_created_date, 'Q') = 1
+               WHEN TO_CHAR (def_created_date, 'Q') = '1'
                THEN
                   TO_CHAR (ADD_MONTHS (def_created_date, -12), 'RR')
                ELSE
@@ -3974,17 +3974,17 @@ AS
             END
             || ' '
             || DECODE (TO_CHAR (def_created_date, 'Q'),
-                       1, 'Q4',
-                       2, 'Q1',
-                       3, 'Q2',
-                       4, 'Q3')
+                       '1', 'Q4',
+                       '2', 'Q1',
+                       '3', 'Q2',
+                       '4', 'Q3')
                fy_st_date,
             COUNT (def_defect_id) tot_defects
        FROM nm_elements,
             kpi_child_au,
             defects,
             hig_admin_units
-      WHERE     def_priority = 1
+      WHERE     def_priority = '1'
             AND ne_admin_unit = child_admin_unit
             AND def_rse_he_id = ne_id
             AND ne_type = 'S'
@@ -4142,7 +4142,7 @@ AS
    GROUP BY hau_name,
             def_status_code,
             CASE
-               WHEN TO_CHAR (def_created_date, 'Q') = 1
+               WHEN TO_CHAR (def_created_date, 'Q') = '1'
                THEN
                   TO_CHAR (ADD_MONTHS (def_created_date, -12), 'RR')
                ELSE
@@ -4150,10 +4150,11 @@ AS
             END
             || ' '
             || DECODE (TO_CHAR (def_created_date, 'Q'),
-                       1, 'Q4',
-                       2, 'Q1',
-                       3, 'Q2',
-                       4, 'Q3');
+                       '1', 'Q4',
+                       '2', 'Q1',
+                       '3', 'Q2',
+                       '4', 'Q3');
+
 
 
 DROP PUBLIC SYNONYM KPI3_DEF_BY_STATUS;
@@ -4174,11 +4175,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -4428,11 +4429,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -4908,11 +4909,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -5140,11 +5141,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -5463,11 +5464,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -5774,11 +5775,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -6012,11 +6013,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
@@ -6268,11 +6269,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.1   Jul 11 2011 10:35:08   Sarah.Williams  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/WAG/kpi_views/wag_kpi_views.sql-arc   1.2   Oct 13 2011 12:23:26   Sarah.Williams  $
 --       Module Name      : $Workfile:   wag_kpi_views.sql  $
---       Date into PVCS   : $Date:   Jul 11 2011 10:35:08  $
---       Date fetched Out : $Modtime:   Jul 11 2011 10:33:12  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Oct 13 2011 12:23:26  $
+--       Date fetched Out : $Modtime:   Oct 13 2011 12:20:48  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :
 --
 --
