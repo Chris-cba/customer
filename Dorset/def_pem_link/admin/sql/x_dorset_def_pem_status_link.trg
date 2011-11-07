@@ -6,11 +6,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Dorset/def_pem_link/admin/sql/x_dorset_def_pem_status_link.trg-arc   1.1   Sep 22 2011 14:59:26   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Dorset/def_pem_link/admin/sql/x_dorset_def_pem_status_link.trg-arc   1.2   Nov 07 2011 10:32:30   Ian.Turnbull  $
 --       Module Name      : $Workfile:   x_dorset_def_pem_status_link.trg  $
---       Date into PVCS   : $Date:   Sep 22 2011 14:59:26  $
---       Date fetched Out : $Modtime:   Sep 22 2011 14:45:24  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Nov 07 2011 10:32:30  $
+--       Date fetched Out : $Modtime:   Nov 04 2011 15:45:20  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 --
 --   Author : PStanton
@@ -27,7 +27,8 @@ DECLARE
 -----------------------------------------------------------------------------
 l_pem_id        VARCHAR2(6);
 n_error_value NUMBER; 
-l_error_text    VARCHAR2(5000);                
+l_error_text    VARCHAR2(5000); 
+instr_number_chars VARCHAR2(11):= '0123456789';
 
 CURSOR pem_id_chk (p_pem_id NUMBER) IS
 Select '*' from docs
@@ -56,6 +57,12 @@ BEGIN
      
          l_pem_id := (substr(:new.def_special_instr,INSTR(UPPER(:new.def_special_instr),'PEM')+3,6));
     
+          IF (TRANSLATE (l_pem_id,CHR(1) || instr_number_chars,CHR(1)) IS NULL) THEN
+            l_pem_id := to_number(l_pem_id);
+          ELSE
+            l_pem_id := null;
+          END IF;
+      
       END IF;
 
 
