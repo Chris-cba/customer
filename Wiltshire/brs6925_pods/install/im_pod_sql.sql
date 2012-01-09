@@ -51,9 +51,7 @@ Insert into IM_POD_SQL
 from org_units 
 where oun_org_unit_type = ''CO''
 and nvl(oun_end_date,sysdate) >= sysdate
-order by 1
-
-', 'Contractors', 
+order by 1', 'Contractors', 
     'Bar', 'Box');
 Insert into IM_POD_SQL
    (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
