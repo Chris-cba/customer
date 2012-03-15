@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/refresh_sdo_sde_metadata.sql-arc   1.3   Jul 29 2011 08:12:36   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/General Scripts/BRS3225/refresh_sdo_sde_metadata.sql-arc   1.4   Mar 15 2012 14:32:46   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_sdo_sde_metadata.sql  $
---       Date into PVCS   : $Date:   Jul 29 2011 08:12:36  $
---       Date fetched Out : $Modtime:   Jul 28 2011 16:20:26  $
---       PVCS Version     : $Revision:   1.3  $
+--       Date into PVCS   : $Date:   Mar 15 2012 14:32:46  $
+--       Date fetched Out : $Modtime:   Feb 23 2012 15:08:28  $
+--       PVCS Version     : $Revision:   1.4  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -46,6 +46,7 @@ begin
   for rec in (SELECT nth_theme_id, nth_theme_name, nth_feature_table, nth_feature_shape_column
                     FROM nm_themes_all
                   WHERE nth_base_table_theme IS NULL
+                       AND nth_theme_type = 'SDO'
                        AND EXISTS (SELECT 1 FROM v_nm_net_themes_all
                                             WHERE vnnt_nth_theme_id = nth_theme_id
                                                 AND vnnt_lr_type = 'D')
@@ -57,6 +58,7 @@ begin
                                             WHERE nbth_base_theme IN (SELECT vnnt_nth_theme_id FROM v_nm_net_themes_all
                                             WHERE vnnt_lr_type = 'D'))
                    AND nth_base_table_theme IS NULL
+                   AND nth_theme_type = 'SDO'
                    AND nth_theme_name != 'MERGE_RESULTS' -- added by aileen as table is always empty and causes code to crash
                 )
    loop
