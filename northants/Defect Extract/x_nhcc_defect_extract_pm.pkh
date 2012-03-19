@@ -1,0 +1,59 @@
+create or replace
+package x_nhcc_defect_extract_pm AUTHID DEFINER
+AS
+
+
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/northants/Defect Extract/x_nhcc_defect_extract_pm.pkh-arc   1.0   Mar 19 2012 13:36:04   Ian.Turnbull  $
+--       Module Name      : $Workfile:   x_nhcc_defect_extract_pm.pkh  $
+--       Date into PVCS   : $Date:   Mar 19 2012 13:36:04  $
+--       Date fetched Out : $Modtime:   Mar 19 2012 13:35:34  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : %USERNAME%
+--
+--    %YourObjectName%
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--</PACKAGE>
+
+--<Old_PACKAGE>  Old Header
+-----------------------------------------------------------------------------
+--
+--   Author : Garry Bleakley
+-- 	 Updated : JMM, March 2012
+--
+--    x_defect_extract header
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2007
+-----------------------------------------------------------------------------
+--</Old_PACKAGE>
+procedure nhcc_defect_extract(l_path varchar2, l_filename varchar2 default null, l_process_id number);
+
+procedure process_output_files;
+
+PROCEDURE FTP_ARCHIVE_FILE (l_path varchar2, l_filename VARCHAR2, l_process_id Number);
+
+--procedure process_out_queue;
+
+--procedure show_woms_log;
+--procedure show_ftp_queue;
+--procedure show_ftp_settings;
+--procedure show_menu;
+
+--PROCEDURE submit_do_all_processes_job (p_every_n_minutes number DEFAULT 15) ;
+--
+-----------------------------------------------------------------------------
+--
+end x_nhcc_defect_extract_pm;
+ 
