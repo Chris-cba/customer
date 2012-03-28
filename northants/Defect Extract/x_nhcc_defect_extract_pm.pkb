@@ -6,11 +6,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/northants/Defect Extract/x_nhcc_defect_extract_pm.pkb-arc   1.0   Mar 19 2012 13:36:02   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/northants/Defect Extract/x_nhcc_defect_extract_pm.pkb-arc   1.1   Mar 28 2012 14:28:46   Ian.Turnbull  $
 --       Module Name      : $Workfile:   x_nhcc_defect_extract_pm.pkb  $
---       Date into PVCS   : $Date:   Mar 19 2012 13:36:02  $
---       Date fetched Out : $Modtime:   Mar 19 2012 13:35:34  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Mar 28 2012 14:28:46  $
+--       Date fetched Out : $Modtime:   Mar 28 2012 14:23:56  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --
@@ -80,6 +80,7 @@ end get_con_id;
 
 */
 
+/* ***Note: FTP archiving has not been impletmented in this version of the code.***  */
 
 procedure nhcc_defect_extract(l_path varchar2, l_filename varchar2 default null, l_process_id number) is
 
