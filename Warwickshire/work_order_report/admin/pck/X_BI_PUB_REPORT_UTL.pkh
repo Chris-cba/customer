@@ -1,0 +1,47 @@
+create or replace PACKAGE          x_bi_pub_report_utl AS
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Warwickshire/work_order_report/admin/pck/X_BI_PUB_REPORT_UTL.pkh-arc   1.0   May 09 2012 10:44:08   Ian.Turnbull  $
+--       Module Name      : $Workfile:   X_BI_PUB_REPORT_UTL.pkh  $
+--       Date into PVCS   : $Date:   May 09 2012 10:44:08  $
+--       Date fetched Out : $Modtime:   May 01 2012 21:15:40  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : Paul Stanton
+--
+--    x_bi_pub_report_utl header
+--
+-----------------------------------------------------------------------------
+--    Copyright (c) Bentley Systems ltd, 2011
+-----------------------------------------------------------------------------
+--
+procedure POP_PARAM_TABLE(P_REPORT_NAME  varchar2 default null,
+                                          P_PARAM_NAME  varchar2 default null,
+                                          P_PARAM_VALUE  varchar2 default null);
+
+FUNCTION pop_param_table(p_report_name  VARCHAR2,
+                                          p_param_name  VARCHAR2,
+                                          p_param_value  VARCHAR2) RETURN number;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE clear_param_table;
+--
+-----------------------------------------------------------------------------
+--
+FUNCTION x_call_bi_pub_report(p_report_name VARCHAR2,
+                                                p_run_id NUMBER) RETURN VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+procedure parameter_entry;
+--
+-----------------------------------------------------------------------------
+--
+END x_bi_pub_report_utl;
+/
