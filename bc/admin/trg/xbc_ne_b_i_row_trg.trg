@@ -9,11 +9,11 @@ NEW.NE_TYPE = 'S'
 DECLARE
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //vm_latest/archives/customer/bc/admin/trg/xbc_ne_b_i_row_trg.trg-arc   1.0   Mar 26 2009 09:41:30   smarshall  $
+--       sccsid           : $Header:   //vm_latest/archives/customer/bc/admin/trg/xbc_ne_b_i_row_trg.trg-arc   1.1   Jun 01 2012 12:41:22   Ian.Turnbull  $
 --       Module Name      : $Workfile:   xbc_ne_b_i_row_trg.trg  $
---       Date into PVCS   : $Date:   Mar 26 2009 09:41:30  $
---       Date fetched Out : $Modtime:   Mar 26 2009 09:40:50  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 01 2012 12:41:22  $
+--       Date fetched Out : $Modtime:   Mar 26 2009 08:40:50  $
+--       PVCS Version     : $Revision:   1.1  $
 
 --
 BEGIN
