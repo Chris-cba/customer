@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.0   Jun 06 2012 16:19:28   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.1   Jun 06 2012 16:32:48   Ian.Turnbull  $
 --       Module Name      : $Workfile:   metadata.sql  $
---       Date into PVCS   : $Date:   Jun 06 2012 16:19:28  $
---       Date fetched Out : $Modtime:   Jun 06 2012 14:32:38  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 06 2012 16:32:48  $
+--       Date fetched Out : $Modtime:   Jun 06 2012 15:06:58  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --
 --   Author : P Stanton
@@ -373,6 +373,20 @@ INSERT INTO GRI_PARAMS
                    WHERE GP_PARAM = 'BATCH_NUM');				   
 ----------------------------------------------------------------------------------------
 
+Insert into GRI_PARAM_LOOKUP
+   (GPL_PARAM, GPL_VALUE, GPL_DESCR)
+select 'YES_NO', 'Y', 'Yes' from dual
+where not exists (select 1 from gri_param_lookup
+                  where gpl_param = 'YES_NO'
+                  and gpl_value = 'Y');
+
+
+Insert into GRI_PARAM_LOOKUP
+   (GPL_PARAM, GPL_VALUE, GPL_DESCR)
+select 'YES_NO', 'N', 'No' from dual
+where not exists (select 1 from gri_param_lookup
+                  where gpl_param = 'YES_NO'
+                  and gpl_value = 'N');
 
 ----------------------------------------------------------------------------------------
 -- GRI_MODULE_PARAMS
@@ -529,13 +543,13 @@ Insert into GRI_MODULE_PARAMS
                    
 Insert into GRI_MODULE_PARAMS
    (GMP_MODULE, GMP_PARAM, GMP_SEQ, GMP_PARAM_DESCR, GMP_MANDATORY, 
-    GMP_NO_ALLOWED, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, GMP_LOV, 
+    GMP_NO_ALLOWED, GMP_WHERE, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, GMP_LOV, 
     GMP_WILDCARD, GMP_HINT_TEXT, GMP_ALLOW_PARTIAL)
  SELECT 'MAI3720', 'YES_NO', 6, 'Download Immediately', 'Y', 
-    1, 'N', 'Y', 'N', 'Y', 
+    1,'GPL_PARAM = '||''''||'YES_NO'||'''', 'N', 'Y', 'N', 'Y', 
     'N', 'Create Batch and Download?', 'N' FROM dual
     WHERE NOT EXISTS (SELECT 1 FROM GRI_MODULE_PARAMS
-                   WHERE GMP_MODULE = 'MAI3720' AND  GMP_PARAM = 'YES_NO');	
+                   WHERE GMP_MODULE = 'MAI3720' AND  GMP_PARAM = 'YES_NO');
 
 Insert into GRI_MODULE_PARAMS
    (GMP_MODULE, GMP_PARAM, GMP_SEQ, GMP_PARAM_DESCR, GMP_MANDATORY, 
