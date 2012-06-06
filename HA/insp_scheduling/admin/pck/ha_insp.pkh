@@ -1,0 +1,181 @@
+CREATE OR REPLACE package ha_insp
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/pck/ha_insp.pkh-arc   1.0   Jun 06 2012 16:19:00   Ian.Turnbull  $
+--       Module Name      : $Workfile:   ha_insp.pkh  $
+--       Date into PVCS   : $Date:   Jun 06 2012 16:19:00  $
+--       Date fetched Out : $Modtime:   Jun 06 2012 14:31:58  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : PStanton
+--
+--    ha_insp
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="SET_PARAMS">
+-- This procdure gets the gri params that have been set and sets up the globals
+Procedure set_params (p_gri_param NUMBER);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="SET_ASSET_PARAMS">
+-- This procdure gets the gri params that have been set and sets up the asset globals
+Procedure set_asset_params (p_gri_param NUMBER);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_inv_type>
+procedure add_inv_type ( inv_type in varchar2 ); 
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_date">
+-- This procdure gets the gri params that have been set and sets up the date globals mai3710
+PROCEDURE add_date ( insp_date IN DATE );
+--</PROC>
+--
+--
+--<PROC NAME="SET_DATE_PARAMS">
+-- This procdure gets the gri params that have been set and sets up the  date globals mai3710
+Procedure set_date_params (p_gri_param NUMBER);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_next_date">
+-- This function returns the next date when passed an interval code and a date
+FUNCTION get_next_date (p_interval intervals.int_code%type, DATE_IN DATE) RETURN DATE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_inspection">
+-- This function creates and locates and inspection asset returning the iit_ne_id of the new asset
+function create_inspection (p_admin_unit      IN     nm_inv_items_all.iit_admin_unit%TYPE
+                           ,pf_insp_type      IN     nm_inv_items_all.iit_chr_attrib26%TYPE
+                           ,pf_insp_source    IN     nm_inv_items_all.iit_chr_attrib27%TYPE
+                           ,pf_asset_type     IN     nm_inv_items_all.iit_chr_attrib31%TYPE
+                           ,pf_insp_date_due  IN     nm_inv_items_all.iit_date_attrib86%TYPE
+                           ,pf_insp_parent_id IN     nm_inv_items_all.iit_foreign_key%TYPE
+                           ,pf_module         IN     VARCHAR2
+               ) RETURN nm_inv_items_all.iit_ne_id%TYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_gaz_query">
+-- This function creates a gaz query
+FUNCTION create_gaz_query RETURN NUMBER;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_interval">
+-- This function gets the interval decsription 
+FUNCTION get_interval (p_int_code VARCHAR2) RETURN VARCHAR2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--<PROC NAME="mai3700">
+-- This is the driving procdure called by the Gri module sql for MAI3700 Inpsecttions by interval
+Procedure mai3700 ( p_gri_id NUMBER);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--<PROC NAME="mai3710">
+-- This is the driving procdure called by the Gri module sql for MAI3710 Inpsecttions by interval
+Procedure mai3710 ( p_gri_id NUMBER);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--<PROC NAME="mai3720">
+-- This is the driving procdure called by the Gri module sql for MAI3720 Create Inspection batches
+Procedure mai3720 ( p_gri_id NUMBER);
+--</PROC>
+--
+--
+-----------------------------------------------------------------------------
+--<PROC NAME="mai3730">
+-- This is the driving procdure called by the Gri module sql for MAI3730 Download Inspection batches
+Procedure mai3730 ( p_gri_id NUMBER);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="initialise">
+Procedure initialise;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="update_inspections">
+--Prodcedure for the inspection loader csv update
+PROCEDURE update_inspections (p_insp_rec v_ha_upd_insp%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_to_batch">
+--Prodcedure for adding an inspection to a batch
+PROCEDURE add_to_batch (p_insp_id v_nm_insp.iit_ne_id%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_mci_files">
+--Prodcedure for generatein the MCI files 
+PROCEDURE create_mci_files (p_batch_id NUMBER);                   
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--Prodcedure for the inspection loader csv process manager
+PROCEDURE csv_update_processing;
+--</PROC>
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end HA_INSP;
+/
