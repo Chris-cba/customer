@@ -5,11 +5,11 @@ AS
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/pck/ha_insp.pkb-arc   1.0   Jun 06 2012 16:19:00   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/pck/ha_insp.pkb-arc   1.1   Jun 07 2012 12:35:06   Ian.Turnbull  $
 --       Module Name      : $Workfile:   ha_insp.pkb  $
---       Date into PVCS   : $Date:   Jun 06 2012 16:19:00  $
---       Date fetched Out : $Modtime:   Jun 06 2012 14:31:30  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 07 2012 12:35:06  $
+--       Date fetched Out : $Modtime:   Jun 07 2012 11:40:26  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --
@@ -57,7 +57,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.0  $"';
+   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.1  $"';
 
    g_package_name CONSTANT varchar2(30) := 'HA_INSP';
 --
@@ -1499,7 +1499,8 @@ PROCEDURE csv_update_processing IS
    t_bad_files    nm3file.file_list;
    l_batch_no     NUMBER;
    l_errno        NUMBER;
-   l_errmess      VARCHAR2(2000) ;
+   l_errmess      VARCHAR2(2000);
+   l_csv_loader   VARCHAR2(50);
 
    FUNCTION get_load_file_id(p_nlf_unique nm_load_files.nlf_unique%TYPE) RETURN NUMBER IS
    
@@ -1522,13 +1523,15 @@ PROCEDURE csv_update_processing IS
 BEGIN
 
    t_insp_files := nm3file.get_wildcard_files_in_dir(nm3file.get_true_dir_name('ASSET_INSPECTIONS_UPLOAD', TRUE ), '*.csv');
-
+   
+   l_csv_loader := HIG.GET_SYSOPT('ASSINSPCSV');
+   
    IF t_insp_files.COUNT > 0 THEN
    
       FOR i IN 1..t_insp_files.COUNT LOOP
          
          -- Start the csv load. This moves the file into the holding table         
-         l_batch_no := nm3load.transfer_to_holding (p_nlf_id       => get_load_file_id('INSPECTIONS_UPDATE')
+         l_batch_no := nm3load.transfer_to_holding (p_nlf_id       => get_load_file_id(l_csv_loader)
                                                    ,p_file_name    => t_insp_files(i)
                                                    ,p_batch_source => 'S'
                                                    );
