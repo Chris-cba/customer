@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/install/insp_scheduling_install.sql-arc   1.0   Jun 06 2012 16:23:32   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/install/insp_scheduling_install.sql-arc   1.1   Jun 07 2012 08:07:34   Ian.Turnbull  $
 --       Module Name      : $Workfile:   insp_scheduling_install.sql  $
---       Date into PVCS   : $Date:   Jun 06 2012 16:23:32  $
---       Date fetched Out : $Modtime:   Jun 06 2012 14:16:32  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 07 2012 08:07:34  $
+--       Date fetched Out : $Modtime:   Jun 06 2012 17:29:44  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --
 --   Author : P Stanton
@@ -170,6 +170,28 @@ Prompt Creating Synonyms That Do Not Exist...
 SET TERM OFF
 EXECUTE nm3ddl.refresh_all_synonyms;
 
+---------------------------------------------------------------------------------------------------
+--
+---------------------------------------------------------------------------------------------------
+--
+---------------------------------------------------------------------------------------------------
+--                        ****************   TRIGGERS   *******************
+---------------------------------------------------------------------------------------------------
+--                        ****************   Procedures  *******************
+
+SET TERM ON
+prompt Creating Triggers
+SET TERM OFF
+SET DEFINE ON
+select '&exor_base'||'insp_scheduling'||'&terminator'||'admin'||
+        '&terminator'||'trg'||'&terminator'||'x_update_asset_maintained_date.trg' run_file
+from dual
+/
+
+
+SET FEEDBACK ON
+start '&&run_file'
+SET FEEDBACK OFF
 ---------------------------------------------------------------------------------------------------
 --
 SET TERM OFF
