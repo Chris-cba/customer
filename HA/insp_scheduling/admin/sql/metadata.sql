@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.2   Jun 07 2012 12:36:56   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.3   Jun 07 2012 12:41:42   Ian.Turnbull  $
 --       Module Name      : $Workfile:   metadata.sql  $
---       Date into PVCS   : $Date:   Jun 07 2012 12:36:56  $
---       Date fetched Out : $Modtime:   Jun 06 2012 15:06:58  $
---       PVCS Version     : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   Jun 07 2012 12:41:42  $
+--       Date fetched Out : $Modtime:   Jun 07 2012 10:19:46  $
+--       PVCS Version     : $Revision:   1.3  $
 --
 --
 --   Author : P Stanton
@@ -1682,4 +1682,61 @@ Insert into HIG_DIRECTORIES
  select 'ASSET_INSPECTIONS_UPLOAD', 'E:\exor_dir\area51a\asset_inspections\upload', 'N' from dual
  where NOT EXISTS (select 1 from hig_directories where hdir_path = 'ASSET_INSPECTIONS_UPLOAD');
 COMMIT;
-				   
+
+----------------------------------------------------------------------------------------
+-- HIG_OPTION_LIST
+--
+-- select * from nm3_metadata.hig_option_list
+-- order by hol_id
+--
+----------------------------------------------------------------------------------------
+
+SET TERM ON
+PROMPT hig_option_list
+SET TERM OFF
+
+INSERT INTO HIG_OPTION_LIST
+       (HOL_ID
+       ,HOL_PRODUCT
+       ,HOL_NAME
+       ,HOL_REMARKS
+       ,HOL_DOMAIN
+       ,HOL_DATATYPE
+       ,HOL_MIXED_CASE
+       ,HOL_USER_OPTION
+       ,HOL_MAX_LENGTH
+       )
+SELECT 
+        'ASSINSPCSV'
+       ,'MAI'
+       ,'Asset Inspections CSV Loader'
+       ,'Choose which CSV file definition is to used for updating Asset inspections'
+       ,NULL
+       ,'VARCHAR2'
+       ,'N'
+       ,'N'
+       ,1 FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
+                   WHERE HOL_ID = 'ASSINSPCSV');	
+
+----------------------------------------------------------------------------------------
+-- HIG_OPTION_VALUES
+--
+-- select * from nm3_metadata.hig_option_values
+-- order by hov_id
+--
+----------------------------------------------------------------------------------------
+
+SET TERM ON
+PROMPT hig_option_values
+SET TERM OFF
+
+INSERT INTO HIG_OPTION_VALUES
+       (HOV_ID
+       ,HOV_VALUE
+       )
+SELECT 
+        'ASSINSPCSV'
+       ,'INSPECTIONS_UPDATE' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
+                   WHERE HOV_ID = 'ASSINSPCSV');				   
