@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.1   Jun 06 2012 16:32:48   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.2   Jun 07 2012 12:36:56   Ian.Turnbull  $
 --       Module Name      : $Workfile:   metadata.sql  $
---       Date into PVCS   : $Date:   Jun 06 2012 16:32:48  $
+--       Date into PVCS   : $Date:   Jun 07 2012 12:36:56  $
 --       Date fetched Out : $Modtime:   Jun 06 2012 15:06:58  $
---       PVCS Version     : $Revision:   1.1  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 --
 --   Author : P Stanton
