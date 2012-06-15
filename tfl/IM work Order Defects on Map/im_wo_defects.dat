@@ -1,0 +1,40 @@
+ -----------------------------------------------------------------------------
+ --
+ --   PVCS Identifiers :-
+ --
+ --       pvcsid           : $Header:   //vm_latest/archives/im/admin/im4_framework/js/new_framework.js-arc   3.13   May 21 2012 15:36:58   Ian.Turnbull  $
+ --       Module Name      : $Workfile:   new_framework.js  $
+ --       Date into PVCS   : $Date:   May 21 2012 15:36:58  $
+ --       Date fetched Out : $Modtime:   May 21 2012 15:18:00  $
+ --       PVCS Version     : $Revision:   3.13  $
+ --       Based on SCCS version :
+ --
+ --
+ -----------------------------------------------------------------------------
+ -- Copyright (c) exor corporation ltd, 2009
+ -----------------------------------------------------------------------------
+--------THEMES BEGIN--------
+IM_WO_DEFECTS|
+DEFECTS BY STATUS XY|
+V_MAI_DEF_STATUS_XY_SDO|
+GEOLOC|
+<?xml version="1.0" standalone="yes"?>
+<styling_rules highlight_style="AVAILABLE_1">
+  <hidden_info>
+    <field column="DEFECT_ID" name="IM_WO_DEFECTS"/>
+  </hidden_info>
+  <rule>
+    <features style="M.DEFECT_AVAILABLE"> defect_works_order_no = :1 </features>
+  </rule>
+</styling_rules>|
+THEMENAME|
+null|
+TYPE_1_STREETS|
+GEOLOC|
+<?xml version="1.0" standalone="yes"?>
+<styling_rules>
+  <rule>
+    <features style="L.ACCESSPROHIBITEDTOLINE"> </features>
+  </rule>
+</styling_rules>
+--------THEMES END--------
