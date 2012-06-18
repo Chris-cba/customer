@@ -1,3 +1,19 @@
+/* -----------------------------------------------------------------------------
+ --
+ --   PVCS Identifiers :-
+ --
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/f1000_page_8.sql-arc   1.1   Jun 18 2012 13:10:08   Ian.Turnbull  $
+ --       Module Name      : $Workfile:   f1000_page_8.sql  $
+ --       Date into PVCS   : $Date:   Jun 18 2012 13:10:08  $
+ --       Date fetched Out : $Modtime:   Jun 18 2012 13:09:46  $
+ --       PVCS Version     : $Revision:   1.1  $
+ --       Based on SCCS version :
+ --
+ --
+ -----------------------------------------------------------------------------
+ -- Copyright (c) exor corporation ltd, 2009
+ -----------------------------------------------------------------------------
+ */
 set define off
 set verify off
 set serveroutput on size 1000000
@@ -5,22 +21,7 @@ set feedback off
 WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK
 begin wwv_flow.g_import_in_progress := true; end; 
 /
-/* -----------------------------------------------------------------------------
- --
- --   PVCS Identifiers :-
- --
- --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/f1000_page_8.sql-arc   1.0   Jun 18 2012 13:08:00   Ian.Turnbull  $
- --       Module Name      : $Workfile:   f1000_page_8.sql  $
- --       Date into PVCS   : $Date:   Jun 18 2012 13:08:00  $
- --       Date fetched Out : $Modtime:   Jun 18 2012 13:05:40  $
- --       PVCS Version     : $Revision:   1.0  $
- --       Based on SCCS version :
- --
- --
- -----------------------------------------------------------------------------
- -- Copyright (c) exor corporation ltd, 2009
- -----------------------------------------------------------------------------
- */ 
+
  
 --application/set_environment
 prompt  APPLICATION 1000 - im_framework
