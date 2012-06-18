@@ -1,0 +1,29 @@
+/* -----------------------------------------------------------------------------
+ --
+ --   PVCS Identifiers :-
+ --
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/install.txt-arc   1.0   Jun 18 2012 13:13:16   Ian.Turnbull  $
+ --       Module Name      : $Workfile:   install.txt  $
+ --       Date into PVCS   : $Date:   Jun 18 2012 13:13:16  $
+ --       Date fetched Out : $Modtime:   Jun 18 2012 13:12:52  $
+ --       PVCS Version     : $Revision:   1.0  $
+ --       Based on SCCS version :
+ --
+ --
+ -----------------------------------------------------------------------------
+ -- Copyright (c) exor corporation ltd, 2009
+ -----------------------------------------------------------------------------
+ */
+ 
+start sqlplus and log on as the highways owner
+
+at the sql prompt 
+SQL> 
+
+run the following scripts
+
+start f1000_page_8.sql
+wo_doc_assocs.sql
+x_im_wo_has_doc.sql
+
+exit sqlplus
