@@ -2,11 +2,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.0   Jun 01 2012 12:24:14   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.1   Jun 20 2012 09:21:48   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_virgins_mviews.sql  $
---       Date into PVCS   : $Date:   Jun 01 2012 12:24:14  $
---       Date fetched Out : $Modtime:   May 31 2012 11:49:14  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 20 2012 09:21:48  $
+--       Date fetched Out : $Modtime:   Jun 20 2012 08:14:34  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -51,11 +51,11 @@ TABLESPACE UKGAZ_DATA as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.0   Jun 01 2012 12:24:14   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.1   Jun 20 2012 09:21:48   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_virgins_mviews.sql  $
---       Date into PVCS   : $Date:   Jun 01 2012 12:24:14  $
---       Date fetched Out : $Modtime:   May 31 2012 11:49:14  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 20 2012 09:21:48  $
+--       Date fetched Out : $Modtime:   Jun 20 2012 08:14:34  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -63,7 +63,6 @@ TABLESPACE UKGAZ_DATA as
 -- write to create materalised view for Virgin's theme TYPE 21
 ---------------------------------------------------------------------------------------------------
 --    Copyright (c) exor corporation ltd, 2012
-
 ---------------------------------------------------------------------------------------------------
           i.TP21_IIT_NE_ID,
           i.TP21_ROAD_STATUS,
@@ -104,11 +103,11 @@ TABLESPACE UKGAZ_DATA as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.0   Jun 01 2012 12:24:14   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.1   Jun 20 2012 09:21:48   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_virgins_mviews.sql  $
---       Date into PVCS   : $Date:   Jun 01 2012 12:24:14  $
---       Date fetched Out : $Modtime:   May 31 2012 11:49:14  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 20 2012 09:21:48  $
+--       Date fetched Out : $Modtime:   Jun 20 2012 08:14:34  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -154,11 +153,11 @@ TABLESPACE UKGAZ_DATA as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.0   Jun 01 2012 12:24:14   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.1   Jun 20 2012 09:21:48   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_virgins_mviews.sql  $
---       Date into PVCS   : $Date:   Jun 01 2012 12:24:14  $
---       Date fetched Out : $Modtime:   May 31 2012 11:49:14  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 20 2012 09:21:48  $
+--       Date fetched Out : $Modtime:   Jun 20 2012 08:14:34  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
@@ -206,11 +205,11 @@ TABLESPACE UKGAZ_DATA as
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.0   Jun 01 2012 12:24:14   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/Virgin/gis scripts/refresh_virgins_mviews.sql-arc   1.1   Jun 20 2012 09:21:48   Ian.Turnbull  $
 --       Module Name      : $Workfile:   refresh_virgins_mviews.sql  $
---       Date into PVCS   : $Date:   Jun 01 2012 12:24:14  $
---       Date fetched Out : $Modtime:   May 31 2012 11:49:14  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jun 20 2012 09:21:48  $
+--       Date fetched Out : $Modtime:   Jun 20 2012 08:14:34  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 --
 --   Author : Aileen Heal
