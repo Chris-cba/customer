@@ -2,11 +2,11 @@
  --
  --   PVCS Identifiers :-
  --
- --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/x_im_wo_has_doc.sql-arc   1.1   Jun 18 2012 13:10:10   Ian.Turnbull  $
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/x_im_wo_has_doc.sql-arc   1.2   Jun 25 2012 10:38:04   Ian.Turnbull  $
  --       Module Name      : $Workfile:   x_im_wo_has_doc.sql  $
- --       Date into PVCS   : $Date:   Jun 18 2012 13:10:10  $
- --       Date fetched Out : $Modtime:   Jun 18 2012 13:09:46  $
- --       PVCS Version     : $Revision:   1.1  $
+ --       Date into PVCS   : $Date:   Jun 25 2012 10:38:04  $
+ --       Date fetched Out : $Modtime:   Jun 25 2012 10:08:36  $
+ --       PVCS Version     : $Revision:   1.2  $
  --       Based on SCCS version :
  --
  --
@@ -14,7 +14,8 @@
  -- Copyright (c) exor corporation ltd, 2009
  -----------------------------------------------------------------------------
  */
-create or replace function x_im_wo_has_doc(pi_woid doc_assocs.das_rec_id%type)
+create or replace function x_im_wo_has_doc(pi_woid doc_assocs.das_rec_id%type
+                                           ,pi_null varchar2 default null)
 return NUMBER
 is
    cursor c1
