@@ -2,11 +2,11 @@
  --
  --   PVCS Identifiers :-
  --
- --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/wo_doc_assocs.sql-arc   1.0   Jun 18 2012 13:08:02   Ian.Turnbull  $
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/wo_doc_assocs.sql-arc   1.1   Jun 25 2012 10:56:12   Ian.Turnbull  $
  --       Module Name      : $Workfile:   wo_doc_assocs.sql  $
- --       Date into PVCS   : $Date:   Jun 18 2012 13:08:02  $
- --       Date fetched Out : $Modtime:   Jun 18 2012 13:05:48  $
- --       PVCS Version     : $Revision:   1.0  $
+ --       Date into PVCS   : $Date:   Jun 25 2012 10:56:12  $
+ --       Date fetched Out : $Modtime:   Jun 25 2012 10:55:04  $
+ --       PVCS Version     : $Revision:   1.1  $
  --       Based on SCCS version :
  --
  --
@@ -24,7 +24,7 @@ instr(ips_source_code,'WORK_ORDERS') > 0
 
 update im_pod_sql
 set ips_source_code = replace(ips_source_code,'showDocAssocsWT','showWODocAssocs')
-where instr(ips_source_code,'im_framework.has_doc') > 0
+where instr(ips_source_code,'showDocAssocsWT') > 0
 and 
 instr(ips_source_code,'WORK_ORDERS') > 0
 ;
