@@ -7,6 +7,7 @@ SQL>
 run the following scripts
 
 start f1000_page_8.sql
+start f512_page_8.sql
 wo_doc_assocs.sql
 x_im_wo_has_doc.sql
 
