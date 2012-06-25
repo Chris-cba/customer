@@ -2,11 +2,11 @@
  --
  --   PVCS Identifiers :-
  --
- --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM work Order Defects on Map/wo_defects_on_map.js-arc   1.0   Jun 15 2012 14:32:44   Ian.Turnbull  $
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM work Order Defects on Map/wo_defects_on_map.js-arc   1.1   Jun 25 2012 09:40:28   Ian.Turnbull  $
  --       Module Name      : $Workfile:   wo_defects_on_map.js  $
- --       Date into PVCS   : $Date:   Jun 15 2012 14:32:44  $
- --       Date fetched Out : $Modtime:   Jun 15 2012 13:56:40  $
- --       PVCS Version     : $Revision:   1.0  $
+ --       Date into PVCS   : $Date:   Jun 25 2012 09:40:28  $
+ --       Date fetched Out : $Modtime:   Jun 25 2012 09:40:04  $
+ --       PVCS Version     : $Revision:   1.1  $
  --       Based on SCCS version :
  --
  --
@@ -34,9 +34,7 @@ function showWODefOnMap(pWOID,pWOLID ){
    showMapNoDisplay();
 
    removeTemplated();
-   --IM_WORK_ORDER_LINES
-   --IM_WO_DEFECTS
-    
+       
    addTheme('IM_WORK_ORDER_LINES',pWOID);
    addTheme('IM_WO_DEFECTS',pWOID);
 
