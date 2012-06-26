@@ -1,7 +1,7 @@
 --------THEMES BEGIN--------
 IM_WO_DEFECTS|
 DEFECTS BY STATUS XY|
-V_MAI_DEF_STATUS_XY_SDO|
+VW_MAI_DEFECTS_SDO|
 GEOLOC|
 <?xml version="1.0" standalone="yes"?>
 <styling_rules highlight_style="AVAILABLE_1">
@@ -9,7 +9,7 @@ GEOLOC|
     <field column="DEFECT_ID" name="IM_WO_DEFECTS"/>
   </hidden_info>
   <rule>
-    <features style="M.DEFECT_AVAILABLE"> defect_works_order_no = :1 </features>
+    <features style="M.DEFECT_AVAILABLE"> def_works_order_no = :1 </features>
   </rule>
 </styling_rules>|
 THEMENAME|
