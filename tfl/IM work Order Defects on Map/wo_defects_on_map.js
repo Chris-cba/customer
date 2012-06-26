@@ -2,11 +2,11 @@
  --
  --   PVCS Identifiers :-
  --
- --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM work Order Defects on Map/wo_defects_on_map.js-arc   1.1   Jun 25 2012 09:40:28   Ian.Turnbull  $
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM work Order Defects on Map/wo_defects_on_map.js-arc   1.2   Jun 26 2012 10:59:14   Ian.Turnbull  $
  --       Module Name      : $Workfile:   wo_defects_on_map.js  $
- --       Date into PVCS   : $Date:   Jun 25 2012 09:40:28  $
- --       Date fetched Out : $Modtime:   Jun 25 2012 09:40:04  $
- --       PVCS Version     : $Revision:   1.1  $
+ --       Date into PVCS   : $Date:   Jun 26 2012 10:59:14  $
+ --       Date fetched Out : $Modtime:   Jun 26 2012 10:58:46  $
+ --       PVCS Version     : $Revision:   1.2  $
  --       Based on SCCS version :
  --
  --
@@ -16,8 +16,11 @@
  */
 function addTheme(pLayerName, pFeatureID){
    var xthemebasedfoi = new MVThemeBasedFOI('locator', dataSource + '.' + pLayerName);
-   xthemebasedfoi.setQueryParameters(pFeatureID);
-    
+   if (pLayerName == 'IM_WORK_ORDER_LINES'){
+    xthemebasedfoi.setQueryParameters( pFeatureID, pFeatureID, pFeatureID );
+   } else {
+    xthemebasedfoi.setQueryParameters(pFeatureID);
+   } 
    xthemebasedfoi.setBringToTopOnMouseOver(true);
    xthemebasedfoi.enableInfoTip(true);
    xthemebasedfoi.setVisible(true);
