@@ -2,11 +2,11 @@
  --
  --   PVCS Identifiers :-
  --
- --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/wo_doc_assocs.sql-arc   1.1   Jun 25 2012 10:56:12   Ian.Turnbull  $
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM WO Doc Assocs/wo_doc_assocs.sql-arc   1.2   Jun 27 2012 15:49:10   Ian.Turnbull  $
  --       Module Name      : $Workfile:   wo_doc_assocs.sql  $
- --       Date into PVCS   : $Date:   Jun 25 2012 10:56:12  $
- --       Date fetched Out : $Modtime:   Jun 25 2012 10:55:04  $
- --       PVCS Version     : $Revision:   1.1  $
+ --       Date into PVCS   : $Date:   Jun 27 2012 15:49:10  $
+ --       Date fetched Out : $Modtime:   Jun 27 2012 15:48:44  $
+ --       PVCS Version     : $Revision:   1.2  $
  --       Based on SCCS version :
  --
  --
@@ -70,5 +70,18 @@ function showWODocAssocs(docID,appID,sessionID,dasTableName)
 ||chr(13)||'#HEAD#')
 where flow_id = 512
 and name in ( 'One Level Tabs with Sidebar');
+
+
+update apex_030200.wwv_flow_templates
+set  header_template = replace(header_template,'<link rel="stylesheet" href="/&FRAMEWORK_DIR./css/master.css" type="text/css" />'
+                                              ,'<!--link rel="stylesheet" href="/&FRAMEWORK_DIR./css/master.css" type="text/css" /-->')
+where flow_id = 1000 
+and name in ( 'popup');
+
+update apex_030200.wwv_flow_templates
+set  header_template = replace(header_template,'<script type="text/javascript" src="/&FRAMEWORK_DIR./js/cmode.js"></script>'
+                                              ,'<!--script type="text/javascript" src="/&FRAMEWORK_DIR./js/cmode.js"></script-->')
+where flow_id = 1000 
+and name in ( 'popup');
 
 commit;
