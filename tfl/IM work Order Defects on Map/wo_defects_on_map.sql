@@ -2,11 +2,11 @@
  --
  --   PVCS Identifiers :-
  --
- --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM work Order Defects on Map/wo_defects_on_map.sql-arc   1.0   Jun 15 2012 14:32:46   Ian.Turnbull  $
+ --       pvcsid           : $Header:   //vm_latest/archives/customer/tfl/IM work Order Defects on Map/wo_defects_on_map.sql-arc   1.1   Jun 27 2012 11:16:40   Ian.Turnbull  $
  --       Module Name      : $Workfile:   wo_defects_on_map.sql  $
- --       Date into PVCS   : $Date:   Jun 15 2012 14:32:46  $
- --       Date fetched Out : $Modtime:   Jun 15 2012 14:24:56  $
- --       PVCS Version     : $Revision:   1.0  $
+ --       Date into PVCS   : $Date:   Jun 27 2012 11:16:40  $
+ --       Date fetched Out : $Modtime:   Jun 27 2012 11:12:00  $
+ --       PVCS Version     : $Revision:   1.1  $
  --       Based on SCCS version :
  --
  --
@@ -35,6 +35,10 @@ and name in ( 'One Level Tabs with Sidebar');
 
 update apex_030200.wwv_flow_worksheets
 set sql_query = replace(sql_query,'showPopUpMap','showWODefOnMap')
+where flow_id = 512;
+
+update apex_030200.wwv_flow_page_plugs
+set PLUG_SOURCE = replace(PLUG_SOURCE,'showPopUpMap','showWODefOnMap')
 where flow_id = 512;
 
 commit;
