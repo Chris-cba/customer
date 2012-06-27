@@ -2,14 +2,14 @@
 IM_WO_DEFECTS|
 DEFECTS BY STATUS XY|
 VW_MAI_DEFECTS_SDO|
-GEOLOC|
+SHAPE|
 <?xml version="1.0" standalone="yes"?>
 <styling_rules highlight_style="AVAILABLE_1">
   <hidden_info>
-    <field column="DEFECT_ID" name="IM_WO_DEFECTS"/>
+    <field column="DEF_DEFECT_ID" name="IM_WO_DEFECTS"/>
   </hidden_info>
   <rule>
-    <features style="M.DEFECT_AVAILABLE"> def_works_order_no = :1 </features>
+    <features style="V.DEFECT_STATUS"> def_works_order_no = :1 </features>
   </rule>
 </styling_rules>|
 THEMENAME|
@@ -23,3 +23,4 @@ GEOLOC|
   </rule>
 </styling_rules>
 --------THEMES END--------
+<?xml version="1.0" standalone="yes"?> <styling_rules highlight_style="AVAILABLE_1"> <hidden_info> <field column="DEF_DEFECT_ID" name="IM_WO_DEFECTS"/> </hidden_info> <rule> <features style="V.DEFECT_STATUS"> def_works_order_no = :1 </features> </rule> </styling_rules>
