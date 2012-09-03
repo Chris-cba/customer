@@ -9,14 +9,14 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid           : $Header:   //vm_latest/archives/customer/NewBrunswick/delete asset/nbdti_exor_delete_asset_location.SQL-arc   1.0   Aug 20 2012 09:16:36   Ian.Turnbull  $
+--       pvcsid           : $Header:   //vm_latest/archives/customer/NewBrunswick/delete asset/nbdti_exor_delete_asset_location.SQL-arc   1.1   Sep 03 2012 14:37:08   Ian.Turnbull  $
 --       Module Name      : $Workfile:   nbdti_exor_delete_asset_location.SQL  $
---       Date into PVCS   : $Date:   Aug 20 2012 09:16:36  $
---       Date fetched Out : $Modtime:   Aug 20 2012 09:16:06  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Sep 03 2012 14:37:08  $
+--       Date fetched Out : $Modtime:   Sep 03 2012 14:36:48  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 --
---   Author : Aileen Heal
+--   Author : Paul Sheedy
 --
 -----------------------------------------------------------------------------
 --    Copyright: (c) 2012 Bentley Systems, Incorporated. All rights reserved.
@@ -63,8 +63,8 @@ spool &Log_File_Name;
 select * from (
 SELECT asset.iit_inv_type AS type
       ,asset.iit_primary_key AS asset_pk
-      ,TO_CHAR(nbcs_location.nm_start_date,'DD-MON-YYYY') AS ACTIVE
-      ,TO_CHAR(nbcs_location.nm_end_date,'DD-MON-YYYY') AS INACTIVE
+      ,TO_CHAR(asset_location.nm_start_date,'DD-MON-YYYY') AS ACTIVE
+      ,TO_CHAR(asset_location.nm_end_date,'DD-MON-YYYY') AS INACTIVE
       ,nbcs.ne_descr nbcs
       ,DECODE(nbcs_location.nm_cardinality, 1, nbcs_location.nm_slk + (greatest(NVL(asset_location.nm_begin_mp,0),nbcs_location.nm_begin_mp))/1000 - nbcs_location.nm_begin_mp/1000,
               nbcs_location.nm_slk + (nbcs_location.nm_end_mp  - least(NVL(asset_location.nm_end_mp,9999), nbcs_location.nm_end_mp))/1000) AS BEG_OFFSET
