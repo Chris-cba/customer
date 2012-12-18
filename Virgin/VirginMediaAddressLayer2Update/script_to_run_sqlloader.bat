@@ -1,0 +1,1 @@
+for %%a in (AL2_Data\*.csv) do sqlldr userid=atlas/atlas@twcah control=addressLayer2.ctl data=%%a log=%%a.log
