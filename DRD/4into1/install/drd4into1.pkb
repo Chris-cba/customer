@@ -1,4 +1,16 @@
-CREATE OR REPLACE PACKAGE body drd4into1
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/DRD/4into1/install/drd4into1.pkb-arc   1.1   Jan 17 2013 10:40:12   Ian.Turnbull  $
+--       Module Name      : $Workfile:   drd4into1.pkb  $
+--       Date into PVCS   : $Date:   Jan 17 2013 10:40:12  $
+--       Date fetched Out : $Modtime:   Jan 17 2013 10:39:52  $
+--       Version          : $Revision:   1.1  $
+--
+--   Copyright (c) exor corporation ltd, 2010
+--
+-----------------------------------------------------------------------------CREATE OR REPLACE PACKAGE body drd4into1
 AS
 
 
