@@ -1,0 +1,75 @@
+CREATE OR REPLACE PACKAGE DRD4INTO1
+AS
+
+  TYPE area_type IS TABLE OF VARCHAR2(100) INDEX BY binary_integer;
+  areas area_type;
+
+  TYPE area_max_type IS TABLE OF NUMBER INDEX BY VARCHAR2(20);
+  area_max area_max_type;  
+  
+  procedure init;
+
+  PROCEDURE DO_DOC_TYPES;
+  
+  procedure do_admin_units;
+  
+  PROCEDURE do_hig_users;
+  
+  FUNCTION get_user_id(p_area VARCHAR2
+                    ,p_table VARCHAR2 default 'HIG_USERS'
+                    ,p_old_id number
+                    )
+  RETURN hig_users.hus_user_id%TYPE;
+  
+  procedure do_docs;
+  
+  PROCEDURE do_contact_address;
+  
+  PROCEDURE inv_metadata;
+  
+  PROCEDURE do_inv_items;
+  
+  PROCEDURE do_points;
+  PROCEDURE do_nodes;
+  procedure do_elements;
+  -- PROCEDURE do_nm_node_usages_all;
+  procedure DO_NM_MEMBERS_ALL;
+  PROCEDURE do_nm_nw_ad_link_all;
+  
+  procedure DO_ACTIVITIES;
+  procedure DO_ACTIVITIES_REPORT;
+  procedure DO_ACT_FREQS;
+  procedure DO_ACT_REPORT_LINES;
+  procedure DO_STANDARD_ITEMS;
+  procedure DO_CONTRACTS;
+  procedure DO_CONTRACT_ITEMS;
+  procedure DO_CONTRACT_PAYMENTS;
+  procedure DO_COST_CENTRES;
+  procedure DO_DEFECT_PRIORITIES;
+  procedure DO_DEF_TREATS;
+  procedure DO_DEF_MOVEMENTS;
+  procedure DO_DEFECTS;
+  procedure DO_NM_AUDIT_ACTIONS;
+  procedure DO_NM_AUDIT_CHANGES;
+  procedure DO_NM_ELEMENT_HISTORY;
+  procedure DO_NOTICES;
+  procedure DO_NOTICE_DEFECTS;
+  procedure DO_REPAIRS;
+  procedure DO_SCHEDULES;
+  procedure DO_SCHEDULE_ITEMS;
+  procedure DO_SCHEDULE_ROADS;
+  procedure DO_SECTION_FREQS;
+  procedure DO_WORK_ORDERS;
+  procedure DO_WORK_ORDER_LINES;
+  procedure DO_BOQ_ITEMS;  
+  procedure DO_BUDGETS;
+  procedure DO_CLAIM_PAYMENTS;
+  procedure DO_CLAIM_PAYMENTS_AUDIT;
+  procedure DO_DOC_ACTIONS;
+  procedure DO_DOC_ACTION_HISTORY;
+  procedure DO_DOC_ASSOCS;
+  procedure DO_roles;
+  
+  
+end drd4into1;
+/
