@@ -7,11 +7,11 @@ DECLARE
 -----------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       pvcsid                     : $Header:   //vm_latest/archives/customer/northants/admin/trg/NHCC_PEM_X_TRG.trg-arc   1.0   Jun 05 2013 08:23:26   Ian.Turnbull  $
+--       pvcsid                     : $Header:   //vm_latest/archives/customer/northants/admin/trg/NHCC_PEM_X_TRG.trg-arc   1.1   Jun 05 2013 10:14:08   Ian.Turnbull  $
 --       Module Name                : $Workfile:   NHCC_PEM_X_TRG.trg  $
---       Date into PVCS             : $Date:   Jun 05 2013 08:23:26  $
---       Date fetched Out           : $Modtime:   Jun 05 2013 08:22:56  $
---       PVCS Version               : $Revision:   1.0  $
+--       Date into PVCS             : $Date:   Jun 05 2013 10:14:08  $
+--       Date fetched Out           : $Modtime:   Jun 05 2013 09:30:30  $
+--       PVCS Version               : $Revision:   1.1  $
 --       Based on SCCS version      :
 --
 --   Author : H.Buckley
@@ -203,7 +203,7 @@ begin
                        send_header('To'  ,'<'||l_customer_email||'>');
 
 	            l_msg(1):='';
-			    l_msg(2):= '*This is not a monitored e-mail address so please do not reply to this e-mail.*';
+			    l_msg(2):= '*****Please be aware, this is not a monitored e-mail address so please do not reply to this email*****';
 	            l_msg(3):='';
                 l_msg(4):= 'Dear '||l_customer_name;
                 l_msg(5):=' ';
