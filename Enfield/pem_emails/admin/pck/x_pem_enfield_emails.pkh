@@ -1,15 +1,16 @@
-create or replace package x_pem_enfield_emails
+create or replace 
+package x_pem_enfield_emails
 AS
 --<PACKAGE>
 -----------------------------------------------------------------------------
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/Enfield/emails/x_pem_enfield_emails.pkh-arc   1.0   Feb 28 2011 11:53:48   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //vm_latest/archives/customer/Enfield/emails/x_pem_enfield_emails.pkh-arc   1.1   Jul 10 2013 15:18:10   Ian.Turnbull  $
 --       Module Name      : $Workfile:   x_pem_enfield_emails.pkh  $
---       Date into PVCS   : $Date:   Feb 28 2011 11:53:48  $
---       Date fetched Out : $Modtime:   Feb 28 2011 11:52:18  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jul 10 2013 15:18:10  $
+--       Date fetched Out : $Modtime:   Jun 07 2013 11:33:50  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 
 --
@@ -28,7 +29,7 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.0  $"';
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.1  $"';
 
 --</GLOBVAR>
 --
@@ -61,7 +62,7 @@ PROCEDURE process_docs;
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="insert_doc_history">
-PROCEDURE insert_doc_history(pi_doc_id NUMBER, 
+PROCEDURE insert_doc_history(pi_doc_id NUMBER,
                              pi_text VARCHAR2);
 --
 -----------------------------------------------------------------------------
@@ -72,26 +73,26 @@ PROCEDURE clear_docs;
 -----------------------------------------------------------------------------
 --
 --<PROC NAME="responsibility_email">
-PROCEDURE responsibility_email(	pi_doc_id					  IN NUMBER,
-	                            pi_doc_user_id				   IN NUMBER,
-	                            pi_doc_status_code			   IN VARCHAR2,
-	                            pi_doc_dtp_code				   IN VARCHAR2,
-	                            pi_doc_dcl_code				   IN VARCHAR2,
-	                            pi_doc_compl_type			   IN VARCHAR2,
-	                            pi_doc_outcome_reason		   IN VARCHAR2,
-	                            pi_doc_compl_location		   IN VARCHAR2,
-	                            pi_doc_descr				   IN VARCHAR2,
-	                            pi_doc_compl_action			   IN VARCHAR2,
-	                            pi_doc_compl_target			   IN VARCHAR2,
-	                            pi_to_email_address			   IN VARCHAR2,
-	                            pi_doc_compl_user_id		   IN VARCHAR2,
-								pi_doc_compl_cpr_id            IN VARCHAR2,
-								pi_DOC_COMPL_INSURANCE_CLAIM   IN VARCHAR2,
-								pi_DOC_COMPL_POLICE_NOTIF_FLag IN VARCHAR2
+PROCEDURE responsibility_email(	pi_doc_id			IN NUMBER,
+	                        pi_doc_user_id			IN NUMBER,
+	                        pi_doc_status_code		IN VARCHAR2,
+	                        pi_doc_dtp_code			IN VARCHAR2,
+	                        pi_doc_dcl_code			IN VARCHAR2,
+	                        pi_doc_compl_type		IN VARCHAR2,
+	                        pi_doc_outcome_reason		IN VARCHAR2,
+	                        pi_doc_compl_location		IN VARCHAR2,
+	                        pi_doc_descr			IN VARCHAR2,
+	                        pi_doc_compl_action		IN VARCHAR2,
+	                        pi_doc_compl_target		IN VARCHAR2,
+	                        pi_to_email_address		IN VARCHAR2,
+	                        pi_doc_compl_user_id	 	IN VARCHAR2,
+				pi_doc_compl_cpr_id             IN VARCHAR2,
+				pi_DOC_COMPL_INSURANCE_CLAIM    IN VARCHAR2,
+				pi_DOC_COMPL_POLICE_NOTIF_FLag  IN VARCHAR2,
+				pi_doc_compl_summons_received   IN VARCHAR2,
+                                pi_doc_compl_litigation_flag    IN VARCHAR2
 	                           );
 --
 -----------------------------------------------------------------------------
 --
 end x_pem_enfield_emails;
-/
-
