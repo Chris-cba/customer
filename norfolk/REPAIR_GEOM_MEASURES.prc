@@ -3,11 +3,11 @@ AS
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/REPAIR_GEOM_MEASURES.prc-arc   1.0   Nov 12 2013 14:52:32   Rob.Coupe  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/REPAIR_GEOM_MEASURES.prc-arc   1.1   Nov 12 2013 17:00:26   Rob.Coupe  $
 --       Module Name      : $Workfile:   REPAIR_GEOM_MEASURES.prc  $
---       Date into PVCS   : $Date:   Nov 12 2013 14:52:32  $
---       Date fetched Out : $Modtime:   Nov 12 2013 14:51:50  $
---       Version          : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Nov 12 2013 17:00:26  $
+--       Date fetched Out : $Modtime:   Nov 12 2013 16:58:48  $
+--       Version          : $Revision:   1.1  $
 -------------------------------------------------------------------------
 
    CURSOR c1
@@ -23,7 +23,8 @@ AS
              AND nth_base_table_theme IS NULL
              AND NVL (pi_inv_type, nith_nit_id) = nith_nit_id
              AND nit_inv_type = nith_nit_id
-             AND nth_dependency = 'D';
+             AND nth_dependency = 'D'
+			 AND not exists (select 1 from nm_nw_ad_types where nith_nit_id = nad_inv_type );
 
    --
    c2str             VARCHAR2 (4000);
