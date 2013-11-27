@@ -3,11 +3,11 @@ create or replace procedure refresh_herm_xsp as
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/refresh_herm_xsp.prc-arc   1.0   Nov 26 2013 16:19:42   Rob.Coupe  $
+--       PVCS id          : $Header:   //vm_latest/archives/customer/norfolk/refresh_herm_xsp.prc-arc   1.1   Nov 27 2013 15:15:26   Rob.Coupe  $
 --       Module Name      : $Workfile:   refresh_herm_xsp.prc  $
---       Date into PVCS   : $Date:   Nov 26 2013 16:19:42  $
---       Date fetched Out : $Modtime:   Nov 26 2013 16:18:42  $
---       Version          : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Nov 27 2013 15:15:26  $
+--       Date fetched Out : $Modtime:   Nov 27 2013 15:15:00  $
+--       Version          : $Revision:   1.1  $
 --
 -------------------------------------------------------------------------
 --
@@ -105,8 +105,4 @@ begin
      end;
    end loop;
 end;
-
-
-begin
-refresh_herm_xsp;
-end;
+/
