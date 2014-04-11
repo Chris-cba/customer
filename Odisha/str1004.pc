@@ -1,0 +1,2518 @@
+/* SCCS ID keywords, do not remove */
+static char *sccsid = "@(#)str1004.pc	1.6 10/17/05";
+
+/******************************************************************/
+/*  Copyright (c) Exor Corporation Ltd, 1997                      */
+/*                                                                */
+/*  All rights reserved                                           */
+/*                                                                */
+/******************************************************************/
+/******************************************************************/
+/*                                                                */
+/*  REPORT  : STR1004  Structure Inventory Loader                 */
+/*                                                                */
+/*                                                                */
+/*                                                                */
+/* Created By : Graham Anns                                       */
+/* Date       : 12-Nov-1998                                       */
+/* Reason:    : Based on str3028.pc Version 10.5. Highways V1.7   */
+/*              Database changes implemented for Highways version */
+/*              2.1.                                              */
+/* Changed    : 03-APR-2014                                       */
+/*              HB: 1. Replaced admin unit with admin unit code   */
+/*                  2. Added debugging as a new parameter         */
+/*                  3. Added additional debug output for          */
+/*                     intersections                              */
+/*                  4. Added a default date to intersection record*/
+/*                  5. Added a break in the logic for attr type CHAR */
+/*                  6. allowed the road intersection record to    */
+/*                     have decimal placed start/end chainages.   */
+/*                                                                */
+/*                                                                */
+/******************************************************************/
+
+/******************************************************************/
+/* Standard I/O definition and rmms header file.                  */
+/******************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "rmms.h"
+EXEC SQL INCLUDE SQLEXT.H;
+
+short EXDebug;
+char *EXRepOutpath;
+char pipe_msg[254];
+char GBErrMsg[255];
+char tmp_msg[255];
+
+
+/******************************************************************/
+/* Define Macros                                                  */
+/******************************************************************/
+
+#define NO_DATA_FOUND       (sqlca.sqlcode == 1403)
+#define END_OF_FETCH        1403
+#define TOO_MANY            (sqlca.sqlcode == -2112)
+#define NOT_TOO_MANY        (sqlca.sqlcode != -2112)
+#define GOOD_FETCH          (sqlca.sqlcode != 1403)
+#define NO_RECS_CHANGED     (sqlca.sqlerrd[2] == 0)
+#define NULL_TERM(x)        x.arr[x.len] = '\0'
+#define SET_LENGTH(x)       x.len = strlen(x.arr)
+#define SOME_RECORD         (file_status == 1)
+#define ERROR_DISPLAYED     (error_display == 1)
+#define INVALID_PARENT      (parent_fail == 1)
+#define STRUCT_ASSEMBLED    1
+#define RECORDS_REJECTED    1
+#define MAIN_STRUCT_CREATED 1
+#define MAX_RECS_IN_STRUCT  2000
+#define DATA_ITEM_FOUND     1
+
+/******************************************************************/
+/* Function declarations                                          */
+/******************************************************************/
+
+void commit();
+void rollback();
+void init_variables();
+
+/******************************************************************/
+/* Oracle Pre-Compiler options                                    */
+/******************************************************************/
+
+EXEC ORACLE OPTION (HOLD_CURSOR=YES);
+EXEC ORACLE OPTION (RELEASE_CURSOR=NO);
+
+
+/******************************************************************/
+/* Shared Oracle and Host Variable declarations.                  */
+/******************************************************************/
+
+EXEC SQL BEGIN DECLARE SECTION;
+
+    /**************************************************************/
+    /* Variable Declarations                                      */
+    /**************************************************************/
+
+    VARCHAR userid[66];
+    VARCHAR tstr_name[31];
+    VARCHAR dummy[20];
+    int     idummy;
+
+    /**************************************************************/
+    /* Initial point id fetch cursor variables                    */
+    /**************************************************************/
+
+    int count=0;
+    int initial_id;
+    int struct_id;
+    int rin_id;
+
+    /* Initial Node existance check cursor variables */
+
+    VARCHAR ex_node_id[7];
+
+    /* Node Insert Cursor Variables                  */
+
+    int  array_count;
+    int  array_count2;
+    int dstr_top_save;
+    int dstr_sic_save;
+
+    /* str_items_all */
+    int dstr_id;
+    int dstr_parent_id;
+    int dstr_seq;
+    int dstr_top_id;
+    VARCHAR dstr_sit_id[5];
+    int dstr_sic_id;
+    VARCHAR dstr_start_date[13];
+    VARCHAR dstr_end_date[13];
+    VARCHAR dstr_local_ref[31];
+    VARCHAR dstr_name[31];
+    VARCHAR dstr_descr[255];
+    VARCHAR dstr_route_ref[6];
+    VARCHAR dstr_inspect_ref[6];
+    VARCHAR dstr_sys_flag[2];
+    VARCHAR dstr_unit_code[11];
+    int dstr_admin_unit;
+    int dstr_st_east;
+    int dstr_end_east;
+    int dstr_st_north;
+    int dstr_end_north;
+
+
+    /* road_intersections */
+    int drin_id;
+    int drin_str_id;
+    int drin_seq;
+    int drin_rse_he_id;
+    float  drin_st_chain;
+    float  drin_end_chain;
+    VARCHAR drin_section[21];
+    VARCHAR drin_primary[2];
+    VARCHAR drin_location[26];
+    VARCHAR drin_start_date[13];
+    short int idrin_start_date;
+
+    /* str_item_attr */
+    int dsia_str_id[1000];
+    VARCHAR dsia_sat_id[1000][5];
+    VARCHAR dsia_value[1000][255];
+
+    /* str_attr_valid */
+    VARCHAR dsav_sit_id[5];
+    VARCHAR dsav_sat_id[1000][5];
+    int     dsav_occurence[1000];
+    int     psav_occurence[1000];
+    VARCHAR dsav_seq[5];
+    VARCHAR dsav_required[5];
+
+    /* str_attr_types */
+    VARCHAR dtmp_value[255];
+    VARCHAR dsat_id[5];
+    VARCHAR dsat_sad_id[21];
+    VARCHAR dsat_name[31];
+    VARCHAR dsat_descr[255];
+    VARCHAR dsat_data_type[5];
+    VARCHAR dsat_min[13];
+    VARCHAR dsat_max[13];
+    VARCHAR dsat_dec_places[2];
+    VARCHAR dsat_length[4];
+
+    /* str_attr_lookup */
+    VARCHAR dsal_sad_id[21];
+    VARCHAR dsal_value[21];
+    VARCHAR dsal_seq[5];
+    VARCHAR dsal_meaning[76];
+
+    /* str_item_types */
+    VARCHAR dsit_id[500][5];
+    int dsit_level[500];
+
+    short int istr_id;
+    short int istr_parent_id;
+    short int istr_seq;
+    short int istr_top_id;
+    short int istr_sit_id;
+    short int istr_sic_id;
+    short int istr_start_date;
+    short int istr_end_date;
+    short int istr_local_ref;
+    short int istr_name;
+    short int istr_descr;
+    short int istr_route_ref;
+    short int istr_inspect_ref;
+    short int istr_sys_flag;
+    short int istr_admin_unit;
+    short int istr_st_east;
+    short int istr_end_east;
+    short int istr_st_north;
+    short int istr_end_north;
+
+
+    short int irin_id;
+    short int irin_str_id;
+    short int irin_seq;
+    short int irin_rse_he_id;
+    short int irin_st_chain;
+    short int irin_end_chain;
+    short int irin_section;
+    short int irin_primary;
+    short int irin_location;
+
+    short int isia_str_id[1000];
+    short int isia_sat_id[1000];
+    short int isia_value[1000];
+
+    short int isav_sit_id;
+    short int isav_sat_id [200];
+    short int isav_occurence;
+    short int isav_seq;
+    short int isav_required;
+
+    short int isat_id;
+    short int isat_sad_id;
+    short int sadind;
+    short int isat_name;
+    short int isat_descr;
+    short int isat_data_type;
+    short int isat_min;
+    short int minind;
+    short int isat_max;
+    short int maxind;
+    short int isat_dec_places;
+    short int decind;
+    short int isat_length;
+    short int lenind;
+    short int isat_fha_ref;
+
+    short int isal_sad_id;
+    short int isal_value;
+    short int isal_seq;
+    short int isal_meaning;
+
+EXEC SQL END DECLARE SECTION;
+
+/************************************************************
+* Include the Oracle (SQL) communications area.             *
+************************************************************/
+
+/************************************************************
+* Shared Global variable declarations                       *
+************************************************************/
+
+int tot_recs_input;
+int tot_recs_rejected;
+int tot_structures;
+int tot_added;
+int temp_structures;
+int temp_added;
+int file_status;
+int struct_status;
+int road_status;
+int batch_status;
+int main_status;
+int parent_fail;
+int error_display;
+int record_type;
+int current_level;
+int level_in_record;
+int structure_id[9];
+int argsc;
+int display_seq;
+int master_level;
+int sit_table_size;
+int sav_table_size;
+int batch_count;
+int item_found;
+char *args[30];
+char tmp_args[30][255];
+char *recstore[MAX_RECS_IN_STRUCT];
+/* file pointer to structure data    */
+FILE *lfp;
+/* file pointer to error record      */
+FILE *efp;
+/* file pointer to discard records   */
+FILE *dfp;
+char origstr[200];
+
+/***********************************************************/
+/* Function Definitions.                                   */
+/***********************************************************/
+void process_type_1_record(char* str);
+void process_type_2_record(char* str);
+void process_type_3_record(char* str);
+void process_type_4_record(char* str);
+void process_type_5_record(char* str);
+void process_type_7_record(char* str);
+void reject_record();
+void read_record(char* str);
+void batchpoint();
+void reset_args();
+
+BOOLEAN oraerror(char* fname);
+
+
+static char *month_list[] = {
+  "JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC" };
+
+/******************************************************************/
+/* Program Entry point.                                           */
+/******************************************************************/
+
+int main(argc,argv)
+char *argv[];
+int  argc;
+{
+    /* argv[0] = name of this C module - ignored here           */
+    /* argv[1] = Oracle username/Password (mandatory)           */
+    /* argv[2] = filename                                       */
+    /* argv[3] = -D         - Debug                             */
+
+    /* field to allow for dynamic underlining of file name      */
+    char undl[100];
+    /* miscellaneous counter variable                           */
+    int i;
+    /* O/S file name of structure data                          */
+    char lfile[100];
+    /* O/S file name of structure error data                    */
+    char efile[104];
+    /* O/S file name of structure discard records               */
+    char dfile[104];
+
+    jobmain(argc,argv);
+    get_params(1);
+
+    /* Display all of the parameters and then enable debugging for the session if
+       one of the parameters is -D 
+    */
+      for (i=0;i<argc;i++)
+      {  /* printf("Argv[%d] [%s]\n",i,argv[i]); */
+         if (strcmp(argv[i],"-D")==0)
+         {
+           EXDebug=1;
+           puts("Info: Debugging enabled");
+         }
+    }
+
+    reset_args();
+
+    strcpy(lfile,EXParam[0].arr);
+
+    if (access(lfile,4) == -1)
+    {
+        strcpy(pipe_msg,"ERROR; No read access allowed to ");
+        strcat(pipe_msg,lfile);
+        printf("\nERROR: No read access allowed to this Load file");
+        printf("\n");
+        printf("***********************************************");
+        printf("\n\n");
+    }
+    else
+    {
+        for (i=0;i<(int)strlen(lfile);i++)
+        {
+            undl[i] = '*';
+        }
+
+        undl[strlen(lfile)]='\0';
+
+        printf("\nStarting format checks and load for : %s \n",lfile);
+        printf("**************************************%s\n\n",undl);
+        strcpy(pipe_msg,"Starting format checks and load for ");
+        strcat(pipe_msg,lfile);
+        write_pipe(NULL,pipe_msg);
+        lfp = fopen(lfile,"r");
+        strcpy(efile,lfile);
+        strcat(efile,".err");
+        /* efp = fopen(efile,"w"); */
+        efp = fopen(EXRepOutpath,"w");
+        strcpy(dfile,lfile);
+        strcat(dfile,".dis");
+        dfp = fopen(dfile,"w");
+        fprintf(efp,"\nStarting format checks and load for : %s \n",lfile);
+        fprintf(efp,"**************************************%s\n\n",undl);
+
+        /****************************************************************/
+        /*            Processing starts here                            */
+        /****************************************************************/
+
+        if (prorecs() == TRUE)
+        {
+            printf("\nINFO: Finished loading and checking : %s ",lfile);
+            printf("STR-8503\n");
+            printf("**************************************%s*",undl);
+            printf("********\n\n");
+            strcpy(pipe_msg,"INFO: Finished loading and checking load file ");
+            strcat(pipe_msg,lfile);
+            write_pipe(NULL,pipe_msg);
+
+            fprintf(efp,"\n\nINFO: Finished loading : %s STR-8503\n",lfile);
+            fprintf(efp,"**********************************%s\n\n",undl);
+        }
+        else
+        {
+            printf("\nINFO: Premature Termination during Load of : %s ",lfile);
+            printf("STR-8503\n");
+            printf("*********************************************%s*",undl);
+            printf("********\n\n");
+            strcpy(pipe_msg,"INFO: Premature Termination during Load of ");
+            strcat(pipe_msg,lfile);
+            write_pipe(NULL,pipe_msg);
+
+            fprintf(efp,"\n\nINFO: Premature Termination during Load of :");
+            fprintf(efp," %s STR-8503\n",lfile);
+            fprintf(efp,"*********************************************");
+            fprintf(efp,"%s\n\n",undl);
+        }
+        fclose(lfp);
+        fclose(efp);
+        fclose(dfp);
+    }
+
+    /************************************************************/
+    /* Disconnect from Oracle                                   */
+    /************************************************************/
+
+   jobend(EXJobId,0,"");
+   EXEC SQL COMMIT WORK;
+   dblogoff();
+   write_pipe(NULL,"INFO: Module Completed Successfully");
+} /* end brace main */
+/*************************************************************/
+/* Function : prorecs                                        */
+/*                                                           */
+/* Purpose  : Process structure records                      */
+/*                       - check valid format                */
+/*                       - check entity integrity            */
+/*                         (ie. is number in use)            */
+/*                       - if OK load structure              */
+/*                       otherwise                           */
+/*                       - write to discard file             */
+/*************************************************************/
+
+BOOLEAN prorecs()
+{
+  char str[200];
+  char temp[100];
+
+  /************************************************************/
+  /*           Load STR_ITEM_TYPES into memory                */
+  /************************************************************/
+
+  EXEC SQL
+  SELECT SIT_ID
+        ,SIT_LEVEL
+    INTO :dsit_id
+        ,:dsit_level
+    FROM STR_ITEM_TYPES
+       ;
+
+  oraerror("prorecs #1");
+
+  if (EXDebug)
+    puts("prorecs");
+
+  sit_table_size=sqlca.sqlerrd[2];
+
+  if (EXDebug)
+     printf("prorecs - %d entries in sit_table\n",sit_table_size); 
+
+  /************************************************************/
+  /* Set insert array counters                                */
+  /************************************************************/
+
+  array_count = 0;
+  array_count2 = 0;
+  tot_recs_input = 0;
+  tot_recs_rejected = 0;
+  tot_structures = 0;
+  tot_added= 0;
+  temp_structures = 0;
+  temp_added= 0;
+  file_status= 0;
+  main_status= 0;
+  struct_status= 0;
+  road_status= 0;
+  batch_count= 0;
+  batch_status = 0;
+  error_display= 0;
+  parent_fail= 0;
+  /************************************************************/
+  /* Process each line in the file                            */
+  /************************************************************/
+  read_record(str);
+  if (EXDebug)
+    printf("Rec: %s\n",str);
+
+  while SOME_RECORD
+    {
+
+    if(INVALID_PARENT && (record_type != 1))
+      {
+      record_type=0;
+      }
+    switch(record_type)
+      {
+      case 1:
+              if(struct_status == STRUCT_ASSEMBLED)
+                {
+                write_struct();
+                }
+              current_level = 1;
+              process_type_1_record(str);
+              read_record(str);
+              break;
+      case 2:
+              if(current_level == 1)
+                {
+                process_type_2_record(str);
+                read_record(str);
+                }
+              else
+                {
+                reject_record();
+                read_record(str);
+                }
+              break;
+      case 3:
+              if(current_level == 1)
+                {
+                process_type_3_record(str);
+                read_record(str);
+                }
+              else
+                {
+                reject_record();
+                read_record(str);
+                }
+              break;
+      case 4:
+              if(current_level == 1)
+                {
+                process_type_4_record(str);
+                read_record(str);
+                }
+              else
+                {
+                reject_record();
+                read_record(str);
+                }
+              break;
+      case 5:
+              if(struct_status == STRUCT_ASSEMBLED)
+                {
+                write_struct();
+                }
+              if(current_level == level_in_record)
+                {
+                process_type_5_record(str);
+                read_record(str);
+                }
+              else
+                {
+                if((level_in_record < current_level)&&(level_in_record > 1))
+                  {
+                  current_level = level_in_record;
+                  process_type_5_record(str);
+                  read_record(str);
+                  }
+                else
+                  {
+                  if(level_in_record - current_level > 1)
+                    {
+                    reject_record();
+                    read_record(str);
+                    }
+                  else
+                    {
+                    current_level=level_in_record;
+                    process_type_5_record(str);
+                    read_record(str);
+                    }
+                  }
+                }
+              break;
+      case 7:
+              if(current_level == level_in_record)
+                {
+                process_type_7_record(str);
+                read_record(str);
+                }
+              else
+                {
+                reject_record();
+                read_record(str);
+                }
+              break;
+      case 0:
+              read_record(str);
+              break;
+     default:
+              reject_record();
+              read_record(str);
+              break;
+      }
+    }
+
+  /* printf("\n----d  %s %s",91,"prorecs","loop finished"); */
+
+  batchpoint();
+
+  /* printf("\n----d done \n\n",92); */
+  /************************************************************/
+  /* Display a load summary                                   */
+  /************************************************************/
+  printf("\n\nLoad Summary  -  total records read : %d\n",tot_recs_input);
+  printf("             total records rejected : %d\n",tot_recs_rejected);
+  printf("                 structures created : %d\n",tot_structures);
+  printf("        rows added to STR_ITEMS_ALL : %d\n",tot_added);
+
+  fprintf(efp,"\n\nLoad Summary  -  total records read : %d\n",tot_recs_input);
+  fprintf(efp,"             total records rejected : %d\n",tot_recs_rejected);
+  fprintf(efp,"                 structures created : %d\n",tot_structures);
+  fprintf(efp,"        rows added to STR_ITEMS_ALL : %d\n",tot_added);
+
+  write_pipe(NULL,"Load Summary :");
+  strcpy(pipe_msg,"Total Records Read           : ");
+  i_toa(tot_recs_input,temp);
+  strcat(pipe_msg,temp);
+  write_pipe(NULL,pipe_msg);
+  strcpy(pipe_msg,"Total Records Rejected       : ");
+  i_toa(tot_recs_rejected,temp);
+  strcat(pipe_msg,temp);
+  write_pipe(NULL,pipe_msg);
+  strcpy(pipe_msg,"Structures Created           : ");
+  i_toa(tot_structures,temp);
+  strcat(pipe_msg,temp);
+  write_pipe(NULL,pipe_msg);
+  strcpy(pipe_msg,"Rows added to STR_ITEMS_ALL  : ");
+  i_toa(tot_added,temp);
+  strcat(pipe_msg,temp);
+  write_pipe(NULL,pipe_msg);
+
+  return(TRUE);
+
+} /* end brace prorecs */
+
+/************************************************************/
+/* Function : process_type_1_record                         */
+/*                                                          */
+/* Purpose  : create a new Structure                        */
+/*                       - check valid format               */
+/*                       - set up appropriate variable      */
+/************************************************************/
+
+void process_type_1_record(str)
+char *str;
+{
+
+
+  master_level=current_level;
+  array_count=0;
+  array_count2=0;
+  display_seq=0;
+  strcpy(dstr_local_ref.arr,args[1]);
+  dstr_local_ref.len = strlen(args[1]);
+  dstr_local_ref.arr[dstr_local_ref.len]='\0';
+  strcpy(dstr_unit_code.arr,args[3]);
+  if (EXDebug)
+    printf("Admin Unit Code Value : %s\n",dstr_unit_code.arr);
+  dstr_unit_code.len = strlen(args[3]);
+  dstr_unit_code.arr[dstr_unit_code.len]='\0';
+  dstr_sic_id=atoi(args[4]);
+
+  road_status=0;
+  batch_count++;
+}
+
+/************************************************************/
+/* Function : process_type_2_record                         */
+/*                                                          */
+/* Purpose  : add more fields to new Structure              */
+/*                       - check valid format               */
+/*                       - set up appropriate variable      */
+/************************************************************/
+
+void process_type_2_record(str)
+char *str;
+{
+
+
+  drin_seq=atoi(args[3]);
+  strcpy(drin_section.arr,args[4]);
+  drin_section.len = strlen(args[4]);
+  drin_section.arr[drin_section.len]='\0';
+  drin_st_chain=atof(args[5]);
+  drin_end_chain=atof(args[6]);
+  strcpy(drin_primary.arr,args[7]);
+  drin_primary.len = strlen(args[7]);
+  drin_primary.arr[drin_primary.len]='\0';
+
+  strcpy(drin_location.arr,args[8]);
+  drin_location.len = strlen(args[8]);
+  drin_location.arr[drin_location.len]='\0';
+
+  dstr_st_east=atoi(args[9]);
+  dstr_end_east=atoi(args[10]);
+  dstr_st_north=atoi(args[11]);
+  dstr_end_north=atoi(args[12]);
+
+  batch_count++;
+}
+
+/************************************************************/
+/* Function : process_type_3_record                         */
+/*                                                          */
+/* Purpose  : setup road intersections                      */
+/*                       - check valid format               */
+/*                       - set up appropriate variable      */
+/************************************************************/
+
+void process_type_3_record(str)
+char *str;
+{
+
+
+  strcpy(dstr_route_ref.arr,args[3]);
+  dstr_route_ref.len = strlen(args[3]);
+  dstr_route_ref.arr[dstr_route_ref.len]='\0';
+
+  strncpy(dstr_inspect_ref.arr,args[4],5);
+  dstr_inspect_ref.len = strlen(args[4]) >5 ? 5 : strlen(args[4]);
+  dstr_inspect_ref.arr[dstr_inspect_ref.len]='\0';
+
+  strcpy(dstr_sys_flag.arr,args[5]);
+  dstr_sys_flag.len = strlen(args[5]);
+  dstr_sys_flag.arr[dstr_sys_flag.len]='\0';
+
+  road_status=1;
+  batch_count++;
+}
+
+/************************************************************/
+/* Function : process_type_4_record                         */
+/*                                                          */
+/* Purpose  : add more fields to new Structure              */
+/*                       - check valid format               */
+/*                       - set up appropriate variable      */
+/************************************************************/
+
+void process_type_4_record(str)
+char *str;
+{
+
+  strcpy(dstr_descr.arr,args[3]);
+  dstr_descr.len = strlen(args[3]);
+  dstr_descr.arr[dstr_descr.len]='\0';
+
+  istr_descr = (dstr_descr.len == 0) ? -1 : 0 ;
+
+  batch_count++;
+}
+
+/************************************************************/
+/* Function : process_type_5_record                         */
+/*                                                          */
+/* Purpose  : create a new Sub Structure                    */
+/*                       - check valid format               */
+/*                       - set up appropriate variable      */
+/************************************************************/
+
+void process_type_5_record(str)
+char *str;
+{
+
+  master_level=current_level;
+  strcpy(dstr_sit_id.arr,args[3]);
+  dstr_sit_id.len = strlen(args[3]);
+  dstr_sit_id.arr[dstr_sit_id.len]='\0';
+
+  strcpy(dstr_start_date.arr,args[4]);
+  dstr_start_date.len = strlen(args[4]);
+  dstr_start_date.arr[dstr_start_date.len]='\0';
+  istr_start_date = (dstr_start_date.len == 0) ? -1 : 0 ;
+
+  strcpy(dstr_end_date.arr,args[5]);
+  dstr_end_date.len = strlen(args[5]);
+  dstr_end_date.arr[dstr_end_date.len]='\0';
+  istr_end_date = (dstr_end_date.len == 0) ? -1 : 0 ;
+
+  strcpy(dstr_name.arr,args[6]);
+  dstr_name.len = strlen(args[6]);
+  dstr_name.arr[dstr_name.len]='\0';
+
+  dstr_seq= ++display_seq;
+
+  if(master_level == 1)
+    {
+    main_status= MAIN_STRUCT_CREATED;
+    struct_status= STRUCT_ASSEMBLED;
+    }
+  else
+    {
+    if(main_status == MAIN_STRUCT_CREATED)
+      {
+      struct_status = STRUCT_ASSEMBLED;
+      }
+    else
+      {
+      reject_record();
+      read_record(str);
+      }
+    }
+  batch_count++;
+
+  EXEC SQL SELECT SAV_SAT_ID, SAV_OCCURENCE
+           INTO   :dsav_sat_id, :dsav_occurence
+           FROM   STR_ATTR_VALID
+           WHERE  SAV_SIT_ID = :dstr_sit_id;
+
+  if (sqlca.sqlerrd[2] > 999)
+    {
+    write_pipe(NULL,"Not Enough room to hold STR_ITEM_VALID  STR8025");
+    printf("Not enough room to hold STR_ITEM_VALID STR-8025");
+    fprintf(efp,"Not enough room to hold STR_ITEM_VALID STR-8025");
+    EXEC SQL ROLLBACK WORK;
+    jobend(EXJobId,1,GBErrMsg);
+    EXEC SQL COMMIT WORK;
+    dblogoff();
+    exit(1);
+    }
+  else
+    {
+    sav_table_size=sqlca.sqlerrd[2];
+    }
+
+  oraerror("proces_type_5_record #1");
+}
+
+/************************************************************/
+/* Function : process_type_7_record                         */
+/*                                                          */
+/* Purpose  : add variable attribute to new Structure       */
+/*                       - check valid format               */
+/*                       - set up appropriate variable      */
+/************************************************************/
+
+void process_type_7_record(str)
+char *str;
+{
+  char *attr_data;
+  int ix;
+
+  if (EXDebug)
+    printf("process_type_7_record: %s\n",str);
+
+  for (ix=3; ix<argsc; ix++)
+    {
+    attr_data = strchr(args[ix],'=');
+    *attr_data++ = '\0';
+
+    strcpy(dsia_sat_id[array_count].arr,args[ix]);
+    dsia_sat_id[array_count].len = strlen(args[ix]);
+    dsia_sat_id[array_count].arr[dsia_sat_id[array_count].len]='\0';
+    isia_sat_id[array_count] = (dsia_sat_id[array_count].len == 0) ? -1:0 ;
+
+    strcpy(dsia_value[array_count].arr,attr_data);
+    dsia_value[array_count].len = strlen(attr_data);
+    dsia_value[array_count].arr[dsia_value[array_count].len]='\0';
+    isia_value[array_count] = (dsia_value[array_count].len == 0) ? -1 : 0 ;
+
+    if (EXDebug)
+    { printf("Sat : %s\n",dsia_sat_id[array_count].arr);
+      printf("Val : %s\n",dsia_value[array_count].arr);
+    }
+    array_count++;
+   }
+  batch_count++;
+}
+
+/************************************************************/
+/* Function : reject_record                                 */
+/*                                                          */
+/* Purpose  : Write the record out to the reject file       */
+/************************************************************/
+
+void reject_record()
+{
+
+  if ( ! ERROR_DISPLAYED )
+    {
+    fprintf(efp,"\n\n%s\n%s",
+    origstr,
+    "Error: Level mismatch STR-8010");
+    write_pipe(NULL,origstr);
+    write_pipe(NULL,"Error: Level mismatch STR-8010");
+    }
+  batch_status=RECORDS_REJECTED;
+  batch_count++;
+}
+
+/************************************************************/
+/* Function : read_record                                   */
+/*                                                          */
+/* Purpose  : Read next input record                        */
+/*                       - check valid format               */
+/*                       - set up appropriate variable      */
+/************************************************************/
+
+void read_record(str)
+char *str;
+{
+  char *j;
+  error_display=0;
+  /*str=(char*)malloc(1000);*/
+
+  if(fgets(str,199,lfp) == NULL)
+    {
+    file_status = FALSE;
+    }
+  else
+    {
+    if((str[0] == '0' && str[1] == '1' && batch_count > 0)
+       ||(str[0] == '1' && str[1] == ',' && batch_count > 0))
+      {
+      batchpoint();
+      }
+    file_status = TRUE;
+    strcpy(origstr,str);
+    if((recstore[batch_count]=(char *)malloc(strlen(str)+1)) == 0)
+      {
+      EXEC SQL ROLLBACK WORK;
+      jobend(EXJobId,1,GBErrMsg);
+      EXEC SQL COMMIT WORK;
+      dblogoff();
+      exit(1);
+      }
+    strcpy(recstore[batch_count],str);
+
+    if(strlen(str) != 0)
+      {
+      /************************************************************/
+      /* Remove space padding at end of string                    */
+      /************************************************************/
+      for(j = (str + strlen(str) - 1) ; isspace(*j) ; *j-- = '\0');
+
+      /************************************************************/
+      /* Do Not process blank lines, comments or multiple road    */
+      /* intersection records. These should all be discarded.     */
+      /************************************************************/
+      if((str[0] == '\0')||(str[0] == '#')||((str[0] == '3')&&(road_status == 1)))
+        {
+        record_type=0;
+        }
+      else
+        {
+        tot_recs_input++;
+
+        /********************************************************/
+        /* Validate the format of the Structure Data            */
+        /********************************************************/
+        if(validate_format(str) == FALSE)
+          {
+          if(record_type == 1)
+            {
+            parent_fail=1;
+            }
+          error_display=1;
+          record_type = 99;
+          }
+        else
+          {
+          if(record_type == 1)
+            {
+            parent_fail=0;
+            }
+          }
+        }
+      }
+    }
+}/* read_record */
+
+/************************************************************/
+/* Function : validate_format                               */
+/*                                                          */
+/* Purpose  : Check format of  input record                 */
+/************************************************************/
+
+BOOLEAN validate_format(str)
+char *str;
+{
+    int i;
+    int ipt;
+    int ix;
+
+    char *attr_id;
+
+    /************************************************************/
+    /* Break the string into its fields                         */
+    /************************************************************/
+    argsc = getstrs(str,args);
+
+    if (argsc < 4)
+    {
+        fprintf(efp,"\n\n%s\n%s",
+        origstr,
+        "Error: Invalid number of strings in structure load record STR-8001");
+        write_pipe(NULL,origstr);
+        write_pipe(NULL,"Error: Invalid number of strings in structure load record STR-8001");
+        return(FALSE);
+    }
+
+    /************************************************************/
+    /* Check Length and format of first field (record ID)       */
+    /************************************************************/
+
+    if ((strlen(args[0]) > 2)
+    || (strlen(args[0]) == 0))
+    {
+        fprintf(efp,"\n\n%s\n%s",
+        origstr,
+        "Error: record id format - Invalid number of characters STR-8002");
+        write_pipe(NULL,origstr);
+        write_pipe(NULL,"Error: record id format - Invalid number of characters STR-8002");
+        return(FALSE);
+    }
+
+
+    for (i=0;i < (int)strlen(args[0]);++i)
+    {
+        if ( ! isdigit(args[0][i]) )
+        {
+            fprintf(efp,"\n\n%s\n%s",
+            origstr,
+            "Error: record id format - Invalid Character STR-8004");
+            write_pipe(NULL,origstr);
+            write_pipe(NULL,"Error: record id format - Invalid Character STR-8004");
+            return(FALSE);
+        }
+
+    } /* end brace FOR */
+
+    record_type = atoi(args[0]);
+
+    /************************************************************/
+    /* Check Length and format of Second field (Local Ref)      */
+    /************************************************************/
+
+    if ((strlen(args[1]) > 30) || (strlen(args[1]) == 0))
+    {
+        fprintf(efp,"\n\n%s\n%s",
+        origstr,
+        "Error: Local Ref - Invalid number of characters STR-8005");
+        write_pipe(NULL,origstr);
+        write_pipe(NULL,"Error: Local Ref - Invalid number of characters STR-8005");
+        return(FALSE);
+    }
+
+    /************************************************************/
+    /* Check Length and format of Third field (Level)           */
+    /************************************************************/
+
+    if ((strlen(args[2]) > 6) || (strlen(args[2]) == 0))
+    {
+        fprintf(efp,"\n\n%s\n%s",
+        origstr,
+        "Error: Level format - Invalid number of characters STR-8006");
+        write_pipe(NULL,origstr);
+        write_pipe(NULL,"Error: Level format - Invalid number of characters STR-8006");
+        return(FALSE);
+    }
+
+
+    for (i=0;i < (int)strlen(args[2]);++i)
+    {
+        if (!isdigit(args[2][i]))
+        {
+            fprintf(efp,"\n\n%s\n%s",
+            origstr,
+            "Error: Level format - Invalid Character STR-8008");
+            write_pipe(NULL,origstr);
+            write_pipe(NULL,"Error: Level format - Invalid Character STR-8008");
+            return(FALSE);
+        }
+
+    } /* end brace FOR */
+
+    level_in_record=atoi(args[2]);
+
+    /************************************************************/
+    /* Check Existence of Fourth field                          */
+    /************************************************************/
+    /* printf("No of fields is %d\n",argsc); */
+    if (argsc < 4)
+    {
+        fprintf(efp,"\n\n%s\n%s",
+        origstr,
+        "Error: Data field - Not enough data fields STR-8011");
+        write_pipe(NULL,origstr);
+        write_pipe(NULL,"Error: Data field - Not enough data fields STR-8011");
+        return(FALSE);
+    }
+
+    if (record_type == 5)
+    {
+        if (found_in_table(args[3]) == 999)
+        {
+            fprintf(efp,"\n\n%s\n%s",
+            origstr,
+            "Error: sit id - Invalid entry STR-8012");
+            write_pipe(NULL,origstr);
+            write_pipe(NULL,"Error: sit id - Invalid entry STR-8012");
+            return(FALSE);
+        }
+    }
+
+    if (record_type == 1)
+    {
+        for (i=0;i < (int)strlen(args[4]);++i)
+        {
+            if (!isdigit(args[4][i]))
+            {
+                 fprintf(efp,"\n\n%s\n%s",
+                 origstr,
+                 "Error: sic id format - Invalid Character STR-8013");
+                 write_pipe(NULL,origstr);
+                 write_pipe(NULL,"Error: sic id format - Invalid Character STR-8013");
+                 return(FALSE);
+            }
+
+        } /* end brace FOR */
+
+        /* test sic_id for existence */
+        if ( ! sic_id_exists( args[4] ))
+        {
+            fprintf(efp,"\n\n%s\n%s",
+            origstr,
+            "Error: sic id does not exist             STR-8023");
+            write_pipe(NULL,origstr);
+            write_pipe(NULL,"Error: sic id does not exist             STR-8023");
+            return(FALSE);
+        }
+
+        dstr_admin_unit=admin_unit_code_exists(args[3]);
+        
+        if ( dstr_admin_unit==0)
+        {
+           fprintf(efp,"\n\n%s\n%s",
+           origstr,
+           "Error: Admin Unit Code does not exist             STR-8024");
+           write_pipe(NULL,origstr);
+           write_pipe(NULL,"Error: Admin Unit Code does not exist             STR-8024");
+           return(FALSE);
+        }
+        else
+          if (EXDebug)
+            printf("AU: %d\n",dstr_admin_unit);
+    } 
+
+    if (record_type == 2)
+    {
+	for (i=0;i < (int)strlen(args[9]);++i)
+	{
+	    if (!isdigit(args[9][i]))
+	    {
+		fprintf(efp,"\n\n%s\n%s",
+		origstr,
+		"Error: st grid east format - Invalid Character STR-8026");
+                write_pipe(NULL,origstr);
+                write_pipe(NULL,"Error: st grid east format - Invalid Character STR-8026");
+		return(FALSE);
+            }
+
+        }
+
+	for (i=0;i < (int)strlen(args[10]);++i)
+	{
+	    if (!isdigit(args[10][i]))
+	    {
+		fprintf(efp,"\n\n%s\n%s",
+		origstr,
+                "Error: end grid east format - Invalid Character STR-8026");
+                write_pipe(NULL,origstr);
+                write_pipe(NULL,"Error: end grid east format - Invalid Character STR-8026");
+		return(FALSE);
+            }
+        }
+
+	for (i=0;i < (int)strlen(args[11]);++i)
+	{
+	    if (!isdigit(args[11][i]))
+	    {
+		fprintf(efp,"\n\n%s\n%s",
+		origstr,
+                "Error: st grid north format - Invalid Character STR-8026");
+                write_pipe(NULL,origstr);
+                write_pipe(NULL,"Error: st grid north format - Invalid Character STR-8026");
+		return(FALSE);
+            }
+        }
+
+	for (i=0;i < (int)strlen(args[12]);++i)
+	{
+	    if (!isdigit(args[12][i]))
+	    {
+		fprintf(efp,"\n\n%s\n%s",
+		origstr,
+                "Error: end grid north format - Invalid Character STR-8026");
+                write_pipe(NULL,origstr);
+                write_pipe(NULL,"Error: end grid north format - Invalid Character STR-8026");
+		return(FALSE);
+            }
+        }
+
+    }
+    /************************************************************/
+    /* Check rest of data fields                                */
+    /************************************************************/
+    if (record_type == 7)
+    {
+        for (ix=3; ix<argsc; ix++)
+        {
+            attr_id = strchr(args[ix],'=');
+            if (attr_id ==0)
+            {
+                fprintf(efp,"\n\n%s\n%s",
+                origstr,
+                "Error: Data fields - Error in variable attribute STR-8014");
+                write_pipe(NULL,origstr);
+                write_pipe(NULL,"Error: Data fields - Error in variable attribute STR-8014");
+                return(FALSE);
+            }
+            else
+            {
+                *attr_id='\0';
+                
+                if ( !is_attr_unique(args[ix]) )
+                {
+                    fprintf(efp,"\n\n%s\n%s",
+                    origstr,
+                    "Error: Data fields - Repeated attribute         STR-8022");
+                    write_pipe(NULL,origstr);
+                    write_pipe(NULL,"Error: Data fields - Repeated attribute         STR-8022");
+                    return(FALSE);
+                }
+
+		if (!INVALID_PARENT)
+		{
+                    ipt=is_valid_attr(args[ix]);
+                }
+          
+                if (ipt == 0 )
+                {
+                    fprintf(efp,"\n\n%s\n%s",
+                    origstr,
+                    "Error: Data fields - Invalid variable attribute STR-8019");
+                    write_pipe(NULL,origstr);
+                    write_pipe(NULL,"Error: Data fields - Invalid variable attribute STR-8019");
+                    return(FALSE);
+                }
+
+                /* Get the sat_data_type and range-check the value, */
+                /* or test in list                                  */
+
+                if ( !valid_value ( args[ix], attr_id+1  ) )
+                {
+                    return(FALSE);
+                }
+
+                *attr_id='=';
+                psav_occurence[array_count] = ipt;
+            }
+        }
+    }
+
+    /************************************************************/
+    /* Check Record Type 2                                      */
+    /************************************************************/
+
+    if ((record_type == 2) && (argsc > 3))
+    {
+	if (argsc < 8)
+	{
+	    fprintf(efp,"\n\n%s\n%s",
+	    origstr,
+	    "Error: All Record 2 Network parameters are mandatory");
+            write_pipe(NULL,origstr);
+            write_pipe(NULL,"Error: All Record 2 Network parameters are mandatory");
+	    return(FALSE);
+        }
+
+	/* test road_id for existence */
+	if ( ! road_id_exists(args[4]))
+	{
+	    fprintf(efp,"\n\n%s\n%s",
+	    origstr,
+	    "Error: Road Id does not exist  STR-8023");
+            write_pipe(NULL,origstr);
+            write_pipe(NULL,"Error: Road Id does not exist  STR-8023");
+	    return(FALSE);
+        }
+
+	for (i=0;i < (int)strlen(args[5]);++i)
+	{
+	    if ((!isdigit(args[5][i])) && (args[5][i]!='.'))
+	    {
+	       fprintf(efp,"\n\n%s\n%s",
+	       origstr,
+	       "Error: St Chain format - Invalid Character STR-8013");
+               write_pipe(NULL,origstr);
+               write_pipe(NULL,"Error: St Chain format - Invalid Character STR-8013");
+	       return(FALSE);
+	    }
+	} /* end brace FOR */
+
+	for (i=0;i < (int)strlen(args[6]);++i)
+        {
+	    if ((!isdigit(args[6][i])) && (args[6][i]!='.'))
+	    {
+		fprintf(efp,"\n\n%s\n%s",
+		origstr,
+		"Error: End Chain format - Invalid Character STR-8013");
+                write_pipe(NULL,origstr);
+                write_pipe(NULL,"Error: End Chain format - Invalid Character STR-8013");
+		return(FALSE);
+	    }
+        }
+    }
+
+    /************************************************************/
+    /* Check date fields                                        */
+    /************************************************************/
+
+    if ((record_type == 5) && (argsc > 3))
+    {
+        if ((strlen(args[4]) != 0) && (!valid_date(args[4])))
+        {
+            fprintf(efp,"\n\n%s\n%s",
+            origstr,
+            "Error: Start Date - Not DD-MON-YYYY Format STR-8017");
+            write_pipe(NULL,origstr);
+            write_pipe(NULL,"Error: Start Date - Not DD-MON-YYYY Format STR-8017");
+            return(FALSE);
+        }
+        if (argsc > 4)
+        {
+            if (strlen(args[5]) != 0)
+            {
+                if (valid_date(args[5]))
+                {
+                    /* End date specified and valid - test if > start date */
+                    if (!valid_end_date( args[4], args[5] ))
+                    {
+                        fprintf(efp,"\n\n%s\n%s",
+                        origstr,
+                    "Error: End Date must be greater than start date STR-8020");
+                        write_pipe(NULL,origstr);
+                        write_pipe(NULL,"Error: End Date must be greater than start date STR-8020");
+                        return(FALSE);
+                    }
+                }
+                else
+                {
+                    fprintf(efp,"\n\n%s\n%s",
+                    origstr,
+                    "Error: End Date - Not DD-MON-YYYY Format STR-8018");
+                    write_pipe(NULL,origstr);
+                    write_pipe(NULL,"Error: End Date - Not DD-MON-YYYY Format STR-8018");
+                    return(FALSE);
+                }
+            }
+        }
+    }
+
+    return(TRUE);
+
+}
+
+/************************************************************/
+/* function :  getstrs                                      */
+/*                                                          */
+/* Purpose  : break a string into arguments based on        */
+/*  comma delimiter.                                        */
+/*                                                          */
+/* Returns  : no of strings found                           */
+/*                                                          */
+/* Input    : line                                          */
+/*                                                          */
+/* Output   : args - array of char pointers to line         */
+/*                                                          */
+/* Effects  : truncates line by inserting a 0 at pos of     */
+/*   every comma character.                                 */
+/************************************************************/
+
+int getstrs( line, args )
+char *line,*args[];
+{
+  int noargs=0,i;
+  char *here, *last;
+
+  count++;
+  while(line!= NULL && *line != '\0')
+    {
+    args[noargs++]=line;
+    line=strchr(line,',');
+    if(line != NULL)
+      {
+      *line++ = '\0';
+      }
+    }
+  for(i=0;i<noargs;i++) /* take off trailing spaces */
+    {
+    for(here=args[i], here+=strlen(here)-1 ; *here == ' ' ; *here-- = '\0');
+    for(here=args[i] ; *here == ' ' ; here++) args[i] = here + 1;
+    here=args[i];
+    last=here+strlen(here)-1;
+    if((*here == '"')&&(*last == '"')&&(last>here))
+      {
+      *last='\0';
+      args[i]= ++here;
+      }
+    }
+
+  return(noargs);
+}
+
+/************************************************************/
+/* function :  found_in_table                               */
+/************************************************************/
+
+int found_in_table(srch_string)
+char *srch_string;
+{
+    int sitx;
+
+    if (EXDebug)
+      printf("found_in_table %s\n",srch_string);
+
+    for (sitx=0; sitx<sit_table_size; sitx++)
+    {
+        if ( strcmp(srch_string,dsit_id[sitx].arr) == 0 )
+        {
+            return(sitx);
+        }
+    }
+
+    return(999);
+}
+
+/************************************************************/
+/* function :  sic_id_exists                                */
+/************************************************************/
+
+BOOLEAN sic_id_exists(srch_string)
+char *srch_string;
+{
+
+    if (EXDebug)
+      printf("sic_id_exists : %s\n",srch_string);
+
+    idummy = atoi( srch_string );
+
+    EXEC SQL SELECT SIC_ID
+             INTO   :idummy
+             FROM   str_insp_cycles
+             where  sic_id = :idummy ;
+
+    oraerror("sic_id_exists");
+
+    if ( sqlca.sqlcode == 1403 )
+    {
+        return(FALSE);
+    }
+    else
+    {
+        return(TRUE);
+    }
+}
+
+/************************************************************/
+/* function :  admin_unit_exists                            */
+/************************************************************/
+
+BOOLEAN admin_unit_exists(srch_string)
+char *srch_string;
+{
+
+    if (EXDebug)
+      printf("admin_unit_exists : %s\n",srch_string);
+
+    idummy = atoi(srch_string);
+
+    EXEC SQL SELECT hau_admin_unit
+             INTO   :idummy
+             FROM   hig_admin_units
+             where  hau_admin_unit = :idummy;
+
+    oraerror("admin_unit_exists");
+
+    if ( sqlca.sqlcode == 1403 )
+    {
+        return(FALSE);
+    }
+    else
+    {
+        return(TRUE);
+    }
+}
+
+
+/************************************************************/
+/* function :  admin_unit_code_exists                       */
+/************************************************************/
+
+int admin_unit_code_exists(srch_string)
+char *srch_string;
+{
+	int idummy=0; 
+
+    EXEC SQL SELECT hau_admin_unit
+             INTO   :idummy
+             FROM   hig_admin_units
+             where  hau_unit_code = :srch_string;
+
+    oraerror("admin_unit_code_exists");
+
+    if (EXDebug)
+      printf("admin_unit_code_exists : %s\n",srch_string);
+
+    if ( sqlca.sqlcode == 1403 )
+    {
+        return(0);
+    }
+    else
+    {
+        return(idummy);
+    }
+}
+
+/************************************************************/
+/* function :  road_id_exists                               */
+/************************************************************/
+
+BOOLEAN road_id_exists(srch_string)
+char *srch_string;
+{
+
+    if (EXDebug)
+      printf("Road Id is %s\n",srch_string);
+
+    if (EXDebug)
+    {
+       strcpy(pipe_msg,"Road Id is ");
+       strcat(pipe_msg,srch_string);
+       write_pipe(NULL,pipe_msg);
+    }
+
+    strcpy(dummy.arr,srch_string);
+    dummy.len = strlen(srch_string);
+    dummy.arr[dummy.len]='\0';
+
+
+    EXEC SQL SELECT RSE_HE_ID
+    INTO   :drin_rse_he_id
+    FROM   ROAD_SEGS
+    where  RSE_UNIQUE = :dummy;
+
+    oraerror("road_id_exists");
+
+    if ( sqlca.sqlcode == 1403 )
+    {
+        return(FALSE);
+    }
+    else
+    {
+        return(TRUE);
+    }
+}
+
+/************************************************************/
+/* function :  is_attr_unique                               */
+/************************************************************/
+
+BOOLEAN is_attr_unique(srch_string)
+char *srch_string;
+{
+    int savx;
+
+    for (savx=0; savx<array_count; savx++)
+    {
+        if ( strcmp(srch_string,dsia_sat_id[savx].arr) == 0 )
+        {
+            return(FALSE);
+        }
+    }
+
+    return(TRUE);
+}
+
+/************************************************************/
+/* function :  is_valid_attr                                */
+/************************************************************/
+
+int is_valid_attr(srch_string)
+char *srch_string;
+{
+    int savx=0;
+    for (savx=0; savx<sav_table_size; savx++)
+    {
+        if ( strcmp(srch_string,dsav_sat_id[savx].arr) == 0 )
+        {
+            return(dsav_occurence[savx]);
+        }
+    }
+    return(savx);
+}
+
+/************************************************************/
+/* function :  valid_value                                  */
+/************************************************************/
+
+BOOLEAN valid_value(sat_id, sia_value)
+char *sat_id, *sia_value;
+{
+    int i, dot_found;
+
+    strcpy( dsat_id.arr, sat_id);
+    dsat_id.len = strlen(sat_id);
+    dsat_id.arr[dsat_id.len]='\0';
+
+
+    strcpy( dtmp_value.arr, sia_value );
+    dtmp_value.len = strlen(sia_value);
+    dtmp_value.arr[dtmp_value.len]='\0';
+
+
+    EXEC SQL SELECT sat_sad_id,
+                    sat_data_type,
+                    sat_min,
+                    sat_max,
+                    sat_dec_places,
+                    sat_length
+             INTO   :dsat_sad_id:sadind,
+                    :dsat_data_type,
+                    :dsat_min:minind,
+                    :dsat_max:maxind,
+                    :dsat_dec_places:decind,
+                    :dsat_length:lenind
+             FROM   str_attr_types
+             WHERE  sat_id = :dsat_id;
+
+    if (sadind == -1)
+       dsat_sad_id.arr[0]='\0';
+    if (minind == -1)
+       dsat_min.arr[0]='\0';
+    if (maxind == -1)
+       dsat_max.arr[0]='\0';
+    if (decind == -1)
+       dsat_dec_places.arr[0]='\0';
+    if (lenind == -1)
+       dsat_length.arr[0]='\0';
+
+
+    oraerror("valid_value #1");
+
+    if ( sqlca.sqlcode == 1403 )
+    {
+        fprintf(efp,"\n\n%s\n%s",
+        origstr,
+        "Error: No attribute type found STR-0028");
+        write_pipe(NULL,origstr);
+        write_pipe(NULL,"Error: No attribute type found STR-0028");
+        return(FALSE);
+    }
+
+
+    NULL_TERM( dsat_sad_id );
+    NULL_TERM( dsat_data_type );
+    NULL_TERM( dsat_min );
+    NULL_TERM( dsat_max );
+    NULL_TERM( dsat_dec_places );
+    NULL_TERM( dsat_length );
+
+    if ( strcmp(dsat_data_type.arr, "CHAR" ) ==  0 )
+    {
+        if ( dsat_length.len > 0 )
+        {
+            if((int)strlen(dtmp_value.arr) > atoi(dsat_length.arr))
+            {
+                fprintf(efp,"\n\n%s\n%s", origstr,
+                "Error: Length exceeds valid length   STR-0014");
+                write_pipe(NULL,origstr);
+                write_pipe(NULL,"Error: Length exceeds valid length   STR-0014");
+                return(FALSE);
+            }
+        }
+        /* else
+        {
+            return(TRUE);
+
+        }
+        */
+       return(TRUE);
+    }
+    else
+    {
+        if ( strcmp( dsat_data_type.arr, "INT" ) == 0  )
+        {
+            for (i=0;i < dtmp_value.len ;++i)
+            {
+                if (!isdigit(dtmp_value.arr[i]))
+                {
+                    fprintf(efp,
+                           "\n\n%s\n%s",
+                           origstr, "Error: Invalid Number   STR-0016");
+                    write_pipe(NULL,origstr);
+                    write_pipe(NULL,"Error: Invalid Number   STR-0016");
+                    return(FALSE);
+                }
+            } /* end brace FOR */
+            if ( dsat_min.len > 0 )
+            {
+                if ( atoi( dsat_min.arr ) > atoi( dtmp_value.arr ) )
+                {
+                    fprintf(efp,"\n\n%s\n%s",
+                            origstr,
+                            "Error: Attribute value not in range  STR-0015");
+                    write_pipe(NULL,origstr);
+                    write_pipe(NULL,"Error: Attribute value not in range  STR-0015");
+                    return(FALSE);
+                }
+            }
+
+            if ( dsat_max.len > 0 )
+            {
+                if ( atoi( dsat_max.arr ) < atoi( dtmp_value.arr ) )
+                {
+                    fprintf(efp,"\n\n%s\n%s",
+                    origstr,
+                    "Error: Attribute value not in range  STR-0015");
+                    write_pipe(NULL,origstr);
+                    write_pipe(NULL,"Error: Attribute value not in range  STR-0015");
+                    return(FALSE);
+                }
+            }
+
+            return(TRUE);
+        }
+        else
+        {
+            if ( strcmp( dsat_data_type.arr, "NUM" ) == 0  )
+            {
+                dot_found = 0;
+                for (i=0;i < dtmp_value.len ;++i)
+                {
+                    if (!isdigit(dtmp_value.arr[i]))
+                    {
+                        if ( dtmp_value.arr[i] == '.' )
+                        {
+                            if ( dot_found )
+                            {
+                                fprintf(efp,"\n\n%s\n%s",
+                                origstr,
+                                "Error: Invalid Number   STR-0016");
+                                write_pipe(NULL,origstr);
+                                write_pipe(NULL,"Error: Invalid Number   STR-0016");
+                                return(FALSE);
+                            }
+                            else
+                            {
+                                dot_found = 1;
+                            }
+                        }
+                        else
+                        {
+                            fprintf(efp,"\n\n%s\n%s",
+                                    origstr,
+                                    "Error: Invalid Number   STR-0016");
+                            write_pipe(NULL,origstr);
+                            write_pipe(NULL,"Error: Invalid Number   STR-0016");
+                            return(FALSE);
+                        }
+                    }
+                } /* end brace FOR */
+
+                if ( dsat_min.len > 0 )
+                {
+                    if ( atof( dsat_min.arr ) > atof( dtmp_value.arr ) )
+                    {
+                        fprintf(efp,"\n\n%s\n%s",
+                                origstr,
+                        "Error: Attribute value not in range  STR-0015");
+                        write_pipe(NULL,origstr);
+                        write_pipe(NULL,"Error: Attribute value not in range  STR-0015");
+                        return(FALSE);
+                    }
+                }
+
+                if ( dsat_max.len > 0 )
+                {
+                    if ( atof( dsat_max.arr ) < atof( dtmp_value.arr ) )
+                    {
+                        fprintf(efp,"\n\n%s\n%s",
+                                origstr,
+                        "Error: Attribute value not in range  STR-0015");
+                        write_pipe(NULL,origstr);
+                        write_pipe(NULL,"Error: Attribute value not in range  STR-0015");
+                        return(FALSE);
+                    }
+                }
+                return(TRUE);
+            }
+            else
+            {
+                if ( strcmp( dsat_data_type.arr, "LIST") == 0 )
+                {
+                    EXEC SQL SELECT 'EXISTS'
+                             INTO   :dummy
+                             FROM   STR_ATTR_LOOKUP
+                             WHERE  SAL_SAD_ID = :dsat_sad_id
+                             AND    SAL_VALUE  = :dtmp_value;
+
+                    oraerror("valid_value #2");
+
+                    if ( sqlca.sqlcode == 1403 )
+                    {
+                        fprintf(efp,"\n\n%s\n%s",
+                                origstr,
+                                "Error: Entered value is not valid STR-0019");
+                        write_pipe(NULL,origstr);
+                        write_pipe(NULL,"Error: Entered value is not valid STR-0019");
+                        return(FALSE);
+                    }
+                    else
+                    {
+                        return(TRUE);
+                    }
+                }
+                else
+                {
+                    if (( strcmp( dsat_data_type.arr, "DATE") == 0 ) ||
+                        ( strcmp( dsat_data_type.arr, "DATL") == 0 ) )
+                    {
+                        if ( valid_date( dtmp_value.arr ) )
+                        {
+                            return(TRUE);
+                        }
+                        else
+                        {
+                            fprintf(efp,"\n\n%s\n%s",
+                                    origstr,
+                                    "Error: Invalid date STR-0018");
+                            write_pipe(NULL,origstr);
+                            write_pipe(NULL,"Error: Invalid date STR-0018");
+                            return(FALSE);
+                        }
+                    }
+                    return(TRUE);
+                }
+            }
+        }
+    }
+}    /* end of valid_value */
+
+/************************************************************/
+/* function :  batchpoint                                   */
+/*                                                          */
+/* purpose  :  start of new batch of records (end of batch).*/
+/*                                                          */
+/************************************************************/
+
+void batchpoint()
+{
+  int ix;
+
+  if(batch_status == RECORDS_REJECTED)
+    {
+    rollback();
+    for(ix=0; ix<batch_count; ix++)
+      {
+      fputs(recstore[ix],dfp);
+      free(recstore[ix]);
+      }
+    tot_recs_rejected += batch_count;
+    }
+  else
+    {
+    if(struct_status == STRUCT_ASSEMBLED)
+      {
+      write_struct();
+      }
+    if(main_status == MAIN_STRUCT_CREATED)
+      {
+      commit();
+      tot_structures += temp_structures;
+      tot_added      += temp_added;
+      }
+    for(ix=0; ix<batch_count; ix++)
+      {
+      free(recstore[ix]);
+      }
+    }
+  batch_status = 0;
+  batch_count  = 0;
+  struct_status= 0;
+  road_status  = 0;
+  main_status  = 0;
+  temp_structures=0;
+  temp_added   = 0;
+}
+
+/************************************************************/
+/* function :  write_struct                                 */
+/*                                                          */
+/* purpose  :  inserts structure data into str_item_att.    */
+/*                                                          */
+/************************************************************/
+
+BOOLEAN write_struct()
+{
+   int ix;
+
+   EXEC SQL select STR_ID_SEQ.NEXTVAL
+            into   :struct_id
+            from   DUAL;
+
+   oraerror("write_struct #1");
+
+   dstr_id=struct_id;
+   if (master_level == 1)
+   {
+       dstr_parent_id=0;
+       dstr_top_id=struct_id;
+       dstr_top_save=struct_id;
+       dstr_sic_save=dstr_sic_id;
+   }
+   else
+   {
+       dstr_sic_id=dstr_sic_save;
+       dstr_top_id=dstr_top_save;
+       dstr_parent_id=structure_id[master_level - 1];
+     /*  strcpy(dstr_local_ref.arr,'\0');
+       strcpy(dstr_route_ref.arr,'\0');
+       strcpy(dstr_inspect_ref.arr,'\0');
+       strcpy(dstr_sys_flag.arr,'\0'); */
+   }
+
+
+   if (EXDebug)
+   {
+     printf("\n\nAbout to Insert the following data into STR_ITEMS_ALL\n");
+     printf("=====================================================\n");
+     printf("struct_id            = [%d]\n",struct_id);
+     printf("dstr_parent_id       = [%d]\n",dstr_parent_id);
+     printf("dstr_seq             = [%d]\n",dstr_seq);
+     printf("dstr_top_id          = [%d]\n",dstr_top_id);
+     printf("dstr_sit_id.arr      = [%s]\n",dstr_sit_id.arr);
+     printf("dstr_sit_id.len      = [%u]\n",dstr_sit_id.len);
+     printf("dstr_sic_id          = [%d]\n",dstr_sic_id);
+     printf("dstr_start_date.arr  = [%s]\n",dstr_start_date.arr);
+     printf("dstr_start_date.len  = [%u]\n",dstr_start_date.len);
+     printf("dstr_end_date.arr    = [%s]\n",dstr_end_date.arr);
+     printf("dstr_end_date.len    = [%u]\n",dstr_end_date.len);
+     printf("dstr_local_ref.arr   = [%s]\n",dstr_local_ref.arr);
+     printf("dstr_local_ref.len   = [%u]\n",dstr_local_ref.len);
+     printf("dstr_name.arr        = [%s]\n",dstr_name.arr);
+     printf("dstr_name.len        = [%u]\n",dstr_name.len);
+     printf("dstr_descr.arr       = [%s]\n",dstr_descr.arr);
+     printf("dstr_descr.len       = [%u]\n",dstr_descr.len);
+     printf("dstr_route_ref.arr   = [%s]\n",dstr_route_ref.arr);
+     printf("dstr_route_ref.len   = [%u]\n",dstr_route_ref.len);
+     printf("dstr_inspect_ref.arr = [%s]\n",dstr_inspect_ref.arr);
+     printf("dstr_inspect_ref.len = [%u]\n",dstr_inspect_ref.len);
+     printf("dstr_sys_flag.arr    = [%s]\n",dstr_sys_flag.arr);
+     printf("dstr_sys_flag.len    = [%u]\n",dstr_sys_flag.len);
+     printf("dstr_admin_unit      = [%d]\n",dstr_admin_unit);
+     printf("dstr_st_east         = [%d]\n",dstr_st_east);
+     printf("dstr_end_east        = [%d]\n",dstr_end_east);
+     printf("dstr_st_north        = [%d]\n",dstr_st_north);
+     printf("dstr_end_north       = [%d]\n",dstr_end_north);
+  }
+
+   EXEC SQL insert
+              into str_items_all
+                  (STR_ID
+                  ,STR_PARENT_ID
+                  ,STR_SEQ,STR_TOP_ID
+                  ,STR_SIT_ID
+                  ,STR_SIC_ID
+                  ,STR_START_DATE
+                  ,STR_END_DATE
+                  ,STR_LOCAL_REF
+                  ,STR_NAME
+                  ,STR_DESCR
+                  ,STR_ROUTE_REF
+                  ,STR_INSPECT_REF
+                  ,STR_SYS_FLAG
+                  ,STR_ADMIN_UNIT
+                  ,STR_ST_GRID_EAST
+                  ,STR_END_GRID_EAST
+                  ,STR_ST_GRID_NORTH
+                  ,STR_END_GRID_NORTH)
+            values(:struct_id
+                  ,:dstr_parent_id
+                  ,:dstr_seq
+                  ,:dstr_top_id
+                  ,:dstr_sit_id
+                  ,:dstr_sic_id
+                  ,to_date(:dstr_start_date,'DD-MON-RRRR')
+                  ,to_date(:dstr_end_date,'DD-MON-RRRR')
+                  ,:dstr_local_ref
+                  ,decode(:dstr_top_id,:struct_id,upper(:dstr_name),:dstr_name)
+                  ,:dstr_descr
+                  ,:dstr_route_ref
+                  ,:dstr_inspect_ref
+                  ,:dstr_sys_flag
+	          ,:dstr_admin_unit
+	          ,decode(:dstr_st_east,0,'',:dstr_st_east)
+	          ,decode(:dstr_end_east,0,'',:dstr_end_east)
+	          ,decode(:dstr_st_north,0,'',:dstr_st_north)
+	          ,decode(:dstr_end_north,0,'',:dstr_end_north))
+	         ;
+
+    oraerror("write_struct #2");
+
+    temp_added++;
+
+    if (master_level == 1)
+    {
+        temp_structures++;
+    }
+
+    for (ix=0; ix<array_count; ix++)
+    {
+        dsia_str_id[ix]=struct_id;
+        isia_str_id[ix]= -1;
+    }
+
+    if (array_count > 0)
+    {
+        EXEC SQL for :array_count
+                 insert into str_item_attr
+                 (SIA_STR_ID,SIA_SAT_ID,SIA_VALUE,SIA_SAV_OCCURENCE)
+                 values
+                 (:dsia_str_id,:dsia_sat_id,:dsia_value,:psav_occurence);
+
+        oraerror("write_struct #3");
+    }
+
+    array_count = 0;
+
+    if (master_level == 1)
+    {
+       EXEC SQL select RIN_ID_SEQ.NEXTVAL
+    	        into   :rin_id
+	        from   DUAL;
+
+       oraerror("write_struct #4");
+
+       drin_id=rin_id;
+
+       drin_str_id=struct_id;
+       irin_str_id= -1;
+
+       if (drin_rse_he_id > 0)
+       {
+
+       if (EXDebug)
+       {
+
+          printf("\n\nAbout to Insert the following data into ROAD_INTERSECTIONS\n");
+          printf("==============================================================\n");
+          printf("rin_str_id    = [%d]\n",drin_id);
+          printf("rin_str_id    = [%d]\n",drin_str_id);
+          printf("rin_seq       = [%d]\n",drin_seq);
+          printf("rin_st_chain  = [%d]\n",drin_st_chain);
+          printf("rin_end_chain = [%d]\n",drin_end_chain);
+          printf("rin_primary   = [%s]\n",drin_primary.arr);
+          printf("rin_location  = [%s]\n",drin_location.arr);
+          printf("rin_start_date = ( defaulted to sysdate)\n");
+       }
+
+       EXEC SQL
+	       insert into road_intersections
+	       (RIN_ID
+               ,RIN_STR_ID
+               ,RIN_SEQ
+               ,RIN_RSE_HE_ID
+               ,RIN_ST_CHAIN
+               ,RIN_END_CHAIN
+               ,RIN_PRIMARY
+               ,RIN_LOCATION
+               ,RIN_START_DATE)
+	       values
+	       (:drin_id
+               ,:drin_str_id
+               ,:drin_seq
+               ,:drin_rse_he_id
+               ,:drin_st_chain
+               ,:drin_end_chain
+               ,:drin_primary
+               ,:drin_location
+               ,trunc(sysdate));
+
+	    oraerror("write_struct #5");
+       }
+    }
+
+    structure_id[master_level] = struct_id;
+
+    struct_status = 0;
+    road_status   = 0;
+
+    /* total_inserts += sqlca.sqlerrd[2]; */
+    array_count2 = 0;
+
+    init_variables();
+
+    return(TRUE);
+
+} /* write_struct end brace */
+
+
+/************************************************************/
+/* function :  valid_date                                   */
+/*                                                          */
+/* purpose  :  Validate the date against dd-mmm-yy format.  */
+/*                                                          */
+/************************************************************/
+
+BOOLEAN valid_date(date)
+char *date;
+{
+    int mx;
+    int month;
+    char *mptr;
+    /* printf("\n----d  %s date=%s",14,"valid_date",date); */
+    if ((strlen(date) != 9) && (strlen(date) != 11))
+    {
+        return(FALSE);
+    }
+
+    if ((!isdigit(date[0])) || (!isdigit(date[1])))
+    {
+        return(FALSE);
+    }
+
+    if ((!isdigit(date[7])) || (!isdigit(date[8])))
+    {
+        return(FALSE);
+    }
+
+    if (strlen(date) != 9)
+    {
+    	if ((!isdigit(date[9])) || (!isdigit(date[10])))
+    	{
+        	return(FALSE);
+    	}
+    }
+
+    if ((date[2] != '-') || (date[6] != '-'))
+    {
+        return(FALSE);
+    }
+
+    if (islower(date[3])) date[3]=toupper(date[3]);
+    if (islower(date[4])) date[4]=toupper(date[4]);
+    if (islower(date[5])) date[5]=toupper(date[5]);
+
+    date[6]='\0';
+    mptr= &date[3];
+    month=0;
+    for (mx=0; mx<12; mx++)
+    {
+        if (strcmp(mptr,month_list[mx]) == 0)
+        {
+            month=mx+1;
+        }
+    }
+
+    if (month==0)
+    {
+        return(FALSE);
+    }
+
+    date[6]='-';
+    return(TRUE);
+
+} /* end of valid_date */
+
+/* the following functions should go in a utils code segment */
+
+/************************************************************/
+/* function :  valid_end_date                               */
+/*                                                          */
+/* purpose  :  Validate the end date > start date           */
+/*                                                          */
+/************************************************************/
+
+BOOLEAN valid_end_date(sdate,edate)
+char *edate;
+char *sdate;
+{
+    int result = 0;
+
+    EXEC SQL EXECUTE
+
+    BEGIN
+
+    if to_date(:edate,'DD-MON-RRRR') < to_date(:sdate,'DD-MON-RRRR') then
+       :result := 1;
+    end if;
+    END;
+
+    END-EXEC;
+
+printf("Result is %d",result);
+    if (result == 1)
+    {
+       return( FALSE );
+    }
+    else
+    {
+       return( TRUE );
+    }
+
+/*
+    int mx;
+    int smonth, emonth, syear, eyear, sday, eday ;
+    char *mptr, *yptr;
+
+    yptr = &sdate[7];
+    syear = atoi( yptr ) ;
+    yptr = &edate[7];
+    eyear = atoi( yptr ) ;
+
+    if ( eyear < syear )
+    {
+        return( FALSE );
+    }
+    else
+    {
+        if ( eyear > syear )
+        {
+            return( TRUE );
+        }
+        else
+        {
+            if (islower(edate[3])) edate[3]=toupper(edate[3]);
+            if (islower(edate[4])) edate[4]=toupper(edate[4]);
+            if (islower(edate[5])) edate[5]=toupper(edate[5]);
+            if (islower(sdate[3])) sdate[3]=toupper(sdate[3]);
+            if (islower(sdate[4])) sdate[4]=toupper(sdate[4]);
+            if (islower(sdate[5])) sdate[5]=toupper(sdate[5]);
+
+            edate[6]='\0';
+            sdate[6]='\0';
+
+            mptr= &sdate[3];
+            smonth=0;
+            emonth=0;
+            for (mx=0; mx<12; mx++)
+            {
+                if (strcmp(mptr,month_list[mx]) == 0)
+                {
+                    smonth=mx+1;
+                }
+            }
+
+            mptr= &edate[3];
+
+            for (mx=0; mx<12; mx++)
+            {
+                if (strcmp(mptr,month_list[mx]) == 0) { emonth=mx+1; }
+            }
+
+            edate[6]='-';
+            sdate[6]='-';
+
+            if ( emonth > smonth )
+            {
+                return( TRUE );
+            }
+            else
+            {
+                if ( emonth < smonth )
+                {
+                    return( FALSE );
+                }
+                else
+                {
+
+                    yptr  = &sdate[0];
+                    sday  = atoi( yptr ) ;
+                    yptr  = &edate[0];
+                    eday  = atoi( yptr ) ;
+
+                    if ( eday  < sday  )
+                    {
+                        return( FALSE );
+                    }
+                    else
+                    {
+                        return( TRUE );
+                    }
+                }
+            }
+        }
+    }
+*/
+} /* end of valid_end_date */
+
+/* the following functions should go in a utils code segment */
+
+/************************************************************/
+/* Function : oraerror()                                    */
+/*                                                          */
+/*  * Detect Oracle Error                                   */
+/*                                                          */
+/*  * If error  put SQL error message and exit              */
+/*    else return false.                                    */
+/*  Parameter fname should be the name of the calling       */
+/*  function                                                */
+/************************************************************/
+
+BOOLEAN oraerror(fname)
+char *fname;
+{
+  if(sqlca.sqlcode < 0)
+    {
+    printf("\nINFO:\n%s\nError occured in function : %s BPR-8202\n",sqlca.sqlerrm.sqlerrmc
+                                                                   ,fname);
+    write_pipe(NULL,"INFO: ");
+    write_pipe(NULL,sqlca.sqlerrm.sqlerrmc);
+    strcpy(pipe_msg," Error occured in function : ");
+    strcat(pipe_msg,fname);
+    write_pipe(NULL,pipe_msg);
+    sql_err(pipe_msg);
+    }
+  else
+    return(FAIL);
+}
+
+/************************************************************/
+/* Function : chkabv()                                      */
+/*                                                          */
+/* One string against another % in abv string matches       */
+/* any char                                                 */
+/*                                                          */
+/************************************************************/
+
+BOOLEAN chkabv(abv,str)
+char *abv,*str;
+{
+    int i;
+    while (*abv == ' ')
+    {
+        abv++;
+    }
+
+    if (strcmp(abv,"%") == 0)
+    {
+        return(TRUE);
+    }
+
+    if (strlen(abv) !=  strlen(str))
+    {
+        return(FALSE);
+    }
+
+    for (i=0;i<(int)strlen(abv);i++)
+    {
+        if((abv[i] != str[i])
+        && (abv[i] != '%')
+        && (abv[i] != '?'))
+        {
+            return(FALSE);
+        }
+    }
+
+    return(TRUE);
+}
+
+/************************************************************/
+/* Function : init_variables                                */
+/* Purpose  : initialise variables after inserts            */
+/*                                                          */
+/************************************************************/
+void init_variables()
+{
+  dstr_id=0;
+  dstr_parent_id=0;
+  dstr_seq=0;
+  dstr_top_id=0;
+  dstr_sic_id=0;
+  dstr_sit_id.len=0;
+  dstr_sit_id.arr[dstr_sit_id.len]='\0';
+  dstr_start_date.len=0;
+  dstr_start_date.arr[dstr_start_date.len]='\0';
+  dstr_end_date.len=0;
+  dstr_end_date.arr[dstr_end_date.len]='\0';
+  dstr_name.len=0;
+  dstr_name.arr[dstr_name.len]='\0';
+  dstr_unit_code.arr[dstr_unit_code.len]='\0';
+  dstr_admin_unit=0;
+  dstr_local_ref.len=0;
+  dstr_local_ref.arr[dstr_local_ref.len]='\0';
+  dstr_route_ref.len=0;
+  dstr_route_ref.arr[dstr_route_ref.len]='\0';
+  dstr_inspect_ref.len=0;
+  dstr_inspect_ref.arr[dstr_inspect_ref.len]='\0';
+  dstr_sys_flag.len=0;
+  dstr_sys_flag.arr[dstr_sys_flag.len]='\0';
+  dstr_st_east=0;
+  dstr_end_east=0;
+  dstr_st_north=0;
+  dstr_end_north=0;
+
+  drin_id=0;
+  drin_str_id=0;
+  drin_seq=0;
+  drin_rse_he_id=0;
+  drin_st_chain=0;
+  drin_end_chain=0;
+  drin_section.len=0;
+  drin_section.arr[drin_section.len]='\0';
+  drin_primary.len=0;
+  drin_primary.arr[drin_primary.len]='\0';
+  drin_location.len=0;
+  drin_location.arr[drin_location.len]='\0';
+}
+
+/************************************************************/
+/* Function : commit()                                      */
+/* Purpose  : do a commit                                   */
+/*                                                          */
+/************************************************************/
+void commit()
+{
+    EXEC SQL COMMIT WORK;
+    return;
+}
+
+/************************************************************/
+/* Function : rollback()                                    */
+/* Purpose  : do a rollback                                 */
+/*                                                          */
+/************************************************************/
+
+void rollback()
+{
+    EXEC SQL ROLLBACK WORK;
+    return;
+}
+
+/********************************************************************/
+/* rmcaseup                                                         */
+/*                                                                  */
+/* This file replaces the standard toupper as defined in ctype.h    */
+/* this was necessary since the macro on the SUN only worked if the */
+/* character being converted was not already uppercase.             */
+/*                                                                  */
+/* Ignore non alphabetic characters                                 */
+/********************************************************************/
+
+
+int rmcaseup(character)
+int character;
+{
+    if (character >= 'A' && character <= 'Z')
+    {
+       return(character);
+    }
+    else
+    {
+        if (character >= 'a' && character <= 'z')
+        {
+            return(character - 'a' + 'A');
+        }
+        else
+        {
+            return(character);
+        }
+    }
+}
+
+void usersigfunc(sig)
+int sig;
+{
+	printf("Signal %d received. Aborting ...",sig);
+        write_pipe(NULL,"Memory Fault Detected - Aborting.");
+	EXEC SQL ROLLBACK WORK;
+	jobend(EXJobId,1,"Signal received causing abnormal program termination");
+	EXEC SQL COMMIT WORK;
+}
+
+void reset_args()
+{
+  int  i;
+
+  for(i=0; i<29; i++)
+    {
+    tmp_args[i][0] = '\0';
+    args[i] = tmp_args[i];
+    }
+}
