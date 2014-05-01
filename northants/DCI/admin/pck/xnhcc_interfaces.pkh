@@ -1,0 +1,379 @@
+CREATE OR REPLACE PACKAGE xnhcc_interfaces IS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   SCCS Identifiers :-
+--
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //vm_latest/archives/customer/northants/DCI/admin/pck/xnhcc_interfaces.pkh-arc   1.0   May 01 2014 09:59:00   Mike.Huitson  $
+--       Module Name      : $Workfile:   xnhcc_interfaces.pkh  $
+--       Date into SCCS   : $Date:   May 01 2014 09:59:00  $
+--       Date fetched Out : $Modtime:   Feb 17 2014 17:21:20  $
+--       SCCS Version     : $Revision:   1.0  $
+--       Based on SCCS Version     : 
+----
+-----------------------------------------------------------------------------
+--   Originally taken from '@(#)interfaces.pck	1.26 08/19/03'
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2003
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+    g_sccsid	CONSTANT	Varchar2(2000) := '"$Revision:   1.0  $"';
+    g_file_handle             utl_file.file_type ;
+    extract_filename 		varchar2(2000);
+--</GLOBVAR>
+--
+-------------------------------------------------------------------------------
+--
+--<PROC NAME="write_BAT">
+  PROCEDURE write_bat( p_bud_id       IN budgets.bud_id%TYPE
+                     , p_wor_no       IN work_orders.wor_works_order_no%TYPE
+                     , p_wol_id       IN work_order_lines.wol_id%TYPE
+                     , p_date         IN date
+                     , p_value        IN budgets.bud_value%TYPE
+                     , p_bud_value    IN budgets.bud_value%TYPE
+                     , p_bud_commited IN budgets.bud_committed%TYPE
+                     , p_bud_actual   IN budgets.bud_actual%TYPE
+                     );
+
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_woc_claim_type">
+FUNCTION get_woc_claim_type( p_woc_claim_ref	IN varchar2
+			   , p_woc_con_id	IN number ) RETURN varchar2;
+--</PROC>
+--
+------------------------------------------------------------------------------
+--
+--<PROC NAME="pop_wor_file_tabs">
+    PROCEDURE pop_wor_file_tabs(p_trans_id IN interface_wor.iwor_transaction_id%TYPE
+                               ,p_wor_no IN work_orders.wor_works_order_no%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="write_wor_file">
+    FUNCTION write_wor_file( p_job_id IN number) RETURN varchar2;  -- WEB calls this one
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="write_wor_file">
+    FUNCTION write_wor_file( p_contractor_id IN varchar2
+	                    ,p_seq_no        IN number
+			    ,p_filepath      IN varchar2) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="validate_completion_data">
+    PROCEDURE validate_completion_data(p_ih_id IN interface_headers.ih_id%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="populate_wc_interface_tables">
+    PROCEDURE populate_wc_interface_tables(p_ih_id  IN OUT interface_headers.ih_id%TYPE
+	                                  ,p_record IN varchar2
+			                  ,p_error  IN OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="submit_record">
+    PROCEDURE submit_record( p_ih_id	IN OUT interface_headers.ih_id%TYPE
+                           , p_icwor_works_order_no interface_claims_wor_all.icwor_works_order_no%TYPE
+                           , p_icwor_claim_value interface_claims_wor_all.icwor_claim_value%TYPE
+                           );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="auto_load_file">
+PROCEDURE auto_load_file(p_ih_id	IN OUT interface_headers.ih_id%TYPE
+                        ,p_record IN	 varchar2
+                        ,p_error	IN OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="check_details_ok">
+PROCEDURE check_details_ok (p_ih_id IN interface_headers.ih_id%TYPE
+                           ,p_file_type IN interface_headers.ih_file_type%TYPE
+                           ,p_details_ok OUT varchar2
+                           );
+--</PROC>
+--
+
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="email_errors">
+PROCEDURE email_errors (p_ih_id IN interface_headers.ih_id%TYPE
+                       ,p_file_type IN interface_headers.ih_file_type%TYPE
+                       );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="close_lines">
+PROCEDURE close_lines  (p_ih_id IN interface_headers.ih_id%TYPE
+                       );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="completion_file_ph1">
+    PROCEDURE completion_file_ph1( p_job_id        IN number
+                                  ,p_contractor_id IN varchar2
+	                          ,p_seq_no	   IN number
+			          ,p_filepath      IN varchar2
+                                  ,p_filename      IN varchar2
+			          ,p_error         OUT varchar2 );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="completion_file_ph1">
+    PROCEDURE completion_file_ph1( p_contractor_id IN varchar2
+			          ,p_seq_no        IN number
+			          ,p_filepath      IN varchar2
+                                  ,p_filename      IN varchar2
+			          ,p_error	   OUT varchar2 );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="check_date_format">
+    FUNCTION check_date_format (p_datechar IN varchar2) RETURN date;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="completion_file_ph2">
+    PROCEDURE completion_file_ph2(p_ih_id IN interface_headers.ih_id%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="claim_file_ph3">
+PROCEDURE claim_file_ph3(p_ih_id IN  interface_headers.ih_id%TYPE
+				,p_file  OUT varchar2
+				,p_error OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="unreplace_data">
+    PROCEDURE validate_claim_data(p_ih_id IN interface_headers.ih_id%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="unreplace_data">
+    PROCEDURE populate_wi_interface_tables
+             (p_ih_id      IN OUT interface_headers.ih_id%TYPE
+	     ,p_wor_no     IN OUT interface_claims_wor.icwor_works_order_no%TYPE
+	     ,p_wol_id	   IN OUT interface_claims_wol.icwol_wol_id%TYPE
+	     ,p_claim_date IN OUT interface_claims_wor.icwor_claim_date%TYPE
+	     ,p_claim_ref  IN OUT interface_claims_wor.icwor_con_claim_ref%TYPE
+	     ,p_con_id	   IN OUT interface_claims_wor.icwor_con_id%TYPE
+	     ,p_record     IN     varchar2
+	     ,p_error	   IN OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="validate_wo_item">
+    PROCEDURE validate_wo_item(p_ih_id IN interface_headers.ih_id%TYPE
+                          ,p_type varchar2
+						  ,p_from number);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="check_paid_status">
+    FUNCTION check_paid_status(p_ih_id IN interface_headers.ih_id%TYPE
+                          ) RETURN number;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="update_ier">
+    PROCEDURE update_ier(p_ih_id IN interface_headers.ih_id%TYPE
+                          );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="claim_file_ph1">
+    PROCEDURE claim_file_ph1(p_job_id 	 	IN number
+                	    ,p_contractor_id 	IN varchar2
+ 		    	    ,p_seq_no	 	IN number
+			    ,p_filepath	 	IN varchar2
+                	    ,p_filename  	IN varchar2
+			    ,p_error	 	OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="update_ier">
+   PROCEDURE claim_file_ph1(p_contractor_id IN varchar2
+    			   ,p_seq_no	    IN number
+		   	   ,p_filepath	    IN varchar2
+                           ,p_filename      IN varchar2
+			   ,p_error	    OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="claim_file_ph2">
+   PROCEDURE claim_file_ph2(p_ih_id IN  interface_headers.ih_id%TYPE
+			   ,p_file  OUT varchar2
+			   ,p_error OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="tolerance_exceeded">
+    FUNCTION tolerance_exceeded(p_ih_id	      IN interface_headers.ih_id%TYPE
+	   		       ,p_tol_percent IN number
+			       ,p_tol_value   IN number) RETURN boolean;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_referral_file">
+    PROCEDURE create_referral_file(p_ih_id    IN interface_headers.ih_id%TYPE
+	  	  	          ,p_filename IN OUT varchar2
+			          ,p_error    IN OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--PROC NAME="get_oun_id">
+    FUNCTION get_oun_id(p_contractor_id IN varchar2) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="reformat_cost_code">
+  FUNCTION reformat_cost_code ( p_cost_code IN interface_wol.iwol_cost_code%TYPE
+                           ) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="split_cost_code">
+  FUNCTION split_cost_code ( p_cost_code IN interface_wol.iwol_cost_code%TYPE
+                           , p_number IN number
+                           ) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="financial_commitment_file">
+    FUNCTION financial_commitment_file(p_job_id number) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="financial_commitment_file">
+    FUNCTION financial_commitment_file(p_seq_no        IN number
+                                      ,p_filepath      IN varchar2
+                                      ,p_contractor_id IN varchar2
+                                      ,pi_end_date     IN date
+                                      ) RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="financial_credit_file">
+    PROCEDURE financial_credit_file(p_cnp_id IN  contract_payments.cnp_id%TYPE
+	                           ,p_file   OUT varchar2
+	                           ,p_contractor_id IN varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="payment_transaction_file">
+    PROCEDURE payment_transaction_file(p_job_id IN number
+                                      ,p_seq_no   IN number
+	    			      ,p_filepath IN varchar2
+                                      ,p_filename IN varchar2
+				      ,p_error OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="payment_transaction_file">
+    PROCEDURE payment_transaction_file(p_seq_no   IN number
+	   		              ,p_filepath IN varchar2
+                                      ,p_filename IN varchar2
+			              ,p_error OUT varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_wol_to_list">
+    PROCEDURE add_wol_to_list(p_wol_id	   IN work_order_lines.wol_id%TYPE
+	  		     ,p_wor_no	   IN work_order_lines.wol_works_order_no%TYPE
+			     ,p_defect_id  IN work_order_lines.wol_def_defect_id%TYPE
+			     ,p_schd_id	   IN work_order_lines.wol_schd_id%TYPE
+			     ,p_work_code  IN work_order_lines.wol_icb_work_code%TYPE
+			     ,p_road_id	   IN road_segs.rse_unique%TYPE
+			     ,p_road_descr IN road_segs.rse_descr%TYPE
+              ,p_wol_descr  IN work_order_lines.wol_descr%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="add_wor_to_list">
+    PROCEDURE add_wor_to_list(p_trans_type   IN interface_wor.iwor_transaction_type%TYPE
+	  		     ,p_wor_no	     IN interface_wor.iwor_works_order_no%TYPE
+			     ,p_wor_flag     IN interface_wor.iwor_flag%TYPE
+			     ,p_scheme_type  IN interface_wor.iwor_scheme_type%TYPE
+			     ,p_con_code     IN interface_wor.iwor_con_code%TYPE
+			     ,p_originator   IN interface_wor.iwor_originator%TYPE
+			     ,p_confirmed    IN interface_wor.iwor_date_confirmed%TYPE
+			     ,p_est_complete IN interface_wor.iwor_est_complete%TYPE
+			     ,p_est_cost	 IN interface_wor.iwor_cost%TYPE
+			     ,p_act_cost	 IN interface_wor.iwor_cost%TYPE
+			     ,p_labour	     IN interface_wor.iwor_est_labour%TYPE
+			     ,p_ip_flag	     IN interface_wor.iwor_interim_payment_flag%TYPE
+			     ,p_ra_flag	     IN interface_wor.iwor_risk_assessment_flag%TYPE
+			     ,p_ms_flag	     IN interface_wor.iwor_method_statement_flag%TYPE
+			     ,p_wp_flag	     IN interface_wor.iwor_works_programme_flag%TYPE
+			     ,p_as_flag      IN interface_wor.iwor_additional_safety_flag%TYPE
+			     ,p_commence_by  IN interface_wor.iwor_commence_by%TYPE
+			     ,p_descr	     IN interface_wor.iwor_descr%TYPE
+              ,p_remarks     IN interface_wor.iwor_remarks%TYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_version">
+-- get sccs version number from package
+    FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="get_body_version">
+-- get sccs version number from package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="copy_data_to_interface">
+    PROCEDURE copy_data_to_interface;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+END xnhcc_interfaces;
+/

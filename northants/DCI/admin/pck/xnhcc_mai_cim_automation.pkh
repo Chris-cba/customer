@@ -1,0 +1,68 @@
+create or replace package xnhcc_mai_cim_automation
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       PVCS id          : $Header:   //vm_latest/archives/customer/northants/DCI/admin/pck/xnhcc_mai_cim_automation.pkh-arc   1.0   May 01 2014 09:59:00   Mike.Huitson  $
+--       Module Name      : $Workfile:   xnhcc_mai_cim_automation.pkh  $
+--       Date into PVCS   : $Date:   May 01 2014 09:59:00  $
+--       Date fetched Out : $Modtime:   Feb 17 2014 17:21:46  $
+--       Version          : $Revision:   1.0  $
+--       Based on SCCS version : 
+--
+-----------------------------------------------------------------------------
+--    Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000) := '$Revision:   1.0  $';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This procedure runs the CIM Interface batch
+PROCEDURE run_batch(pi_batch_type Varchar2);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- s function return the CIM FTP details for the passed Contractor, if available 
+--FUNCTION get_ftp_details(pi_ftp_type Varchar2,pi_contractor_id org_units.oun_contractor_id%TYPE)
+--RETURN hig_ftp_connections%ROWTYPE;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xnhcc_mai_cim_automation;
+/
