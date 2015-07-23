@@ -1,4 +1,5 @@
-CREATE OR REPLACE PACKAGE BODY APP_RIM.XBC_CREATE_SECURING_INV AS
+create or replace
+PACKAGE BODY         XBC_CREATE_SECURING_INV AS
 --
 ---------------------
 --
@@ -6,22 +7,24 @@ CREATE OR REPLACE PACKAGE BODY APP_RIM.XBC_CREATE_SECURING_INV AS
 --
 -- PVCS Identifiers :-
 --
--- sccsid : $Header:   //vm_latest/archives/customer/bc/admin/pck/xbc_create_securing_inv.pkb-arc   1.1   Nov 11 2009 08:02:38   iturnbull  $
--- Module Name : $Workfile:   xbc_create_securing_inv.pkb  $
--- Date into PVCS : $Date:   Nov 11 2009 08:02:38  $
--- Date fetched Out : $Modtime:   May 07 2009 17:01:36  $
--- PVCS Version : $Revision:   1.1  $
+-- sccsid : $Header:   //new_vm_latest/archives/customer/bc/admin/pck/xbc_create_securing_inv.pkb-arc   1.2   Jul 23 2015 10:30:30   Sarah.Williams  $
+-- Module Name : $Workfile:   XBC_CREATE_SECURING_INV.pkb  $
+-- Date into PVCS : $Date:   Jul 23 2015 10:30:30  $
+-- Date fetched Out : $Modtime:   Jul 23 2015 10:29:38  $
+-- PVCS Version     : $Revision:   1.2  $
 
- g_body_sccsid constant varchar2(30) :='"$Revision:   1.1  $"';
-
---
- g_package_name CONSTANT varchar2(30) := 'xkytc_create_securing_inv';
+-- g_body_sccsid constant varchar2(30) :='"$Revision:   1.2  $"';
+ g_body_sccsid constant varchar2(30) :='"$Revision:   1.2  $"';
+-- dh corrected fatal error on closing a route group and its datum  - Jun 30 2015
+-- dh corrected end date on closed assets - Jun 30 2015
+-- g_package_name CONSTANT varchar2(30) := 'xkytc_create_securing_inv';
+ g_package_name CONSTANT varchar2(30) := 'xbc_create_securing_inv';
 --
 -----------------------------------------------------------------------------
 --
  g_count PLS_INTEGER := 0;
  g_tab_ne_id nm3type.tab_number;
- 
+
  g_tab_ca_iit_ne_id_count PLS_INTEGER := 0;
  g_tab_ca_iit_ne_id nm3type.tab_number;
 --
@@ -40,7 +43,7 @@ BEGIN
 --
  g_count := 0;
  g_tab_ne_id.DELETE;
- 
+
 --
  nm_debug.proc_end(g_package_name,'clear_globals');
 --
@@ -54,7 +57,7 @@ BEGIN
 --
     g_count_enddate     := 0;
     g_tab_ne_id_enddate.DELETE;
- 
+
 --
  nm_debug.proc_end(g_package_name,'clear_globals_enddate');
 --
@@ -69,13 +72,13 @@ BEGIN
 --
  nm_debug.proc_start(g_package_name,'append_to_g_tab_ca_iit_ne_id');
 
- 
+
  for iit_ne_id in (select nm_ne_id_in from nm_members where nm_ne_id_of = p_ne_id and nm_obj_type in ('CA','PINV') and nm_type='I' )
  loop
-        
+
         g_tab_ca_iit_ne_id_count := g_tab_ca_iit_ne_id_count + 1;
         g_tab_ca_iit_ne_id(g_count) := iit_ne_id.nm_ne_id_in;
-        
+
         DBMS_OUTPUT.PUT_LINE  ('count = ' || g_tab_ca_iit_ne_id_count || ' iit_ne_id = ' || iit_ne_id.nm_ne_id_in );
 
   end loop;
@@ -127,23 +130,23 @@ l_pinv_admin_unit nm_admin_units.nau_admin_unit%type:=164;
 BEGIN
 --
  nm_debug.proc_start(g_package_name,'process_g_tab_ca_iit_ne_id');
- 
+
  DBMS_OUTPUT.PUT_LINE   ( 'id count = ' || g_tab_ca_iit_ne_id.count);
  DBMS_OUTPUT.PUT_LINE   ( 'id = '  || g_tab_ca_iit_ne_id(1));
- 
+
  FOR i IN 1..g_tab_ca_iit_ne_id_count
  LOOP
-     
+
  DBMS_OUTPUT.PUT_LINE   ( 'id = '  || g_tab_ca_iit_ne_id(i));
    -- nm3api_inv.end_date_item (g_tab_ca_iit_ne_id(i));
 
  end loop;
- 
+
  g_tab_ca_iit_ne_id_count := 0;
  g_tab_ca_iit_ne_id.DELETE;
- 
+
  end  process_g_tab_ca_iit_ne_id ;
-        
+
 
 PROCEDURE process_globals IS
 l_iit_ne_id nm_inv_items.iit_ne_id%TYPE;
@@ -232,17 +235,30 @@ t_error     VARCHAR2(220);
 t_exists    number;
 
 CURSOR cur_ca(cp_neid IN NUMBER) IS
-    SELECT nm_ne_id_in
+    SELECT nm_ne_id_in, nm_end_date 
     FROM nm_members_all
     WHERE nm_ne_id_of = cp_neid
         AND nm_obj_type IN ('CA','PINV');
 
 BEGIN
-nm_debug.proc_start(g_package_name,'start');
+nm_debug.proc_start(g_package_name,'start close assets');
 nm3dbg.debug_on;
 
+/* a fatal error was encountered when closing a route and the members
+   checking for a NW operation and only proceeding 
+       through the logic if true prevents the error
+   NOTE:  the value of t_today is reset to value of the membership end date
+   dh - June 30, 2015
+*/
+if nm3merge.is_nw_operation_in_progress then
+    nm_debug.debug('NW OPERATION true');
 		t_count		:=  g_tab_ne_id_enddate.COUNT;
 		t_index		:= 0;
+else
+    nm_debug.debug('NW OPERATION FALSE .... ');
+    t_count := 0;
+end if;
+
 
 		SELECT SYSDATE INTO t_today FROM DUAL;
 		t_today		:= trunc(t_today);
@@ -252,30 +268,31 @@ nm3dbg.debug_on;
 	nm3dbg.putln('*********t_index1: ' || t_index );
             t_datum       := g_tab_ne_id_enddate(t_index);
 	nm3dbg.putln('*********t_index2: ' || t_index );
-           
-            
+
+
             FOR c_ca IN cur_ca(t_datum) LOOP
 
                 t_iit       := c_ca.nm_ne_id_in;
-nm3dbg.putln('Processing Datum: ' || t_datum || ', asset: ' || t_iit || ' t_index: ' || t_index );
+                t_today     := trunc(c_ca.nm_end_date);
+nm3dbg.putln('Processing Datum: ' || t_datum || ', asset: ' || t_iit || ' t_index: ' || t_index || ' end date ' || t_today);
                 -- need to check in case it's already been end dated
-                
-                
+
+
                 select count(*) into t_exists from nm_inv_items where iit_ne_id = t_iit;
-                
+
                 if nvl(t_exists,0) > 0 then
-                
+
                     nm3api_inv.end_date_item(p_iit_ne_id => t_iit, p_effective_date => t_today);
                     nm3dbg.putln('Asset end-dated: ' || t_iit);
-                 
+
                 end if;
 
-                
+
             END LOOP;
-            
+
         END LOOP;
-nm_debug.proc_end(g_package_name,'start');
-        
+nm_debug.proc_end(g_package_name,'close assets');
+
 EXCEPTION WHEN OTHERS THEN
     t_error := substr(sqlerrm,1,200);
     nm_debug.proc_start(g_package_name,'start');
