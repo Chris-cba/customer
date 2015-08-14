@@ -2,18 +2,23 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.0   Apr 22 2015 13:54:34   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.1   Aug 14 2015 14:29:20   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   Apr 22 2015 13:54:34  $
-  --       Date fetched Out : $Modtime:   Apr 22 2015 14:58:58  $
-  --       Version          : $Revision:   3.0  $
+  --       Date into PVCS   : $Date:   Aug 14 2015 14:29:20  $
+  --       Date fetched Out : $Modtime:   Aug 14 2015 14:04:34  $
+  --       Version          : $Revision:   3.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
-  --   Copyright (c) 2015 Bentley Systems Incorporated. All rights reserved.
+  --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
   ------------------------------------------------------------------
   --
+  --all global package variables here
+
+  -----------
+  --constants
+  -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.0  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.1  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -409,10 +414,10 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
       */
       WHEN 'RW'
        THEN
-          IF pi_srw_closure_type = 'Planned Works'
+          IF pi_srw_closure_type = 'PLAN'
            THEN
               po_event_type := 'PROGRAMMED ROUTINE WORKS';
-          ELSIF pi_srw_closure_type = 'Emergency Works'
+          ELSIF pi_srw_closure_type = 'EMER'
            THEN
               po_event_type := 'EMERGENCY ROUTINE WORKS';
           ELSE
@@ -454,10 +459,10 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
           /*
           ||TODO - Pete R has included some TMA data in the mapping of this one, need to go back to discuss.
           */
-          IF pi_srw_closure_type = 'Planned Works'
+          IF pi_srw_closure_type = 'PLAN'
            THEN
               po_event_type := 'PROGRAMMED STREET/ROAD WORKS';
-          ELSIF pi_srw_closure_type = 'Emergency Works'
+          ELSIF pi_srw_closure_type = 'EMER'
            THEN
               po_event_type := 'EMERGENCY AND URGENT ROAD WORK';
           ELSE
@@ -478,10 +483,10 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
           po_event_type := 'LICENSEE WORKS';
       WHEN 'NTW'
        THEN
-          IF pi_srw_closure_type = 'Planned Works'
+          IF pi_srw_closure_type = 'PLAN'
            THEN
               po_event_type := 'NATIONAL TECHNOLOGY WORKS';
-          ELSIF pi_srw_closure_type = 'Emergency Works'
+          ELSIF pi_srw_closure_type = 'EMER'
            THEN
               po_event_type := 'EMERGENCY NATIONAL TECH WORKS';
           ELSE
