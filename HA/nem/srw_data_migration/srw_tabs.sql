@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_tabs.sql-arc   3.1   Oct 05 2015 19:28:28   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_tabs.sql-arc   3.2   Oct 05 2015 19:38:32   Mike.Huitson  $
 --       Module Name      : $Workfile:   srw_tabs.sql  $
---       Date into PVCS   : $Date:   Oct 05 2015 19:28:28  $
---       Date fetched Out : $Modtime:   Oct 05 2015 19:24:32  $
---       Version          : $Revision:   3.1  $
+--       Date into PVCS   : $Date:   Oct 05 2015 19:38:32  $
+--       Date fetched Out : $Modtime:   Oct 05 2015 19:37:22  $
+--       Version          : $Revision:   3.2  $
 --       Based on SCCS version :
 ------------------------------------------------------------------
 --   Copyright (c) 2015 Bentley Systems Incorporated. All rights reserved.
@@ -127,11 +127,12 @@ CREATE TABLE srw_dcm_daily
 /
 
 CREATE TABLE srw_to_nem_log
-(stn_id           NUMBER(30)
-,stn_timestamp    TIMESTAMP
-,stn_closure      NUMBER
-,stn_message_type VARCHAR2(20)
-,stn_message      VARCHAR2(1000))
+(stn_id               NUMBER(30)
+,stn_timestamp        TIMESTAMP
+,stn_operational_area VARCHAR2 (6)
+,stn_closure          NUMBER
+,stn_message_type     VARCHAR2(20)
+,stn_message          VARCHAR2(1000))
 /
 
 CREATE SEQUENCE stn_id_seq
