@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.1   Aug 14 2015 14:29:20   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.2   Oct 05 2015 20:25:40   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   Aug 14 2015 14:29:20  $
-  --       Date fetched Out : $Modtime:   Aug 14 2015 14:04:34  $
-  --       Version          : $Revision:   3.1  $
+  --       Date into PVCS   : $Date:   Oct 05 2015 20:25:40  $
+  --       Date fetched Out : $Modtime:   Oct 05 2015 20:11:36  $
+  --       Version          : $Revision:   3.2  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,11 +18,12 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.1  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.2  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
   g_closure  srw_closures.closure%TYPE;
+  g_operational_area  srw_closures.operational_area%TYPE;
   --
   TYPE closure_tab IS TABLE OF srw_closures%ROWTYPE;
   TYPE layouts_tab IS TABLE OF srw_layouts%ROWTYPE;
@@ -114,6 +115,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     --
     po_stack(po_stack.COUNT+1).stn_id := stn_id_seq.NEXTVAL;
     po_stack(po_stack.COUNT).stn_timestamp := CURRENT_TIMESTAMP;
+    po_stack(po_stack.COUNT).stn_operational_area := g_operational_area;
     po_stack(po_stack.COUNT).stn_closure := g_closure;
     po_stack(po_stack.COUNT).stn_message_type := pi_message_type;
     po_stack(po_stack.COUNT).stn_message := pi_message;
@@ -866,7 +868,12 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
         lv_no_overlaps_job_id := nm3extent.remove_overlaps(pi_nte_id => lv_asset_job_id);
         /*
         ||Locate the asset.
+        ||NB. If the load runs beyond midnight the session's effective date
+        ||will be yesterday which means any assets created after midnight will
+        ||not be able to be located as they will not show up in the nm_inv_items
+        ||view so reset the effective date to be sure.
         */
+        nm3user.set_effective_date(p_date => SYSDATE);
         nm3homo.homo_update(p_temp_ne_id_in  => lv_no_overlaps_job_id
                            ,p_iit_ne_id      => pi_iit_ne_id
                            ,p_effective_date => TRUNC(SYSDATE)
@@ -1658,7 +1665,6 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     lv_delay             nm_inv_attri_lookup_all.ial_value%TYPE;
     lv_val_attr_value    nm3type.max_varchar2;
     lv_val_attr_meaning  nm3type.max_varchar2;
-    lv_area              srw_closures.operational_area%TYPE;
     lv_error_flag        VARCHAR2(1);
     lv_error_text        nm3type.max_varchar2;
     lv_operational_area  srw_closures.operational_area%TYPE;
@@ -1675,6 +1681,9 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
        AND activity != 'NA'
        AND closure_status != 'COMP'
        AND operational_area = NVL(pi_srw_operational_area,operational_area)
+       AND closure NOT IN(SELECT iit_num_attrib19
+                            FROM nm_inv_items_all
+                           WHERE iit_inv_type = 'NEVT')
      ORDER
         BY operational_area
           ,closure
@@ -1684,7 +1693,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     /*
     ||Clear down the log table.
     */
-    DELETE srw_to_nem_log;
+    --DELETE srw_to_nem_log;
     --
     COMMIT;
     /*
@@ -1703,10 +1712,10 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
         /*
         ||Log start of the load.
         */
-        IF NVL(lv_area,'@@@@@') != lt_closures(i).operational_area
+        IF NVL(g_operational_area,'@@@@@') != lt_closures(i).operational_area
          THEN
-            lv_area := lt_closures(i).operational_area;
-            add_to_stack(pi_message      => 'Starting to process Closures for Operaitional Area ['||lv_area||']'
+            g_operational_area := lt_closures(i).operational_area;
+            add_to_stack(pi_message      => 'Starting to process Closures for Operaitional Area ['||g_operational_area||']'
                         ,pi_message_type => c_information
                         ,po_stack        => lt_message_stack);
         END IF;
