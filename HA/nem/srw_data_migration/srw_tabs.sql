@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_tabs.sql-arc   3.0   Apr 22 2015 13:54:34   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_tabs.sql-arc   3.1   Oct 05 2015 19:28:28   Mike.Huitson  $
 --       Module Name      : $Workfile:   srw_tabs.sql  $
---       Date into PVCS   : $Date:   Apr 22 2015 13:54:34  $
---       Date fetched Out : $Modtime:   Apr 22 2015 14:55:30  $
---       Version          : $Revision:   3.0  $
+--       Date into PVCS   : $Date:   Oct 05 2015 19:28:28  $
+--       Date fetched Out : $Modtime:   Oct 05 2015 19:24:32  $
+--       Version          : $Revision:   3.1  $
 --       Based on SCCS version :
 ------------------------------------------------------------------
 --   Copyright (c) 2015 Bentley Systems Incorporated. All rights reserved.
@@ -107,12 +107,12 @@ CREATE TABLE srw_diary
 
 CREATE TABLE srw_documents
 (closure        NUMBER
-,description    VARCHAR2(200)
+,description    VARCHAR2(2000)
 ,document       VARCHAR2(200)
 ,document_size  NUMBER
 ,submitted_by   VARCHAR2(20)
 ,submitted_on   DATE
-,document_name  VARCHAR2(55))
+,document_name  VARCHAR2(2000))
 /
 
 CREATE TABLE srw_dcm_daily
