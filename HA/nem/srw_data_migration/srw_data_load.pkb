@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.2   Oct 05 2015 20:25:40   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.3   Dec 01 2015 14:45:04   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   Oct 05 2015 20:25:40  $
-  --       Date fetched Out : $Modtime:   Oct 05 2015 20:11:36  $
-  --       Version          : $Revision:   3.2  $
+  --       Date into PVCS   : $Date:   Dec 01 2015 14:45:04  $
+  --       Date fetched Out : $Modtime:   Dec 01 2015 14:43:22  $
+  --       Version          : $Revision:   3.3  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.2  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.3  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -1691,12 +1691,6 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     --
   BEGIN
     /*
-    ||Clear down the log table.
-    */
-    --DELETE srw_to_nem_log;
-    --
-    COMMIT;
-    /*
     ||Get the closures to convert.
     */
     OPEN get_closures;
@@ -1824,11 +1818,19 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                                 ,pi_attr_tab      => lt_attr);
         --
         nem_util.add_to_attr_tab(pi_view_col_name => 'TMA_WORKS_REF'
-                                ,pi_char_value    => lt_closures(i).eton_reference
+                                ,pi_char_value    => CASE
+                                                       WHEN SUBSTR(eton_reference,1,5) = 'ETON_'
+                                                         THEN SUBSTR(lt_closures(i).eton_reference,6)
+                                                       ELSE lt_closures(i).eton_reference
+                                                     END
                                 ,pi_attr_tab      => lt_attr);
         --
         nem_util.add_to_attr_tab(pi_view_col_name => 'MOBILE_LANE_CLOSURE'
-                                ,pi_char_value    => CASE WHEN lt_closures(i).traffic_management = 'MOBLACL' THEN 'Y' ELSE 'N' END
+                                ,pi_char_value    => CASE
+                                                       WHEN lt_closures(i).traffic_management = 'MOBLACL'
+                                                         THEN 'Y'
+                                                       ELSE 'N'
+                                                     END
                                 ,pi_attr_tab      => lt_attr);
         --
         nem_util.add_to_attr_tab(pi_view_col_name => 'SRW_ID'
