@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.3   Dec 01 2015 14:45:04   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.4   Jan 04 2016 10:52:00   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   Dec 01 2015 14:45:04  $
-  --       Date fetched Out : $Modtime:   Dec 01 2015 14:43:22  $
-  --       Version          : $Revision:   3.3  $
+  --       Date into PVCS   : $Date:   Jan 04 2016 10:52:00  $
+  --       Date fetched Out : $Modtime:   Jan 04 2016 10:51:48  $
+  --       Version          : $Revision:   3.4  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.3  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.4  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -1809,7 +1809,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                                 ,pi_char_value    => lv_delay
                                 ,pi_attr_tab      => lt_attr);
         --
-        nem_util.add_to_attr_tab(pi_view_col_name => 'AGENCY_REF'
+        nem_util.add_to_attr_tab(pi_view_col_name => 'HE_REF'
                                 ,pi_char_value    => lt_closures(i).reference_number
                                 ,pi_attr_tab      => lt_attr);
         --
@@ -1819,7 +1819,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
         --
         nem_util.add_to_attr_tab(pi_view_col_name => 'TMA_WORKS_REF'
                                 ,pi_char_value    => CASE
-                                                       WHEN SUBSTR(eton_reference,1,5) = 'ETON_'
+                                                       WHEN SUBSTR(lt_closures(i).eton_reference,1,5) = 'ETON_'
                                                          THEN SUBSTR(lt_closures(i).eton_reference,6)
                                                        ELSE lt_closures(i).eton_reference
                                                      END
