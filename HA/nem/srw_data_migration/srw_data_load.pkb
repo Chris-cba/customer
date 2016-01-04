@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.4   Jan 04 2016 10:52:00   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.5   Jan 04 2016 15:37:36   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   Jan 04 2016 10:52:00  $
-  --       Date fetched Out : $Modtime:   Jan 04 2016 10:51:48  $
-  --       Version          : $Revision:   3.4  $
+  --       Date into PVCS   : $Date:   Jan 04 2016 15:37:36  $
+  --       Date fetched Out : $Modtime:   Jan 04 2016 14:52:42  $
+  --       Version          : $Revision:   3.5  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.4  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.5  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -2271,9 +2271,16 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                        ;
                   /*
                   ||Run the Validate Action.
+                  ||NB The Validate Action will either commit or rollback so commit
+                  ||the event so that it is not lost should the action rollback.
                   */
+                  COMMIT;
                   execute_validation(pi_event_id  => lv_event_id
                                     ,po_validated => lv_validated);
+                  /*
+                  ||Reset the save point.
+                  */
+                  SAVEPOINT closure_to_event_sp;
                   /*
                   ||Update the status if everything is ok.
                   */
@@ -2321,6 +2328,10 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                       --
                   END IF;
                   /*
+                  ||Commit the event.
+                  */
+                  COMMIT;
+                  /*
                   ||Log creation of the Event.
                   */
                   add_to_stack(pi_message      => 'Event created ['||nem_util.get_formatted_event_number(pi_nevt_id => lv_event_id)||'].'
@@ -2351,8 +2362,6 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
         flush_stack(po_stack => lt_message_stack);
         --
       END LOOP;
-      --
-      COMMIT;
       --
       EXIT WHEN get_closures%NOTFOUND;
       --
