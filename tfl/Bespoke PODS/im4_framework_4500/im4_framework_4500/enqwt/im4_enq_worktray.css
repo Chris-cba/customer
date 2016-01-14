@@ -1,0 +1,183 @@
+/* -----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //new_vm_latest/archives/customer/tfl/Bespoke PODS/im4_framework_4500/im4_framework_4500/enqwt/im4_enq_worktray.css-arc   1.0   Jan 14 2016 21:15:36   Sarah.Williams  $
+--       Module Name      : $Workfile:   im4_enq_worktray.css  $
+--       Date into PVCS   : $Date:   Jan 14 2016 21:15:36  $
+--       Date fetched Out : $Modtime:   Nov 09 2011 19:26:04  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+--
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+*/
+
+/* firfox .ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 3px; bottom: 15px; } */
+.ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 9px; bottom: 20px; }
+
+#P0_DOC_REASON,P0_OUTCOME_REASON{
+    width: 430px;    
+}
+#P12_DOC_REASON_LATER_ARR{
+    width: 735px;    
+}
+
+#P10_LOCATION, #P10_DESCRIPTION, #P10_ACTIONS, #P10_NEW_ACTION{
+    width: 1015px;
+    height: 60px;
+   /* overflow:hidden; */    
+}
+
+#P10_CATEGORY, #P10_CLASS, #P10_TYPE{
+    width: 300px;   
+}
+
+#P1_LOV {
+	width:250px;	
+}
+
+.t13Button {
+	width: 100px;
+}
+
+
+.lovwidth {
+	width:250px;
+}
+
+#buttonlist li{
+	list-style-type: none;
+}
+
+.hasmap {
+   background-image: url(/im4_framework/im_banner_11.gif);
+   background-repeat: no-repeat;
+}
+
+#AjaxLoading {
+    padding: 0px;
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+    left: 40%;
+    top: 20%;
+    position: absolute;
+    border: 0px solid #4682B4;
+    /*background-color: #FFF;*/
+	
+}   
+
+#apexir_LOADER {
+    position: absolute;
+    top: 0px;
+    left: 48%;
+}
+
+#nolicimg {
+    font-size: 36px;   
+    text-align: center;   
+    padding: 0px;
+    left: 30%;
+    top: 20%;
+    position: absolute;
+    border: 0px solid #4682B4;  
+}
+
+#NEWENQ {
+    font-size: 12px;   
+    text-align: center;   
+    padding: 0px;
+    color: #ffffff;
+    /*left: 30%;
+    top: 20%;
+    position: absolute;*/
+    border: 0px solid #4682B4;  
+}
+
+
+.mapstyle {
+    left: 0px;
+    top:    0px;
+    width:    100%;
+    height:    99%;
+    margin:    1px;
+    padding:    0px;
+    border:    0px  solid #CFE0F1;
+}
+
+.RegionTitle {
+padding:2px;
+text-align:left;
+}
+
+/* Set Location Region - Road Name LOV - Width of LOV container */
+#rseuniquecontainer {
+    width:1000px;
+    position:absolute; left:8px; top:200px;
+}
+
+
+#rsedescrcontainer {
+    width:1000px;
+    position:absolute; left:8px; top:200px;
+}
+
+
+/* Set Location Region - Lov1 is Road Name LOV Style */
+/* Road Name inside LOV style - Bold / Black */
+.networkLOVdescr {
+   display:inline-block;
+   width:500px;
+   font-weight:normal;
+   color:gray;
+}
+
+
+/* RSE Unique inside LOV style - Normal Gray */
+.networkLOVunique {
+   display:inline-block;
+   width:250px;
+   font-weight:bold;
+   color:black;
+}
+
+/* Set Location Region - Road Name LOV entry field width */
+#P10_ROAD {
+	width:300px;    
+    position:relative;
+    
+}
+#P10_ROAD_DESCR {
+	width:645px;    
+    position:relative;
+}
+
+
+
+/* Spinner
+----------------------------------*/
+.ui-spinner { position:relative; display: inline-block; overflow: hidden; padding: 0; vertical-align: middle; height: 1.8em; }
+.ui-spinner-input { border: none; background: none; padding: 0; margin: .2em 0; vertical-align: middle; }
+.ui-spinner-button { width: 16px; height: 50%; font-size: .5em; padding: 0; margin: 0; z-index: 100; text-align: center; vertical-align: middle; position: absolute; cursor: default; display: block; overflow: hidden; }
+.ui-spinner a.ui-spinner-button { border-top: none; border-bottom: none; } /* more specificity required here to overide default borders */
+.ui-spinner .ui-icon { position: absolute; margin-top: -8px; top: 50%; left: 0; } /* vertical centre icon */
+.ui-spinner-up { top: 0; }
+.ui-spinner-down { bottom: 0; }
+
+/* ltr (default) */
+.ui-spinner-ltr { direction: ltr; }
+.ui-spinner-ltr .ui-spinner-input { float: left; margin-left: .4em; margin-right: 22px; }
+.ui-spinner-ltr .ui-spinner-button { right: 0; }
+.ui-spinner-ltr a.ui-spinner-button { border-right: none; }
+
+/* rtl */
+.ui-spinner-rtl { direction: rtl; }
+.ui-spinner-rtl .ui-spinner-input { float: right; margin-left: 22px; margin-right: .4em; }
+.ui-spinner-rtl .ui-spinner-button { left: 0; }
+.ui-spinner-rtl a.ui-spinner-button { border-left: none; }
+
+/* TR overrides */
+div.ui-spinner { background: none; }
