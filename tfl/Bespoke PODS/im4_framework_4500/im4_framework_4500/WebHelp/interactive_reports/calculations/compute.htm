@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<META http-equiv="content-type" content="text/html; charset=utf-8">
+<TITLE>Compute</TITLE>
+<META NAME="generator" CONTENT="Adobe RoboHelp - www.adobe.com">
+<link rel="stylesheet" href="../../information_manager_v4_3_help_file_v0_9_rtf_ns.css"><script type="text/javascript" language="JavaScript" title="WebHelpSplitCss">
+<!--
+if (navigator.appName !="Netscape")
+{   document.write("<link rel='stylesheet' href='../../information_manager_v4_3_help_file_v0_9_rtf.css'>");}
+//-->
+</script>
+<SCRIPT LANGUAGE="JavaScript" TITLE="BSSC Special Effects" SRC="../../ehlpdhtm.js" name="EHELP_DHTM"></SCRIPT>
+<script type="text/javascript" language="JavaScript" title="WebHelpInlineScript">
+<!--
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//-->
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute; left:0px; top:0px; z-index:4; visibility:hidden; }
+-->
+</style><script type="text/javascript" language="javascript1.2" src="../../whmsg.js"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js"></script>
+</HEAD>
+<BODY><script type="text/javascript" language="javascript1.2">
+<!--
+if (window.gbWhTopic)
+{
+	if (window.addTocInfo)
+	{
+	addTocInfo("Interactive Reports\nCalculations\nCompute");
+addTocInfo("Interactive Reports\nCalculations\nHow to create a new Computed Column");
+addTocInfo("Interactive Reports\nCalculations\nHow to delete a Computed Column");
+addAvenueInfo("INFORMATION MANAGER V4.3 HELP FILE V0.9","interactive_reports/actions_menu/highlight.htm","interactive_reports/calculations/aggregate.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	if (window.setRelStartPage)
+	{
+	setRelStartPage("../../im_43_help.htm");
+
+		autoSync(1);
+		sendSyncInfo();
+		sendAveInfoOut();
+	}
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+//-->
+</script>
+<H3 style="border-top:2.25pt solid #ffcc00;border-bottom:2.25pt solid #ffcc00;"><IMG src="../../images/img00077.gif" border=0 height=22 width=20 alt="images\img00077.gif"> Compute</H3>
+ <P class="Exor_Main_Body" >The Compute option allows you to add a “derived” or computed column to your report Pod.  These new columns can be the result of mathematical computations, e.g. Target Date minus Completion Date, or standard Oracle functions applied to existing columns, e.g. INITCAP, LTRIM, TO_DATE etc.  The figure below shows a simple example that performs a calculation to compute the number of days late based upon subtracting one date from another.</P>
+ <P class="Image" ><IMG src="../../images/img00078.gif" border=0 height=275 width=350 alt="images\img00078.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >50</FONT><FONT style="color:#006666; " > Constructing a calculated column within an interactive report</FONT></P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="How_to_create_a_new_Computed_Column"></A>How to create a new Computed Column</H4>
+ <P class="Exor_Main_Body" >From the computation field select <FONT style="font-style:italic; " >“</FONT><FONT style="font-style:italic; " >- New Computation –</FONT><FONT style="font-style:italic; " >”</FONT> </P>
+ <P class="Exor_Main_Body" >Enter a name for the new Report Column in the “Column Heading” field</P>
+ <P class="Exor_Main_Body" >Select a Format mask from the list of values to be applied against the column, e.g. 5,210, 5,210.10, 01-JAN-2000, etc</P>
+ <P class="Exor_Main_Body" >Enter the calculation to be performed in the Computation field.  This can either be manually entered or you can use the Columns, Keypad and Functions area which simply provide shortcuts for commonly used Keys.</P>
+ <P class="Exor_Main_Body" >Within the Computation field existing Report Columns are referred to by their Alias name as displayed in the Column List. </P>
+ <P class="Image" ><IMG src="../../images/img00079.gif" border=0 height=229 width=225 alt="images\img00079.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >51</FONT><FONT style="color:#006666; " > </FONT><FONT style="color:#006666; " >Column aliases and column names</FONT></P>
+ <P class="Exor_Main_Body" >To create the new computed Column press [Apply].  The new computed column will be displayed in the Interactive Report Pod, the results of the example above are shown below </P>
+ <P class="Image" ><IMG src="../../images/img00080.gif" border=0 height=221 width=129 alt="images\img00080.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >52</FONT><FONT style="color:#006666; " > Computed column within interactive report</FONT></P>
+ <P class="Exor_Main_Body" ><IMG src="../../images/img00081.gif" border=0 height=68 width=94 alt="images\img00081.gif"> The display sequence of the new computed Column can be set using the “<A href="../actions_menu/_select_columns.htm"><FONT style="color:black; font-weight:bold; " >Select Columns</FONT></A> ” option in the Actions menu.  Computed Columns are indicated in the list by **</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="How_to_delete_a_Computed_Column"></A>How to delete a Computed Column</H4>
+ <P class="Exor_Main_Body" >From the computation field select the required value from the List of values</P>
+ <P class="Exor_Main_Body" >Press the [Delete] button.  This will remove the computed column from the Interactive Report Pod.</P>
+<script type="text/javascript" language="javascript1.2">
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+//-->
+</script>
+</BODY>
+</HTML>
