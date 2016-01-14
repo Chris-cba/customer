@@ -1,0 +1,14 @@
+CREATE OR REPLACE package RAMS.X_RMS_RSD_CSV_PACK as
+
+g_srid                   CONSTANT NUMBER                        := 6000000;
+g_srid_geographic        CONSTANT NUMBER                        := 8311;
+g_theme_id               CONSTANT NUMBER                        := 2;
+procedure P_INSERT(pi_row IN OUT X_RMS_RSD_CSV_HOLDING%ROWTYPE);
+
+procedure P_VALIDATE(pi_row IN OUT X_RMS_RSD_CSV_HOLDING%ROWTYPE);
+
+
+
+end X_RMS_RSD_CSV_PACK;
+/
+
