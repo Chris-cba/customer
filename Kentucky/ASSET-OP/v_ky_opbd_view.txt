@@ -1,0 +1,60 @@
+-- View to add location information and other data to match existing V_KY asset views
+--
+CREATE OR REPLACE FORCE VIEW EXOR.V_KY_OPBD
+(
+   RT_NE_ID,
+   RT_NE_UNIQUE,
+   BEGIN_MP,
+   END_MP,
+   DISTRICT,
+   COUNTY_NAME,
+   COUNTY,
+   RT_PREFIX,
+   RT_NUMBER,
+   RT_SUFFIX,
+   RT_SECTION,
+   RT_DESCR,
+   GOV_LEVEL,
+   EXTRACT_DATE,
+   IIT_NE_ID,
+   INV_TYPE,
+   X_SECT,
+   IIT_START_DATE,
+   IIT_END_DATE,
+   IIT_DATE_MODIFIED,
+   IIT_MODIFIED_BY,
+   TYPEOP
+)
+AS
+   SELECT pl_ne_id rt_ne_id,
+          SUBSTR (rt.ne_unique, 1, 17) rt_ne_unique,
+          pl.pl_start begin_mp,
+          pl.pl_end end_mp,
+          cnty.cnt_dist district,
+          cnty.cnt_Desc county_name,
+          cnty.cnt_code county,
+          RTRIM (rt.ne_prefix) rt_prefix,
+          TO_NUMBER (rt.ne_name_2) rt_number,
+          RTRIM (rt.ne_sub_type) rt_suffix,
+          TO_NUMBER (rt.ne_version_no) rt_section,
+          RTRIM (rt.NE_DESCR) rt_descr,
+          SUBSTR (rt.NE_Owner, 1, 2) gov_level,
+          SYSDATE Extract_Date,
+          inv.iit_ne_id iit_ne_id,
+          inv.iit_inv_type inv_type,
+          inv.iit_x_sect x_sect,
+          inv.iit_start_date iit_start_date,
+          inv.iit_end_date iit_end_date,
+          inv.iit_date_modified iit_date_modified,
+          SUBSTR (inv.iit_modified_by, 1, 28) iit_modified_by, -- attributes for OPBD                                                           ,
+          SUBSTR (IIT_CHR_ATTRIB26, 1, 1) TYPEOP
+     FROM nm_inv_items inv,
+          ky_inv_locations_tab pl,
+          nm_elements rt,
+          ky_counties cnty
+    WHERE     inv.iit_inv_type = 'OPBD'
+          AND inv.iit_ne_id = pl.iit_ne_id
+          AND rt.ne_id = pl_ne_id
+          AND rt.ne_nt_type = 'RT'
+          AND TO_NUMBER (rt.ne_name_1) = cnty.cnt_code
+   WITH READ ONLY
