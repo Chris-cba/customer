@@ -1,0 +1,18 @@
+select * from x_rms_rsd_adap
+
+select * from x_rms_rsd_adap_sdo
+
+select * from x_rms_rsd_ddap
+
+select * from x_rms_rsd_ddap_sdo
+
+select * from  x_rms_rsd_idap
+ 
+select * from  x_rms_rsd_idap_sdo
+
+select * from x_rms_rsd_rdap
+
+select * from x_rms_rsd_rdap_sdo
+
+
+select * from x_rms_rsd_pdasp
