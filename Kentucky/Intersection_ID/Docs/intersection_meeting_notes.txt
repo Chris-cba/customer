@@ -1,0 +1,33 @@
+First priority = Safety Analysis
+
+Process
+ - Create Node
+ - Create NodeAsset from Nodes Table
+ - Create a tool that allows a user to modify the NodeAsset
+	 - Spatial Select 
+		more than one node per selection
+		standard ESRI select/tools
+		add a unique number to attributes of selected NodeAsset
+	 - Intersection Type:  Intersection, Admin Boundary, Turns Allowed
+
+
+Manually populating an intersection id into the node table (in case of an addition to an existing intersection)
+
+
+Build a multi-select tool to perform this automatically.
+
+
+
+Paul to:
+ - research multiselect to update asset or node attributes
+ - send ppt
+ - put on sharepoint site
+ - send meeting invite for tue at 1:30 to start
+
+
+Keith/KYTC:
+ - continue to refine requirements (document)
+ - determine state of network after initial intersection load
+
+
+
