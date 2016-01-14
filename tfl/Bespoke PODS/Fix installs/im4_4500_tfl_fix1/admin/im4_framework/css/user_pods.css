@@ -1,0 +1,17 @@
+/* -----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //new_vm_latest/archives/customer/tfl/Bespoke PODS/Fix installs/im4_4500_tfl_fix1/admin/im4_framework/css/user_pods.css-arc   1.0   Jan 14 2016 19:52:52   Sarah.Williams  $
+--       Module Name      : $Workfile:   user_pods.css  $
+--       Date into PVCS   : $Date:   Jan 14 2016 19:52:52  $
+--       Date fetched Out : $Modtime:   Oct 21 2010 15:05:22  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+--
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+*/
+#podtree { margin-left:0.5em;  float: left; width: 175px; min-height: 18em;} * html #cols { height: 18em; } /* IE6 */
