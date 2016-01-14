@@ -1,0 +1,116 @@
+<HTML>
+<HEAD>
+<META http-equiv="content-type" content="text/html; charset=utf-8">
+<TITLE>Query Operators</TITLE>
+<META NAME="generator" CONTENT="Adobe RoboHelp - www.adobe.com">
+<link rel="stylesheet" href="../../information_manager_v4_3_help_file_v0_9_rtf_ns.css"><script type="text/javascript" language="JavaScript" title="WebHelpSplitCss">
+<!--
+if (navigator.appName !="Netscape")
+{   document.write("<link rel='stylesheet' href='../../information_manager_v4_3_help_file_v0_9_rtf.css'>");}
+//-->
+</script>
+<SCRIPT LANGUAGE="JavaScript" TITLE="BSSC Special Effects" SRC="../../ehlpdhtm.js" name="EHELP_DHTM"></SCRIPT>
+<script type="text/javascript" language="JavaScript" title="WebHelpInlineScript">
+<!--
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//-->
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute; left:0px; top:0px; z-index:4; visibility:hidden; }
+-->
+</style><script type="text/javascript" language="javascript1.2" src="../../whmsg.js"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js"></script>
+</HEAD>
+<BODY><script type="text/javascript" language="javascript1.2">
+<!--
+if (window.gbWhTopic)
+{
+	if (window.addTocInfo)
+	{
+	addTocInfo("Queries\nQuery Operators\nQuery Operators");
+addTocInfo("Queries\nQuery Operators\n=");
+addTocInfo("Queries\nQuery Operators\nlike");
+addTocInfo("Queries\nQuery Operators\n>");
+addTocInfo("Queries\nQuery Operators\n<");
+addTocInfo("Queries\nQuery Operators\nin");
+addTocInfo("Queries\nQuery Operators\nNOT NULL");
+addTocInfo("Queries\nQuery Operators\nIS NULL");
+addTocInfo("Queries\nQuery Operators\ninstr");
+addTocInfo("Queries\nQuery Operators\nDates");
+addAvenueInfo("INFORMATION MANAGER V4.3 HELP FILE V0.9","queries/building_an_ad_hoc_query.htm","queries/_saving_an_ad_hoc_query.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	if (window.setRelStartPage)
+	{
+	setRelStartPage("../../im_43_help.htm");
+
+		autoSync(1);
+		sendSyncInfo();
+		sendAveInfoOut();
+	}
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+//-->
+</script>
+<H3 style="border-top:2.25pt solid #ffcc00;border-bottom:2.25pt solid #ffcc00;">Query Operators</H3>
+ <P class="Exor_Main_Body" >The available query operators are shown below. Note that some operators are not suitable for use with text fields.</P>
+ <P class="Image" ><IMG src="../../images/img00123.gif" border=0 height=211 width=121 alt="images\img00123.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >73</FONT><FONT style="color:#006666; " > Query Operators</FONT></P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="_"></A>=</H4>
+ <P class="Exor_Main_Body" >Returns an exact match to the comparator value or text string</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="like"></A>like</H4>
+ <P class="Exor_Main_Body" >Returns all records with a text field beginning with comparator value. This operator will not search for strings within the middle of a text field. Not suitable for numeric or date fields.</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="__1"></A>&gt;</H4>
+ <P class="Exor_Main_Body" >Returns all records greater than the comparator value. Not suitable for text fields.</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="__2"></A>&gt;=</H4>
+ <P class="Exor_Main_Body" >Returns all records greater than or equal to the comparator value. Not suitable for text fields.</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="__3"></A>&lt;</H4>
+ <P class="Exor_Main_Body" >Returns all records less than the comparator value. Not suitable for text fields.</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="__4"></A>&lt;=</H4>
+ <P class="Exor_Main_Body" >Returns all records less than or equal to the comparator value. Not suitable for text fields.</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="__5"></A>!=</H4>
+ <P class="Exor_Main_Body" >Returns all records that are not equal to the comparator value. Not suitable for date fields.</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="in"></A>in</H4>
+ <P class="Exor_Main_Body" >Returns records that exactly match one of a series or comma separated texts strings e.g John Smith, Paul Jones would return record where a name was either John Smith or Paul Jones. Not suitable for numeric or date fileds </P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="NOT_NULL"></A>NOT NULL</H4>
+ <P class="Exor_Main_Body" >Returns all records that have a value within a field</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="IS_NULL"></A>IS NULL</H4>
+ <P class="Exor_Main_Body" >Returns all records that do not have a value in the field</P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="instr"></A>instr</H4>
+ <P class="Exor_Main_Body" >Returns all records where the comparator value is contained within a text field. Not suitable for numeric or date fields.</P>
+ <H3 style="border-top:2.25pt solid #ffcc00;border-bottom:2.25pt solid #ffcc00;"><A name="Dates"></A>Dates</H3>
+ <P class="Exor_Main_Body" >A date picker is not available within the Query Builder. Dates must be entered in the format 01-Jan-2010</P>
+ <P class="Exor_Main_Body" >To find records between two dates build a query using two query statements a “&lt;=” and a “&gt;=” (your System Administrator will need to make the date field available to use in two query statements) as shown below.</P>
+ <P class="Image" ><IMG src="../../images/img00124.gif" border=0 height=102 width=503 alt="images\img00124.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >74</FONT><FONT style="color:#006666; " > Querying between dates</FONT></P>
+ <P class="Exor_Main_Body" ><FONT style="font-style:italic; " >You can combine, text, date and value query statements using the “and” and “or” options.</FONT></P>
+<script type="text/javascript" language="javascript1.2">
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+//-->
+</script>
+</BODY>
+</HTML>
