@@ -1,0 +1,32 @@
+to resolve,  add the following index
+
+create index zidx_HTS_test on hig_audits(HAUD_TABLE_NAME,HAUD_TIMESTAMP,HAUD_ATTRIBUTE_NAME);
+drop index zidx_HTS_test;
+
+create index zidx_WOR_test on work_orders(WOR_CHAR_ATTRIB100, WOR_CHAR_ATTRIB104);
+drop index zidx_WOR_test;
+
+
+
+Create a table and trigger to add vaules we care about
+
+
+Create a materilized View and update it 3 times a day.
+
+
+
+im_tfl_wor
+
+create index im_tfl_wor on work_orders(WOR_CHAR_ATTRIB100, WOR_CHAR_ATTRIB104);
+drop index im_tfl_wor;
+
+
+create index im_tfl_wor_100 on work_orders(WOR_CHAR_ATTRIB100);
+drop index im_tfl_wor_100;
+
+create index im_tfl_wor_104 on work_orders(WOR_CHAR_ATTRIB104);
+drop index im_tfl_wor_104;
+
+
+CREATE INDEX IM_TFL_HAUD ON HIG_AUDITS (HAUD_TABLE_NAME,HAUD_TIMESTAMP,HAUD_ATTRIBUTE_NAME);
+drop index IM_TFL_HAUD;
