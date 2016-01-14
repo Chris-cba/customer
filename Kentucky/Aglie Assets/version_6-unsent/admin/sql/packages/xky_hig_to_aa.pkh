@@ -1,0 +1,17 @@
+create or replace package xky_hig_to_aa is
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	Author: JMM
+	UPDATE01:	Original, 2013.10.29, JMM
+*/
+	procedure process_route_events(s_test_route in varchar2 default  '%', b_debug_in in boolean default false, b_fill_work_flow_gaps in boolean default false);
+				
+		
+	procedure generate_asset_info(s_user in varchar2 default 'EXOR_TO_AA');
+		
+	procedure generate_report_info(d_date_overide in date default null, b_process_spatial in boolean default true);
+end xky_hig_to_aa;
+/
