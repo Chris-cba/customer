@@ -1,0 +1,27 @@
+create or replace package x_ctdot_ploc_inv_load is	
+	/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	file: x_ctdot_ploc_inv_load
+	Author: JMM
+	UPDATE01:	Original, 2014.08.19, JMM
+*/
+
+	type  typ_p_rec_old is table of V_LOAD_INV_MEM_ON_ELEMENT%ROWTYPE;
+	
+	procedure p_load_inv(p_row_in in X_V_INV_ITEM_LOADER%rowtype);
+	procedure p_validate_inv(p_row_in in X_V_INV_ITEM_LOADER%rowtype);
+	
+	procedure p_load_loc(p_row_in in X_V_LOAD_INV_MEM_ON_ELEMENT_P%rowtype);
+	procedure p_validate_loc(p_row_in in X_V_LOAD_INV_MEM_ON_ELEMENT_P%rowtype);
+	
+	procedure process(p_row_in in X_V_INV_ITEM_LOADER%rowtype, b_validate boolean default false);
+	
+	PROCEDURE LOAD_OR_VAL_ON_ELEMENT (P_REC typ_p_rec_old,P_VALIDATE_ONLY BOOLEAN);
+	
+	procedure process_ploc(p_row_in in X_V_LOAD_INV_MEM_ON_ELEMENT_P%rowtype, b_validate boolean default false);
+	
+	function get_iit_id_proj(s_proj_number varchar2) return number;
+end x_ctdot_ploc_inv_load;
