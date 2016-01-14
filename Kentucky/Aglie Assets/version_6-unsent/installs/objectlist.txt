@@ -1,0 +1,41 @@
+--..\admin\sql\tables\xaa_route_temp.sql
+table xaa_route_temp_sql
+
+--..\admin\sql\tables\XAA_SPATIAL_AUDIT.sql
+table XAA_SPATIAL_AUDIT
+
+--..\admin\sql\tables\xaa_asset_type.sql
+table xaa_asset_type
+TABLE XAA_ASSET_ATTRIB
+
+--..\admin\sql\tables\xaa_length_change.sql
+table xaa_length_change
+SEQUENCE xaa_leng_change_seq
+
+--..\admin\sql\tables\xaa_loc_ident_net_ref.sql
+table XAA_LOC_IDENT
+table XAA_NET_REF
+
+--..\admin\sql\views\xaa_route_sdo.sql
+view XAA_ROUTE_SDO
+
+--..\admin\sql\views\xaa_route.sql
+view  xaa_route
+
+--..\admin\sql\views\xaa_route_all.sql
+view  xaa_route_all
+
+
+--..\admin\sql\triggers\xaa_SPATIAL_AUDIT_trg.sql
+trigger xaa_spatial_audit_trg 
+
+--..\admin\sql\packages\x_log_table.pkh
+package x_log_table
+
+--..\admin\sql\packages\xky_hig_to_aa.pkh
+package body xky_hig_to_aa
+
+
+--..\admin\sql\tables\xaa_user.sql
+tablespace tbs_exor_to_aa
+user exor_to_aa
