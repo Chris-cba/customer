@@ -1,0 +1,8 @@
+Create or replace package xky_view as
+	 g_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.0  $"';
+	
+	Procedure create_view(v_name varchar2);
+	FUNCTION get_version RETURN varchar2;
+	FUNCTION get_body_version RETURN varchar2;
+	PROCEDURE rep_params ;
+end xky_view;
