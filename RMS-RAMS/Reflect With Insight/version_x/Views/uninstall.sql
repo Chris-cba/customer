@@ -1,0 +1,10 @@
+drop view x_rms_rsd_ddap_sdo;
+drop view x_rms_rsd_idap_sdo;
+drop view x_rms_rsd_rdap_sdo;
+drop view x_rms_rsd_adap_sdo;
+drop view x_rms_rsd_ddap;
+drop view x_rms_rsd_idap;
+drop view x_rms_rsd_rdap;
+drop view x_rms_rsd_adap;
+drop view x_rms_rsd_pdasp;
+drop package XRMS_CONTEXT_RPT_DATES;
