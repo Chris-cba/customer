@@ -1,0 +1,164 @@
+select * from xaa_loc_ident where route_name like '030-US%';
+
+select * from xaa_loc_ident where loc_ident like '69258'
+
+select * from xaa_net_ref;
+
+select (new_offset_to - new_offset_from) n, (offset_to - offset_from) o, a.* from xaa_net_ref a  order by 8,9;
+
+select (new_offset_to - new_offset_from) n, (offset_to - offset_from) o, a.* from xaa_net_ref a where process_msg like '%Old%';
+
+ select * from nm_members_all where nm_ne_id_in = NM3NET.GET_NE_ID('056-KY-1747  -000') order by nm_slk;
+
+exec XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS(632359, true);
+
+exec XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS(69258, true);
+
+exec XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS(69258, true);
+
+exec XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS(636117, true);
+
+exec XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS('63611%');
+
+exec XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS(10, true);
+
+exec XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS;
+
+ 
+to look at :   63611 636118 636111
+
+exec xky_aa_test('030-US-0431  -000',14, '1-JAN-1950');
+
+select * from nm_elements_all where ne_unique = '037-US-0421  -000';
+
+1744
+89.48	104.26
+
+048-KY-0038  -000	28	29.474
+
+select nm_slk, nm_end_slk, a.* from nm_members_all a where nm_ne_id_in = 2759 and nm_end_date is not null order by 1;
+
+select * from xaa_route where route_name = '024-US-0041A -000';
+
+037-US-0421  -000	0	3.072	WORK_ORDERS_LOCATION	12/3/2010 12:40:44 PM	037-US-0421  -000	0	1.328
+
+exec X_LOG_TABLE.DEBUG_ON;
+
+
+select * from x_log_information 
+where 1=1
+and info2 like '%%'
+ order by 1 desc, 2 desc
+
+--------------------
+------------------
+-------------
+
+                select a.slk sp, a.end_slk ep,b.* from xaa_route_all_recal a, nm_members_all b where
+                    1=1
+                    and b.nm_ne_id_of = a.nm_ne_id_of 
+                    and a.nm_ne_id_in = NM3NET.GET_NE_ID(:n_rt_id)
+                    and a.slk >= :n_slk
+                    and a.end_slk <= :n_end_slk    
+                    and nm_obj_type in (:s_route_type)
+                    and (b.nm_start_date <= trunc(:d_eff_date) AND NVL (b.nm_end_date, TO_DATE ('99991231', 'YYYYMMDD')) >  trunc(:d_eff_date))                    
+                    order by a.slk
+                    ;
+                    
+                    024-US-0041A -000    0    5.744
+                    
+                    
+                    
+                    select nm3net.get_ne_unique(ne_id_in), a.* from xaa_route_temp_sql a order by slk;
+                    
+                    .455-.228
+                    
+                    3318446    1744 1.966    2.193    S
+                    3318499    1744 2.882    3.739    S
+                    
+                    
+                    
+                    
+                    Removed??  Why
+                    2.193    2.522    1744    259041
+                    2.522    2.882    1744    259043
+                    
+                    select * from x_log_information  
+                    where 1=1
+                    --and info2 like '%7069031%' --(7068937,7069028,7069031)
+                    order by 1 desc, 2 desc
+                    
+                    select * from nm_element_history
+                     where neh_ne_id_old = :n_ne_id order by neh_id
+                    
+                    8493788
+                    
+                    
+                    8493764
+                    
+                    select * from nm_elements_all where ne_id = 8493764;
+                    
+                    select * from nm_nodes_all where no_node_id = 261584
+                    
+                    select * from nm_member_history where nmh_nm_ne_id_of_old in ( 259041, 8493764)
+                    and nmh_nm_obj_type = 'RT'
+                    
+                    select * from nm_members_all where nm_ne_id_of = 8493764
+                    
+                    
+                    
+                   select ne_id, ne_unique, ne_no_start, ne_no_end from nm_elements where ne_id in(259023,259063);
+                   
+                   select ne_no_start, ne_no_end, a.* from nm_elements a where ne_group = '024-US-0041A -000' 
+                   and ne_no_start in(357970,357972,357974,357981, 359476,357978,357980)
+                   order by 1
+                   
+                   end_slk = 5.744
+                  
+                select nm3net.get_ne_unique(ne_id_in), a.* from xaa_route_temp_sql a order by slk;
+                
+                   select nm3net.get_ne_unique(ne_id_in)
+                   , ne_no_start, ne_no_end
+                   , lead (ne_no_start) over (partition by ne_id_in order by slk) next_start_no
+                   , lead (ne_id_in) over (partition by ne_id_in order by slk) next_ne_id_in
+                   , lead (slk) over (partition by ne_id_in order by slk) next_slk
+                   ,   a.* 
+                   from (select distinct * from xaa_route_temp_sql) a                   
+                   ,nm_elements b                   
+                   where a.ne_id_of = b.ne_id
+                   order by ne_id_in,slk;
+                   
+                   select count(*) from (select distinct * from xaa_route_temp_sql) a ,nm_elements b   where a.ne_id_of = b.ne_id and ne_no_start = 257837;
+                   
+                   select * from nm_members where nm_ne_id_in = 1744 and nm_slk >= 1.738 and nm_end_slk <= 4.116 order by nm_seq_no;
+                   
+                 
+                    
+                    258903
+                    
+                    
+                    
+select  count(*) over () cnt, ne_id_in , min(slk) start_slk ,max(end_slk) end_slk, op        from (   
+  select         
+        ne_id_in , ne_id_of , slk, end_slk, op
+        , Case when (lag (slk) over (partition by ne_id_in,OP order by slk, end_slk) = slk AND lag (end_slk) over (partition by ne_id_in order by slk, end_slk) = end_slk) then (last_value (DBTSMP ignore nulls) over (partition by ne_id_in order by slk, end_slk rows between unbounded preceding and 1 preceding))
+            when lag (end_slk) over (partition by ne_id_in,OP order by slk, end_slk) <> slk 
+            OR (lag (end_slk) over (partition by ne_id_in,OP order by slk, end_slk) is null) then slk
+            else (last_value (DBTSMP ignore nulls) over (partition by ne_id_in,OP order by slk, end_slk rows between unbounded preceding and 1 preceding)) end DBSMP
+        from (                            
+                select 
+                        ne_id_in , ne_id_of, slk , end_slk,  OPT OP       
+                        , Case when (lag (slk) over (partition by ne_id_in, OPT order by slk, end_slk) = slk AND lag (end_slk) over (partition by ne_id_in order by slk, end_slk) = end_slk) then null
+                                when (lag (end_slk) over (partition by ne_id_in, OPT order by slk, end_slk) <> slk)   
+                                        OR (lag (end_slk) over (partition by ne_id_in, OPT order by slk, end_slk) is null) 
+                                            then slk  else null end DBTSMP               
+                     from 
+                        --(select distinct a.*, case when op = 'C' then 'C' else null end OPT  from xaa_route_temp_sql a)
+                        (select distinct ne_id_of, ne_id_in, slk,end_slk, decode(nvl(to_char(ne_end_date), 'O'),'O',null,'C') OPT from xaa_route_temp_sql a,nm_elements_all b where	a.ne_id_of = b.ne_id group by  ne_id_in, slk,end_slk, ne_id_of,ne_end_date order by ne_id_in, slk,end_slk )
+                    where 1=1                       
+                        order by ne_id_in, slk, end_slk, dbtsmp                                           
+                        )                                 
+            )                                
+            group by    ne_id_in, DBSMP, op
+            order by op nulls first,ne_id_in, start_slk 
+            ;
