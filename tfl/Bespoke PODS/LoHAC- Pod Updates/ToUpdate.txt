@@ -1,0 +1,46 @@
+Report Title:  Works Order to Instruct 
+	top pod:  WOWT001
+	notes:  No Data
+
+Report Title:  Re-Submitted Works Orders
+	top pod:  WOWT002
+
+Report Title:  EOT Request 
+	top pod: IM41015
+		modify undelining quires,  need data to test. need to make drill down and top level pod.
+		Done awaiting data for review
+	
+
+Report Title:  Works Order Due to be Completed 
+	top pod: IM41020
+		Modified top level pods,  drill downs need to be fixed
+		Notes:  Complete
+
+Report Title:  Works Order – Draft Status 
+	top pod: WOWT003
+	notes:	Need to confrim(top level):  AND NVL (WOR_CHAR_ATTRIB100, 'Empty') NOT IN ('RDY', 'HLD', 'REJ')
+	Need to address contract type
+
+Report Title:  Available Defects 
+	top pod: IM41030
+	Submitted:   issue with document and maps
+
+Report Title:  Rejected Works Order 
+	top Pod:  IM41035
+	Notes:  Done, Awaiting review
+	
+Report Title:  Held Works Order 
+	Top Pod: IM41036
+	Notes:  No data so moving on
+	
+Report Title:  Updated EOTs 
+	Top Pod: IM41040
+	Notes:  No Data, Moving on
+
+	
+	
+
+
+																								Held Works Order
+																								
+																								WOWT001
