@@ -1,0 +1,38 @@
+<script>
+function showLarimerNetonMap(pFeatureID){
+  
+   var pLayerName = 'IM_NETWORK';
+
+   $("#mapholder").dialog('open');
+   
+   showMapNoDisplay();
+   
+   removeTemplated();
+    
+   var xthemebasedfoi = new MVThemeBasedFOI('locator', dataSource + '.' + pLayerName);
+   xthemebasedfoi.setQueryParameters(pFeatureID,pFeatureID);
+    
+   xthemebasedfoi.setBringToTopOnMouseOver(true);
+   xthemebasedfoi.enableInfoTip(true);
+   xthemebasedfoi.setVisible(true);
+   xthemebasedfoi.setInfoWindowStyle("MVInfoWindowStyle1");
+   xthemebasedfoi.setEventListener("mouse_click", foiClick);
+   xthemebasedfoi.setBoundingTheme(true);
+   mapview.addThemeBasedFOI(xthemebasedfoi);
+   
+   mapview.display();
+   
+}
+
+function doDrillDown(i, k, j, h, g, f, e, c, b, a, u, t, r, q, p, o) {
+    var m = $v("pFlowId");
+    var n = $v("pInstance");
+    setSessionValue("MODULE_ID", i);
+    var s = "P6_MODULE,P6_PARAM1,P6_PARAM2,P6_PARAM3,P6_PARAM4,P6_PARAM5,P6_PARAM6,P6_PARAM7,P6_PARAM8,P6_PARAM9,P6_PARAM10,P6_PARAM11,P6_PARAM12,P6_PARAM13,P6_PARAM14,P6_PARAM15";
+    var d = i + "," + k + "," + j + "," + h + "," + g + "," + f + "," + e + "," + c + "," + b + "," + a + "," + u + "," + t + "," + r + "," + q + "," + p + "," + o;
+    var l = "f?p=" + m + ":6:" + n + ":::RP:" + s + ":" + d;
+    window.location = l
+}
+
+
+</script>
