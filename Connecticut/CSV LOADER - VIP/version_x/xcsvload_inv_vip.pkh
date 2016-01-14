@@ -1,0 +1,21 @@
+CREATE OR REPLACE PACKAGE xcsvload_inv_vip IS
+ /*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	file:   xcsvload_inv_vip
+	Author: JMM
+	UPDATE01:	Original - Modified to allow dual asset from single row, 2014.06.11, JMM
+*/
+type  typ_p_rec_old is table of V_LOAD_INV_MEM_ON_ELEMENT%ROWTYPE;
+
+PROCEDURE load_on_element (p_rec x_v_load_inv_mem_on_element%ROWTYPE);
+
+PROCEDURE validate_on_element (p_rec x_v_load_inv_mem_on_element%ROWTYPE);
+
+procedure LOAD_OR_VAL_ON_ELEMENT (P_REC           typ_p_rec_old
+                                 ,P_VALIDATE_ONLY BOOLEAN
+                                 );
+
+end xcsvload_inv_vip;
