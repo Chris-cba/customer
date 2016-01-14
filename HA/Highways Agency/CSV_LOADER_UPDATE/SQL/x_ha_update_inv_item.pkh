@@ -1,0 +1,17 @@
+create or replace package  x_ha_update_inv_item as
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	file: x_ha_update_inv_item.pkh
+	Author: JMM
+	UPDATE01:	Original, 2014.07.28, JMM
+*/
+
+	procedure p_update(p_row_in in v_ha_update_inv%rowtype);
+	procedure p_validate(p_row_in in v_ha_update_inv%rowtype);
+	
+	procedure process(p_row_in in v_ha_update_inv%rowtype, b_validate boolean default false);
+
+end x_ha_update_inv_item;
