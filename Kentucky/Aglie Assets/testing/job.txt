@@ -1,0 +1,14 @@
+DECLARE
+   x   NUMBER;
+BEGIN
+   sys.DBMS_JOB.submit (job         => x,
+                        what        => '
+										-- Running XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS()
+										XKY_HIG_TO_AA.PROCESS_ROUTE_EVENTS;
+										'
+    ,next_date   => TO_DATE (SYSDATE)                        
+   ,no_parse  => false
+  );
+  sys.dbms_output.put_line('Job Number is: ' || to_char(x));
+commit;
+end;
