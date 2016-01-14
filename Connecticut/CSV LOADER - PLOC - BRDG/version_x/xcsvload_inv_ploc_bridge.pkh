@@ -1,0 +1,22 @@
+CREATE OR REPLACE PACKAGE xcsvload_inv_ploc_bridge IS
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	file: xcsvload_inv_ploc_bridge
+	Author: JMM
+	UPDATE01:	Original, 2014.06.12, JMM
+*/
+
+type  typ_p_rec_old is table of V_LOAD_INV_MEM_ON_ELEMENT%ROWTYPE;
+
+PROCEDURE load_on_element (p_rec x_v_load_ploc_brdg_mem_on_ele%ROWTYPE);
+
+PROCEDURE validate_on_element (p_rec x_v_load_ploc_brdg_mem_on_ele%ROWTYPE);
+
+procedure LOAD_OR_VAL_ON_ELEMENT (P_REC           typ_p_rec_old
+                                 ,P_VALIDATE_ONLY BOOLEAN
+                                 );
+
+end xcsvload_inv_ploc_bridge;
