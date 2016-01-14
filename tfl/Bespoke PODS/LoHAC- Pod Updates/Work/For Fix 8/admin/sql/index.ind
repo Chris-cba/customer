@@ -1,0 +1,17 @@
+declare
+	c_cnt  number;
+Begin
+
+	select count(*) into c_cnt from user_indexes where table_owner = 'HIGHWAYS' and index_name = 'IM_TFL_WOR_DATE';
+	
+	if c_cnt = 0 then 
+		execute immediate 'create index  IM_TFL_WOR_DATE on work_orders(wor_date_raised)';
+	   end if;
+
+	select count(*) into c_cnt from user_indexes where table_owner = 'HIGHWAYS' and index_name = 'IM_TFL_WOL_STATUS_CODE';
+	
+	if c_cnt = 0 then 
+		execute immediate 'create index  IM_TFL_WOL_STATUS_CODE on work_order_lines(wol_status_code)';
+	   end if;
+end;
+/
