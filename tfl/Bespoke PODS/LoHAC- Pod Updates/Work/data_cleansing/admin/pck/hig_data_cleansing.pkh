@@ -1,0 +1,82 @@
+REM////////////////////////////////////////////////////////////////////////////
+REM   Subversion controlled - SQL template
+REM////////////////////////////////////////////////////////////////////////////
+REM Id              : $Id:   //new_vm_latest/archives/customer/tfl/Bespoke PODS/LoHAC- Pod Updates/Work/data_cleansing/admin/pck/hig_data_cleansing.pkh-arc   1.0   Jan 14 2016 22:37:24   Sarah.Williams  $
+REM Date            : $Date:   Jan 14 2016 22:37:24  $
+REM Revision        : $Revision:   1.0  $
+REM Changed         : $LastChangedDate:    $
+REM Last Revision   : $LastChangedRevision:$
+REM Last Changed By : $LastChangedBy: $
+REM URL             : $URL: $
+REM ///////////////////////////////////////////////////////////////////////////
+REM Descr: This package was originally written by PS. I have been asked to
+REM        modify the package so that it makes use of separate FTP locations.
+REM    
+
+CREATE OR REPLACE package hig_data_cleansing
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //new_vm_latest/archives/customer/tfl/Bespoke PODS/LoHAC- Pod Updates/Work/data_cleansing/admin/pck/hig_data_cleansing.pkh-arc   1.0   Jan 14 2016 22:37:24   Sarah.Williams  $
+--       Module Name      : $Workfile:   hig_data_cleansing.pkh  $
+--       Date into PVCS   : $Date:   Jan 14 2016 22:37:24  $
+--       Date fetched Out : $Modtime:   Jul 08 2013 14:52:16  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : H.Buckley
+--
+--    hig_data_cleansing
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation (c) 2013
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="RemoveData">
+-- This procedure will remove (delete) any data that is within the specified tables
+-- PRIOR to and INCLUDING a specified date.
+Procedure RemoveData( expiration_date in date );
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end hig_data_cleansing;
+/
