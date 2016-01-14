@@ -1,0 +1,27 @@
+On after insert & update
+
+When CE_SOURCE = FMS  Changes
+Referred
+	newtable.service_request_id -> CE_DOC_ID
+	newtable.status -> lookup.Status = OPEN
+	newtable.description ->lookup.description = ‘This call has been referred to an Officer within the Highways Department of Oxfordshire County Council’
+Inspected
+	newtable.service_request_id -> CE_DOC_ID
+	newtable.status -> lookup.Status = OPEN
+	newtable.description ->lookup.description = The issue reported in this call has been inspected by an Oxfordshire County Council Highways Inspector and appropriate action has been taken
+Completed
+	newtable.service_request_id -> CE_DOC_ID
+	newtable.status -> lookup.Status = CLOSED
+	newtable.description ->lookup.description =  ‘The issue reported in this call has now been fixed’
+	
+	
+	
+Check domains for referred, inspected and completed
+	
+	
+	doc_compl_source = FMS
+	Doc_ID
+	doc_status_code
+	
+	
+	
