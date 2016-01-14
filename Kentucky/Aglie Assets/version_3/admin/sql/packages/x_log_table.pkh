@@ -1,0 +1,17 @@
+create or replace package x_log_table is
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	Author: JMM
+	UPDATE01:	Original, 2013.10.29, JMM
+*/
+
+	procedure init;
+	procedure clean(s_module varchar2);
+	procedure log_item(s_module varchar2, s_area varchar2, s_info1 varchar2, s_info2 varchar2);
+end x_log_table;
+/
+
+
