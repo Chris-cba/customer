@@ -1,0 +1,132 @@
+
+Install Date 12-MAY-2014 19:45:48                                                                                       
+
+Install Running on exor@ktky.dubpsdb1 - DB ver : 11.2.0.2.0                                                             
+
+Current version of HIG 4.5.0.0                                                                                          
+Current version of NET 4.5.0.0                                                                                          
+Starting updates ...
+*** RUNNING: ..\admin\sql\METP.sql ***
+
+1 row created.
+
+
+Commit complete.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+Commit complete.
+
+
+1 row created.
+
+
+Commit complete.
+
+
+1 row created.
+
+
+Commit complete.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+Commit complete.
+
+
+1 row created.
+
+
+1 row created.
+
+
+Commit complete.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+*** RUNNING: ..\admin\sql\xKYCT_META_Insert.pkh ***
+
+Package created.
+
+*** RUNNING: ..\admin\sql\xKYCT_META_Insert.pkb ***
+*** RUNNING: ..\admin\sql\xKYCT_METP_fk.sql ***
+
+Function created.
+
+*** RUNNING: ..\admin\sql\table_x_xnminvitemsall_metc.sql ***
+
+PL/SQL procedure successfully completed.
+
+
+Table created.
+
+*** RUNNING: ..\admin\sql\x_xnminvitemsall_metc.sql ***
+
+Trigger created.
+
+*** RUNNING: ..\admin\sql\MetC_compound.sql ***
+
+Trigger created.
+
+*** RUNNING: ..\admin\sql\MetP_compound.sql ***
+
+Trigger created.
+
+*** RUNNING: ..\admin\sql\METP_CSV_LOAD.sql ***
+
+PL/SQL procedure successfully completed.
+
+*** RUNNING: ..\admin\sql\METC_CSV_LOAD.sql ***
+
+PL/SQL procedure successfully completed.
+
