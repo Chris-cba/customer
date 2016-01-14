@@ -1,0 +1,11 @@
+create or replace package xKYTC_META_Insert
+as
+    type fldArray is table of nm_inv_items_all%rowtype index by binary_integer;
+    newRows fldArray;
+    updRows fldArray;
+    empty   fldArray;
+    bypass_flag boolean := FALSE;
+
+end xKYTC_META_Insert;
+
+/
