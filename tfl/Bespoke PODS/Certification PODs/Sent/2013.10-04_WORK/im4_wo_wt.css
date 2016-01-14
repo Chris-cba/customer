@@ -1,0 +1,51 @@
+/* -----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //new_vm_latest/archives/customer/tfl/Bespoke PODS/Certification PODs/Sent/2013.10-04_WORK/im4_wo_wt.css-arc   1.0   Jan 14 2016 19:38:04   Sarah.Williams  $
+--       Module Name      : $Workfile:   im4_wo_wt.css  $
+--       Date into PVCS   : $Date:   Jan 14 2016 19:38:04  $
+--       Date fetched Out : $Modtime:   Mar 15 2013 18:34:28  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+--
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+*/
+
+
+#P10_REASON, #P10_COMMENT{
+    width: 460px;    
+}
+
+#P20_REASON, #P20_COMMENT{
+    width: 460px;    
+}
+
+.promoteZ {
+        z-index: 2006; /* Dialog z-index is 1006*/
+} 
+
+#P10_FORWARD_TO{
+	width:230px;
+}
+
+#wolineinfo {
+position: absolute;
+top: 0; left: 0;
+z-index: 10;
+background:#ffc;
+background:#EFEFEF;
+padding:5px;
+border:1px solid #CCCCCC;
+/* text-align:center; */
+font-weight:bold;
+width:80%;
+min-height:10px;
+overflow:auto;
+}
+#wolmsg{
+overflow:auto;
+}
