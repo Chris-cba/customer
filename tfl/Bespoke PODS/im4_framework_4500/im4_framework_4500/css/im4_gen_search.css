@@ -1,0 +1,57 @@
+/* -----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid           : $Header:   //new_vm_latest/archives/customer/tfl/Bespoke PODS/im4_framework_4500/im4_framework_4500/css/im4_gen_search.css-arc   1.0   Jan 14 2016 21:14:50   Sarah.Williams  $
+--       Module Name      : $Workfile:   im4_gen_search.css  $
+--       Date into PVCS   : $Date:   Jan 14 2016 21:14:50  $
+--       Date fetched Out : $Modtime:   Oct 21 2010 15:05:22  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+--
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+*/
+/* #collistcontainer { float: left; width: 65%; min-height: 12em; } * html #collistcontainer { height: 12em; } *//* IE6 */
+
+/* #collistcontainer { width: 100%; height: 50%; } * html #collistcontainer { height: 12em; } */
+
+#gensearch { margin-left:0.5em;  float: left; width: 175px; min-height: 18em;} * html #cols { height: 18em; } /* IE6 */
+#saved { margin-left:0.5em; float: left; width: 500px; min-height: 18em;  } * html #cols { height: 18em; } /* IE6 */
+
+
+#cols1 { float: left; width: 185px; min-height: 18em; } * html #cols { height: 18em; } 
+
+
+ #col_list { float: left; width: 200px; min-height: 18em; } * html #col_list { height: 18em; } 
+			.col_list.custom-state-active { background: #eee; }
+			.col_list li { float: left; width: 170px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
+			.col_list li h5 { margin: 0 0 0.4em; cursor: move; }
+			.col_list li a { float: right; }
+			.col_list li a.ui-icon-zoomin { float: left; }
+			.col_list li img { width: 100%; cursor: move; }
+
+
+/* #trash { float: right; width: 60%; min-height: 18em; padding: 1%;} * html #trash { height: 18em; } */
+#trash { float: left; width: 550px; min-height: 18em; padding: 1%;} * html #trash { height: 18em; } 
+			#trash h4 { line-height: 16px; margin: 0 0 0.4em; }
+			#trash h4 .ui-icon { float: left; }
+			#trash .col_list h5 { display: none; }
+
+#searchCols {
+	width: 500px;
+}
+
+.saved {
+	text-align:left;
+	width: 50px;
+}
+
+.savepanel {
+	width:450px
+}
+
+
+
