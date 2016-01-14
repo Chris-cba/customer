@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<META http-equiv="content-type" content="text/html; charset=utf-8">
+<TITLE>Aggregate</TITLE>
+<META NAME="generator" CONTENT="Adobe RoboHelp - www.adobe.com">
+<link rel="stylesheet" href="../../information_manager_v4_3_help_file_v0_9_rtf_ns.css"><script type="text/javascript" language="JavaScript" title="WebHelpSplitCss">
+<!--
+if (navigator.appName !="Netscape")
+{   document.write("<link rel='stylesheet' href='../../information_manager_v4_3_help_file_v0_9_rtf.css'>");}
+//-->
+</script>
+<SCRIPT LANGUAGE="JavaScript" TITLE="BSSC Special Effects" SRC="../../ehlpdhtm.js" name="EHELP_DHTM"></SCRIPT>
+<script type="text/javascript" language="JavaScript" title="WebHelpInlineScript">
+<!--
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//-->
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute; left:0px; top:0px; z-index:4; visibility:hidden; }
+-->
+</style><script type="text/javascript" language="javascript1.2" src="../../whmsg.js"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js"></script>
+</HEAD>
+<BODY><script type="text/javascript" language="javascript1.2">
+<!--
+if (window.gbWhTopic)
+{
+	if (window.addTocInfo)
+	{
+	addTocInfo("Interactive Reports\nCalculations\nAggregate");
+addTocInfo("Interactive Reports\nCalculations\nHow to create a new Aggregation");
+addTocInfo("Interactive Reports\nCalculations\nHow to remove an Aggregation");
+addAvenueInfo("INFORMATION MANAGER V4.3 HELP FILE V0.9","interactive_reports/calculations/compute.htm","interactive_reports/charts/chart.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	if (window.setRelStartPage)
+	{
+	setRelStartPage("../../im_43_help.htm");
+
+		autoSync(1);
+		sendSyncInfo();
+		sendAveInfoOut();
+	}
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+//-->
+</script>
+<H3 style="border-top:2.25pt solid #ffcc00;border-bottom:2.25pt solid #ffcc00;"><IMG src="../../images/img00082.gif" border=0 height=20 width=22 alt="images\img00082.gif"> Aggregate</H3>
+ <P class="Exor_Main_Body" >The Aggregate option allows mathematical computations to be performed against Report Columns, the results of which are displayed after each Control Break and at the end of the Report Pod within the column against which they are defined.  Aggregates can only be performed against numeric columns including any numeric columns created as the result of a “<A href="compute.htm"><FONT style="color:black; font-weight:bold; " >Compute</FONT></A><FONT style="font-weight:bold; " > </FONT>” operation.  </P>
+ <P class="Exor_Main_Body" >An example Aggregate operation to compute the Average value of a Column called “Days Late” (the ** which precedes the Column Name indicates that it is a derived “computed Column”) is shown below.</P>
+ <P class="Image" ><IMG src="../../images/img00083.gif" border=0 height=127 width=229 alt="images\img00083.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >53</FONT><FONT style="color:#006666; " > Defining an Aggregate calculation</FONT></P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="How_to_create_a_new_Aggregation"></A>How to create a new Aggregation</H4>
+ <P class="Exor_Main_Body" >From the Aggregation field select <FONT style="font-style:italic; " >“</FONT><FONT style="font-style:italic; " >- New Aggregation –</FONT><FONT style="font-style:italic; " >”</FONT> </P>
+ <P class="Exor_Main_Body" >Select the required mathematical Function for the Aggregation from the list  of available methods</P>
+ <P class="Exor_Main_Body" >Select the Column to apply the mathematical function to.  Only numeric Columns will be displayed.</P>
+ <P class="Exor_Main_Body" ><FONT style="font-style:italic; " >The name of the Aggregation will be automatically created as a concatenation of the selected Function and the Column Name, e.g. Average:**Days Late.</FONT></P>
+ <P class="Exor_Main_Body" ><FONT style="font-style:italic; " >Multiple Aggregations may be applied simultaneously if required.</FONT></P>
+ <P class="Exor_Main_Body" ><IMG src="../../images/img00084.gif" border=0 height=395 width=315 alt="images\img00084.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >54</FONT><FONT style="color:#006666; " > shows an example of 2 Aggregations to compute the number of records, i.e. Count, and Average of Days Late within a Control Break.</FONT></P>
+ <P class="Image" ><IMG src="../../images/img00084.gif" border=0 height=395 width=315 alt="images\img00084.gif"> </P>
+ <P style="margin-top:0.00pt;margin-bottom:0.00pt;"><FONT style="color:#006666; " >Figure </FONT><FONT style="color:#006666; " >54</FONT><FONT style="color:#006666; " > Aggregations within Control Breaks</FONT></P>
+ <H4 style="border-bottom:0.75pt solid #ffbe3d;"><A name="How_to_remove_an_Aggregation"></A>How to remove an Aggregation</H4>
+ <P class="Exor_Main_Body" >From the Aggregation field select the required value from the List of values</P>
+ <P class="Exor_Main_Body" >Press the <FONT style="font-weight:bold; " >[Delete]</FONT> button.  This will remove the Aggregation from the Interactive Report Pod.</P>
+<script type="text/javascript" language="javascript1.2">
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+//-->
+</script>
+</BODY>
+</HTML>
