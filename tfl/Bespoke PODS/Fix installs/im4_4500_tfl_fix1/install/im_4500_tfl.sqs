@@ -1,0 +1,45 @@
+--------------------------------------------------------------------------------
+--   PVCS Identifiers :-
+--
+--       sccsid           : $Header:   //new_vm_latest/archives/customer/tfl/Bespoke PODS/Fix installs/im4_4500_tfl_fix1/install/im_4500_tfl.sqs-arc   1.0   Jan 14 2016 21:12:04   Sarah.Williams  $
+--       Module Name      : $Workfile:   im_4500_tfl.sqs  $
+--       Date into PVCS   : $Date:   Jan 14 2016 21:12:04  $
+--       Date fetched Out : $Modtime:   Feb 20 2013 19:42:20  $
+--       PVCS Version     : $Revision:   1.0  $
+--
+--------------------------------------------------------------------------------
+--
+declare
+   s int;
+begin
+   select count(*) into s from user_sequences where sequence_name = 'X_IM511001_SEQ';
+   if s = 1 then
+      execute immediate 'drop sequence X_IM511001_SEQ';
+   end if;
+   select count(*) into s from user_sequences where sequence_name = 'X_IM511002_SEQ';
+      if s = 1 then
+         execute immediate 'drop sequence X_IM511002_SEQ';
+   end if;
+   select count(*) into s from user_sequences where sequence_name = 'X_IM511003_SEQ';
+      if s = 1 then
+         execute immediate 'drop sequence X_IM511003_SEQ';
+   end if;
+   end;
+/
+PROMPT Creating Sequence 'X_IM511001_SEQ'
+CREATE SEQUENCE X_IM511001_SEQ
+START WITH 1
+INCREMENT BY 1
+/
+
+PROMPT Creating Sequence 'X_IM511002_SEQ'
+CREATE SEQUENCE X_IM511002_SEQ
+START WITH 1
+INCREMENT BY 1
+/
+
+PROMPT Creating Sequence 'X_IM511003_SEQ'
+CREATE SEQUENCE X_IM511003_SEQ
+START WITH 1
+INCREMENT BY 1
+/
