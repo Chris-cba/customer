@@ -1,0 +1,17 @@
+Create or replace package XBCC_SAP_SYNC as
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	Author: JMM
+	UPDATE01:	Original, 2014.03.25, JMM
+	UPDATE02:	Added Extra Logging Information, 2014.05.29, JMM
+*/
+	--type typ_sap_sync_record is record( o_INDICATOR  varchar2(1), o_BRAMS_ID number(10), o_OBJECT varchar2(30), o_NAME varchar2(30), o_START number(18,2), o_END number(18,2));
+	--type typ_sap_sync_list is table of typ_sap_sync_record ;
+	--procedure process (d_start_date date, d_end_date date, n_brams_id number default null);
+	
+	procedure process_refcur  (d_start_date in  date, d_end_date in date, rc_recordset out sys_refcursor, n_brams_id in number default null, b_Only_Check_Cooridor in boolean default false, b_log_to_x_log_information in boolean default false);
+end XBCC_SAP_SYNC;
+/
