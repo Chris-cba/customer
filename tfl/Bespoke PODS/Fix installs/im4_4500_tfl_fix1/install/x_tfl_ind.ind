@@ -1,0 +1,23 @@
+declare
+   c int;
+begin
+   select count(*) into c from user_indexes where index_name = 'IM_TFL_HAUD';
+   if c = 1 then
+      execute immediate 'drop index IM_TFL_HAUD';
+   end if;
+   select count(*) into c from user_indexes where index_name = 'IM_TFL_WOR';
+      if c = 1 then
+         execute immediate 'drop index IM_TFL_WOR';
+   end if;
+   end;
+/
+
+PROMPT Creating Index 'IM_TFL_HAUD'
+CREATE INDEX IM_TFL_HAUD ON HIG_AUDITS
+(HAUD_TABLE_NAME,HAUD_TIMESTAMP,HAUD_ATTRIBUTE_NAME)
+/
+
+PROMPT Creating Index 'IM_TFL_WOR'
+CREATE INDEX IM_TFL_WOR ON WORK_ORDERS
+(WOR_CHAR_ATTRIB100, WOR_CHAR_ATTRIB104)
+/
