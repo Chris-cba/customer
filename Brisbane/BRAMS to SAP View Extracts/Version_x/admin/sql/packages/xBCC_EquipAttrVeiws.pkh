@@ -1,0 +1,52 @@
+--Remove OLD
+
+DECLARE
+   name_array dbms_sql.varchar2_table;
+   i_count  number;
+BEGIN
+   name_array(1) := 'xBCC_Equip_Attr_Views';
+    name_array(2) := 'xBCC_Equip_Attr_Views_b_date';
+	name_array(3) := 'xBCC_Equip_Attr_Views_e_date';
+		--
+   FOR i IN name_array.FIRST .. name_array.LAST
+   LOOP
+	select count(*) into i_count from user_objects where object_name = upper(name_array(i)) and object_type = 'TABLE';
+		if i_count = 1 then
+			execute immediate 'drop table ' || name_array(i);
+		end if;
+	select count(*) into i_count from user_objects where object_name = upper(name_array(i)) and object_type = 'VIEW';
+		if i_count = 1 then
+			execute immediate 'drop view ' || name_array(i);	
+		end if;
+	select count(*) into i_count from user_objects where object_name = upper(name_array(i)) and object_type = 'PROCEDURE';
+		if i_count = 1 then
+			execute immediate 'drop procedure ' || name_array(i);	
+		end if;
+	select count(*) into i_count from user_objects where object_name = upper(name_array(i)) and object_type = 'PACKAGE';
+		if i_count = 1 then
+			execute immediate 'drop package ' || name_array(i);	
+		end if;
+
+   END LOOP;
+END;
+/
+
+
+Create or replace package xBCC_Equip_Attr_Views as
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	file: xBCC_EquipAttrVeiws.sql
+	Author: JMM
+	UPDATE01:	Original, 2014.04.28, JMM
+*/
+
+		procedure p_process(s_primary_view in varchar2 default '%', d_start_date in date default sysdate, d_end_date in date default to_date('01019999','MMDDRRRR'), d_last_ran_before in date default to_date('01019999','MMDDRRRR'));
+
+	
+End xBCC_Equip_Attr_Views;
+/
+
+
