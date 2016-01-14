@@ -1,0 +1,46 @@
+select * from nm_elements 
+where ne_type = 'S'
+
+select * from nm_node_usages
+
+
+select nnu_ne_id from nm_node_usages where nnu_no_node_id = :n_node
+
+
+select * from nm_members
+where nm_obj_type = 'APRC'
+
+
+select * from nm_elements 
+
+select * from nm_inv_items where iit_ne_id = 20685467
+
+20685466
+7
+
+
+select * from nm_elements where ne_id = 2828307
+
+
+Insert into EXOR.NM_ELEMENTS
+   (NE_ID, NE_UNIQUE, NE_TYPE, NE_NT_TYPE, NE_DESCR, 
+    NE_LENGTH, NE_ADMIN_UNIT, NE_DATE_CREATED, NE_DATE_MODIFIED, NE_MODIFIED_BY, 
+    NE_CREATED_BY, NE_START_DATE, NE_NAME_1, NE_NAME_2, NE_PREFIX, 
+    NE_NUMBER, NE_SUB_TYPE, NE_GROUP, NE_NO_START, NE_NO_END, 
+    NE_SUB_CLASS)
+ Values
+   (NM3SEQ.NEXT_NE_ID_SEQ, '089-PR-1162  -TST-0001', 'S', 'BD', 'HAY MEADOW COURT', 
+    0.164, 182, TO_DATE('01/31/2006 10:50:59', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE('12/19/2011 00:50:00', 'MM/DD/YYYY HH24:MI:SS'), 'PROGERS', 
+    'ABOX', TO_DATE('01/31/2006 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), '177-03985', 'ACCEPTED', '2', 
+    '0001', '20', '089-PR-1162  -000', 271132, 271134, 
+    'S');
+
+rollback;
+
+select * from nm_admin_units where NAU_ADMIN_TYPE = 'INV' and NAU_UNIT_CODE = 'STATE'
+
+select * from nm_node_usages where nnu_no_node_id = 271134;
+
+2828307
+
+select * from nm_elements_all where ne_id = 20685465;
