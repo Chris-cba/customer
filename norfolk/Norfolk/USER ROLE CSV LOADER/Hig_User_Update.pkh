@@ -1,0 +1,10 @@
+create or replace
+package XNORFOLK_USER_ROLE is
+
+
+procedure MAIN(p_user IN varchar2, p_role IN varchar2, p_command IN varchar2, admin_option in VARCHAR2 DEFAULT NULL);
+PROCEDURE GRANT_ROLE (p_username VARCHAR2, a_role IN VARCHAR2, admin_option in VARCHAR2 DEFAULT NULL);
+PROCEDURE REVOKE_ROLE (p_username VARCHAR2, l_role in VARCHAR);
+procedure CSV_LOADER(p_rec XNORFOLK_V_USER_ROLE%rowtype);
+
+end XNORFOLK_USER_ROLE;
