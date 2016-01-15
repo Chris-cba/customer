@@ -1,0 +1,103 @@
+select * from (
+select crew, feature_count, count(*) cnt from (
+
+select crew, sum(FEATURE_COUNT) FEATURE_COUNT from xodot_hbud_fi_report group by crew 
+union all
+select crew, feature_count  from transinfo.xodot_hbud_extract 
+)
+
+where 1=1
+group by crew, feature_count
+)
+where cnt <>2
+order by 1
+ ; 
+ 
+ 
+ 
+ 
+ -----------
+ SELECT  lookup_crew crew_unique
+          , ea.ne_nt_type EA_type
+       ,count_sections.iit_inv_type
+      ,count_sections.iit_ne_id
+      , locs.hwy
+      , locs.begin_mp
+      ,locs.end_mp      
+      ,count_sections.IIT_ITEMCODE EA
+    ,calculation_type
+   ,asset_type
+   ,attribute_type
+   ,attribute_values
+   ,hact.crew_type
+   ,feature_type
+   , district
+   , region
+   FROM
+   (    select 
+        NM3NET.GET_NE_UNIQUE(hwy.nm_ne_id_in) hwy,
+        min(hwy.nm_slk+inv.nm_begin_mp) begin_mp,
+        max(hwy.nm_slk+inv.nm_end_mp) end_mp,
+        inv.nm_ne_id_in iit_ne_id
+        from nm_members inv, nm_members hwy
+        where hwy.nm_obj_type = 'HWY'
+        and inv.nm_obj_type in ('SCNS','ELCS','BRGS','SGNS','LDSS','STPS','SCNS')
+        and hwy.nm_ne_id_of = inv.nm_ne_id_of
+        --and inv.nm_ne_id_in = 5419008
+        group by hwy.nm_ne_id_in, inv.nm_ne_id_in
+   ) locs,
+   (     
+    select * from V_NM_HACT
+      where iit_ne_id in
+         (
+            select min(iit_ne_id) from v_nm_HACT
+            where calculation_type !=  'LUMP SUM'
+            group by calculation_type, asset_type, ATTRIBUTE_TYPE, crew_type, FEATURE_TYPE
+        )      
+    ) hact
+   , nm_inv_items count_sections
+   , nm_elements ea
+   , (  
+   select 'SECW' lookup_crew_type
+      , nm3net.get_ne_unique(r.nm_ne_id_in) region
+      ,district
+      ,crew lookup_crew
+      ,ne_id
+             from nm_members r,
+             v_nm_SEcw_SEcw_nt
+       where r.nm_obj_type = 'REG'
+       and nm_type = 'G'
+       and nm3net.get_ne_unique(r.nm_ne_id_of) = district
+        union
+        select 'LDCW', region, null district, crew , ne_id  from v_nm_LDCW_ldcw_NT where ne_gty_group_type = --'SECW' --  
+                                                                                                            p_crew_type 
+        union
+        select 'SNCW', region, null district, crew  , ne_id from v_nm_sncw_sncw_nt where ne_gty_group_type = --'SECW' --   
+                                                                                                            p_crew_type 
+        union
+        select 'ELCW', region, null district, crew  , ne_id from v_nm_elcw_elcw_nt where ne_gty_group_type = --'SECW' --   
+                                                                                                            p_crew_type 
+        union
+        select 'BGCW', region, null district, crew  , ne_id from v_nm_bgcw_bgcw_nt where ne_gty_group_type = --'SECW' --   
+                                                                                                            p_crew_type 
+        union
+        select 'SPCW', region, null district, crew  , ne_id from v_nm_spcw_spcw_nt where ne_gty_group_type = --'SECW' --   
+                                                                                                            p_crew_type 
+   ) crew,
+   (   select nm_ne_id_of ea_ne_id,
+        nm_ne_id_in crew_ne_id
+        from nm_members
+        where nm_obj_type = --'SECW'
+                         p_crew_type        
+   ) crew_ea
+   WHERE
+   locs.iit_ne_id = count_sections.iit_ne_id
+   and hact.crew_type =--- 'SECW'
+                         p_crew_type
+  -- and hact.asset_type = count_sections.iit_inv_type              
+   and count_sections.iit_inv_type   =  --'SCNS'
+                           xodot_asset_type_functions.f$get_group_asset_type(  p_crew_type     ,'CREW_ASSET_GROUP_TYPES')                     
+     and count_sections.iit_itemcode = ea.ne_unique
+      AND ea.NE_ID = crew_ea.ea_ne_id
+    and CREW_NE_ID = CREW.NE_ID
+   order by iit_ne_id;
