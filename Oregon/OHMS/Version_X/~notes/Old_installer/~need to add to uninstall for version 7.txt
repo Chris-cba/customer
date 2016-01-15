@@ -1,0 +1,1 @@
+drop table v_nm_seea566_outer_mv_nt;
