@@ -1,0 +1,526 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<indexdata>
+<key name="Actions Menu" >
+  <topic name="Actions Menu" url="interactive_reports/actions_menu/actions_menu.htm" />
+  <topic name="Search Bar" url="interactive_reports/using_interactive_reports/search_bar.htm" />
+</key>
+<key name="Active Overview Map" >
+  <topic name="Active_Overview_Map" url="map_tab/finding_a_location_on_the_map.htm#Active_Overview_Map" />
+</key>
+<key name="Ad hoc query" >
+  <topic name="Building an ad hoc query" url="queries/building_an_ad_hoc_query.htm" />
+  <topic name="Saving an ad hoc query" url="queries/_saving_an_ad_hoc_query.htm" />
+</key>
+<key name="Ad hoc query:Building" >
+  <topic name="Building an ad hoc query" url="queries/building_an_ad_hoc_query.htm" />
+</key>
+<key name="Ad hoc query:Saving" >
+  <topic name="Saving an ad hoc query" url="queries/_saving_an_ad_hoc_query.htm" />
+</key>
+<key name="Adding" >
+  <topic name="Configuring User Tabs" url="configuring_user_tabs/configuring_user_tabs.htm" />
+</key>
+<key name="Adding:Pods" >
+  <topic name="Configuring User Tabs" url="configuring_user_tabs/configuring_user_tabs.htm" />
+</key>
+<key name="Aggregation" >
+  <topic name="Aggregate" url="interactive_reports/calculations/aggregate.htm" />
+</key>
+<key name="Aggregation:remove" >
+  <topic name="Aggregate" url="interactive_reports/calculations/aggregate.htm" />
+</key>
+<key name="Building" >
+  <topic name="Building an ad hoc query" url="queries/building_an_ad_hoc_query.htm" />
+</key>
+<key name="Building:ad hoc query" >
+  <topic name="Building an ad hoc query" url="queries/building_an_ad_hoc_query.htm" />
+</key>
+<key name="Business Areas" >
+  <topic name="Business Areas Tab" url="business_areas/business_areas_tab.htm" />
+</key>
+<key name="Business Areas Tab" >
+  <topic name="Business Areas Tab" url="business_areas/business_areas_tab.htm" />
+</key>
+<key name="Calendar Date Picker" >
+  <topic name="Using the Calendar Date Picker" url="interactive_pods/using_the_calendar_date_picker.htm" />
+</key>
+<key name="Callouts" >
+  <topic name="Map Info Tips" url="map_tab/map_info_tips.htm" />
+</key>
+<key name="Cancel" >
+  <topic name="Toolbar" url="enquiry_manager_worktray/toolbar/toolbar.htm" />
+</key>
+<key name="Changing" >
+  <topic name="Changing the layout of Information Manager" url="getting_started/changing_the_layout_of_information_manager/changing_the_layout_of_information_manager.htm" />
+</key>
+<key name="Changing:layout" >
+  <topic name="Changing the layout of Information Manager" url="getting_started/changing_the_layout_of_information_manager/changing_the_layout_of_information_manager.htm" />
+</key>
+<key name="Chart" >
+  <topic name="Aggregate" url="interactive_reports/calculations/aggregate.htm" />
+  <topic name="Displaying Chart Values" url="interactive_pods/displaying_chart_values.htm" />
+  <topic name="How_to_remove_an_Aggregation" url="interactive_reports/calculations/aggregate.htm#How_to_remove_an_Aggregation" />
+</key>
+<key name="Checkbox" >
+  <topic name="Work Order Worktray Additional Functional Areas" url="work_order_authorisation_and_instruction_worktray/work_order_worktray_additional_functional_areas.htm" />
+</key>
+<key name="Closing Pods" >
+  <topic name="Dragging, opening and closing Pods" url="getting_started/changing_the_layout_of_information_manager/pod_controls.htm" />
+</key>
+<key name="Compute" >
+  <topic name="Compute" url="interactive_reports/calculations/compute.htm" />
+</key>
+<key name="Computed Column" >
+  <topic name="Compute" url="interactive_reports/calculations/compute.htm" />
+</key>
+<key name="Computed Column:delete" >
+  <topic name="Compute" url="interactive_reports/calculations/compute.htm" />
+</key>
+<key name="Connecting" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="Contact Details Tab" >
+  <topic name="Contact Details Tab" url="enquiry_manager_worktray/tabs/contact_details_tab.htm" />
+</key>
+<key name="Control Break" >
+  <topic name="Control Break" url="interactive_reports/actions_menu/_control_break.htm" />
+</key>
+<key name="Database" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="Dates" >
+  <topic name="Query Operators" url="queries/query_operators/query_operators.htm" />
+</key>
+<key name="DB" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="Defects Tab" >
+  <topic name="Defects Tab" url="enquiry_manager_worktray/tabs/defects_tab.htm" />
+</key>
+<key name="Delete" >
+  <topic name="Compute" url="interactive_reports/calculations/compute.htm" />
+</key>
+<key name="Delete:Computed Column" >
+  <topic name="Compute" url="interactive_reports/calculations/compute.htm" />
+</key>
+<key name="Description    Edit" >
+  <topic name="Enquiry Details Tab" url="enquiry_manager_worktray/tabs/enquiry_details_tab.htm" />
+</key>
+<key name="Displaying Chart Values" >
+  <topic name="Displaying Chart Values" url="interactive_pods/displaying_chart_values.htm" />
+</key>
+<key name="Download" >
+  <topic name="Download" url="interactive_reports/actions_menu/download.htm" />
+</key>
+<key name="Dragging" >
+  <topic name="Dragging, opening and closing Pods" url="getting_started/changing_the_layout_of_information_manager/pod_controls.htm" />
+</key>
+<key name="Dragging Pods" >
+  <topic name="The Pod Library" url="configuring_user_tabs/the_pod_library.htm" />
+</key>
+<key name="Dragging Pods:User Tab" >
+  <topic name="The Pod Library" url="configuring_user_tabs/the_pod_library.htm" />
+</key>
+<key name="Drill Down" >
+  <topic name="Using “Drill Down” Functionality" url="interactive_pods/using_drill_down_functionality.htm" />
+</key>
+<key name="Drill Down Availability" >
+  <topic name="Drill_Down_Availability" url="interactive_pods_and_reports.htm#Drill_Down_Availability" />
+</key>
+<key name="Edit Enquiry Details" >
+  <topic name="Enquiry Manager Summary" url="enquiry_manager_worktray/reviewing_enquiries/enquiry_manager_summary.htm" />
+</key>
+<key name="Enquiries" >
+  <topic name="Enquiries at Received Status" url="enquiry_manager_worktray/reviewing_enquiries/enquiries_at_received_status.htm" />
+</key>
+<key name="Enquiry Id" >
+  <topic name="Find Enquiry" url="getting_started/searching/find_enquiry.htm" />
+  <topic name="Quick Edit" url="enquiry_manager_worktray/reviewing_enquiries/quick_edit.htm" />
+</key>
+<key name="Enquiry Manager Detail" >
+  <topic name="Enquiry Manager Detail" url="enquiry_manager_worktray/editing_enquiry_details/enquiry_manager_detail.htm" />
+</key>
+<key name="Enquiry Manager Worktray" >
+  <topic name="Enquiry Manager Worktray" url="enquiry_manager_worktray/enquiry_manager_worktray.htm" />
+  <topic name="Enquiry Manager Worktray Homepage" url="enquiry_manager_worktray/enquiry_manager_worktray_homepage.htm" />
+  <topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+</key>
+<key name="Enquiry Manager Worktray Homepage" >
+  <topic name="Enquiry Manager Worktray Homepage" url="enquiry_manager_worktray/enquiry_manager_worktray_homepage.htm" />
+</key>
+<key name="Example" >
+  <topic name="Chart" url="interactive_reports/charts/chart.htm" />
+</key>
+<key name="Examples of Charts" >
+  <topic name="Chart" url="interactive_reports/charts/chart.htm" />
+  <topic name="Examples_of_Charts" url="interactive_reports/charts/chart.htm#Examples_of_Charts" />
+</key>
+<key name="Executing" >
+  <topic name="Executing a query" url="queries/_executing_a_query.htm" />
+</key>
+<key name="Executing:query" >
+  <topic name="Executing a query" url="queries/_executing_a_query.htm" />
+</key>
+<key name="Filter" >
+  <topic name="Filter" url="interactive_reports/actions_menu/filter.htm" />
+</key>
+<key name="Find Enquiry" >
+  <topic name="Find Enquiry" url="getting_started/searching/find_enquiry.htm" />
+</key>
+<key name="Find On Map" >
+  <topic name="Viewing Items on the Map" url="interactive_reports/viewing_reports/viewing_items_on_the_map.htm" />
+</key>
+<key name="Find Roadworks" >
+  <topic name="Find Roadworks" url="getting_started/searching/find_roadworks.htm" />
+</key>
+<key name="Flashback" >
+  <topic name="Flashback" url="interactive_reports/actions_menu/flashback.htm" />
+</key>
+<key name="Forward" >
+  <topic name="Work Order Worktray Additional Functional Areas" url="work_order_authorisation_and_instruction_worktray/work_order_worktray_additional_functional_areas.htm" />
+</key>
+<key name="From" >
+  <topic name="Search_for_Roadworks_on_a_known_Street" url="getting_started/searching/find_roadworks.htm#Search_for_Roadworks_on_a_known_Street" />
+</key>
+<key name="Functionality" >
+  <topic name="Using “Drill Down” Functionality" url="interactive_pods/using_drill_down_functionality.htm" />
+</key>
+<key name="Hiding" >
+  <topic name="Hiding &amp; Restoring the Information Manager title bar" url="getting_started/changing_the_layout_of_information_manager/hiding_restoring_the_information_manager_title_bar.htm" />
+</key>
+<key name="Highlight" >
+  <topic name="Highlight" url="interactive_reports/actions_menu/highlight.htm" />
+</key>
+<key name="Hints and Tips" >
+  <topic name="Enquiry Manager Detail" url="enquiry_manager_worktray/editing_enquiry_details/enquiry_manager_detail.htm" />
+  <topic name="Enquiry Manager Summary" url="enquiry_manager_worktray/reviewing_enquiries/enquiry_manager_summary.htm" />
+  <topic name="Enquiry Manager Worktray" url="enquiry_manager_worktray/enquiry_manager_worktray.htm" />
+  <topic name="Enquiry Manager Worktray Homepage" url="enquiry_manager_worktray/enquiry_manager_worktray_homepage.htm" />
+  <topic name="Logging_into_the_Enquiry_Manager_Worktray" url="enquiry_manager_worktray/enquiry_manager_worktray.htm#Logging_into_the_Enquiry_Manager_Worktray" />
+  <topic name="Logging_into_the_Work_Order_Authorisation_and_Instruction_Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm#Logging_into_the_Work_Order_Authorisation_and_Instruction_Worktray" />
+  <topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+  <topic name="Work Order Authorisation and Instruction Worktray Homepage" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray_homepage.htm" />
+  <topic name="Work_Order_Summary" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray_homepage.htm#Work_Order_Summary" />
+</key>
+<key name="History Tab" >
+  <topic name="History Tab" url="enquiry_manager_worktray/tabs/history_tab.htm" />
+</key>
+<key name="How to View a Location on the Map" >
+  <topic name="How_to_View_a_Location_on_the_Map" url="getting_started/searching/searching_and_finding.htm#How_to_View_a_Location_on_the_Map" />
+</key>
+<key name="Information Manager" >
+  <topic name="Changing the layout of Information Manager" url="getting_started/changing_the_layout_of_information_manager/changing_the_layout_of_information_manager.htm" />
+</key>
+<key name="Information Manager title bar" >
+  <topic name="Hiding &amp; Restoring the Information Manager title bar" url="getting_started/changing_the_layout_of_information_manager/hiding_restoring_the_information_manager_title_bar.htm" />
+</key>
+<key name="Information Manager title bar:Restoring" >
+  <topic name="Hiding &amp; Restoring the Information Manager title bar" url="getting_started/changing_the_layout_of_information_manager/hiding_restoring_the_information_manager_title_bar.htm" />
+</key>
+<key name="Information Manager Toolbar" >
+  <topic name="Drill_Down_Availability" url="interactive_pods_and_reports.htm#Drill_Down_Availability" />
+</key>
+<key name="Information Tools" >
+  <topic name="Pod Information Tools" url="interactive_pods_and_reports.htm" />
+</key>
+<key name="Instruction Worktray" >
+  <topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+</key>
+<key name="Interactive Pods" >
+  <topic name="Interactive Pods" url="getting_started/changing_the_layout_of_information_manager/interactive_pods.htm" />
+</key>
+<key name="Interactive Report Pods" >
+  <topic name="Using Interactive Reports" url="interactive_reports/using_interactive_reports/using_interactive_reports.htm" />
+</key>
+<key name="Interactive Report Pods:Actions Menu" >
+  <topic name="Actions Menu" url="interactive_reports/actions_menu/actions_menu.htm" />
+</key>
+<key name="Interactive Report Pods:Column Heading Menu" >
+  <topic name="Column Headings Menu" url="interactive_reports/column_headings_menu/column_headings_menu.htm" />
+</key>
+<key name="Interactive Report Pods:Search Bar" >
+  <topic name="Search Bar" url="interactive_reports/using_interactive_reports/search_bar.htm" />
+</key>
+<key name="Interactive Report Pods:Single Row View" >
+  <topic name="Single Row View" url="interactive_reports/viewing_reports/single_row_view.htm" />
+</key>
+<key name="Interactive Report Pods:Viewing Document Associations" >
+  <topic name="Viewing Document Associations" url="interactive_reports/viewing_reports/viewing_document_associations.htm" />
+</key>
+<key name="Interactive Report Pods:Viewing Items on the Map" >
+  <topic name="Viewing Items on the Map" url="interactive_reports/viewing_reports/viewing_items_on_the_map.htm" />
+</key>
+<key name="Introduction" >
+  <topic name="Introduction" url="appendix_1/find_roadworks_likely_impact_algorithm.htm" />
+</key>
+<key name="Late Arrival  Edit" >
+  <topic name="Dates Tab" url="enquiry_manager_worktray/tabs/dates_tab.htm" />
+</key>
+<key name="Late Arrival  Edit:Reason" >
+  <topic name="Dates Tab" url="enquiry_manager_worktray/tabs/dates_tab.htm" />
+</key>
+<key name="Layout" >
+  <topic name="Changing the layout of Information Manager" url="getting_started/changing_the_layout_of_information_manager/changing_the_layout_of_information_manager.htm" />
+</key>
+<key name="Layout:Changing" >
+  <topic name="Changing the layout of Information Manager" url="getting_started/changing_the_layout_of_information_manager/changing_the_layout_of_information_manager.htm" />
+</key>
+<key name="Location Context Sensitivity" >
+  <topic name="Drill_Down_Availability" url="interactive_pods_and_reports.htm#Drill_Down_Availability" />
+</key>
+<key name="Logging into" >
+  <topic name="Enquiry Manager Worktray" url="enquiry_manager_worktray/enquiry_manager_worktray.htm" />
+  <topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+</key>
+<key name="Logging into Information Manager" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="Logging into:Work Order Authorisation" >
+  <topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+</key>
+<key name="Login dialog" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="LOGONINFO" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="Map" >
+  <topic name="Show Results on a Report" url="getting_started/searching/show_results_on_a_report.htm" />
+</key>
+<key name="Map Info Tips" >
+  <topic name="Map Info Tips" url="map_tab/map_info_tips.htm" />
+</key>
+<key name="Map Legend" >
+  <topic name="Map Legend" url="map_tab/map_legend.htm" />
+</key>
+<key name="Map Tab" >
+  <topic name="Map Tab" url="map_tab.htm" />
+</key>
+<key name="Map:View Roadworks on" >
+  <topic name="Show Results on a Report" url="getting_started/searching/show_results_on_a_report.htm" />
+</key>
+<key name="More Info" >
+  <topic name="Map Info Tips" url="map_tab/map_info_tips.htm" />
+</key>
+<key name="More Info Callouts" >
+  <topic name="_More_Info_Callouts" url="map_tab/map_info_tips.htm#_More_Info_Callouts" />
+  <topic name="Map Info Tips" url="map_tab/map_info_tips.htm" />
+</key>
+<key name="Navigating around the Map" >
+  <topic name="Navigating around the Map" url="map_tab/navigating_around_the_map.htm" />
+</key>
+<key name="Navigation Controls" >
+  <topic name="Navigating around the Map" url="map_tab/navigating_around_the_map.htm" />
+  <topic name="Using_the_Navigation_Controls" url="map_tab/navigating_around_the_map.htm#Using_the_Navigation_Controls" />
+</key>
+<key name="Open Folder Icon" >
+  <topic name="Viewing Document Associations" url="interactive_reports/viewing_reports/viewing_document_associations.htm" />
+</key>
+<key name="Opening" >
+  <topic name="Dragging, opening and closing Pods" url="getting_started/changing_the_layout_of_information_manager/pod_controls.htm" />
+</key>
+<key name="Outcome    Edit    List" >
+  <topic name="Enquiry Id" url="enquiry_manager_worktray/editing_enquiry_details/enquiry_id.htm" />
+</key>
+<key name="Pod Info" >
+  <topic name="Pod_Info" url="interactive_pods_and_reports.htm#Pod_Info" />
+</key>
+<key name="Pod Information Tools" >
+  <topic name="Pod Information Tools" url="interactive_pods_and_reports.htm" />
+</key>
+<key name="Pod Value Tool Tips" >
+  <topic name="Displaying Chart Values" url="interactive_pods/displaying_chart_values.htm" />
+</key>
+<key name="Pods" >
+  <topic name="Configuring User Tabs" url="configuring_user_tabs/configuring_user_tabs.htm" />
+</key>
+<key name="Pods:Adding" >
+  <topic name="Configuring User Tabs" url="configuring_user_tabs/configuring_user_tabs.htm" />
+</key>
+<key name="Postcode" >
+  <topic name="Find Enquiry" url="getting_started/searching/find_enquiry.htm" />
+</key>
+<key name="Print Map" >
+  <topic name="Print Map" url="map_tab/print_map.htm" />
+</key>
+<key name="Query" >
+  <topic name="Executing a query" url="queries/_executing_a_query.htm" />
+</key>
+<key name="Query Builder" >
+  <topic name="Query Builder" url="query_builder.htm" />
+</key>
+<key name="Query:Executing" >
+  <topic name="Executing a query" url="queries/_executing_a_query.htm" />
+</key>
+<key name="Raise Defect" >
+  <topic name="Raise Defect" url="enquiry_manager_worktray/toolbar/raise_defect/raise_defect.htm" />
+</key>
+<key name="Reason" >
+  <topic name="Dates Tab" url="enquiry_manager_worktray/tabs/dates_tab.htm" />
+</key>
+<key name="Reason:Late Arrival  Edit" >
+  <topic name="Dates Tab" url="enquiry_manager_worktray/tabs/dates_tab.htm" />
+</key>
+<key name="Received Status" >
+  <topic name="Enquiries at Received Status" url="enquiry_manager_worktray/reviewing_enquiries/enquiries_at_received_status.htm" />
+</key>
+<key name="Relevant Product Options" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+  <topic name="Relevant_Product_Options_1" url="getting_started/logon/logging_into_information_manager.htm#Relevant_Product_Options_1" />
+</key>
+<key name="Remove" >
+  <topic name="Aggregate" url="interactive_reports/calculations/aggregate.htm" />
+</key>
+<key name="Remove:Aggregation" >
+  <topic name="Aggregate" url="interactive_reports/calculations/aggregate.htm" />
+</key>
+<key name="Reset" >
+  <topic name="Reset" url="interactive_reports/actions_menu/reset.htm" />
+</key>
+<key name="Resp Of" >
+  <topic name="Find Enquiry" url="getting_started/searching/find_enquiry.htm" />
+</key>
+<key name="Restoring" >
+  <topic name="Hiding &amp; Restoring the Information Manager title bar" url="getting_started/changing_the_layout_of_information_manager/hiding_restoring_the_information_manager_title_bar.htm" />
+</key>
+<key name="Restoring:Information Manager title bar" >
+  <topic name="Hiding &amp; Restoring the Information Manager title bar" url="getting_started/changing_the_layout_of_information_manager/hiding_restoring_the_information_manager_title_bar.htm" />
+</key>
+<key name="Running" >
+  <topic name="Running a saved query" url="queries/running_a_saved_query.htm" />
+</key>
+<key name="Running:saved query" >
+  <topic name="Running a saved query" url="queries/running_a_saved_query.htm" />
+</key>
+<key name="Save Report" >
+  <topic name="Save Report" url="interactive_reports/actions_menu/_save_report.htm" />
+</key>
+<key name="Saved query" >
+  <topic name="Running a saved query" url="queries/running_a_saved_query.htm" />
+</key>
+<key name="Saved query:Running" >
+  <topic name="Running a saved query" url="queries/running_a_saved_query.htm" />
+</key>
+<key name="Saving" >
+  <topic name="Saving an ad hoc query" url="queries/_saving_an_ad_hoc_query.htm" />
+</key>
+<key name="Saving:ad hoc query" >
+  <topic name="Saving an ad hoc query" url="queries/_saving_an_ad_hoc_query.htm" />
+</key>
+<key name="Score Categorisation" >
+  <topic name="Determine Works” “Score”" url="appendix_1/scoring/determine_works_score_.htm" />
+</key>
+<key name="Search for Roadworks in a Town" >
+  <topic name="Search_for_Roadworks_in_a_Town" url="getting_started/searching/find_roadworks.htm#Search_for_Roadworks_in_a_Town" />
+</key>
+<key name="Search for Roadworks on a known Street" >
+  <topic name="Search_for_Roadworks_on_a_known_Street" url="getting_started/searching/find_roadworks.htm#Search_for_Roadworks_on_a_known_Street" />
+</key>
+<key name="Search using a Works Reference Number" >
+  <topic name="Search_using_a_Works_Reference_Number" url="getting_started/searching/find_roadworks.htm#Search_using_a_Works_Reference_Number" />
+</key>
+<key name="Select Columns" >
+  <topic name="Search Bar" url="interactive_reports/using_interactive_reports/search_bar.htm" />
+  <topic name="Select Columns" url="interactive_reports/actions_menu/_select_columns.htm" />
+  <topic name="Select_Columns_Icon" url="interactive_reports/using_interactive_reports/search_bar.htm#Select_Columns_Icon" />
+</key>
+<key name="Set Location" >
+  <topic name="Setting Location" url="getting_started/searching/searching_and_finding.htm" />
+</key>
+<key name="Setting" >
+  <topic name="Changing the order and naming of User Tabs" url="configuring_user_tabs/changing_the_order_and_naming_of_user_tabs.htm" />
+</key>
+<key name="Setting:visibility" >
+  <topic name="Changing the order and naming of User Tabs" url="configuring_user_tabs/changing_the_order_and_naming_of_user_tabs.htm" />
+</key>
+<key name="Single Row View" >
+  <topic name="Single Row View" url="interactive_reports/viewing_reports/single_row_view.htm" />
+</key>
+<key name="Sort" >
+  <topic name="Column Headings Menu" url="interactive_reports/column_headings_menu/column_headings_menu.htm" />
+  <topic name="Sort" url="interactive_reports/actions_menu/sort.htm" />
+</key>
+<key name="Sort Descending" >
+  <topic name="Column Headings Menu" url="interactive_reports/column_headings_menu/column_headings_menu.htm" />
+</key>
+<key name="Spatial Manager" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="Spatial Manager menu" >
+  <topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+</key>
+<key name="Surname" >
+  <topic name="Find Enquiry" url="getting_started/searching/find_enquiry.htm" />
+</key>
+<key name="Tabs" >
+  <topic name="Changing the order and naming of User Tabs" url="configuring_user_tabs/changing_the_order_and_naming_of_user_tabs.htm" />
+</key>
+<key name="Text Area" >
+  <topic name="Hide Column" url="interactive_reports/column_headings_menu/hide_column.htm" />
+</key>
+<key name="Time" >
+  <topic name="Dates Tab" url="enquiry_manager_worktray/tabs/dates_tab.htm" />
+  <topic name="Time_Arrived_Edit_List" url="enquiry_manager_worktray/tabs/dates_tab.htm#Time_Arrived_Edit_List" />
+</key>
+<key name="Town" >
+  <topic name="Search_for_Roadworks_on_a_known_Street" url="getting_started/searching/find_roadworks.htm#Search_for_Roadworks_on_a_known_Street" />
+</key>
+<key name="User    Radio Button    List" >
+  <topic name="Enquiries In Progress" url="enquiry_manager_worktray/reviewing_enquiries/enquiries_in_progress.htm" />
+</key>
+<key name="User Tab" >
+  <topic name="Configuring User Tabs" url="configuring_user_tabs/configuring_user_tabs.htm" />
+  <topic name="The Pod Library" url="configuring_user_tabs/the_pod_library.htm" />
+</key>
+<key name="User Tab:Dragging Pods" >
+  <topic name="The Pod Library" url="configuring_user_tabs/the_pod_library.htm" />
+</key>
+<key name="Using" >
+  <topic name="Navigating around the Map" url="map_tab/navigating_around_the_map.htm" />
+  <topic name="Using the Calendar Date Picker" url="interactive_pods/using_the_calendar_date_picker.htm" />
+</key>
+<key name="Using Interactive Reports" >
+  <topic name="Using Interactive Reports" url="interactive_reports/using_interactive_reports/using_interactive_reports.htm" />
+</key>
+<key name="Using “Drill Down" >
+  <topic name="Using “Drill Down” Functionality" url="interactive_pods/using_drill_down_functionality.htm" />
+</key>
+<key name="View Roadworks on" >
+  <topic name="Show Results on a Report" url="getting_started/searching/show_results_on_a_report.htm" />
+</key>
+<key name="View Roadworks on the Map" >
+  <topic name="Show Results on a Report" url="getting_started/searching/show_results_on_a_report.htm" />
+  <topic name="View_Roadworks_on_the_Map" url="getting_started/searching/show_results_on_a_report.htm#View_Roadworks_on_the_Map" />
+</key>
+<key name="View Roadworks on:Map" >
+  <topic name="Show Results on a Report" url="getting_started/searching/show_results_on_a_report.htm" />
+</key>
+<key name="Viewing Document Associations" >
+  <topic name="Viewing Document Associations" url="interactive_reports/viewing_reports/viewing_document_associations.htm" />
+</key>
+<key name="Viewing Items on the Map" >
+  <topic name="Viewing Items on the Map" url="interactive_reports/viewing_reports/viewing_items_on_the_map.htm" />
+</key>
+<key name="Visibility" >
+  <topic name="Changing the order and naming of User Tabs" url="configuring_user_tabs/changing_the_order_and_naming_of_user_tabs.htm" />
+</key>
+<key name="Visibility:Setting" >
+  <topic name="Changing the order and naming of User Tabs" url="configuring_user_tabs/changing_the_order_and_naming_of_user_tabs.htm" />
+</key>
+<key name="Welcome" >
+  <topic name="Welcome" url="welcome.htm" />
+</key>
+<key name="Work Order Authorisation" >
+  <topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+</key>
+<key name="Work Order Authorisation:Logging into" >
+  <topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+</key>
+<key name="Work Order Summary" >
+  <topic name="Work Order Authorisation and Instruction Worktray Homepage" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray_homepage.htm" />
+</key>
+<key name="Works Reference Number" >
+  <topic name="Search_using_a_Works_Reference_Number" url="getting_started/searching/find_roadworks.htm#Search_using_a_Works_Reference_Number" />
+</key>
+
+</indexdata>
