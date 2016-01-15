@@ -1,0 +1,7 @@
+@"X_IM_MAI_DEFECTS.vw"
+@"ApplicationReview.sql"
+@"ApplicationStatus.sql"
+@"applicationReviewPodSql.sql"
+@"im_pod_sql.sql"
+@"IM4102X-DD.sql"
+@"IM41021 - WORK_DUE_TO_BE_CMP_NO_DF_CHILD.sql"
