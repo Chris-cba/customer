@@ -1,0 +1,13 @@
+-4	Is_Structure
+
+XX-10	Peak Lanes
+XX-11	Counter Peak Lanes
+XX-40	Peak Parking
+
+45	Grades
+
+	Most Curves (Only A and C showed up)
+	
+-	HPMS Sample ID (hasn't caught up yet to design)
+	
+XX	Region_District still one row (hasn't caught up yet to design)
