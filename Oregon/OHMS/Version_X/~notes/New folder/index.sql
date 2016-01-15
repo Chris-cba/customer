@@ -1,0 +1,1 @@
+create index idx_V_NM_OHMS_NW on V_NM_OHMS_NW(iit_ne_id, samp_id, ne_id_of);
