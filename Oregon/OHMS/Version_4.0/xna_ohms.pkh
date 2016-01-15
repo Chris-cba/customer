@@ -1,0 +1,1005 @@
+CREATE OR REPLACE PACKAGE xna_ohms IS
+----------------------------------------------------------
+-- PVCS Identifiers :-
+--
+-- pvcsid : $Header:   //new_vm_latest/archives/customer/Oregon/OHMS/Version_4.0/xna_ohms.pkh-arc   1.0   Jan 15 2016 20:12:08   Sarah.Williams  $
+-- Module Name : $Workfile:   xna_ohms.pkh  $
+-- Date into PVCS : $Date:   Jan 15 2016 20:12:08  $
+-- Date fetched Out : $Modtime:   Aug 03 2011 23:37:48  $
+-- PVCS Version : $Revision:   1.0  $
+----------------------------------------------------------
+
+g_body_sccsid     CONSTANT  varchar2(2000) := '"%W% %G%"';
+g_package_name    CONSTANT  varchar2(30)   := 'xna_hpms';
+
+TYPE XODOT_HPMS_ALIAS IS TABLE OF VARCHAR2(200)
+INDEX BY BINARY_INTEGER;
+
+tab_item 			XODOT_HPMS_ALIAS;
+tab_item_value		XODOT_HPMS_ALIAS;
+tab_alias			XODOT_HPMS_ALIAS;
+tab_from			XODOT_HPMS_ALIAS;
+tab_type			XODOT_HPMS_ALIAS;
+tab_column			XODOT_HPMS_ALIAS;
+tab_view_column		XODOT_HPMS_ALIAS;
+tab_where_clause	XODOT_HPMS_ALIAS;
+tab_table			XODOT_HPMS_ALIAS;
+tab_rte_table		XODOT_HPMS_ALIAS;
+
+t_loop			NUMBER;
+t_loop2			NUMBER;
+t_loop_dup			NUMBER;
+t_loop_output		NUMBER;
+t_output_count		NUMBER;
+
+t_global_log		VARCHAR2(3)	:= 'YES';
+t_global_proc		VARCHAR2(50)	:= 'MENU';
+
+TYPE XODOT_HPMS_FORMULA IS TABLE OF VARCHAR2(1000)
+INDEX BY BINARY_INTEGER;
+
+tab_formula			XODOT_HPMS_FORMULA;
+
+is_complete     		EXCEPTION;
+t_view				VARCHAR2(32);
+t_alias				VARCHAR2(20);
+t_network_type			VARCHAR2(4);
+t_group_type			VARCHAR2(4);
+t_log_item				VARCHAR2(100);
+
+t_generation_time		TIMESTAMP;
+t_generation_user		VARCHAR2(20);
+
+t_outerjoin_count		NUMBER	:= 0;
+t_simple_count			NUMBER	:= 0;
+t_aggregate_count		NUMBER	:= 0;
+t_subview_count			NUMBER	:= 0;
+t_point_cont			VARCHAR2(2);
+t_union_count			NUMBER	:= 0;
+
+t_unit_conversions		NUMBER;
+t_unit_divisor			NUMBER;
+
+t_counter				NUMBER;
+t_counter2				NUMBER;
+t_hc_name				HPMS_CATALOG.HC_NAME%TYPE;
+t_ht_id				HPMS_TABLE.HT_ID%TYPE;
+t_table_id				HPMS_TABLE.HT_ID%TYPE;
+t_ht_name				HPMS_TABLE.HT_NAME%TYPE;
+t_ht_template			HPMS_TEMPLATE.HTMP_TEMPLATE_CODE%TYPE;
+t_ht_hl_id				HPMS_TABLE.HT_HL_ID%TYPE;
+
+t_formula_used			BOOLEAN;
+t_addl_count			NUMBER	:= 0;
+t_found				NUMBER;
+
+t_hl_type				HPMS_LOCATION.HL_TYPE%TYPE;
+t_hl_item				HPMS_LOCATION.HL_ITEM%TYPE;
+t_hl_item_attribute		HPMS_LOCATION.HL_ITEM_ATTRIBUTE%TYPE;
+t_hl_where				HPMS_LOCATION.HL_WHERE%TYPE;
+t_hl_item_type			HPMS_LOCATION.HL_ITEM_TYPE%TYPE;
+
+t_newline				VARCHAR2(1)	:= chr(10);
+t_tab					VARCHAR2(4)	:= chr(32) || chr(32) || chr(32) || chr(32);
+t_whitespace			VARCHAR2(100);
+t_comma				VARCHAR2(1);
+
+t_network_mv_name		VARCHAR2(32);
+t_network_clause		VARCHAR2(32000);
+t_network_select		VARCHAR2(200);
+t_network_from			VARCHAR2(200);
+t_network_where			VARCHAR2(200);
+t_network_route_id		VARCHAR2(20);
+t_network_flag			NUMBER(1)	:= 0;
+
+t_template				CLOB;
+t_template_line			VARCHAR2(500);
+t_template_length		NUMBER;
+t_template_read			NUMBER;
+t_template_start		NUMBER;
+t_template_return		VARCHAR2(1);
+t_template_return_pos		NUMBER;
+t_template_return_count		NUMBER;
+
+t_alias_asset			VARCHAR2(4);
+t_alias_group			VARCHAR2(4);
+t_native_count			NUMBER;
+t_alias_group_range		VARCHAR2(4);
+t_alias_asset_range		VARCHAR2(4);
+t_shape_count			NUMBER;
+
+t_sub_start			NUMBER;
+t_sub_return_count		NUMBER;
+
+t_procedure			HPMS_PROCEDURE.HP_PROCEDURE%TYPE;
+t_mview_creates			HPMS_PROCEDURE.HP_MVIEW_CREATES%TYPE;
+t_table_creates			HPMS_PROCEDURE.HP_TABLE_CREATES%TYPE;
+t_procedure_line		VARCHAR2(32000);
+t_procedure_line_length	NUMBER;
+t_lob_length			NUMBER;
+t_output				VARCHAR2(32000);
+t_mview_name			VARCHAR2(32);
+t_table_name			VARCHAR2(32);
+t_base_name			VARCHAR2(32);
+
+t_item_hcl_name			HPMS_COLUMN.HCL_NAME%TYPE;
+t_item_hcl_type			HPMS_COLUMN.HCL_TYPE%TYPE;
+t_item_hm_hdi_id		HPMS_MAPPING.HM_HDI_ID%TYPE;
+t_item_hm_id			HPMS_MAPPING.HM_ID%TYPE;
+t_item_hm_item			HPMS_MAPPING.HM_ITEM%TYPE;
+t_item_hm_value			HPMS_MAPPING.HM_ITEM_VALUE%TYPE;
+t_item_hm_item_attribute	HPMS_MAPPING.HM_ITEM_ATTRIBUTE%TYPE;
+t_item_hm_item_where		HPMS_MAPPING.HM_ITEM_WHERE%TYPE;
+t_item_hm_item_function	HPMS_MAPPING.HM_ITEM_FUNCTION%TYPE;
+t_item_hm_item_type		HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+t_item_desc			VARCHAR2(100);
+t_item_sql				VARCHAR2(32000);
+t_item_type			HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+t_item				HPMS_MAPPING.HM_ITEM%TYPE;
+
+t_route_id				VARCHAR2(20);
+t_route_item			HPMS_MAPPING.HM_ITEM%TYPE;
+t_route_item_value		HPMS_MAPPING.HM_ITEM_VALUE%TYPE;
+t_route_item_attribute	HPMS_MAPPING.HM_ITEM_ATTRIBUTE%TYPE;
+t_route_item_where		HPMS_MAPPING.HM_ITEM_WHERE%TYPE;
+t_route_item_type		HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+t_route_start			NUMBER;
+t_route_end			NUMBER;
+t_route_section_length	NUMBER;
+t_route_sql			VARCHAR2(32000);
+t_route_restrict		VARCHAR2(20);
+t_route_type			HPMS_MAPPING.HM_ITEM%TYPE;
+t_route_table			VARCHAR2(32);
+
+t_data_item			HPMS_MAPPING.HM_HDI_ID%TYPE;
+t_cursor_id			HPMS_MAPPING.HM_HDI_ID%TYPE;
+t_cursor_name			VARCHAR2(20);
+t_cursor_abbrev			VARCHAR2(20);
+t_cursor_descr			VARCHAR2(40);
+
+t_single_item_name		HPMS_COLUMN.HCL_NAME%TYPE;
+t_single_item			HPMS_MAPPING.HM_ITEM%TYPE;
+t_single_item_type		HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+
+t_variable_columns		VARCHAR2(4000);
+t_target_columns		VARCHAR2(4000);
+t_all_var_columns		VARCHAR2(4000);
+t_all_target_columns		VARCHAR2(4000);
+t_variables_line		VARCHAR2(4000);
+
+t_repeat				NUMBER;
+t_min_hm_id			NUMBER;
+
+t_target_table			VARCHAR2(32);
+t_target_db_table		HPMS_PROCEDURE.HP_DB_TABLE_NAME%TYPE;
+t_target_col_name		HPMS_COLUMN.HCL_NAME%TYPE;
+t_target_col_type		HPMS_COLUMN.HCL_TYPE%TYPE;
+t_target_col_size		HPMS_COLUMN.HCL_SIZE%TYPE;
+
+t_primary_name			HPMS_COLUMN.HCL_NAME%TYPE;
+t_primary_item			HPMS_MAPPING.HM_ITEM%TYPE;
+t_primary_value			VARCHAR2(100);
+t_primary_attribute		HPMS_MAPPING.HM_ITEM_ATTRIBUTE%TYPE;
+t_primary_where			HPMS_MAPPING.HM_ITEM_WHERE%TYPE;
+t_primary_type			HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+t_primary_function		HPMS_MAPPING.HM_ITEM_FUNCTION%TYPE;
+t_primary_formula		HPMS_MAPPING.HM_ITEM_FORMULA%TYPE;
+t_primary_hdi_id		HPMS_MAPPING.HM_HDI_ID%TYPE;
+t_primary_join			HPMS_MAPPING.HM_JOIN_TYPE%TYPE;
+t_primary_alias			VARCHAR2(2);
+
+t_addl_name			HPMS_COLUMN.HCL_NAME%TYPE;
+t_addl_item			HPMS_MAPPING.HM_ITEM%TYPE;
+t_addl_value			VARCHAR2(100);
+t_addl_attribute		HPMS_MAPPING.HM_ITEM_ATTRIBUTE%TYPE;
+t_addl_where			HPMS_MAPPING.HM_ITEM_WHERE%TYPE;
+t_addl_type			HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+t_addl_function			HPMS_MAPPING.HM_ITEM_FUNCTION%TYPE;
+t_and					VARCHAR2(15);
+
+t_range_item			HPMS_MAPPING.HM_ITEM%TYPE;
+t_range_value			HPMS_MAPPING.HM_ITEM_VALUE%TYPE;
+t_range_type			HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+t_range_attribute		HPMS_MAPPING.HM_ITEM_ATTRIBUTE%TYPE;
+t_range_where			HPMS_MAPPING.HM_ITEM_WHERE%TYPE;
+
+t_outerjoin			NUMBER	:= 0;
+
+t_outerrange_name		HPMS_COLUMN.HCL_NAME%TYPE;
+t_outerrange_item		HPMS_MAPPING.HM_ITEM%TYPE;
+t_outerrange_value		HPMS_MAPPING.HM_ITEM_VALUE%TYPE;
+t_outerrange_attribute		HPMS_MAPPING.HM_ITEM_ATTRIBUTE%TYPE;
+t_outerrange_where		HPMS_MAPPING.HM_ITEM_WHERE%TYPE;
+t_outerrange_type		HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+
+t_outerdata_id			NUMBER;
+t_outerdata_name		HPMS_COLUMN.HCL_NAME%TYPE;
+t_outerdata_item		HPMS_MAPPING.HM_ITEM%TYPE;
+t_outerdata_value		HPMS_MAPPING.HM_ITEM_VALUE%TYPE;
+t_outerdata_attribute		HPMS_MAPPING.HM_ITEM_ATTRIBUTE%TYPE;
+t_outerdata_where		HPMS_MAPPING.HM_ITEM_WHERE%TYPE;
+t_outerdata_type		HPMS_MAPPING.HM_ITEM_TYPE%TYPE;
+
+t_aggregate_seg_table		VARCHAR2(32);
+t_aggregate_detail_table	VARCHAR2(32);
+t_aggregate_final_table	VARCHAR2(32);
+
+t_viewname				VARCHAR2(30);
+t_viewcolumn			VARCHAR2(30);
+
+t_rollup				VARCHAR2(1);
+
+t_prte_sort_item		VARCHAR2(30);
+t_prte_sort_order		VARCHAR2(10);
+t_prte_where			VARCHAR2(200);
+t_prte_where_item		VARCHAR2(30);
+t_prte_group			VARCHAR2(4);
+t_prte_item			VARCHAR2(30);
+t_primary_route			CLOB;
+
+CURSOR cur_catalog(cp_catalog IN NUMBER) IS
+	SELECT ht_id
+	FROM hpms_catalog
+		, hpms_table
+	WHERE ht_hc_id = hc_id
+		AND hc_include = 'Y'
+		AND ht_include = 'Y'
+		AND hc_id = cp_catalog;
+
+CURSOR cur_cat_table (cp_table IN NUMBER) IS
+	SELECT hc_name
+		, ht_name
+		, nvl(ht_hl_id,-1) ht_hl_id
+		, ht_id
+	FROM hpms_catalog
+		, hpms_table
+	WHERE ht_hc_id = hc_id
+		AND hc_include = 'Y'
+		AND ht_include = 'Y'
+		AND ht_id = cp_table;
+
+CURSOR cur_columns(cp_ht_id IN NUMBER) IS
+	SELECT hcl_id
+		, hcl_name
+		, hcl_type
+		, hcl_size
+	FROM hpms_column
+	WHERE hcl_ht_id = cp_ht_id;
+
+CURSOR cur_network(cp_hl_id IN NUMBER) IS
+	SELECT hl_type
+		, hl_item
+		, hl_item_attribute
+		, hl_where
+		, hl_item_type
+	FROM hpms_location
+	WHERE hl_id = cp_hl_id;
+
+CURSOR cur_network_group(lcp_group IN VARCHAR2) IS
+    SELECT ngt_nt_type
+    FROM nm_group_types
+    WHERE ngt_group_type = lcp_group;
+
+CURSOR cur_alias_asset(cp_type IN VARCHAR2) IS
+	SELECT count(*)
+	FROM nm_inv_types
+	WHERE nit_inv_type = cp_type;
+
+CURSOR cur_alias_group(cp_type IN VARCHAR2) IS
+	SELECT count(*)
+	FROM nm_group_types
+	WHERE ngt_group_type = cp_type;
+
+CURSOR cur_alias_reference(cp_type IN VARCHAR2, cp_asset_group IN VARCHAR2) IS
+	SELECT CASE 
+			WHEN instr(referenced_name,'V_NM_') > 0 THEN
+				substr(referenced_name,6,4)
+			ELSE
+				'-x'
+			END reference_type
+	FROM user_dependencies
+	WHERE type = 'VIEW'
+		AND referenced_type = 'VIEW'
+		AND name = 'V_NM_' || cp_type || '_' || cp_asset_group;
+
+CURSOR cur_template(cp_type IN VARCHAR2, cp_target IN VARCHAR2) IS
+	SELECT htmp_template_code
+	FROM hpms_template
+	WHERE htmp_template_type = cp_type
+		AND htmp_template_target = cp_target;
+
+CURSOR cur_procedure (cp_ht_id IN NUMBER) IS
+	SELECT hp_procedure
+		, hp_mview_creates
+		, hp_table_creates
+	FROM hpms_procedure
+	WHERE hp_ht_id = cp_ht_id FOR UPDATE;
+
+CURSOR cur_target_cols(cp_hp_ht_id IN NUMBER) IS
+	SELECT hcl_name
+		, hcl_type
+		, hcl_size
+		, hp_db_table_name
+	FROM hpms_column a
+    		, hpms_procedure b
+	WHERE hcl_ht_id = hp_ht_id
+    		AND hcl_ht_id = cp_hp_ht_id;
+
+CURSOR cur_shape_count(cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER) IS
+	SELECT count(*) shape_count
+	FROM hpms_mapping
+		, hpms_column
+	WHERE hm_hcl_id = hcl_id
+		AND hcl_ht_id = cp_ht_id
+		AND hm_hdi_id = cp_hdi_id
+		AND instr(hm_item_function,'SHAPE') > 0;
+
+CURSOR cur_aggregate_count (cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER) IS
+	SELECT count(*)
+	FROM hpms_mapping
+	    , hpms_column
+	WHERE hcl_id = hm_hcl_id
+	    AND hm_item_function IN ('SUM','COUNT','MIN','MAX')
+	    AND hm_hdi_id = cp_hdi_id
+	    AND hcl_ht_id = cp_ht_id;
+
+CURSOR cur_outerjoin_count (cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER) IS
+	SELECT count(*)
+	FROM hpms_mapping
+	    , hpms_column
+	WHERE hcl_id = hm_hcl_id
+	    AND hm_item_function IN ('OUTERJOIN_DATA','OUTERJOIN_RANGE')
+	    AND hm_hdi_id = cp_hdi_id
+	    AND hcl_ht_id = cp_ht_id;
+
+CURSOR cur_subview_count (cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER) IS
+	SELECT count(*)
+	FROM hpms_mapping
+	    , hpms_column
+	WHERE hcl_id = hm_hcl_id
+	    AND hm_item_type = 'SUB'
+	    AND hm_hdi_id = cp_hdi_id
+	    AND hcl_ht_id = cp_ht_id;
+
+CURSOR cur_map_singles(cp_ht_id IN NUMBER
+		, cp_hdi_id IN NUMBER) IS
+	SELECT hcl_name
+		, hcl_type
+		, nvl(hm_hdi_id, cp_hdi_id) hm_hdi_id
+		, hm_item
+		, hm_item_value
+		, hm_item_attribute
+		, hm_item_where
+		, hm_item_function
+		, hm_item_type
+	FROM hpms_column
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+		AND hcl_ht_id = cp_ht_id
+		AND hcl_location_col = 'N'
+		AND nvl(hm_hdi_id,cp_hdi_id) = cp_hdi_id
+		AND hm_item_type IN ('TEXT','FUNCTION')
+	ORDER BY hcl_id;
+
+CURSOR cur_map_multiples(cp_ht_id IN NUMBER
+		, cp_hdi_id IN NUMBER) IS
+    SELECT *
+    FROM (
+        SELECT hcl_name
+            , hcl_type
+            , nvl(hm_hdi_id, cp_hdi_id) hm_hdi_id
+            , hm_item
+            , hm_item_value
+            , hm_item_attribute
+            , hm_item_where
+            , hm_item_function
+            , hm_item_type
+            , hm_id
+            , hcl_id
+		 , hm_item_formula
+		 , hm_output
+        FROM hpms_column
+            , hpms_mapping
+        WHERE hcl_id = hm_hcl_id
+            AND hcl_ht_id = cp_ht_id
+            AND hm_hdi_id IS NULL
+            AND hm_item_type NOT IN ('TEXT','FUNCTION')
+            AND hm_item_value IS NOT NULL
+        UNION
+        SELECT hcl_name
+            , hcl_type
+            , hm_hdi_id
+            , hm_item
+            , hm_item_value
+            , hm_item_attribute
+            , hm_item_where
+            , hm_item_function
+            , hm_item_type
+            , hm_id
+            , hcl_id
+		 , hm_item_formula
+		 , hm_output
+        FROM hpms_column
+            , hpms_mapping
+        WHERE hcl_id = hm_hcl_id
+            AND hcl_ht_id = cp_ht_id
+            AND hm_hdi_id = cp_hdi_id
+            AND hm_item_type NOT IN ('TEXT','FUNCTION')
+            AND hm_item_value IS NOT NULL
+            AND hm_output = 'Y')
+    ORDER BY hcl_id, hm_id;
+
+CURSOR cur_map_all(cp_ht_id IN NUMBER
+		, cp_hdi_id IN NUMBER) IS
+	SELECT hcl_name
+		, hcl_type
+		, nvl(hm_hdi_id, cp_hdi_id) hm_hdi_id
+		, hm_item
+		, hm_item_value
+		, hm_item_attribute
+		, hm_item_where
+		, hm_item_function
+		, hm_item_type
+	FROM hpms_column
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+		AND hcl_ht_id = cp_ht_id
+		AND nvl(hm_hdi_id,cp_hdi_id) = cp_hdi_id
+	ORDER BY hcl_id;
+
+CURSOR cur_output_columns(cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER) IS
+	SELECT a.hcl_name
+	FROM hpms_column a
+		, hpms_mapping b
+	WHERE a.hcl_id = b.hm_hcl_id
+		AND a.hcl_ht_id = cp_ht_id
+		AND b.hm_hdi_id = cp_hdi_id
+		AND nvl(b.hm_output,'N') = 'Y'
+	ORDER BY hm_id;
+
+CURSOR cur_divisor_asset(lcp_route IN VARCHAR2, lcp_item IN VARCHAR2) IS
+	SELECT uc_conversion_factor
+	FROM nm_unit_conversions
+	WHERE uc_unit_id_in = (
+		SELECT nt_length_unit
+        	FROM nm_types
+	        WHERE nt_type = (
+                	SELECT ngt_nt_type
+	                FROM nm_group_types
+                	WHERE ngt_group_type = lcp_route))
+	    AND uc_unit_id_out = (
+	        SELECT nt_length_unit
+        	FROM nm_types
+        	WHERE nt_type = (
+                	SELECT min(nin_nw_type)
+	                FROM nm_inv_nw_all
+        	        WHERE nin_nit_inv_code = lcp_item));
+
+CURSOR cur_divisor_group(lcp_route IN VARCHAR2, lcp_item IN VARCHAR2) IS
+	SELECT uc_conversion_factor
+	FROM nm_unit_conversions
+	WHERE uc_unit_id_in = (
+		SELECT nt_length_unit
+        	FROM nm_types
+	        WHERE nt_type = (
+                	SELECT ngt_nt_type
+	                FROM nm_group_types
+                	WHERE ngt_group_type = lcp_route))
+	    AND uc_unit_id_out = (
+		SELECT nt_length_unit
+        	FROM nm_types
+	        WHERE nt_type = (
+                	SELECT ngt_nt_type
+	                FROM nm_group_types
+                	WHERE ngt_group_type = lcp_item));
+
+CURSOR cur_target_table (cp_table_id IN NUMBER) IS
+	SELECT hp_db_table_name
+	FROM hpms_procedure
+		, hpms_table
+	WHERE hp_ht_id = ht_id
+		AND ht_id = cp_table_id;
+
+CURSOR cur_cursor_count (cp_ht_id IN NUMBER) IS
+    	SELECT DISTINCT hm_hdi_id
+    	FROM hpms_mapping
+        	, hpms_column
+        	, hpms_table
+    	WHERE hm_hcl_id = hcl_id
+            	AND hcl_ht_id = ht_id
+            	AND ht_id = cp_ht_id
+            	AND hm_hdi_id is not null
+    	ORDER BY hm_hdi_id;
+
+CURSOR cur_output_cursors (cp_ht_id IN NUMBER) IS
+SELECT hm_hdi_id
+FROM (
+    SELECT DISTINCT
+        a.hm_hdi_id
+        , nvl(b.cursor_count,0) cursor_count
+    FROM     
+            (SELECT hm_hdi_id
+            FROM hpms_mapping
+                , hpms_column
+            WHERE hm_hcl_id = hcl_id
+                AND hcl_ht_id = cp_ht_id
+                AND hm_hdi_id is not null) a
+            , (SELECT count(*) cursor_count
+                , hm_hdi_id
+            FROM hpms_mapping
+                , hpms_column
+            WHERE hm_hcl_id = hcl_id
+                AND hcl_ht_id = cp_ht_id
+                AND hm_hdi_id is not null
+                AND nvl(hm_cursor_process,'Y') = 'N'
+            GROUP BY hm_hdi_id) b
+    WHERE a.hm_hdi_id = b.hm_hdi_id(+))
+WHERE cursor_count(+) = 0
+ORDER BY hm_hdi_id;
+
+CURSOR cur_shape_columns(lcp_ht_id IN NUMBER) IS
+    SELECT hcl_name
+        , hcl_type
+        , hm_item
+        , hm_item_value
+        , hm_item_attribute
+        , hm_item_where
+        , hm_item_function
+        , hm_item_type
+    FROM hpms_column
+        , hpms_mapping
+    WHERE hcl_id = hm_hcl_id
+	AND hcl_ht_id = lcp_ht_id
+	AND hm_item_type NOT IN ('TEXT','FUNCTION')
+    ORDER BY hcl_id;
+
+CURSOR cur_aggregates (cp_ht_id IN NUMBER) IS
+    	SELECT DISTINCT hm_hdi_id
+    	FROM hpms_mapping
+        	, hpms_column
+        	, hpms_table
+    	WHERE hm_hcl_id = hcl_id
+            	AND hcl_ht_id = ht_id
+            	AND ht_id = cp_ht_id
+            	AND hm_hdi_id is not null
+		AND hm_item_function IN ('SUM','COUNT', 'MIN' ,'MAX')
+    	ORDER BY hm_hdi_id;
+
+CURSOR cur_addl_aggr(cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER
+		, cp_item IN VARCHAR2, cp_hm_id IN NUMBER) IS
+	SELECT hcl_name
+		, hm_item
+		, hm_item_value
+		, hm_item_attribute
+		, hm_item_where
+		, hm_item_type
+		, hm_item_formula
+	FROM hpms_mapping
+		, hpms_column
+	WHERE hm_hcl_id = hcl_id
+		AND hcl_ht_id = cp_ht_id
+		AND hm_hdi_id = cp_hdi_id
+		AND hm_item = cp_item
+		AND hm_id <> cp_hm_id
+		AND nvl(hm_item_attribute,'-x') <> '-x'
+	ORDER BY hm_id;
+
+CURSOR cur_outerjoins (cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER) IS
+    	SELECT hm_id
+		, hm_hdi_id
+    	FROM hpms_mapping
+        	, hpms_column
+        	, hpms_table
+    	WHERE hm_hcl_id = hcl_id
+            AND hcl_ht_id = ht_id
+            AND ht_id = cp_ht_id
+            AND hm_hdi_id = cp_hdi_id
+		AND hm_item_function IN ('OUTERJOIN_RANGE','OUTERJOIN_DATA')
+    	ORDER BY hm_id;
+
+CURSOR cur_outer_range(cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER) IS
+	SELECT hcl_name
+		, hm_item
+		, hm_item_value
+		, hm_item_attribute
+		, hm_item_where
+		, hm_item_type
+	FROM hpms_column
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = cp_ht_id
+		AND hm_hdi_id = cp_hdi_id
+		AND hm_item_function = 'OUTERJOIN_RANGE'
+	ORDER BY hm_id;
+
+CURSOR cur_addl_outer(cp_ht_id IN NUMBER, cp_hdi_id IN NUMBER
+		, cp_item IN VARCHAR2, cp_hm_id IN NUMBER) IS
+	SELECT hcl_name
+		, hm_item
+		, hm_item_value
+		, hm_item_attribute
+		, hm_item_where
+		, hm_item_type
+		, hm_item_formula
+	FROM hpms_mapping
+		, hpms_column
+	WHERE hm_hcl_id = hcl_id
+		AND hcl_ht_id = cp_ht_id
+		AND hm_hdi_id = cp_hdi_id
+		AND hm_item = cp_item
+		AND hm_id <> cp_hm_id
+		AND nvl(hm_item_attribute,'-x') <> '-x'
+	ORDER BY hm_id;
+
+CURSOR cur_fields(cp_item_view IN VARCHAR2) IS
+	SELECT column_name
+	FROM user_tab_cols
+	WHERE table_name = cp_item_view
+		AND column_name NOT IN ('NE_ID_OF','NM_BEGIN_MP','NM_END_MP');
+
+CURSOR cur_get_min_hmid (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER) IS
+	SELECT min(hm_id) hm_id
+	FROM (
+	    SELECT hm_id
+	    FROM hpms_column 
+	        , hpms_mapping
+	    WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+	        AND hm_item_type NOT IN ('TEXT','FUNCTION')
+		AND hcl_location_col = 'N');
+
+CURSOR cur_get_output_column(lcp_hm_id IN NUMBER) IS
+    SELECT hcl_name
+    FROM hpms_mapping
+        , hpms_column
+    WHERE hcl_id = hm_hcl_id
+	    AND hm_id = lcp_hm_id;
+
+CURSOR cur_get_sub_output(lcp_table IN NUMBER
+			, lcp_hdi_id IN NUMBER
+			, lcp_hcl_name IN VARCHAR2
+			, lcp_hm_item IN VARCHAR2) IS
+    SELECT count(*)
+    FROM hpms_mapping
+        , hpms_column
+    WHERE hcl_name = lcp_hcl_name
+		AND hm_hdi_id = lcp_hdi_id
+		AND hcl_ht_id = lcp_table
+		AND hm_item = lcp_hm_item
+	    	AND hcl_id = hm_hcl_id
+		AND hm_output = 'Y';
+
+CURSOR cur_primary_item(lcp_hm_id IN NUMBER) IS
+	SELECT hcl_name
+		, hm_item
+		, hm_item_value
+		, hm_item_attribute
+		, hm_item_where
+		, hm_item_type
+		, hm_item_function
+		, hm_item_formula
+		, hm_hdi_id
+		, hm_join_type
+	    FROM hpms_column 
+	        , hpms_mapping
+	    WHERE hcl_id = hm_hcl_id
+	        AND hm_id = lcp_hm_id;
+
+CURSOR cur_addl_items (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER, lcp_min_hm_id IN NUMBER) IS
+	SELECT hcl_name
+		, hm_item
+		, hm_item_value
+		, hm_item_attribute
+		, hm_item_where
+		, hm_item_type
+		, hm_item_function
+		, hm_item_formula
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+	        AND hm_item_type NOT IN ('TEXT','FUNCTION')
+		AND instr(hm_item_function,'RANGE') = 0
+		AND hcl_location_col = 'N'
+		AND hm_id > lcp_min_hm_id
+	ORDER BY hm_id;
+
+CURSOR cur_distinct_addl_items (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER, lcp_min_hm_id IN NUMBER) IS
+	SELECT distinct(hm_item) hm_item
+		, hm_item_type
+		, hm_item_function
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+	        AND hm_item_type NOT IN ('TEXT','FUNCTION')
+		AND hm_item_function NOT IN ('SUM','COUNT','MIN','MAX')
+		AND instr(hm_item_function,'RANGE') = 0
+		AND hcl_location_col = 'N'
+		AND hm_id > lcp_min_hm_id
+	ORDER BY hm_item;
+
+CURSOR cur_distinct_addl_item_vals (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER, lcp_min_hm_id IN NUMBER) IS
+	SELECT distinct(hm_item) hm_item
+		, hm_item_type
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+	        AND hm_item_type NOT IN ('TEXT','FUNCTION')
+		AND hm_item_function NOT IN ('SUM','COUNT','MIN','MAX')
+		AND instr(hm_item_function,'RANGE') = 0
+		AND hcl_location_col = 'N'
+		AND hm_id > lcp_min_hm_id
+	ORDER BY hm_item;
+
+CURSOR cur_aggregate_item_list (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER) IS
+	SELECT distinct(hm_item) hm_item
+		, hm_item_type
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,0) = lcp_hdi_id
+	        AND hm_item_type NOT IN ('TEXT','FUNCTION')
+	ORDER BY hm_item;
+
+CURSOR cur_aggregate_where_list (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER, lcp_item IN VARCHAR2) IS
+	SELECT 'AND ' || hm_item_attribute || ' ' || nvl(hm_item_where,'IS NOT NULL') where_clause
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	     	AND hcl_ht_id = lcp_ht_id
+	     	AND hm_hdi_id = lcp_hdi_id
+		AND hm_item = lcp_item
+		AND nvl(hm_item_attribute,'-x') <> '-x';
+
+CURSOR cur_addl_where (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER, lcp_min_hm_id IN NUMBER
+		, cp_item IN VARCHAR2, cp_type IN VARCHAR2) IS
+	SELECT count(*) where_count
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+	        AND hm_item_type NOT IN ('TEXT','FUNCTION')
+		AND hm_item_function NOT IN ('OUTERJOIN_DATA','OUTERJOIN_RANGE')
+		AND instr(hm_item_function,'RANGE') = 0
+		AND hcl_location_col = 'N'
+		AND hm_id > lcp_min_hm_id
+		AND nvl(hm_item_where,'-x') <> '-x'
+		AND hm_item = cp_item
+		AND hm_item_type = cp_type;
+
+CURSOR cur_addl_function(lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER, lcp_item IN VARCHAR2) IS
+	SELECT count(*) fn_count
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+		AND hm_item_function = 'OUTERJOIN_DATA';
+
+CURSOR cur_aggregate_range (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER) IS
+	SELECT *
+	FROM (
+		SELECT hm_item
+			, hm_item_value
+			, hm_item_type
+			, hm_item_attribute
+			, hm_item_where
+		FROM hpms_column 
+			, hpms_mapping
+		WHERE hcl_id = hm_hcl_id
+		        AND hcl_ht_id = lcp_ht_id
+		        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+			AND instr(hm_item_function,'RANGE') > 0
+			AND hcl_location_col = 'N'
+		ORDER BY hm_item)
+	WHERE rownum < 2;
+
+CURSOR cur_distinct_aggr_addl_items (lcp_ht_id IN NUMBER, lcp_hdi_id IN NUMBER, lcp_min_hm_id IN NUMBER) IS
+	SELECT distinct(hm_item) hm_item
+		, hm_item_type
+		, hm_item_function
+	FROM hpms_column 
+		, hpms_mapping
+	WHERE hcl_id = hm_hcl_id
+	        AND hcl_ht_id = lcp_ht_id
+	        AND nvl(hm_hdi_id,lcp_hdi_id) = lcp_hdi_id
+	        AND hm_item_type NOT IN ('TEXT','FUNCTION')
+		AND hm_item_function NOT IN ('SUM','COUNT','MIN','MAX')
+		AND hcl_location_col = 'N'
+		AND hm_id > lcp_min_hm_id
+	ORDER BY hm_item;
+
+CURSOR cur_item_desc(cp_table IN NUMBER, cp_item IN NUMBER) IS
+	SELECT hm_item_value
+	FROM hpms_column
+	    , hpms_mapping
+	WHERE hm_hcl_id = hcl_id
+	    AND hcl_ht_id = cp_table
+	    AND hm_hdi_id = cp_item
+	    AND hm_item_type = 'TEXT';    
+
+CURSOR cur_data_type (cp_table IN NUMBER, cp_item IN NUMBER) IS
+	SELECT hcl_name
+	FROM (
+	    SELECT hcl_name
+	    FROM hpms_column
+        	, hpms_mapping
+	    WHERE hm_hcl_id = hcl_id
+	        AND hm_hdi_id = cp_item
+		AND hcl_ht_id = cp_table
+	        AND instr(hcl_name,'VALUE_') > 0
+	    ORDER BY hm_id)
+	WHERE rownum < 2;
+
+CURSOR cur_route_restrict(cp_table IN NUMBER, cp_data_item IN NUMBER) IS
+SELECT CASE 
+    WHEN d_count > 0 THEN
+        'D'
+    WHEN i_count > 0 THEN
+        'I'
+    WHEN nvl(join_type,'-x') = '-x' THEN
+        'A'
+    ELSE
+        join_type
+    END join_type
+FROM (
+    SELECT count(*) d_count
+    FROM hpms_mapping
+        , hpms_column
+    WHERE hm_hcl_id = hcl_id
+        AND hcl_ht_id = cp_table
+        AND hm_hdi_id = cp_data_item
+          AND hm_join_type = 'D') 
+    , (SELECT count(*) i_count
+    FROM hpms_mapping
+        , hpms_column
+    WHERE hm_hcl_id = hcl_id
+        AND hcl_ht_id = cp_table
+        AND hm_hdi_id = cp_data_item
+          AND hm_join_type = 'I')
+    , (SELECT min(hm_join_type) join_type
+    FROM hpms_mapping
+        , hpms_column
+    WHERE hm_hcl_id = hcl_id
+        AND hcl_ht_id = cp_table
+        AND hm_hdi_id = cp_data_item
+);    
+
+CURSOR cur_rollup (cp_table IN NUMBER, cp_data_item IN NUMBER) IS
+	SELECT nvl(hm_rollup,'Y') hm_rollup
+	FROM hpms_mapping
+		, hpms_column
+	WHERE hm_hcl_id = hcl_id
+		AND hcl_ht_id = cp_table
+		AND hm_hdi_id = cp_data_item
+		AND rownum < 2;
+
+CURSOR cur_sub_view_items(lcp_ht_id IN NUMBER, lcp_data_item_id IN NUMBER) IS
+    SELECT hcl_name
+        , hcl_type
+	   , hm_id
+        , hm_item
+        , hm_item_formula
+        , hm_item_value
+        ,hm_item_attribute || ' '|| hm_item_where hm_where_clause 
+    FROM hpms_column
+        , hpms_mapping
+    WHERE hcl_id = hm_hcl_id
+	AND hcl_ht_id = lcp_ht_id
+	AND hm_hdi_id = lcp_data_item_id
+	AND hm_item_type = 'SUB'
+	AND hm_item_function = 'VALUE'
+    ORDER BY hm_id;
+
+CURSOR cur_point_cont(cp_item IN VARCHAR2) IS
+	SELECT nvl(nit_pnt_or_cont,'X')
+	FROM nm_inv_types
+	WHERE nit_inv_type = cp_item;
+
+CURSOR cur_prte_sort(cp_order IN NUMBER) IS
+	SELECT DISTINCT qpr_sort_item
+		, qpr_sort_order
+	FROM hpms_primary_route
+	WHERE qpr_order = cp_order
+		AND qpr_sort_item IS NOT NULL
+		AND qpr_sort_order IS NOT NULL;
+
+CURSOR cur_prte_where(cp_order IN NUMBER) IS
+	SELECT DISTINCT qpr_item
+		, qpr_where
+	FROM hpms_primary_route
+	WHERE qpr_order = cp_order
+		AND qpr_item IS NOT NULL
+		AND qpr_where IS NOT NULL;
+
+CURSOR cur_prte_output (cp_prte_id IN NUMBER DEFAULT 1) IS
+	SELECT hpv_view_definition
+	FROM hpms_prte_view
+	WHERE hpv_id = cp_prte_id FOR UPDATE;
+
+CURSOR cur_get_prte_abbrev(cp_prte_id IN NUMBER DEFAULT 1) IS
+	SELECT hpv_abbreviation
+	FROM hpms_prte_view
+	WHERE hpv_id = cp_prte_id;
+	
+CURSOR cur_count_order IS
+	SELECT count(*) 
+	FROM (SELECT DISTINCT qpr_order FROM hpms_primary_route);
+
+--------------------------------------------------------------------------------
+FUNCTION get_version RETURN VARCHAR2;
+
+PROCEDURE generate_catalog_all(p_catalog IN NUMBER);
+
+PROCEDURE table_generate(p_table IN NUMBER DEFAULT 1, p_log IN VARCHAR2 DEFAULT 'YES');
+
+PROCEDURE lp_create_network_restriction;
+
+PROCEDURE lp_create_target_table;
+
+PROCEDURE lp_begin_procedure_write;
+
+PROCEDURE lp_build_aggregate_table;
+
+PROCEDURE lp_build_aggregate_view;
+
+PROCEDURE lp_build_outerjoin_table;
+
+PROCEDURE lp_build_view(lp_type IN VARCHAR2);
+
+PROCEDURE lp_build_shape_view;
+
+PROCEDURE lp_build_primary_route;
+
+PROCEDURE lp_complete_the_procedure;
+
+FUNCTION lf_generate_shape_view RETURN VARCHAR2;
+
+FUNCTION lf_generate_subview_view RETURN VARCHAR2;
+
+FUNCTION lf_generate_aggregate_table_pt RETURN VARCHAR2;
+
+FUNCTION lf_generate_aggregate_table RETURN VARCHAR2;
+
+FUNCTION lf_generate_aggregate_view RETURN VARCHAR2;
+
+FUNCTION lf_generate_outerjoin_table RETURN VARCHAR2;
+
+FUNCTION lf_generate_simple_view RETURN VARCHAR2;
+
+PROCEDURE lp_add_exception_clause;
+
+PROCEDURE CREATE_OBJECTS(p_table_id IN NUMBER DEFAULT 1);
+
+PROCEDURE COMPILE_PROC(p_table_id IN NUMBER DEFAULT 1);
+
+PROCEDURE CREATE_HPMS_VIEW(p_sql IN VARCHAR2
+				, p_desc IN VARCHAR2
+				, p_table_id IN NUMBER DEFAULT 1
+				, p_item_id IN NUMBER DEFAULT 0
+				, p_view IN VARCHAR2 DEFAULT 'V_HPMS_XXX'
+				, p_view_version IN VARCHAR2 DEFAULT 'TEMP');
+
+PROCEDURE CLEAR_ACTIVITY_LOG;
+
+PROCEDURE hpms_params;
+
+PROCEDURE hpms_report(pi_report_type varchar2) ;
+
+PROCEDURE TABLE_VALIDATE (p_table_id IN NUMBER DEFAULT 1);
+
+FUNCTION results_rollup(p_view_name IN VARCHAR2, p_data_type IN VARCHAR2, p_table IN NUMBER, p_data_item IN NUMBER) RETURN VARCHAR2;
+
+FUNCTION lf_generate_prte_view RETURN VARCHAR2;
+
+END;
+/
+
