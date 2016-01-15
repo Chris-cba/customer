@@ -1,0 +1,1 @@
+drop view xodot_gasb34;
