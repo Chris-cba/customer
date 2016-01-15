@@ -1,0 +1,303 @@
+SET DEFINE OFF;
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (21, 334, 100, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''CNSCHWO''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'CNSCHWO', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (22, 334, 110, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''TOREQ''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'TOREQ', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (24, 334, 120, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''TOHOLD''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'TOHOLD', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (79, 334, 15, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''BDG''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'BDG', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (250, 334, 10, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''LSW''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'LSW', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (251, 334, 20, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''BOQINV''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'BOQINV', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (252, 334, 30, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''CCINV''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'CCINV', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (253, 334, 40, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''3RDDAM''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', '3RDDAM', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (254, 334, 50, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''NOPOT''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'NOPOT', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (255, 334, 60, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''NODEFVIS''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'NODEFVIS', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (256, 334, 70, '  SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || ''PRI''
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("INCDEFPRI", 0) "Incorrect Defect Priority"
+    FROM (  SELECT days, SUM (reason) "INCDEFPRI"
+              FROM (SELECT DISTINCT
+                          r.range_value days,
+                           1 reason,
+                           works_order_number
+                      FROM imf_mai_work_orders_all_attrib wor,
+                           imf_mai_work_order_lines wol,
+                           hig_audits_vw,
+                           POD_DAY_RANGE r,
+                           pod_nm_element_security,
+                           pod_budget_security
+                     WHERE     works_order_number = haud_pk_id
+                           AND haud_table_name = ''WORK_ORDERS''
+                           AND works_order_number = work_order_number
+                           AND NVL (works_order_description, ''Empty'') NOT LIKE
+                                  ''%**Cancelled**%''
+                           AND work_order_line_status NOT IN
+                                  (''COMPLETED'', ''ACTIONED'', ''INSTRUCTED'')
+                           AND WOR_CHAR_ATTRIB100 = ''REJ''
+                           AND WOR_CHAR_ATTRIB104 = ''PRI''
+                           AND haud_attribute_name = ''WOR_CHAR_ATTRIB100''
+                           AND haud_timestamp =
+                                  (SELECT MAX (haud_timestamp)
+                                     FROM hig_audits_vw
+                                    WHERE haud_pk_id = works_order_number
+                                          AND haud_attribute_name =
+                                                 ''WOR_CHAR_ATTRIB100''
+                                          AND haud_new_value = ''REJ'')
+                           AND haud_timestamp BETWEEN r.st_range AND r.end_range
+                           AND pod_nm_element_security.element_id = wol.network_element_id
+                           AND pod_budget_security.budget_code = wol.work_category )
+          GROUP BY days
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_value', 'INCDEFPRI', 
+    'Bar', 'Box');
+Insert into HIGHWAYS.IM_POD_SQL
+   (IPS_ID, IPS_IP_ID, IPS_SEQ, IPS_SOURCE_CODE, IPS_NAME, IPS_TYPE, IPS_SHAPE_TYPE)
+ Values
+   (258, 334, 90, ' SELECT    ''javascript:doDrillDown( ''''IM41037'''' ,''''''
+         || r2.range_value
+         || '''''',  ''''''
+         || WOR_CHAR_ATTRIB104
+         || '''''');''
+            AS link,
+         r2.range_value,
+         NVL ("CNT", 0) "CNT"
+    FROM (  SELECT days, SUM (reason) "CNT", NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') WOR_CHAR_ATTRIB104
+              FROM  (SELECT *
+                      FROM X_LOHAC_IM_IM41035_POD
+                     WHERE 1=1
+					 AND NVL(WOR_CHAR_ATTRIB104, ''NO_REASON'') = ''NOT''
+                     )
+          GROUP BY days, WOR_CHAR_ATTRIB104
+          ORDER BY days),
+           POD_DAY_RANGE r2
+   WHERE days(+) =r2.range_value
+ORDER BY r2.range_id', 'NOT', 
+    'Bar', 'Box');
+COMMIT;
