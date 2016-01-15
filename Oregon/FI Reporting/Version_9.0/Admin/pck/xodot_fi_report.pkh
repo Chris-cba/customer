@@ -1,0 +1,139 @@
+CREATE OR REPLACE PACKAGE TRANSINFO.XODOT_FI_REPORT AS
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/Oregon/FI Reporting/Version_9.0/Admin/pck/xodot_fi_report.pkh-arc   1.0   Jan 15 2016 17:55:50   Sarah.Williams  $
+--       Module Name      : $Workfile:   xodot_fi_report.pkh  $
+
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+--
+--
+--   Author : P Stanton
+--
+--   XODOT_FI_REPORT body
+
+--   Altered by R. Ellis to remove dependance on HACT.REPORT_COLUMN = Y.
+--    it now just uses one per column.
+
+
+--
+-----------------------------------------------------------------------------
+--    Copyright (c) exor corporation ltd, 2009
+----------------------------------------------
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_CREW_ACT">
+-- Procedure Determine the crews and activities to be processed
+PROCEDURE GET_CREW_ACT;
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="regenerate_hbud">
+-- Regenerate HBUD data
+PROCEDURE regenerate_tables;
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="determine_asset_storage">
+-- Procedure to determine if the value is calculated from a count,length, summary
+-- or calculation
+PROCEDURE determine_asset_storage;
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="summary_process">
+-- Function to process activities defined as Summary
+FUNCTION summary_process (p_asset_type nm_inv_items.iit_inv_type%TYPE
+                           ,p_ne_id  nm_elements.ne_id%TYPE
+						   ,p_attribute_name nm_inv_type_attribs.ita_attrib_name%TYPE) return VARCHAR2;
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="calculated_process">
+-- Function to process activities defined as calculated
+FUNCTION calculated_process (p_crew              v_nm_hact.crew_type%TYPE
+                             ,p_ne_id            nm_elements.ne_id%TYPe
+                             ,p_feature_type     v_nm_hact.feature_type%TYPE 
+                             ,p_asset_type       v_nm_hact.asset_type%TYPE 
+                             ,p_calculation_type v_nm_hact.calculation_type%TYPE 
+                             ,p_attribute_type   v_nm_hact.attribute_type%TYPE 
+                             ,p_attribute_values v_nm_hact.attribute_values%TYPE 
+                              ,p_ita_attrib_name  nm_inv_type_attribs.ita_attrib_name%TYPE 
+                             ,p_ita_units        nm_inv_type_attribs.ita_units%TYPE
+                             ,p_begin_mp         number
+                             ,p_end_mp           number
+                             ,p_hwy              nm_elements_all.ne_unique%TYPE  
+                                                        ) return NUMBER;
+
+--
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="count_process">
+-- Function to process activities defined as count
+FUNCTION count_process  (p_asset_type nm_inv_items.iit_inv_type%TYPE
+                        ,p_ne_id  nm_elements.ne_id%TYPE
+						,p_attribute_name nm_inv_type_attribs.ita_attrib_name%TYPE
+						,p_attribute_values V_NM_HACT.attribute_values%TYPE) return NUMBER;
+
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="length_process">
+-- FUNCTION to process activities defined as length
+FUNCTION length_process (p_asset_type nm_inv_items.iit_inv_type%TYPE
+                        ,p_ne_id  nm_elements.ne_id%TYPE
+						,p_attribute_name nm_inv_type_attribs.ita_attrib_name%TYPE
+						,p_attribute_values V_NM_HACT.attribute_values%TYPE) return NUMBER;
+--
+-----------------------------------------------------------------------------
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="equiv_bit_miles">
+--FUNCTION to calculate equivalent  bitumen miles
+FUNCTION equiv_bit_miles (p_begin_mp  number
+                              ,p_end_mp  number
+                              ,p_hwy  nm_elements.ne_unique%type 
+                         ) return NUMBER;
+						 --
+-----------------------------------------------------------------------------
+--
+--
+--<PROC NAME="Create_fi_views">
+-- Function to craete an FI view for each crew type
+--
+PROCEDURE create_fi_views;
+--
+-----------------------------------------------------------------------------
+--
+END XODOT_FI_REPORT;
+/
