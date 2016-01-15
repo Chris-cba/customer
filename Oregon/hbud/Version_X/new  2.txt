@@ -1,0 +1,39 @@
+select * from transinfo.xodot_hbud_extract 
+where 1=1
+order by 1
+ ;
+ 
+ 
+select * 
+from transinfo.xodot_hbud_fi_report
+where 1=1
+
+
+order by 1
+;
+
+select * from (
+select t, crew, feature_count, count(*) cnt from (
+
+select 'fi't, crew, sum(FEATURE_COUNT) FEATURE_COUNT from xodot_hbud_fi_report group by crew 
+union all
+select 'hbud' t, crew, feature_count  from transinfo.xodot_hbud_extract 
+)
+
+where crew = 1300
+group by t, crew, feature_count
+)
+where cnt <>2
+order by 1
+ ;
+
+exec xodot_fi_report.regenerate_tables;
+exec xodot_hbud_extract_process.regenerate_hbud;
+
+select * from v_nm_scns;
+
+desc v_nm_scns;
+
+desc v_nm_seea_nt;
+
+select sum(nm_end_mp - nm_begin_mp) from nm_members where nm_ne_id_in in(select nm_ne_id_of from nm_members where nm_ne_id_in = nm3net.get_ne_id('1300','SECW'));
