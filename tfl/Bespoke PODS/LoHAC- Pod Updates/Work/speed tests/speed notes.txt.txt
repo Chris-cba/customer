@@ -1,0 +1,26 @@
+user:lohac_central
+
+	WOWT001:	1:22
+	WOWT003: 	1:18
+
+
+Trying create index z_HA_WOW001_C on hig_audits(haud_timestamp desc, haud_table_name, Haud_attribute_name, haud_new_value);
+
+	WOWT001:	2:20
+
+dropped
+trying:  create index z_HA_new_val on hig_audits(haud_new_value);
+
+	WOWT001: 1:32, 1:24
+
+dropping z_HA_new_val
+	WOWT001: 	2:24, 1:56
+	
+	
+	
+
+user:lohac_central
+	woWt003 top: 1:03
+	
+	to: 45 sec
+	
