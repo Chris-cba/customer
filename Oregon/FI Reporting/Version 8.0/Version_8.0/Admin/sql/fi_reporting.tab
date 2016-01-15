@@ -1,0 +1,46 @@
+--
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/Oregon/FI Reporting/Version 8.0/Version_8.0/Admin/sql/fi_reporting.tab-arc   1.0   Jan 15 2016 17:53:32   Sarah.Williams  $
+--       Module Name      : $Workfile:   fi_reporting.tab  $
+--       Date into PVCS   : $Date:   Jan 15 2016 17:53:32  $
+--       Date fetched Out : $Modtime:   Sep 01 2010 21:46:18  $
+--       PVCS Version     : $Revision:   1.0  $
+--
+--
+--   Author : P Stanton
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2010
+-----------------------------------------------------------------------------
+--
+
+drop table XODOT_HBUD_FI_REPORT;
+
+PROMPT Creating Table 'XODOT_HBUD_FI_REPORT'
+CREATE TABLE XODOT_HBUD_FI_REPORT
+ (  COUNT_SECTION_ID   VARCHAR2(50)
+   ,COUNT_SECTION_TYPE VARCHAR2(4)
+   ,HIGHWAY            VARCHAR2(30)
+   ,BEGIN_MP           NUMBER
+   ,END_MP             NUMBER
+   ,EA                 VARCHAR2(8)
+   ,DISTRICT           VARCHAR2(80)
+   ,REGION             VARCHAR2(80)
+   ,APPN	           VARCHAR2(3)
+   ,CREW_TYPE          VARCHAR2(4)
+   ,CREW               VARCHAR2(4)
+   ,ACTIVITY	       VARCHAR2(3)
+   ,ASSET_TYPE         VARCHAR2(4)
+   ,TIME_TYPE	       VARCHAR2(2)
+   ,UNIT_OF_MEASURE	   VARCHAR2(20)
+   ,FEATURE_TYPE	   VARCHAR2(50)
+   ,FEATURE_COUNT 	   NUMBER
+ )
+/
+
+
+COMMENT ON TABLE XODOT_HBUD_FI_REPORT IS 'Table for storing the HBUD EXTRACT data for FI reporting'
+/
