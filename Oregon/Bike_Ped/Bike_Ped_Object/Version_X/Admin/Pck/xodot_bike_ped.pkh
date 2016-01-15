@@ -1,0 +1,83 @@
+create or replace package xodot_bike_ped
+AS
+--<PACKAGE>
+-----------------------------------------------------------------------------
+--
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/Oregon/Bike_Ped/Bike_Ped_Object/Version_X/Admin/Pck/xodot_bike_ped.pkh-arc   1.0   Jan 15 2016 16:39:02   Sarah.Williams  $
+--       Module Name      : $Workfile:   xodot_bike_ped.pkh  $
+--       Date into PVCS   : $Date:   Jan 15 2016 16:39:02  $
+--       Date fetched Out : $Modtime:   Sep 21 2010 21:24:24  $
+--       PVCS Version     : $Revision:   1.0  $
+--       Based on SCCS version :
+
+--
+--
+--   Author : P Stanton
+--
+--    xodot_bike_ped
+--
+-----------------------------------------------------------------------------
+--	Copyright (c) exor corporation ltd, 2009
+-----------------------------------------------------------------------------
+--</PACKAGE>
+--<GLOBVAR>
+
+  -----------
+  --constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.0  $"';
+
+--</GLOBVAR>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_VERSION">
+-- This function returns the current SCCS version
+FUNCTION get_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="GET_BODY_VERSION">
+-- This function returns the current SCCS version of the package body
+FUNCTION get_body_version RETURN varchar2;
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE run_merge(p_job_id OUT nm_mrg_query_results.nqr_mrg_job_id%TYPE);
+
+PROCEDURE run_merge_new(p_job_id OUT nm_mrg_query_results.nqr_mrg_job_id%TYPE);
+
+PROCEDURE run_merge_all(p_job_id OUT nm_mrg_query_results.nqr_mrg_job_id%TYPE);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE pop_mrg_result_table(p_job_id nm_mrg_query_results.nqr_mrg_job_id%TYPE);
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE refresh_bike_ped;	
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE refresh_bike_ped_all_network;
+--
+-----------------------------------------------------------------------------
+--
+PROCEDURE pop_mrg_result_table_point;
+--
+-----------------------------------------------------------------------------
+--
+--<PRAGMA>
+  PRAGMA RESTRICT_REFERENCES(get_version, RNDS, WNPS, WNDS);
+  PRAGMA RESTRICT_REFERENCES(get_body_version, RNDS, WNPS, WNDS);
+--</PRAGMA>
+--
+-----------------------------------------------------------------------------
+--
+end xodot_bike_ped;
+/
