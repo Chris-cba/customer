@@ -1,0 +1,23 @@
+declare
+   c int;
+begin
+   select count(*) into c from user_tables where table_name = 'X_IM511001_WO';
+   if c = 1 then
+      execute immediate 'drop table X_IM511001_WO';
+   end if;
+   end;
+/
+
+CREATE TABLE X_IM511001_WO
+(
+  RUN_ID             NUMBER,
+  WORK_ORDER_NUMBER  VARCHAR2(50 BYTE),
+  DAYS               VARCHAR2(10 BYTE),
+  DEF_PRI            VARCHAR2(10 BYTE)
+) SEGMENT CREATION DEFERRED                                                  
+  PCTFREE 10 PCTUSED 0 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING               
+  STORAGE( INITIAL 65536 MINEXTENTS 1 MAXEXTENTS 2147483645                     
+  PCTINCREASE 0 BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT
+)                                                                               
+  TABLESPACE "HIGHWAYS";                                                       
+                                                                                
