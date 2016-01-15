@@ -1,0 +1,4 @@
+create index xodot_rwy_report_idx on xodot_rwy_report(SCNS_HWY_EA_NO);
+
+create index iit_chr_attrib32_idx on nm_inv_items_all(iit_chr_attrib32);
+
