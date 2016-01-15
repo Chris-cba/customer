@@ -1,0 +1,2 @@
+delete from im_pod_sql where ips_ip_id =334; -- Must run since some pods need to be removed
+delete from im_pod_sql where ips_ip_id in (select ip_id from im_pods where ip_hmo_module = 'IM41036') ; -- Must run since some pods need to be removed
