@@ -1,0 +1,2 @@
+alter table V_NM_OHMS_NW
+  add Route_ID VARCHAR2(32 BYTE);
