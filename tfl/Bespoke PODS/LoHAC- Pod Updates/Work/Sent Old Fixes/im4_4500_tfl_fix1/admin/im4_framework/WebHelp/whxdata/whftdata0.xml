@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ftstdata>
+<topic name="Logging into Information Manager" url="getting_started/logon/logging_into_information_manager.htm" />
+<topic name="Changing the layout of Information Manager" url="getting_started/changing_the_layout_of_information_manager/changing_the_layout_of_information_manager.htm" />
+<topic name="Dragging, opening and closing Pods" url="getting_started/changing_the_layout_of_information_manager/pod_controls.htm" />
+<topic name="Hiding &amp; Restoring the Information Manager title bar" url="getting_started/changing_the_layout_of_information_manager/hiding_restoring_the_information_manager_title_bar.htm" />
+<topic name="Interactive Pods" url="getting_started/changing_the_layout_of_information_manager/interactive_pods.htm" />
+<topic name="Setting Location" url="getting_started/searching/searching_and_finding.htm" />
+<topic name="Find Enquiry" url="getting_started/searching/find_enquiry.htm" />
+<topic name="Find Roadworks" url="getting_started/searching/find_roadworks.htm" />
+<topic name="Show Results on a Report" url="getting_started/searching/show_results_on_a_report.htm" />
+<topic name="Business Areas Tab" url="business_areas/business_areas_tab.htm" />
+<topic name="Map Tab" url="map_tab.htm" />
+<topic name="Navigating around the Map" url="map_tab/navigating_around_the_map.htm" />
+<topic name="Finding a location on the map" url="map_tab/finding_a_location_on_the_map.htm" />
+<topic name="Map Legend" url="map_tab/map_legend.htm" />
+<topic name="Print Map" url="map_tab/print_map.htm" />
+<topic name="Map Info Tips" url="map_tab/map_info_tips.htm" />
+<topic name="Pod Information Tools" url="interactive_pods_and_reports.htm" />
+<topic name="Displaying Chart Values" url="interactive_pods/displaying_chart_values.htm" />
+<topic name="Using “Drill Down” Functionality" url="interactive_pods/using_drill_down_functionality.htm" />
+<topic name="Using the Calendar Date Picker" url="interactive_pods/using_the_calendar_date_picker.htm" />
+<topic name="Using Interactive Reports" url="interactive_reports/using_interactive_reports/using_interactive_reports.htm" />
+<topic name="Search Bar" url="interactive_reports/using_interactive_reports/search_bar.htm" />
+<topic name="Actions Menu" url="interactive_reports/actions_menu/actions_menu.htm" />
+<topic name="Select Columns" url="interactive_reports/actions_menu/_select_columns.htm" />
+<topic name="Filter" url="interactive_reports/actions_menu/filter.htm" />
+<topic name="Sort" url="interactive_reports/actions_menu/sort.htm" />
+<topic name="Control Break" url="interactive_reports/actions_menu/_control_break.htm" />
+<topic name="Highlight" url="interactive_reports/actions_menu/highlight.htm" />
+<topic name="Compute" url="interactive_reports/calculations/compute.htm" />
+<topic name="Aggregate" url="interactive_reports/calculations/aggregate.htm" />
+<topic name="Chart" url="interactive_reports/charts/chart.htm" />
+<topic name="Flashback" url="interactive_reports/actions_menu/flashback.htm" />
+<topic name="Save Report" url="interactive_reports/actions_menu/_save_report.htm" />
+<topic name="Reset" url="interactive_reports/actions_menu/reset.htm" />
+<topic name="Download" url="interactive_reports/actions_menu/download.htm" />
+<topic name="Column Headings Menu" url="interactive_reports/column_headings_menu/column_headings_menu.htm" />
+<topic name="Hide Column" url="interactive_reports/column_headings_menu/hide_column.htm" />
+<topic name="Single Row View" url="interactive_reports/viewing_reports/single_row_view.htm" />
+<topic name="Viewing Document Associations" url="interactive_reports/viewing_reports/viewing_document_associations.htm" />
+<topic name="Viewing Items on the Map" url="interactive_reports/viewing_reports/viewing_items_on_the_map.htm" />
+<topic name="Query Builder" url="query_builder.htm" />
+<topic name="Building an ad hoc query" url="queries/building_an_ad_hoc_query.htm" />
+<topic name="Query Operators" url="queries/query_operators/query_operators.htm" />
+<topic name="Saving an ad hoc query" url="queries/_saving_an_ad_hoc_query.htm" />
+<topic name="Executing a query" url="queries/_executing_a_query.htm" />
+<topic name="Running a saved query" url="queries/running_a_saved_query.htm" />
+<topic name="Configuring User Tabs" url="configuring_user_tabs/configuring_user_tabs.htm" />
+<topic name="The Pod Library" url="configuring_user_tabs/the_pod_library.htm" />
+<topic name="Changing the order and naming of User Tabs" url="configuring_user_tabs/changing_the_order_and_naming_of_user_tabs.htm" />
+<topic name="Enquiry Manager Worktray" url="enquiry_manager_worktray/enquiry_manager_worktray.htm" />
+<topic name="Enquiry Manager Worktray Homepage" url="enquiry_manager_worktray/enquiry_manager_worktray_homepage.htm" />
+<topic name="Enquiries In Progress" url="enquiry_manager_worktray/reviewing_enquiries/enquiries_in_progress.htm" />
+<topic name="Enquiries at Received Status" url="enquiry_manager_worktray/reviewing_enquiries/enquiries_at_received_status.htm" />
+<topic name="Quick Edit" url="enquiry_manager_worktray/reviewing_enquiries/quick_edit.htm" />
+<topic name="Enquiry Manager Summary" url="enquiry_manager_worktray/reviewing_enquiries/enquiry_manager_summary.htm" />
+<topic name="Enquiry Manager Detail" url="enquiry_manager_worktray/editing_enquiry_details/enquiry_manager_detail.htm" />
+<topic name="Enquiry Id" url="enquiry_manager_worktray/editing_enquiry_details/enquiry_id.htm" />
+<topic name="Toolbar" url="enquiry_manager_worktray/toolbar/toolbar.htm" />
+<topic name="Raise Defect" url="enquiry_manager_worktray/toolbar/raise_defect/raise_defect.htm" />
+<topic name="Enquiry Details Tab" url="enquiry_manager_worktray/tabs/enquiry_details_tab.htm" />
+<topic name="Contact Details Tab" url="enquiry_manager_worktray/tabs/contact_details_tab.htm" />
+<topic name="Dates Tab" url="enquiry_manager_worktray/tabs/dates_tab.htm" />
+<topic name="History Tab" url="enquiry_manager_worktray/tabs/history_tab.htm" />
+<topic name="Defects Tab" url="enquiry_manager_worktray/tabs/defects_tab.htm" />
+<topic name="Work Order Authorisation and Instruction Worktray" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray.htm" />
+<topic name="Work Order Authorisation and Instruction Worktray Homepage" url="work_order_authorisation_and_instruction_worktray/work_order_authorisation_and_instruction_worktray_homepage.htm" />
+<topic name="Work Order Worktray Additional Functional Areas" url="work_order_authorisation_and_instruction_worktray/work_order_worktray_additional_functional_areas.htm" />
+<topic name="Introduction" url="appendix_1/find_roadworks_likely_impact_algorithm.htm" />
+<topic name="Determine Works” “Score”" url="appendix_1/scoring/determine_works_score_.htm" />
+<topic name="Welcome" url="welcome.htm" />
+
+</ftstdata>  
