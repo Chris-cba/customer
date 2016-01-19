@@ -1,0 +1,14 @@
+create or replace package  reports.xodot_rollup_mp is
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	file: xodot_rollup_mp
+	Author: JMM
+	UPDATE01:	Original, 2015.04.20, JMM
+*/
+
+procedure rollup_mp(s_source_table varchar2, s_destination_table varchar2);
+
+end xodot_rollup_mp;
