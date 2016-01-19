@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CONTACT_ADMIN" xml:space="preserve">
+    <value>contact your systems administrator. </value>
+  </data>
+  <data name="ERROR_CONFIG_SCREEN_DATA_LOAD" xml:space="preserve">
+    <value>There is an issue retrieving data from an existing configuration file.  This error could occur if the file was copied form a different computer.  Please check the values, test and resave the data.</value>
+  </data>
+  <data name="ERROR_CONFIG_SCREEN_DATA_LOAD_TITLE" xml:space="preserve">
+    <value>Unable to completely load from the configuration file</value>
+  </data>
+  <data name="ERROR_DETAILS" xml:space="preserve">
+    <value>Below are the technical details for the issue: </value>
+  </data>
+  <data name="ERROR_MAIN_CONFIG_DATA_LOAD" xml:space="preserve">
+    <value>Please close the program and try again.  If the issue persists then contact a systems administrator.</value>
+  </data>
+  <data name="ERROR_MAIN_CONFIG_DATA_LOAD_TITLE" xml:space="preserve">
+    <value>Unable to completely load from the configuration file</value>
+  </data>
+  <data name="ERROR_ORA_03113" xml:space="preserve">
+    <value>Network communications was interrupted or lost to the TransInfo Database.
+Please ensure that you have network access and then try again.  
+If the issue persists then contact a system administrator.</value>
+  </data>
+  <data name="ERROR_ORA_04068" xml:space="preserve">
+    <value>A TransInfo System Administrator is most likely preforming system maintenance and the broker cannot continue.   Please wait a few minutes and try again.
+If the issue persists then contact a system administrator.</value>
+  </data>
+  <data name="ERROR_ORA_CONFIG" xml:space="preserve">
+    <value>The Database Configuration File could not be found.  Please </value>
+  </data>
+  <data name="ERROR_ORA_CONFIG_EX" xml:space="preserve">
+    <value>The ora_connect.xml  file needs to be created by the broker Systems Administrator.</value>
+  </data>
+  <data name="ERROR_SFA_LOCATION" xml:space="preserve">
+    <value> highway &lt;H&gt; at milepoint &lt;M&gt; </value>
+  </data>
+  <data name="ERROR_SFA_LOG_UNHANDLED" xml:space="preserve">
+    <value>The installation on &lt;LOC&gt; contains an error preventing synchronization. Please review the record for possible issues or contact the Sign Asset Database Administrator.</value>
+  </data>
+  <data name="ERROR_SFA_NOT_FOUND" xml:space="preserve">
+    <value>SFA Access Databases Not Found or producing errors.
+Please verify you can open the sign_client.mdb with out errors and then retry the sign_broker. 
+If this error continues then </value>
+  </data>
+  <data name="ERROR_SFA_NOT_FOUND_EX" xml:space="preserve">
+    <value>The SFA MDB paths in the configuration file need to be checked or the sign_client.mdb is producing errors when opening.</value>
+  </data>
+  <data name="ERROR_SFA_NOT_INI" xml:space="preserve">
+    <value>SFA Access Database Internal Error</value>
+  </data>
+  <data name="ERROR_SFA_NOT_INI_EX" xml:space="preserve">
+    <value>Please ensure the signs field app can be run, then try the broker again.  </value>
+  </data>
+  <data name="ERROR_SFA_VERSION_NOT_FOUND" xml:space="preserve">
+    <value>An acceptable Broker Version Number could not be found in the SFA database.  
+•Please Close the Broker.  
+•Then ensure that you have a network connection to the ODOT network. 
+•Once you have confirmed the network connection, please restart the Broker from the shortcut provided by your systems administrator. 
+ If the issue persists, then </value>
+  </data>
+  <data name="ERROR_SFA_VERSION_NOT_FOUND_EX" xml:space="preserve">
+    <value>Version Control Mismatch.</value>
+  </data>
+  <data name="ERROR_TI_API" xml:space="preserve">
+    <value>An Issue occured with the Oracle Database Please  </value>
+  </data>
+  <data name="ERROR_TI_API_EX" xml:space="preserve">
+    <value>xodot_signs_api.get_version is generating an error.   Please have a TransInfo administrator verify the state of the xodot_signs_api package.</value>
+  </data>
+  <data name="ERROR_TI_TO_SFA_WITH_EDIT_ITEM_IN_SFA" xml:space="preserve">
+    <value>The Item that is attempting to sync from TI to SFA  has items that are not synced in the Edit Table.  Please Fix any Errors relating to this Item in the SFA to TI sync and try again.</value>
+  </data>
+  <data name="ERROR_UNEXPECTED" xml:space="preserve">
+    <value>Unexpected Issue, please have your System Administrator check the TRANSINFO Database Error log.</value>
+  </data>
+  <data name="INFO_SYNC_COMPLETED" xml:space="preserve">
+    <value>Sync Process Complete</value>
+    <comment>D</comment>
+  </data>
+  <data name="TASK_LOV" xml:space="preserve">
+    <value>TI to SFA Lookup Lists</value>
+  </data>
+  <data name="TASK_POPULATING_TASKS" xml:space="preserve">
+    <value>Populating the Task List</value>
+  </data>
+  <data name="TASK_SFA_ITEMS" xml:space="preserve">
+    <value>SFA Changes to Sync to TI</value>
+  </data>
+  <data name="TASK_TI_ITEMS" xml:space="preserve">
+    <value>TI to SFA Install Items to Sync</value>
+  </data>
+  <data name="TI_BAD_USER" xml:space="preserve">
+    <value>The user name used to log into TransInfo does not have rights to access the Signs Data.  Please </value>
+  </data>
+  <data name="TI_CONNECTING" xml:space="preserve">
+    <value>Attempting to connect to TransInfo.  Please Wait.</value>
+  </data>
+  <data name="TI_CONNECT_ERROR" xml:space="preserve">
+    <value>Unable to connect to TransInfo, Please check your network connection and try again.  If the issue continues then </value>
+  </data>
+  <data name="UNHANDLED" xml:space="preserve">
+    <value>An unhandled fatal issue occurred, please </value>
+  </data>
+</root>
