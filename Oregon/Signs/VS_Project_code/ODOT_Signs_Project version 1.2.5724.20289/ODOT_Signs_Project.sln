@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ODOT_Signs_Project", "ODOT_Signs_Project\ODOT_Signs_Project.vbproj", "{4F389268-E792-45B8-9B86-B7A04074F5BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		all_stop|x86 = all_stop|x86
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		USER_DEBUG|x86 = USER_DEBUG|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.all_stop|x86.ActiveCfg = all_stop|x86
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.all_stop|x86.Build.0 = all_stop|x86
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.Debug|x86.ActiveCfg = Debug|x86
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.Debug|x86.Build.0 = Debug|x86
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.Release|x86.ActiveCfg = Release|x86
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.Release|x86.Build.0 = Release|x86
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.USER_DEBUG|x86.ActiveCfg = Release|x86
+		{4F389268-E792-45B8-9B86-B7A04074F5BA}.USER_DEBUG|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
