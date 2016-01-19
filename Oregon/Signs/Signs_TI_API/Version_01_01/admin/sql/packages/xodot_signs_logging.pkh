@@ -1,0 +1,15 @@
+create or replace package  xodot_signs_logging as
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	file: xodot_signs_logging
+	Author: JMM
+	UPDATE01:	Original, 2015.03.12, JMM
+*/
+procedure log_exception(s_ne_id varchar2, s_install_id varchar2, s_statehwy varchar2, n_mp number, s_error_type varchar2, s_sync_error varchar2);
+procedure log_status ( n_SFA_CNT number, n_SFA_EXP number, n_TI_CNT number,n_TI_EXCP number, n_LOV_CNT number, n_LOV_EXP number, n_MP100_CNT number, n_MP100_EXP number);
+
+
+end xodot_signs_logging;
