@@ -1,0 +1,137 @@
+create or replace package xodot_signs_api as
+/*
+	The contents of this document, including system ideas and concepts, 
+	are confidential and proprietary in nature and are not to be distributed 
+	in any form without the prior written consent of Bentley Systems.
+	
+	This packages is dependant on a package: xlog_file for debugging purposes
+	
+	file: xodot_signs_api
+	Author: JMM
+	UPDATE01:	Original, 2015.03.09, JMM
+	UPDATE02:	Added Get Version Function, 2015.05.12, JMM
+*/
+--type t_task_list_row is record(asset varchar2(4), cnt number);
+--type t_task_list is table of t_task_list_row;
+
+procedure get_task_list_sign_assets(s_crew_number in varchar2,  d_last_sync_date in date, output_list out xodot_signs_task_list);
+
+function find_ea_from_crew_number(s_crew_number in varchar2) return varchar2;
+function delete_child_asset(n_parent_ne_id number, s_asset_type varchar2, s_sign_type varchar2 default null) return varchar2;
+function get_version return varchar2;
+
+procedure snin_opps				( t_result 				out		xodot_signs_asset_op
+								, s_Operation			in		varchar2 -- Expects: I = Insert, U = Update, E = End Date
+								, p_iit_ne_id			in 		number 										default null 
+								--Insertion Information
+								, p_effective_date		IN 		DATE 										DEFAULT nm3user.get_effective_date
+								, p_admin_unit			IN 		nm_inv_items_all.iit_admin_unit%TYPE  		DEFAULT NULL
+								, p_x_sect				IN		nm_inv_items_all.iit_x_sect%TYPE  			DEFAULT NULL
+								, p_descr 				IN		nm_inv_items_all.iit_descr%TYPE 			DEFAULT NULL
+								, p_note  				IN		nm_inv_items_all.iit_note%TYPE 				DEFAULT NULL
+								
+								,pf_loc_note           	IN 		nm_inv_items_all.iit_chr_attrib26%TYPE 		DEFAULT NULL
+								,pf_city_rd_flg        	IN 		nm_inv_items_all.iit_chr_attrib27%TYPE 		DEFAULT NULL
+								,pf_cnty_rd_flg        	IN 		nm_inv_items_all.iit_chr_attrib28%TYPE 		DEFAULT NULL
+								,pf_sign_inv_side_of_rd	IN 		nm_inv_items_all.iit_chr_attrib29%TYPE 		DEFAULT NULL
+								,pf_sign_inv_trvl_dir  	IN 		nm_inv_items_all.iit_chr_attrib30%TYPE		DEFAULT Null
+								,pf_off_netwrk_note    	IN 		nm_inv_items_all.iit_chr_attrib66%TYPE 		DEFAULT NULL
+								,pf_dstnc_from_pvmt    	IN 		nm_inv_items_all.iit_distance%TYPE 			DEFAULT NULL
+								,pf_lat                	IN 		nm_inv_items_all.iit_num_attrib100%TYPE 	DEFAULT NULL
+								,pf_longtd             	IN 		nm_inv_items_all.iit_num_attrib101%TYPE 	DEFAULT NULL
+								--Location Information
+								, s_LRM					IN		nm_elements.ne_unique%TYPE 					default null
+								, n_MP					in		nm_members_all.NM_SLK%TYPE					default null
+								, s_sfa_id				in		varchar2									default 'N/A'
+								);
+								
+
+
+
+PROCEDURE snsn_opps 			(t_result 						out		xodot_signs_asset_op
+								,s_Operation					in		varchar2 -- Expects: I = Insert, D = Delete
+								,p_iit_ne_id					in 		number 	-- THis is the Parent NE_ID			
+								---AssetInformation
+								,p_effective_date				IN		nm_inv_items_all.iit_start_date%TYPE DEFAULT nm3user.get_effective_date								
+								,p_x_sect						IN		nm_inv_items_all.iit_x_sect%TYPE DEFAULT NULL 
+								,p_descr						IN		nm_inv_items_all.iit_descr%TYPE DEFAULT NULL 
+								,p_note							IN		nm_inv_items_all.iit_note%TYPE DEFAULT NULL 
+								--<FLEXIBLEATTRIBUTES>		
+								,pf_sign_typ					IN		nm_inv_items_all.iit_chr_attrib26%TYPE DEFAULT NULL 								
+								,pf_std_sign_id					IN		nm_inv_items_all.iit_chr_attrib27%TYPE DEFAULT NULL 
+								,pf_fail_flg					IN		nm_inv_items_all.iit_chr_attrib28%TYPE DEFAULT NULL 
+								,pf_facing_dir					IN		nm_inv_items_all.iit_chr_attrib29%TYPE DEFAULT NULL 
+								,pf_sbstr						IN		nm_inv_items_all.iit_chr_attrib30%TYPE DEFAULT NULL 
+								,pf_sheeting					IN		nm_inv_items_all.iit_chr_attrib31%TYPE DEFAULT NULL 
+								,pf_soi_flg						IN		nm_inv_items_all.iit_chr_attrib32%TYPE DEFAULT NULL 
+								,pf_custom_lgnd					IN		nm_inv_items_all.iit_chr_attrib66%TYPE DEFAULT NULL 
+								,pf_custom_pic_path				IN		nm_inv_items_all.iit_chr_attrib67%TYPE DEFAULT NULL 
+								,pf_est_rplcmnt_dt				IN		nm_inv_items_all.iit_date_attrib86%TYPE DEFAULT NULL 
+								,pf_insp_dt						IN		nm_inv_items_all.iit_date_attrib87%TYPE DEFAULT NULL 
+								,pf_install_dt					IN		nm_inv_items_all.iit_instal_date%TYPE DEFAULT NULL 
+								--,pf_custom_lgnd_id				IN		nm_inv_items_all.iit_num_attrib100%TYPE DEFAULT NULL 
+								,pf_custom_wd					IN		nm_inv_items_all.iit_num_attrib101%TYPE DEFAULT NULL 
+								,pf_custom_ht					IN		nm_inv_items_all.iit_num_attrib102%TYPE DEFAULT NULL 
+								,pf_recyc_cnt					IN		nm_inv_items_all.iit_num_attrib103%TYPE DEFAULT NULL 
+								, s_sfa_id						in		varchar2									default 'N/A'
+								);
+
+PROCEDURE snsu_opps 			(t_result 						out		xodot_signs_asset_op
+								,s_Operation					in		varchar2 -- Expects: I = Insert, D = Delete
+								,p_iit_ne_id					in 		number 	-- This is the Parent NE_ID			
+								---AssetInformation
+								,p_effective_date               IN     nm_inv_items_all.iit_start_date%TYPE DEFAULT nm3user.get_effective_date
+								,p_admin_unit                   IN     nm_inv_items_all.iit_admin_unit%TYPE default null
+								,p_x_sect                       IN     nm_inv_items_all.iit_x_sect%TYPE default null
+								,p_descr                        IN     nm_inv_items_all.iit_descr%TYPE DEFAULT NULL
+								,p_note                         IN     nm_inv_items_all.iit_note%TYPE DEFAULT NULL
+								-- <FLEXIBLE ATTRIBUTES>
+								,pf_supp_typ                    IN     nm_inv_items_all.iit_chr_attrib26%TYPE  DEFAULT NULL
+								,pf_install_dt                  IN     nm_inv_items_all.iit_instal_date%TYPE  DEFAULT NULL
+								,pf_no_supps                    IN     nm_inv_items_all.iit_no_of_units%TYPE  DEFAULT NULL
+								, s_sfa_id						in		varchar2									default 'N/A'
+								);
+								
+PROCEDURE snml_opps 			(t_result 						out		xodot_signs_asset_op
+								,s_Operation					in		varchar2 -- Expects: I = Insert, D = Delete
+								,p_iit_ne_id					in 		number 	-- This is the Parent NE_ID			
+								---AssetInformation
+								,p_effective_date               IN     nm_inv_items_all.iit_start_date%TYPE DEFAULT nm3user.get_effective_date
+								,p_admin_unit                   IN     nm_inv_items_all.iit_admin_unit%TYPE DEFAULT NULL
+								,p_x_sect                       IN     nm_inv_items_all.iit_x_sect%TYPE DEFAULT NULL
+								,p_descr                        IN     nm_inv_items_all.iit_descr%TYPE DEFAULT NULL
+								,p_note                         IN     nm_inv_items_all.iit_note%TYPE DEFAULT NULL
+								-- <FLEXIBLE ATTRIBUTES>
+								,pf_actn                        IN     nm_inv_items_all.iit_chr_attrib26%TYPE DEFAULT NULL
+								,pf_cause                       IN     nm_inv_items_all.iit_chr_attrib27%TYPE DEFAULT NULL
+								,pf_sign_dtl                    IN     nm_inv_items_all.iit_chr_attrib28%TYPE DEFAULT NULL
+								,pf_resp_per                    IN     nm_inv_items_all.iit_chr_attrib29%TYPE DEFAULT NULL
+								,pf_sign_sz                     IN     nm_inv_items_all.iit_chr_attrib30%TYPE DEFAULT NULL
+								,pf_sign_facing                 IN     nm_inv_items_all.iit_chr_attrib31%TYPE DEFAULT NULL
+								,pf_sign_lgnd                   IN     nm_inv_items_all.iit_chr_attrib56%TYPE DEFAULT NULL
+								,pf_comnt                       IN     nm_inv_items_all.iit_chr_attrib66%TYPE DEFAULT NULL
+								,pf_matl                        IN     nm_inv_items_all.iit_chr_attrib67%TYPE DEFAULT NULL
+								,pf_supp_desc                   IN     nm_inv_items_all.iit_chr_attrib70%TYPE DEFAULT NULL
+								,pf_maint_hist_dt               IN     nm_inv_items_all.iit_date_attrib86%TYPE DEFAULT NULL
+								,pf_accomp                      IN     nm_inv_items_all.IIT_CHR_ATTRIB57%TYPE DEFAULT NULL
+								,pf_crew_hr                     IN     nm_inv_items_all.iit_num_attrib100%TYPE DEFAULT NULL
+								,pf_equip_hr                    IN     nm_inv_items_all.iit_num_attrib101%TYPE DEFAULT NULL
+								, s_sfa_id						in		varchar2									default 'N/A'
+								);
+
+procedure get_sign_assets(s_crew_number varchar2, s_asset_type in varchar2, d_date_last_synced in date, ref_cur out sys_refcursor);
+
+procedure get_asset_lov(s_asset varchar2, d_date_last_synced date, info out xodot_signs_asset_op, ref_cur out sys_refcursor);
+
+procedure get_domain_lov(s_domain in varchar2, info out xodot_signs_asset_op, ref_cur out sys_refcursor );
+
+procedure get_mem_location_from_ne_id(n_ne_id in number, ref_cur out sys_refcursor);
+
+procedure get_child_from_parent_ne_id(n_ne_id in number, s_child_type varchar2, ref_cur out sys_refcursor);
+
+procedure get_simple_report_lookup(s_report in varchar2,s_crew varchar2, s_district varchar2, b_crew_only  varchar2,  d_last_sync_date date  default sysdate , ref_cur out sys_refcursor);
+
+procedure get_gen_dir_from_LRM(LRM varchar2, ref_cur out sys_refcursor);
+
+end xodot_signs_api;
+/
