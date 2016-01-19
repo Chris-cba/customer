@@ -1,0 +1,29 @@
+	--****TransInfo Schema****
+	
+	-- Types
+	xodot_signs_task_list
+	xodot_signs_task_list_row
+	xodot_signs_asset_op
+	
+	--Indexes
+	xsigns_date_chk_idx
+	
+	
+	--TRIGGERS
+	xodot_signs_asset_domain_trg 
+	
+	--Packages
+	xodot_signs_api
+	xodot_signs_logging
+	--Tables
+	
+	
+	--****Reports Schema****
+	
+	--Packages
+	reports.xodot_rollup_mp
+	--Tables
+	REPORTS.X_SIGNS_TBLHWYLKUP_IN
+	REPORTS.X_SIGNS_TBLHWYLKUP_OUT	
+	reports.xsign_except
+	REPORTS.XSIGN_STATUS
