@@ -1,0 +1,199 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+Sign_Broker
+</name>
+</assembly>
+<members>
+<member name="P:Sign_Broker.My.Resources.Images.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.Images.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.Images.odot_logo">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="T:Sign_Broker.My.Resources.Images">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.CONTACT_ADMIN">
+	<summary>
+  Looks up a localized string similar to contact your systems administrator. .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_CONFIG_SCREEN_DATA_LOAD">
+	<summary>
+  Looks up a localized string similar to There is an issue retrieving data from an existing configuration file.  This error could occur if the file was copied form a different computer.  Please check the values, test and resave the data..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_CONFIG_SCREEN_DATA_LOAD_TITLE">
+	<summary>
+  Looks up a localized string similar to Unable to completely load from the configuration file.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_DETAILS">
+	<summary>
+  Looks up a localized string similar to Below are the technical details for the issue: .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_MAIN_CONFIG_DATA_LOAD">
+	<summary>
+  Looks up a localized string similar to Please close the program and try again.  If the issue persists then contact a systems administrator..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_MAIN_CONFIG_DATA_LOAD_TITLE">
+	<summary>
+  Looks up a localized string similar to Unable to completely load from the configuration file.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_ORA_03113">
+	<summary>
+  Looks up a localized string similar to Network communications was interrupted or lost to the TransInfo Database.
+Please ensure that you have network access and then try again.  
+If the issue persists then contact a system administrator..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_ORA_04068">
+	<summary>
+  Looks up a localized string similar to A TransInfo System Administrator is most likely preforming system maintenance and the broker cannot continue.   Please wait a few minutes and try again.
+If the issue persists then contact a system administrator..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_ORA_CONFIG">
+	<summary>
+  Looks up a localized string similar to The Database Configuration File could not be found.  Please .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_ORA_CONFIG_EX">
+	<summary>
+  Looks up a localized string similar to The ora_connect.xml  file needs to be created by the broker Systems Administrator..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_LOCATION">
+	<summary>
+  Looks up a localized string similar to  highway &lt;H&gt; at milepoint &lt;M&gt; .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_LOG_UNHANDLED">
+	<summary>
+  Looks up a localized string similar to The installation on &lt;LOC&gt; contains an error preventing synchronization. Please review the record for possible issues or contact the Sign Asset Database Administrator..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_NOT_FOUND">
+	<summary>
+  Looks up a localized string similar to SFA Access Databases Not Found or producing errors.
+Please verify you can open the sign_client.mdb with out errors and then retry the sign_broker. 
+If this error continues then .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_NOT_FOUND_EX">
+	<summary>
+  Looks up a localized string similar to The SFA MDB paths in the configuration file need to be checked or the sign_client.mdb is producing errors when opening..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_NOT_INI">
+	<summary>
+  Looks up a localized string similar to SFA Access Database Internal Error.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_NOT_INI_EX">
+	<summary>
+  Looks up a localized string similar to Please ensure the signs field app can be run, then try the broker again.  .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_VERSION_NOT_FOUND">
+	<summary>
+  Looks up a localized string similar to An acceptable Broker Version Number could not be found in the SFA database.  
+•Please Close the Broker.  
+•Then ensure that you have a network connection to the ODOT network. 
+•Once you have confirmed the network connection, please restart the Broker from the shortcut provided by your systems administrator. 
+ If the issue persists, then .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_SFA_VERSION_NOT_FOUND_EX">
+	<summary>
+  Looks up a localized string similar to Version Control Mismatch..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_TI_API">
+	<summary>
+  Looks up a localized string similar to An Issue occured with the Oracle Database Please  .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_TI_API_EX">
+	<summary>
+  Looks up a localized string similar to xodot_signs_api.get_version is generating an error.   Please have a TransInfo administrator verify the state of the xodot_signs_api package..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_TI_TO_SFA_WITH_EDIT_ITEM_IN_SFA">
+	<summary>
+  Looks up a localized string similar to The Item that is attempting to sync from TI to SFA  has items that are not synced in the Edit Table.  Please Fix any Errors relating to this Item in the SFA to TI sync and try again..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.ERROR_UNEXPECTED">
+	<summary>
+  Looks up a localized string similar to Unexpected Issue, please have your System Administrator check the TRANSINFO Database Error log..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.INFO_SYNC_COMPLETED">
+	<summary>
+  Looks up a localized string similar to Sync Process Complete.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.TASK_LOV">
+	<summary>
+  Looks up a localized string similar to TI to SFA Lookup Lists.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.TASK_POPULATING_TASKS">
+	<summary>
+  Looks up a localized string similar to Populating the Task List.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.TASK_SFA_ITEMS">
+	<summary>
+  Looks up a localized string similar to SFA Changes to Sync to TI.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.TASK_TI_ITEMS">
+	<summary>
+  Looks up a localized string similar to TI to SFA Install Items to Sync.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.TI_BAD_USER">
+	<summary>
+  Looks up a localized string similar to The user name used to log into TransInfo does not have rights to access the Signs Data.  Please .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.TI_CONNECT_ERROR">
+	<summary>
+  Looks up a localized string similar to Unable to connect to TransInfo, Please check your network connection and try again.  If the issue continues then .
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.TI_CONNECTING">
+	<summary>
+  Looks up a localized string similar to Attempting to connect to TransInfo.  Please Wait..
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.strings.UNHANDLED">
+	<summary>
+  Looks up a localized string similar to An unhandled fatal issue occurred, please .
+</summary>
+</member><member name="T:Sign_Broker.My.Resources.strings">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.Resources.DeleteLightSetup">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.Resources.LightOff">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Sign_Broker.My.Resources.Resources.PlaceLight">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="T:Sign_Broker.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>
