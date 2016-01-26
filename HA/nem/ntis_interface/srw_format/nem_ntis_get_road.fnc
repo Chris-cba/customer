@@ -3,11 +3,11 @@ CREATE OR REPLACE FUNCTION nem_ntis_get_road(pi_nevt_id IN nem_events.nevt_id%TY
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_ntis_get_road.fnc-arc   1.0   26 Jan 2016 18:00:08   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_ntis_get_road.fnc-arc   1.1   26 Jan 2016 18:05:32   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_get_road.fnc  $
-  --       Date into PVCS   : $Date:   26 Jan 2016 18:00:08  $
+  --       Date into PVCS   : $Date:   26 Jan 2016 18:05:32  $
   --       Date fetched Out : $Modtime:   26 Jan 2016 17:59:16  $
-  --       Version          : $Revision:   1.0  $
+  --       Version          : $Revision:   1.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.

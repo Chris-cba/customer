@@ -3,17 +3,17 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_ntis_interface.pkh-arc   1.0   26 Jan 2016 18:00:08   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_ntis_interface.pkh-arc   1.1   26 Jan 2016 18:05:32   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkh  $
-  --       Date into PVCS   : $Date:   26 Jan 2016 18:00:08  $
+  --       Date into PVCS   : $Date:   26 Jan 2016 18:05:32  $
   --       Date fetched Out : $Modtime:   21 Jan 2016 11:33:12  $
-  --       Version          : $Revision:   1.0  $
+  --       Version          : $Revision:   1.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
   ------------------------------------------------------------------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
   --
   c_datetimefmt    CONSTANT VARCHAR2(50) := 'YYYY-MM-DD"T"HH24:MI:SS'; 
   --
