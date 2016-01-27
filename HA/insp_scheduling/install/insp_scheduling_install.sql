@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/install/insp_scheduling_install.sql-arc   1.1   Jun 07 2012 08:07:34   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/insp_scheduling/install/insp_scheduling_install.sql-arc   1.2   Jan 27 2016 12:14:18   Chris.Baugh  $
 --       Module Name      : $Workfile:   insp_scheduling_install.sql  $
---       Date into PVCS   : $Date:   Jun 07 2012 08:07:34  $
---       Date fetched Out : $Modtime:   Jun 06 2012 17:29:44  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Jan 27 2016 12:14:18  $
+--       Date fetched Out : $Modtime:   Jan 25 2016 15:29:38  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 --
 --   Author : P Stanton
@@ -60,6 +60,13 @@ SET DEFINE ON
 
 select '&exor_base'||'insp_scheduling'||'&terminator'||'admin'||'&terminator'||'views'||
         '&terminator'||'v_ha_upd_insp.vw' run_file
+from dual
+/
+SET FEEDBACK ON
+start '&&run_file'
+
+select '&exor_base'||'insp_scheduling'||'&terminator'||'admin'||'&terminator'||'views'||
+        '&terminator'||'v_ha_ins_insl.vw' run_file
 from dual
 /
 SET FEEDBACK ON
@@ -153,6 +160,17 @@ SET FEEDBACK OFF
 SET DEFINE ON
 select '&exor_base'||'insp_scheduling'||'&terminator'||'admin'||
         '&terminator'||'sql'||'&terminator'||'update_inpections_csv_loader.sql' run_file
+from dual
+/
+
+
+SET FEEDBACK ON
+start '&&run_file'
+SET FEEDBACK OFF
+---
+SET DEFINE ON
+select '&exor_base'||'insp_scheduling'||'&terminator'||'admin'||
+        '&terminator'||'sql'||'&terminator'||'create_partial_inspections_csv_loader.sql' run_file
 from dual
 /
 
