@@ -1,25 +1,25 @@
-CREATE OR REPLACE package ha_insp
+CREATE OR REPLACE package HIGHWAYS.ha_insp
 AS
 --<PACKAGE>
 -----------------------------------------------------------------------------
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/pck/ha_insp.pkh-arc   1.0   Jun 06 2012 16:19:00   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/insp_scheduling/admin/pck/ha_insp.pkh-arc   1.1   Jan 27 2016 12:03:44   Chris.Baugh  $
 --       Module Name      : $Workfile:   ha_insp.pkh  $
---       Date into PVCS   : $Date:   Jun 06 2012 16:19:00  $
---       Date fetched Out : $Modtime:   Jun 06 2012 14:31:58  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Jan 27 2016 12:03:44  $
+--       Date fetched Out : $Modtime:   Jan 25 2016 15:24:42  $
+--       PVCS Version     : $Revision:   1.1  $
 --       Based on SCCS version :
 
---
+--   -- 26 Oct 2013 - Modified to use FTP functionality
 --
 --   Author : PStanton
 --
 --    ha_insp
 --
 -----------------------------------------------------------------------------
---	Copyright (c) exor corporation ltd, 2009
+--    Copyright (c) exor corporation ltd, 2009
 -----------------------------------------------------------------------------
 --</PACKAGE>
 --<GLOBVAR>
@@ -28,7 +28,7 @@ AS
   --constants
   -----------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.0  $"';
+  g_sccsid CONSTANT VARCHAR2(2000):='"$Revision:   1.1  $"';
 
 --</GLOBVAR>
 --
@@ -150,6 +150,13 @@ Procedure initialise;
 --<PROC NAME="update_inspections">
 --Prodcedure for the inspection loader csv update
 PROCEDURE update_inspections (p_insp_rec v_ha_upd_insp%ROWTYPE);
+--</PROC>
+--
+-----------------------------------------------------------------------------
+--
+--<PROC NAME="create_partial_inspections">
+--Prodcedure for the inspection loader csv update
+PROCEDURE create_partial_inspections (p_insl_rec v_ha_ins_insl%ROWTYPE);
 --</PROC>
 --
 -----------------------------------------------------------------------------
