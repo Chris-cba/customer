@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.3   Jun 07 2012 12:41:42   Ian.Turnbull  $
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/insp_scheduling/admin/sql/metadata.sql-arc   1.4   Jan 27 2016 12:07:42   Chris.Baugh  $
 --       Module Name      : $Workfile:   metadata.sql  $
---       Date into PVCS   : $Date:   Jun 07 2012 12:41:42  $
---       Date fetched Out : $Modtime:   Jun 07 2012 10:19:46  $
---       PVCS Version     : $Revision:   1.3  $
+--       Date into PVCS   : $Date:   Jan 27 2016 12:07:42  $
+--       Date fetched Out : $Modtime:   Jan 25 2016 15:18:00  $
+--       PVCS Version     : $Revision:   1.4  $
 --
 --
 --   Author : P Stanton
@@ -336,7 +336,7 @@ INSERT INTO GRI_PARAMS
        ,GP_ORDER
        ,GP_CASE
        ,GP_GAZ_RESTRICTION
-       ) SELECT 'REGION_OF_INTEREST','NUMBER','NM_ELEMENTS_ALL','NE_ID','NE_DESCR','NE_UNIQUE','CHAR','CHAR','','',''FROM DUAL
+       ) SELECT 'REGION_OF_INTEREST','NUMBER','ROAD_SEGMENTS_ALL','RSE_HE_ID','RSE_DESCR','RSE_UNIQUE','CHAR','CHAR','','',''FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM GRI_PARAMS
                    WHERE GP_PARAM = 'REGION_OF_INTEREST');
 				   
@@ -406,7 +406,7 @@ Insert into GRI_MODULE_PARAMS
     GMP_NO_ALLOWED, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, GMP_LOV, 
     GMP_WILDCARD, GMP_HINT_TEXT, GMP_ALLOW_PARTIAL)
  SELECT 'MAI3700', 'INSP_ASSET_TYPE', 1, 'Asset Type', 'Y', 
-    10, 'N', 'Y', 'N', 'Y', 
+    40, 'N', 'Y', 'N', 'Y', 
     'N', 'Select Asset Types', 'N' FROM dual
     WHERE NOT EXISTS (SELECT 1 FROM GRI_MODULE_PARAMS
                    WHERE GMP_MODULE = 'MAI3700' AND  GMP_PARAM = 'INSP_ASSET_TYPE');
@@ -426,7 +426,7 @@ Insert into GRI_MODULE_PARAMS
     GMP_NO_ALLOWED, GMP_WHERE, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, 
     GMP_LOV, GMP_WILDCARD, GMP_HINT_TEXT, GMP_ALLOW_PARTIAL)
  SELECT 'MAI3700', 'REGION_OF_INTEREST', 3, 'Region of Interest', 'Y', 
-    1, 'NE_TYPE IN (''G'',''P'',''S'')', 'N', 'Y', 'Y', 
+    1, 'RSE_TYPE IN (''G'',''P'',''S'')', 'N', 'Y', 'Y', 
     'N', 'N', 'Select Region of Interest (Gaz)', 'N' FROM dual
     WHERE NOT EXISTS (SELECT 1 FROM GRI_MODULE_PARAMS
                    WHERE GMP_MODULE = 'MAI3700' AND  GMP_PARAM = 'REGION_OF_INTEREST');
@@ -466,7 +466,7 @@ Insert into GRI_MODULE_PARAMS
     GMP_NO_ALLOWED, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, GMP_LOV, 
     GMP_WILDCARD, GMP_HINT_TEXT, GMP_ALLOW_PARTIAL)
  select 'MAI3710', 'INSP_ASSET_TYPE', 2, 'Asset Type', 'Y', 
-    10, 'N', 'Y', 'N', 'Y', 
+    40, 'N', 'Y', 'N', 'Y', 
     'N', 'Select Asset Types', 'N' FROM dual
     WHERE NOT EXISTS (SELECT 1 FROM GRI_MODULE_PARAMS
                    WHERE GMP_MODULE = 'MAI3710' AND  GMP_PARAM = 'INSP_ASSET_TYPE');
@@ -476,7 +476,7 @@ Insert into GRI_MODULE_PARAMS
     GMP_NO_ALLOWED, GMP_WHERE, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, 
     GMP_LOV, GMP_WILDCARD, GMP_HINT_TEXT, GMP_ALLOW_PARTIAL)
  select 'MAI3710', 'REGION_OF_INTEREST', 3, 'Region of Interest', 'Y', 
-    1, 'NE_TYPE IN (''G'',''P'',''S'')', 'N', 'Y', 'Y', 
+    1, 'RSE_TYPE IN (''G'',''P'',''S'')', 'N', 'Y', 'Y', 
     'N', 'N', 'Select Region of Interest (Gaz)', 'N' FROM dual
     WHERE NOT EXISTS (SELECT 1 FROM GRI_MODULE_PARAMS
                    WHERE GMP_MODULE = 'MAI3710' AND  GMP_PARAM = 'REGION_OF_INTEREST');
@@ -496,7 +496,7 @@ Insert into GRI_MODULE_PARAMS
     GMP_NO_ALLOWED, GMP_WHERE, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, 
     GMP_LOV, GMP_WILDCARD, GMP_HINT_TEXT, GMP_ALLOW_PARTIAL)
  select 'MAI3720', 'REGION_OF_INTEREST', 1, 'Region of Interest', 'Y', 
-    1, 'NE_TYPE IN (''G'',''P'',''S'')', 'N', 'Y', 'Y', 
+    1, 'RSE_TYPE IN (''G'',''P'',''S'')', 'N', 'Y', 'Y', 
     'N', 'N', 'Select region of Interest (Gaz)', 'N' FROM dual
     WHERE NOT EXISTS (SELECT 1 FROM GRI_MODULE_PARAMS
                    WHERE GMP_MODULE = 'MAI3720' AND  GMP_PARAM = 'REGION_OF_INTEREST');
@@ -506,7 +506,7 @@ Insert into GRI_MODULE_PARAMS
     GMP_NO_ALLOWED, GMP_TAG_RESTRICTION, GMP_VISIBLE, GMP_GAZETTEER, GMP_LOV, 
     GMP_WILDCARD, GMP_HINT_TEXT, GMP_ALLOW_PARTIAL)
  select 'MAI3720', 'INSP_ASSET_TYPE', 2, 'Asset Type', 'Y', 
-    10, 'N', 'Y', 'N', 'Y', 
+    40, 'N', 'Y', 'N', 'Y', 
     'N', 'Select Asset Types', 'N' FROM dual
     WHERE NOT EXISTS (SELECT 1 FROM GRI_MODULE_PARAMS
                    WHERE GMP_MODULE = 'MAI3720' AND  GMP_PARAM = 'INSP_ASSET_TYPE');
@@ -706,7 +706,23 @@ SELECT
        ,'VARCHAR2'
         FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM nm_inv_domains_all
-                   WHERE ID_DOMAIN = 'Y_OR_N');                              
+                   WHERE ID_DOMAIN = 'Y_OR_N');       
+
+INSERT INTO nm_inv_domains_all
+  (ID_DOMAIN
+  ,ID_TITLE
+  ,ID_START_DATE
+  ,ID_DATATYPE
+  )
+SELECT 'INSP_INSPECTED'
+      ,'INSPECTED?'
+      ,TO_DATE('01/JAN/1900')
+      ,'VARCHAR2'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 
+                     FROM nm_inv_domains_all
+                    WHERE ID_DOMAIN = 'INSP_INSPECTED');
+                   
  ----------------------------------------------------------------------------------------
 --
 --nm_inv_attri_lookup_all
@@ -904,6 +920,64 @@ SELECT 'Y_OR_N','N','No', TO_DATE('01-JAN-00'),1 FROM DUAL WHERE NOT EXISTS (SEL
 INSERT INTO NM_INV_ATTRI_LOOKUP_ALL
 (IAL_DOMAIN, IAL_VALUE, IAL_MEANING, IAL_START_DATE, IAL_SEQ)
 SELECT 'Y_OR_N','Y','Yes', TO_DATE('01-JAN-00'),1 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM NM_INV_ATTRI_LOOKUP_ALL WHERE IAL_DOMAIN = 'Y_OR_N' AND IAL_VALUE = 'Y');
+
+INSERT INTO NM_INV_ATTRI_LOOKUP_ALL
+  (IAL_DOMAIN
+  ,IAL_VALUE
+  ,IAL_MEANING
+  ,IAL_START_DATE
+  ,IAL_SEQ
+  )
+SELECT
+   'INSP_INSPECTED' 
+  ,'Y'
+  ,'Yes'
+  ,TO_DATE('01/01/1900 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+  ,1
+  FROM DUAL 
+ WHERE NOT EXISTS (SELECT 1 
+                     FROM NM_INV_ATTRI_LOOKUP_ALL 
+                    WHERE IAL_DOMAIN = 'INSP_INSPECTED' 
+                      AND IAL_VALUE = 'Y');
+--
+INSERT INTO NM_INV_ATTRI_LOOKUP_ALL
+  (IAL_DOMAIN
+  ,IAL_VALUE
+  ,IAL_MEANING
+  ,IAL_START_DATE
+  ,IAL_SEQ
+  )
+SELECT
+   'INSP_INSPECTED' 
+  ,'N'
+  ,'No'
+  ,TO_DATE('01/01/1900 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+  ,2
+  FROM DUAL 
+ WHERE NOT EXISTS (SELECT 1 
+                     FROM NM_INV_ATTRI_LOOKUP_ALL 
+                    WHERE IAL_DOMAIN = 'INSP_INSPECTED' 
+                      AND IAL_VALUE = 'N');
+--
+INSERT INTO NM_INV_ATTRI_LOOKUP_ALL
+  (IAL_DOMAIN
+  ,IAL_VALUE
+  ,IAL_MEANING
+  ,IAL_START_DATE
+  ,IAL_SEQ
+  )
+SELECT
+   'INSP_INSPECTED' 
+  ,'P'
+  ,'Partial'
+  ,TO_DATE('01/01/1900 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+  ,3
+  FROM DUAL 
+ WHERE NOT EXISTS (SELECT 1 
+                     FROM NM_INV_ATTRI_LOOKUP_ALL 
+                    WHERE IAL_DOMAIN = 'INSP_INSPECTED' 
+                      AND IAL_VALUE = 'P');
+
 ----------------------------------------------------------------------------------------
 -- NM_INV_TYPES_ALL
 --
@@ -915,7 +989,9 @@ SELECT 'Y_OR_N','Y','Yes', TO_DATE('01-JAN-00'),1 FROM DUAL WHERE NOT EXISTS (SE
 SET TERM ON
 PROMPT nm_inv_types_all
 SET TERM OFF
-INSERT INTO NM_INV_TYPES_ALL     (NIT_INV_TYPE
+
+INSERT INTO NM_INV_TYPES_ALL     
+       (NIT_INV_TYPE
        ,NIT_PNT_OR_CONT
        ,NIT_X_SECT_ALLOW_FLAG
        ,NIT_ELEC_DRAIN_CARR
@@ -951,7 +1027,34 @@ SELECT 'INSP','P','N','C','N','Y','N','I','Inspections','N','N','N','N',null
        ,'','N','','','','','NETW','','N','','Y','' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPES_ALL
                    WHERE NIT_INV_TYPE = 'INSP');
-
+--
+INSERT INTO NM_INV_TYPES_ALL
+   (NIT_INV_TYPE
+   ,NIT_PNT_OR_CONT
+   ,NIT_X_SECT_ALLOW_FLAG
+   ,NIT_ELEC_DRAIN_CARR
+   ,NIT_CONTIGUOUS
+   ,NIT_REPLACEABLE
+   ,NIT_EXCLUSIVE
+   ,NIT_CATEGORY
+   ,NIT_DESCR
+   ,NIT_LINEAR
+   ,NIT_USE_XY
+   ,NIT_MULTIPLE_ALLOWED
+   ,NIT_END_LOC_ONLY
+   ,NIT_VIEW_NAME
+   ,NIT_START_DATE
+   ,NIT_FLEX_ITEM_FLAG
+   ,NIT_ADMIN_TYPE
+   ,NIT_TOP
+   ,NIT_UPDATE_ALLOWED)
+SELECT 'INSL', 'P', 'N', 'C', 'N', 
+       'Y', 'N', 'I', 'Linear Inspection Record', 'N', 
+       'N', 'N', 'N', 'V_NM_INSL', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+       'N', 'NETW', 'N', 'Y'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPES_ALL
+                   WHERE NIT_INV_TYPE = 'INSL');
 
 ----------------------------------------------------------------------------------------
 -- NM_INV_TYPE_ATTRIBS_ALL
@@ -965,520 +1068,867 @@ SELECT 'INSP','P','N','C','N','Y','N','I','Inspections','N','N','N','N',null
 SET TERM ON
 PROMPT nm_inv_type_attribs_all
 SET TERM OFF
+
 INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB26','N',3,'Y','VARCHAR2',50,null
-       ,'Inspection Type','INSP_TYPE','Y','',null
-       ,null
-       ,'INSP_TYPE','INSP_TYPE',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','UPPER'FROM DUAL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+    'INSP', 
+    'IIT_NUM_ATTRIB100', 
+    'N', 
+    1, 
+    'N', 
+    'NUMBER', 
+    22, 
+    'Inspection Batch ID', 
+    'N', 
+    'INSP_BATCH_ID', 
+    'INSP_BATCH_ID', 
+    TO_DATE('04/24/2012 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'UPPER'
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB26');
-				   
+                   WHERE ITA_INV_TYPE = 'INSP' AND  ITA_ATTRIB_NAME = 'IIT_NUM_ATTRIB100');
+--
 INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB27','N',5,'Y','VARCHAR2',50,null
-       ,'Inspection Source','INSP_SOURCE','Y','',null
-       ,null
-       ,'INSP_SOURCE','INSP_SOURCE',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','UPPER'FROM DUAL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_FOREIGN_KEY', 
+    'N', 
+    2, 
+    'Y', 
+    'VARCHAR2', 
+    50, 
+    'Parent Asset ID', 
+    'N', 
+    'INSP_PARENT_ID', 
+    'INSP_PARENT_ID', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'UPPER'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP' AND  ITA_ATTRIB_NAME = 'IIT_FOREIGN_KEY');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_ID_DOMAIN, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB26', 
+    'N', 
+    3, 
+    'Y', 
+    'VARCHAR2', 
+    50, 
+    'Inspection Type', 
+    'INSP_TYPE', 
+    'Y', 
+    'INSP_TYPE', 
+    'INSP_TYPE', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'UPPER'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP' AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB26');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB31', 
+    'N', 
+    4, 
+    'Y', 
+    'VARCHAR2', 
+    50, 
+    'Asset type', 
+    'N', 
+    'ASSET_TYPE', 
+    'ASSET_TYPE', 
+    TO_DATE('01/01/2001 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'UPPER'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP' AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB31');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_ID_DOMAIN, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB27', 
+    'N', 
+    5, 
+    'Y', 
+    'VARCHAR2', 
+    50, 
+    'Inspection Source', 
+    'INSP_SOURCE', 
+    'Y', 
+    'INSP_SOURCE', 
+    'INSP_SOURCE', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'UPPER'
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
                    WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB27');
-				   
+--
 INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB28','N',8,'N','VARCHAR2',3,null
-       ,'Defects Found?','Y_OR_N','Y','',null
-       ,null
-       ,'INSP_DEF_FOUND_FLAG','INSP_DEF_FOUND_FLAG',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',2,'Y','UPPER'FROM DUAL
- WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB28');
-				   
-INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB29','N',9,'N','VARCHAR2',3,null
-       ,'Inspected?','Y_OR_N','Y','',null
-       ,null
-       ,'INSP_INSPECTED_FLAG','INSP_INSPECTED_FLAG',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',2,'Y','UPPER'FROM DUAL
- WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB29');
-				   
-INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB30','N',11,'N','VARCHAR2',50,null
-       ,'Condition Rating','INSP_COND','Y','',null
-       ,null
-       ,'INSP_CONDITION','INSP_CONDITION',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',5,'Y','UPPER'FROM DUAL
- WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB30');
-				   
-INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB31','N',4,'Y','VARCHAR2',50,null
-       ,'Asset type','','N','',null
-       ,null
-       ,'ASSET_TYPE','ASSET_TYPE',to_date('01-JAN-01')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','UPPER'FROM DUAL
- WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB31');
-				   
-INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB66','N',10,'N','VARCHAR2',500,null
-       ,'Reason Not Inspected','','N','',null
-       ,null
-       ,'INSP_NOT_INSP_REASON','INSP_NOT_INSP_REASON',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','MIXED'FROM DUAL
- WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB66');
-				   
-INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_CHR_ATTRIB67','N',12,'N','VARCHAR2',500,null
-       ,'Condition Comment','','N','',null
-       ,null
-       ,'INSP_CONDITION_COMMENT','INSP_CONDITION_COMMENT',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','MIXED'FROM DUAL
- WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB67');
-				   
-INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_DATE_ATTRIB86','N',6,'N','DATE',7,null
-       ,'Date Inspection Due','','N','',null
-       ,null
-       ,'INSP_DATE_DUE','INSP_DATE_DUE',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','UPPER'FROM DUAL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_DATE_ATTRIB86', 
+    'N', 
+    6, 
+    'N', 
+    'DATE', 
+    7, 
+    'Date Inspection Due', 
+    'N', 
+    'INSP_DATE_DUE', 
+    'INSP_DATE_DUE', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'UPPER'
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
                    WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_DATE_ATTRIB86');
-				   
+--
 INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_DATE_ATTRIB87','N',7,'N','DATE',7,null
-       ,'Date Inspected','','N','',null
-       ,null
-       ,'INSP_DATE_INSPECTED','INSP_DATE_INSPECTED',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','UPPER'FROM DUAL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_DATE_ATTRIB87', 
+    'N', 
+    7, 
+    'N', 
+    'DATE', 
+    7, 
+    'Date Inspected', 
+    'N', 
+    'INSP_DATE_INSPECTED', 
+    'INSP_DATE_INSPECTED', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'UPPER'
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
                    WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_DATE_ATTRIB87');
-
+--
 INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_FOREIGN_KEY','N',2,'Y','VARCHAR2',50,null
-       ,'Parent Asset ID','','N','',null
-       ,null
-       ,'INSP_PARENT_ID','INSP_PARENT_ID',to_date('01-JAN-00')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','UPPER'FROM DUAL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_ID_DOMAIN, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB28', 
+    'N', 
+    8, 
+    'N', 
+    'VARCHAR2', 
+    3, 
+    'Defects Found?', 
+    'Y_OR_N', 
+    'Y', 
+    'INSP_DEF_FOUND_FLAG', 
+    'INSP_DEF_FOUND_FLAG', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    2, 
+    'Y', 
+    'UPPER'
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_FOREIGN_KEY');
+                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB28');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_ID_DOMAIN, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB29', 
+    'N', 
+    9, 
+    'N', 
+    'VARCHAR2', 
+    3, 
+    'Inspected?', 
+    'INSP_INSPECTED', 
+    'Y', 
+    'INSP_INSPECTED_FLAG', 
+    'INSP_INSPECTED_FLAG', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    2, 
+    'Y', 
+    'UPPER'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB29');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB66', 
+    'N', 
+    10, 
+    'N', 
+    'VARCHAR2', 
+    500, 
+    'Reason Not Inspected', 
+    'N', 
+    'INSP_NOT_INSP_REASON', 
+    'INSP_NOT_INSP_REASON', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'MIXED'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB66');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_ID_DOMAIN, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB30', 
+    'N', 
+    11, 
+    'N', 
+    'VARCHAR2', 
+    50, 
+    'Condition Rating', 
+    'INSP_COND', 
+    'Y', 
+    'INSP_CONDITION', 
+    'INSP_CONDITION', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    5, 
+    'Y', 
+    'UPPER'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB30');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB67', 
+    'N', 
+    12, 
+    'N', 
+    'VARCHAR2', 
+    500, 
+    'Condition Comment', 
+    'N', 
+    'INSP_CONDITION_COMMENT', 
+    'INSP_CONDITION_COMMENT', 
+    TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'Y', 
+    'MIXED'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB67');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_DATE_ATTRIB88', 
+    'N', 
+    13, 
+    'N', 
+    'DATE', 
+    7, 
+    'Survey Date', 
+    'N', 
+    'SURVEY_DATE', 
+    'SURVEY_DATE', 
+    TO_DATE('03/13/2013 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'N', 
+    'UPPER'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_DATE_ATTRIB88');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, 
+    ITA_ATTRIB_NAME, 
+    ITA_DYNAMIC_ATTRIB, 
+    ITA_DISP_SEQ_NO, 
+    ITA_MANDATORY_YN, 
+    ITA_FORMAT, 
+    ITA_FLD_LENGTH, 
+    ITA_SCRN_TEXT, 
+    ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, 
+    ITA_START_DATE, 
+    ITA_QUERYABLE, 
+    ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, 
+    ITA_DISP_WIDTH, 
+    ITA_INSPECTABLE, 
+    ITA_CASE
+   )
+ SELECT
+   ('INSP', 
+    'IIT_CHR_ATTRIB32', 
+    'N', 
+    14, 
+    'N', 
+    'VARCHAR2', 
+    50, 
+    'Survey Time', 
+    'N', 
+    'SURVEY_TIME', 
+    'SURVEY_TIME', 
+    TO_DATE('03/13/2013 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 
+    'Y', 
+    'N', 
+    'N', 
+    'Y', 
+    10, 
+    'N', 
+    'UPPER'
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB32');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE
+   , ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_FOREIGN_KEY', 'N', 1, 'Y', 
+    'VARCHAR2', 50, 'Scheduled Inspection ID', 'N', 'INSP_INSPECTION_ID', 
+    'INSP_INSPECTION_ID', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'N', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_FOREIGN_KEY');
 
-				   INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
-       (ITA_INV_TYPE
-       ,ITA_ATTRIB_NAME
-       ,ITA_DYNAMIC_ATTRIB
-       ,ITA_DISP_SEQ_NO
-       ,ITA_MANDATORY_YN
-       ,ITA_FORMAT
-       ,ITA_FLD_LENGTH
-       ,ITA_DEC_PLACES
-       ,ITA_SCRN_TEXT
-       ,ITA_ID_DOMAIN
-       ,ITA_VALIDATE_YN
-       ,ITA_DTP_CODE
-       ,ITA_MAX
-       ,ITA_MIN
-       ,ITA_VIEW_ATTRI
-       ,ITA_VIEW_COL_NAME
-       ,ITA_START_DATE
-       ,ITA_END_DATE
-       ,ITA_QUERYABLE
-       ,ITA_UKPMS_PARAM_NO
-       ,ITA_UNITS
-       ,ITA_FORMAT_MASK
-       ,ITA_EXCLUSIVE
-       ,ITA_KEEP_HISTORY_YN
-       ,ITA_QUERY
-       ,ITA_DISPLAYED
-       ,ITA_DISP_WIDTH
-       ,ITA_INSPECTABLE
-       ,ITA_CASE
-       )
-SELECT 'INSP','IIT_NUM_ATTRIB100','N',1,'N','NUMBER',22,null
-       ,'Inspection Batch ID','','N','',null
-       ,null
-       ,'INSP_BATCH_ID','INSP_BATCH_ID',to_date('24-APR-12')
-       ,null
-       ,'Y',null
-       ,null
-       ,'','N','N','','Y',10,'Y','UPPER'FROM DUAL
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_NUM_ATTRIB100', 'N', 2, 'N', 
+    'NUMBER', 22, 'Start Chainage', 'N', 'START_CHAINAGE', 
+    'START_CHAINAGE', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'N', 'UPPER'
+  FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
-                   WHERE ITA_INV_TYPE = 'INSP'AND  ITA_ATTRIB_NAME = 'IIT_NUM_ATTRIB100');
-                   
-Insert into NM_INV_NW_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_NUM_ATTRIB100');
+
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_NUM_ATTRIB101', 'N', 3, 'N', 
+    'NUMBER', 22, 'End Chainage', 'N', 'END_CHAINAGE', 
+    'END_CHAINAGE', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'N', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_NUM_ATTRIB101');
+    
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_DATE_ATTRIB86', 'N', 4, 'Y', 
+    'DATE', 7, 'Date Inspected', 'N', 'DATE_INSPECTED', 
+    'DATE_INSPECTED', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'N', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_DATE_ATTRIB86');
+--    
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_ID_DOMAIN, ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_CHR_ATTRIB28', 'N', 5, 'Y', 
+    'VARCHAR2', 3, 'Defects Found?', 'Y_OR_N', 'Y', 
+    'INSL_DEF_FOUND', 'INSL_DEF_FOUND', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 
+    'N', 'Y', 2, 'N', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB28');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_ID_DOMAIN, ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_CHR_ATTRIB29', 'N', 6, 'Y', 
+    'VARCHAR2', 3, 'Inspection Complete?', 'Y_OR_N', 'Y', 
+    'INSL_INSP_COMPLETE', 'INSL_INSP_COMPLETE', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 
+    'N', 'Y', 10, 'N', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB29');
+--   
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_ID_DOMAIN, ITA_VALIDATE_YN, 
+    ITA_VIEW_ATTRI, ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, 
+    ITA_KEEP_HISTORY_YN, ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_CHR_ATTRIB30', 'N', 7, 'N', 
+    'VARCHAR2', 50, 'Condition Rating', 'INSP_COND', 'Y', 
+    'INSL_CONDITION', 'INSL_CONDITION', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 
+    'N', 'Y', 10, 'Y', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB30');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_CHR_ATTRIB67', 'N', 8, 'N', 
+    'VARCHAR2', 500, 'Condition Comment', 'N', 'INSL_CONDITION_COMMENT', 
+    'INSL_CONDITION_COMMENT', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'N', 'N', 'N', 
+    'N', 10, 'N', 'MIXED'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB67');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_X', 'N', 9, 'N', 
+    'NUMBER', 6, 'Start X (Easting)', 'N', 'START_EASTING', 
+    'START_EASTING', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'Y', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_X');
+--    
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_Y', 'N', 10, 'N', 
+    'NUMBER', 6, 'Start Y (Northing)', 'N', 'START_NORTHING', 
+    'START_NORTHING', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'Y', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL'AND  ITA_ATTRIB_NAME = 'IIT_Y');
+--   
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_X_COORD', 'N', 11, 'N', 
+    'NUMBER', 6, 'End X (Easting', 'N', 'END_EASTING', 
+    'END_EASTING', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'Y', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_X_COORD');
+--    
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_Y_COORD', 'N', 12, 'N', 
+    'NUMBER', 6, 'End Y (Northing', 'N', 'END_NORTHING', 
+    'END_NORTHING', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'Y', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_Y_COORD');
+--
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_DATE_ATTRIB87', 'N', 13, 'N', 
+    'DATE', 7, 'Survey Date', 'N', 'INSL_SURVEY_DATE', 
+    'INSL_SURVEY_DATE', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'N', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL'AND  ITA_ATTRIB_NAME = 'IIT_DATE_ATTRIB87');
+--    
+INSERT INTO NM_INV_TYPE_ATTRIBS_ALL
+   (ITA_INV_TYPE, ITA_ATTRIB_NAME, ITA_DYNAMIC_ATTRIB, ITA_DISP_SEQ_NO, ITA_MANDATORY_YN, 
+    ITA_FORMAT, ITA_FLD_LENGTH, ITA_SCRN_TEXT, ITA_VALIDATE_YN, ITA_VIEW_ATTRI, 
+    ITA_VIEW_COL_NAME, ITA_START_DATE, ITA_QUERYABLE, ITA_EXCLUSIVE, ITA_KEEP_HISTORY_YN, 
+    ITA_DISPLAYED, ITA_DISP_WIDTH, ITA_INSPECTABLE, ITA_CASE)
+SELECT 'INSL', 'IIT_CHR_ATTRIB31', 'N', 14, 'N', 
+    'VARCHAR2', 50, 'Survey Time', 'N', 'INSL_SURVEY_TIME', 
+    'INSL_SURVEY_TIME', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), 'Y', 'N', 'N', 
+    'Y', 10, 'N', 'UPPER'
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ATTRIBS_ALL
+                   WHERE ITA_INV_TYPE = 'INSL' AND  ITA_ATTRIB_NAME = 'IIT_CHR_ATTRIB31');
+--
+----------------------------------------------------------------------------------------
+-- NM_INV_NW_ALL
+--
+----------------------------------------------------------------------------------------
+
+SET TERM ON
+PROMPT NM_INV_NW_ALL
+SET TERM OFF
+
+INSERT INTO NM_INV_NW_ALL
    (NIN_NW_TYPE, NIN_NIT_INV_CODE, NIN_LOC_MANDATORY, NIN_START_DATE)
- Values
-   ('D', 'INSP', 'N', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS'));
+SELECT 'D', 'INSP', 'N', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_NW_ALL 
+                   WHERE NIN_NW_TYPE = 'D' AND NIN_NIT_INV_CODE = 'INSP');
+--
+INSERT INTO NM_INV_NW_ALL
+   (NIN_NW_TYPE, NIN_NIT_INV_CODE, NIN_LOC_MANDATORY, NIN_START_DATE)
+SELECT 'D', 'INSL', 'N', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_NW_ALL 
+                   WHERE NIN_NW_TYPE = 'D' AND NIN_NIT_INV_CODE = 'INSL');
+   
+--
+----------------------------------------------------------------------------------------
+-- NM_INV_NW_ALL
+--
+----------------------------------------------------------------------------------------
 
+SET TERM ON
+PROMPT NM_INV_NW_ALL
+SET TERM OFF
+
+INSERT INTO NM_INV_TYPE_GROUPINGS_ALL
+   (ITG_INV_TYPE, ITG_PARENT_INV_TYPE, ITG_MANDATORY, ITG_RELATION, ITG_START_DATE)
+SELECT 'INSL', 'INSP', 'N', 'NONE', TO_DATE('01/01/2000 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+  FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_GROUPINGS_ALL 
+                   WHERE ITG_INV_TYPE = 'INSL' AND ITG_PARENT_INV_TYPE = 'INSP');
 
                    
 exec nm3inv.create_view('INSP');
 
 exec nm3inv_api_gen.build_one('INSP');                                 
+
+exec nm3inv.create_view('INSL');
+
+exec nm3inv_api_gen.build_one('INSL');    
 
 ----------------------------------------------------------------------------------------
 -- NM_INV_TYPE_ROLES
@@ -1505,6 +1955,45 @@ SELECT
  WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ROLES
                    WHERE ITR_INV_TYPE = 'INSP'
                     AND  ITR_HRO_ROLE = 'NET_USER');
+                    
+INSERT INTO NM_INV_TYPE_ROLES
+       (ITR_INV_TYPE
+       ,ITR_HRO_ROLE
+       ,ITR_MODE
+       )
+SELECT 
+        'INSP'
+       ,'NET_READ'
+       ,'READONLY' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ROLES
+                   WHERE ITR_INV_TYPE = 'INSP'
+                    AND  ITR_HRO_ROLE = 'NET_READ');
+                    
+INSERT INTO NM_INV_TYPE_ROLES
+       (ITR_INV_TYPE
+       ,ITR_HRO_ROLE
+       ,ITR_MODE
+       )
+SELECT 
+        'INSL'
+       ,'NET_USER'
+       ,'NORMAL' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ROLES
+                   WHERE ITR_INV_TYPE = 'INSL'
+                    AND  ITR_HRO_ROLE = 'NET_USER');
+                    
+INSERT INTO NM_INV_TYPE_ROLES
+       (ITR_INV_TYPE
+       ,ITR_HRO_ROLE
+       ,ITR_MODE
+       )
+SELECT 
+        'INSL'
+       ,'NET_READ'
+       ,'READONLY' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM NM_INV_TYPE_ROLES
+                   WHERE ITR_INV_TYPE = 'INSL'
+                    AND  ITR_HRO_ROLE = 'NET_READ');
                     
 
 
@@ -1624,7 +2113,7 @@ SELECT
                    WHERE HPTR_PROCESS_TYPE_ID = -5002
                     AND  HPTR_ROLE = 'HIG_USER');					
 
-					----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 -- HIG_PROCESS_TYPE_FREQUENCIES
 --
 -- select * from mai_metadata.hig_process_type_frequencies
@@ -1718,6 +2207,30 @@ SELECT
        ,1 FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
                    WHERE HOL_ID = 'ASSINSPCSV');	
+--
+INSERT INTO HIG_OPTION_LIST
+       (HOL_ID
+       ,HOL_PRODUCT
+       ,HOL_NAME
+       ,HOL_REMARKS
+       ,HOL_DOMAIN
+       ,HOL_DATATYPE
+       ,HOL_MIXED_CASE
+       ,HOL_USER_OPTION
+       ,HOL_MAX_LENGTH
+       )
+SELECT 
+        'ASSINSLCSV'
+       ,'MAI'
+       ,'Partial Asset Inspections'
+       ,'Choose which CSV file definition is to used for partial Asset inspections'
+       ,NULL
+       ,'VARCHAR2'
+       ,'N'
+       ,'N'
+       ,1 FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
+                   WHERE HOL_ID = 'ASSINSLCSV');	
 
 ----------------------------------------------------------------------------------------
 -- HIG_OPTION_VALUES
@@ -1737,6 +2250,17 @@ INSERT INTO HIG_OPTION_VALUES
        )
 SELECT 
         'ASSINSPCSV'
-       ,'INSPECTIONS_UPDATE' FROM DUAL
+       ,'MCI_INSP_UPDATE' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
-                   WHERE HOV_ID = 'ASSINSPCSV');				   
+                   WHERE HOV_ID = 'ASSINSPCSV');			
+--     
+INSERT INTO HIG_OPTION_VALUES
+       (HOV_ID
+       ,HOV_VALUE
+       )
+SELECT 
+        'ASSINSLCSV'
+       ,'MCI_INSL_INSERT' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
+                   WHERE HOV_ID = 'ASSINSLCSV');			
+              
