@@ -3,11 +3,11 @@
 --
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/insp_scheduling/admin/sql/nm_load_destinations.sql-arc   1.1   Jan 27 2016 12:07:42   Chris.Baugh  $
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/insp_scheduling/admin/sql/nm_load_destinations.sql-arc   1.2   Feb 16 2016 15:17:50   Chris.Baugh  $
 --       Module Name      : $Workfile:   nm_load_destinations.sql  $
---       Date into PVCS   : $Date:   Jan 27 2016 12:07:42  $
---       Date fetched Out : $Modtime:   Jan 25 2016 15:23:14  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Feb 16 2016 15:17:50  $
+--       Date fetched Out : $Modtime:   Feb 16 2016 15:17:22  $
+--       PVCS Version     : $Revision:   1.2  $
 --
 --
 --   Author : P Stanton
@@ -90,7 +90,7 @@ BEGIN
            l_id
           ,'V_HA_INS_INSL'
           ,'V_INL'
-          ,'HA_INSP.CREATE_PARTIAL_INSPECTION'
+          ,'HA_INSP.CREATE_PARTIAL_INSPECTIONS'
           ,'' FROM DUAL
     WHERE NOT EXISTS (SELECT 1 FROM NM_LOAD_DESTINATIONS
                       WHERE NLD_ID = l_id
