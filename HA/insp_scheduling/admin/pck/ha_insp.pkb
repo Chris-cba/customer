@@ -7,9 +7,9 @@ AS
 --
 --       pvcsid                 : $
 --       Module Name      : $Workfile:   ha_insp.pkb  $
---       Date into PVCS   : $Date:   Jan 27 2016 12:03:44  $
---       Date fetched Out : $Modtime:   Jan 25 2016 12:09:54  $
---       PVCS Version     : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   Feb 16 2016 15:33:22  $
+--       Date fetched Out : $Modtime:   Feb 16 2016 15:18:52  $
+--       PVCS Version     : $Revision:   1.3  $
 --       Based on SCCS version :
 --
 ----   -- 26 Oct 2013 - Modified to use FTP functionality in csv_update_processing
@@ -59,7 +59,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.2  $"';
+   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.3  $"';
 
    g_package_name CONSTANT varchar2(30) := 'HA_INSP';
 --
@@ -1714,8 +1714,8 @@ EXCEPTION
    hig_process_api.log_it(pi_message =>'Record Failed To Update. Please Review'
                          ,pi_message_type => 'E');
 
-   RAISE_APPLICATION_ERROR(-20001,'Record Failed To Update.  Check Log files For Details');
-
+   --RAISE_APPLICATION_ERROR(-20001,'Record Failed To Update.  Check Log files For Details');
+   RAISE; -- changed to improve error messaging
 
 END create_partial_inspections;
 --
