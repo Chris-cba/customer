@@ -7,9 +7,9 @@ AS
 --
 --       pvcsid                 : $
 --       Module Name      : $Workfile:   ha_insp.pkb  $
---       Date into PVCS   : $Date:   Feb 16 2016 15:33:22  $
---       Date fetched Out : $Modtime:   Feb 16 2016 15:18:52  $
---       PVCS Version     : $Revision:   1.3  $
+--       Date into PVCS   : $Date:   Feb 29 2016 10:00:42  $
+--       Date fetched Out : $Modtime:   Feb 26 2016 10:41:38  $
+--       PVCS Version     : $Revision:   1.4  $
 --       Based on SCCS version :
 --
 ----   -- 26 Oct 2013 - Modified to use FTP functionality in csv_update_processing
@@ -59,7 +59,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.3  $"';
+   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.4  $"';
 
    g_package_name CONSTANT varchar2(30) := 'HA_INSP';
 --
@@ -1441,6 +1441,7 @@ EXCEPTION WHEN parent_or_insp_not_exist THEN
    hig_process_api.log_it(pi_message =>'Inspection/Parent ID Combination Is Invalid. Check Log files For Details'
                          ,pi_message_type => 'E');
 
+   hig_process_api.process_execution_end('N'); 
    RAISE_APPLICATION_ERROR(-20001,'Inspection/Parent ID combination is invalid');
 
 
@@ -1451,6 +1452,7 @@ WHEN OTHERS THEN
    hig_process_api.log_it(pi_message =>'Record Failed To Update. Please Review'
                          ,pi_message_type => 'E');
 
+   hig_process_api.process_execution_end('N'); 
    RAISE_APPLICATION_ERROR(-20001,'Record Failed To Update.  Check Log files For Details');
 
 
@@ -1500,7 +1502,7 @@ BEGIN
      RAISE date_inspected_missing;
    END IF;
 
-   IF insl_rec_data.insl_date_inspected IS NULL
+   IF insl_rec_data.insl_def_found IS NULL
    THEN
      RAISE defects_found_missing;
    END IF;
@@ -1524,7 +1526,7 @@ BEGIN
      IF insl_rec_data.insl_end_easting IS NULL OR 
         insl_rec_data.insl_end_northing IS NULL
      THEN
-       RAISE start_location_missing;
+       RAISE end_location_missing;
      END IF;
    END IF;
   
@@ -1665,6 +1667,7 @@ EXCEPTION
     hig_process_api.log_it(pi_message =>'Inspection ID is Invalid. Check Log files For Details'
                           ,pi_message_type => 'E');
  
+    hig_process_api.process_execution_end('N'); 
     RAISE_APPLICATION_ERROR(-20001,'Inspection ID combination is invalid');
 
   WHEN date_inspected_missing THEN
@@ -1673,6 +1676,7 @@ EXCEPTION
     hig_process_api.log_it(pi_message =>'Date Inspected not present. Check Log files For Details'
                           ,pi_message_type => 'E');
   
+    hig_process_api.process_execution_end('N'); 
     RAISE_APPLICATION_ERROR(-20001,'Date Inspected not present');
 
   WHEN defects_found_missing THEN
@@ -1681,6 +1685,7 @@ EXCEPTION
     hig_process_api.log_it(pi_message =>'Defects Found indicator not present. Check Log files For Details'
                           ,pi_message_type => 'E');
   
+    hig_process_api.process_execution_end('N'); 
     RAISE_APPLICATION_ERROR(-20001,'Defects Found indicator not present');
 
   WHEN inspection_complete_missing THEN
@@ -1689,6 +1694,7 @@ EXCEPTION
     hig_process_api.log_it(pi_message =>'Inspection Complete indicator missing. Check Log files For Details'
                           ,pi_message_type => 'E');
   
+    hig_process_api.process_execution_end('N'); 
     RAISE_APPLICATION_ERROR(-20001,'Inspection Complete indicator missing');
 
   WHEN start_location_missing THEN
@@ -1697,6 +1703,7 @@ EXCEPTION
     hig_process_api.log_it(pi_message =>'Start Location is missing. Check Log files For Details'
                           ,pi_message_type => 'E');
   
+    hig_process_api.process_execution_end('N'); 
     RAISE_APPLICATION_ERROR(-20001,'Start Location is missing');
 
   WHEN end_location_missing THEN
@@ -1705,6 +1712,7 @@ EXCEPTION
     hig_process_api.log_it(pi_message =>'End Location is missing. Check Log files For Details'
                           ,pi_message_type => 'E');
   
+    hig_process_api.process_execution_end('N'); 
     RAISE_APPLICATION_ERROR(-20001,'End Location is missing');
 
   WHEN OTHERS THEN
@@ -1714,7 +1722,7 @@ EXCEPTION
    hig_process_api.log_it(pi_message =>'Record Failed To Update. Please Review'
                          ,pi_message_type => 'E');
 
-   --RAISE_APPLICATION_ERROR(-20001,'Record Failed To Update.  Check Log files For Details');
+   hig_process_api.process_execution_end('N'); 
    RAISE; -- changed to improve error messaging
 
 END create_partial_inspections;
@@ -1871,6 +1879,16 @@ PROCEDURE csv_update_processing IS
    END;
    --
    PROCEDURE process_file (p_file_name varchar2) IS
+    --
+    CURSOR c1 IS 
+    SELECT 1
+      FROM nm_load_batch_status
+     WHERE nlbs_nlb_batch_no = l_batch_no
+       AND nlbs_status = 'E';
+    --
+    lv_dummy       PLS_INTEGER;
+    lv_row_found   BOOLEAN;
+    --
    BEGIN
      --
      hig_process_api.log_it('Batch Number: '||l_batch_no);
@@ -1878,7 +1896,20 @@ PROCEDURE csv_update_processing IS
 
          --Now lets actully load the data
          nm3load.load_batch (p_batch_no => l_batch_no);
-
+         
+         -- Check if CSV load failed
+         OPEN c1;
+         FETCH c1 INTO lv_dummy;
+         lv_row_found := c1%FOUND;
+         CLOSE c1;
+         
+         IF lv_row_found
+         THEN
+           g_csv_errors := TRUE;
+           hig_process_api.log_it(pi_message =>'Error encountered in CSV Loader'
+                               ,pi_message_type => 'E');
+         END IF;
+         
          IF g_csv_errors = TRUE THEN
             -- Produce the log and bad files
             nm3load.produce_log_files ( p_nlb_batch_no  => l_batch_no);
@@ -1944,6 +1975,11 @@ PROCEDURE csv_update_processing IS
                hig_process_api.log_it('Bad file '||t_bad_files(i)||' Generated');
 
             END LOOP;
+            
+            IF g_csv_errors
+            THEN
+              hig_process_api.process_execution_end('N'); 
+            END IF;
 
             g_csv_errors := FALSE; -- Reset failure flag
 
@@ -1961,6 +1997,7 @@ PROCEDURE csv_update_processing IS
             IF l_errno IS NOT NULL THEN
                hig_process_api.log_it(l_errno);
                hig_process_api.log_it(l_errmess);
+               hig_process_api.process_execution_end('N'); 
             END IF;
 
          END IF;
@@ -1983,9 +2020,10 @@ BEGIN
       WHEN OTHERS THEN
         nm_debug.debug('FTP connection error');
         hig_process_api.log_it('Error while connecting to the FTP server '||' '||Sqlerrm);
-    exit;
+        hig_process_api.process_execution_end('N'); 
+        EXIT;
       END;
-    end;
+    END;
 
     nm_debug.debug('FTP directory = '||ftp.hfc_ftp_in_dir);
     nm3ftp.list(l_conn,ftp.hfc_ftp_in_dir, file_tab);
@@ -1998,7 +2036,7 @@ BEGIN
     LOOP
           IF file_tab(i) IS NOT NULL  and instr(upper(file_tab(i)),'.CSV')>0
           THEN
-            begin
+            BEGIN
                nm_debug.debug('Full filename = '||file_tab(i));
                
                l_file_name:=f$GetFilename(trim(file_tab(i)));
@@ -2009,11 +2047,12 @@ BEGIN
               EXCEPTION
             WHEN OTHERS THEN
               hig_process_api.log_it('Error while getting file '||l_file_name||' '||Sqlerrm );
-          exit;
+              hig_process_api.process_execution_end('N'); 
+              EXIT;
             END;
-         end if;
-      end loop;
-   end loop;
+         END IF;
+      END LOOP;
+   END LOOP;
 
    nm3ftp.logout(l_conn);
 
@@ -2042,7 +2081,7 @@ BEGIN
                                                      );
            --
             nm_debug.debug('Processing INSL File '||t_asset_files(i));
-          process_file(t_asset_files(i));
+            process_file(t_asset_files(i));
          END IF;
          
       END LOOP;
@@ -2071,13 +2110,13 @@ BEGIN
                                                      );
            --
             nm_debug.debug('Processing INSP File '||t_asset_files(i));
-           process_file(t_asset_files(i));
+            process_file(t_asset_files(i));
          END IF;
          
       END LOOP;
 
    END IF;
-
+   --
 
 END csv_update_processing;
 --
