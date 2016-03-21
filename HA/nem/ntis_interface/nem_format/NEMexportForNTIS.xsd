@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xsd:schema id="NEMexportForNTIS"
-            version="1.1"
+            version="1.2"
             targetNamespace="http://schemas.bentley.com/NetworkEventManager/NTISInterface"
             xmlns="http://schemas.bentley.com/NetworkEventManager/NTISInterface"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -20,6 +20,7 @@
         <xsd:element name="event" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:sequence>
+              <xsd:element name="event_id" type="xsd:positiveInteger"/>
               <xsd:element name="event_number" type="xsd:positiveInteger"/>
               <xsd:element name="version" type="xsd:positiveInteger"/>
               <xsd:element name="distribute" type="xsd:string"/>
@@ -31,30 +32,10 @@
               <xsd:element name="status" type="xsd:string"/>
               <xsd:element name="delay" type="xsd:string"/>
               <xsd:element name="type" type="xsd:string"/>
-              <xsd:element name="notes" type="xsd:string" minOccurs="0"/>
-              <xsd:element name="user_responsible" type="xsd:string" minOccurs="0"/>
               <xsd:element name="modified" type="xsd:dateTime"/>
               <xsd:element name="nature_of_works" type="xsd:string" minOccurs="0"/>
               <xsd:element name="he_ref" type="xsd:string" minOccurs="0"/>
               <xsd:element name="works_ref" type="xsd:string" minOccurs="0"/>
-              <xsd:element name="contacts" minOccurs="0">
-                <xsd:complexType>
-                  <xsd:sequence>
-                    <xsd:element name="contact" maxOccurs="unbounded">
-                      <xsd:complexType>
-                        <xsd:sequence>
-                          <xsd:element name="type" type="xsd:string"/>
-                          <xsd:element name="name" type="xsd:string"/>
-                          <xsd:element name="ref" type="xsd:string" minOccurs="0" />
-                          <xsd:element name="day_tel" type="xsd:string" minOccurs="0" />
-                          <xsd:element name="night_tel" type="xsd:string" minOccurs="0" />
-                          <xsd:element name="notes" type="xsd:string" minOccurs="0" />
-                        </xsd:sequence>
-                      </xsd:complexType>
-                    </xsd:element>
-                  </xsd:sequence>
-                </xsd:complexType>
-              </xsd:element>
               <xsd:element name="roads" minOccurs="0">
                 <xsd:complexType>
                   <xsd:sequence>
@@ -68,6 +49,7 @@
                     <xsd:element name="impact_group" maxOccurs="unbounded">
                       <xsd:complexType>
                         <xsd:sequence>
+                          <xsd:element name="impact_group_id" type="xsd:positiveInteger"/>
                           <xsd:element name="name" type="xsd:string"/>
                           <xsd:element name="speed_limit" type="xsd:string"/>
                           <xsd:element name="carriageway_closure" type="xsd:string"/>
@@ -82,11 +64,19 @@
                                 <xsd:element name="change" maxOccurs="unbounded">
                                   <xsd:complexType>
                                     <xsd:sequence>
+                                      <xsd:element name="change_id" type="xsd:positiveInteger"/>
                                       <xsd:element name="xsp" type="xsd:string"/>
                                       <xsd:element name="reason" type="xsd:string"/>
                                     </xsd:sequence>
                                   </xsd:complexType>
                                 </xsd:element>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                          <xsd:element name="roads" minOccurs="0">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="road" type="xsd:string" maxOccurs="unbounded"/>
                               </xsd:sequence>
                             </xsd:complexType>
                           </xsd:element>
@@ -112,6 +102,7 @@
                                 <xsd:element name="schedule" maxOccurs="unbounded">
                                   <xsd:complexType>
                                     <xsd:sequence>
+                                      <xsd:element name="schedule_id" type="xsd:positiveInteger"/>
                                       <xsd:element name="planned_sdate" type="xsd:dateTime"/>
                                       <xsd:element name="planned_edate" type="xsd:dateTime"/>
                                       <xsd:element name="actual_sdate" type="xsd:dateTime" minOccurs="0"/>
@@ -143,8 +134,11 @@
         <xsd:element name="event" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:sequence>
+              <xsd:element name="event_id" type="xsd:positiveInteger"/>
               <xsd:element name="event_number" type="xsd:positiveInteger"/>
+              <xsd:element name="version" type="xsd:positiveInteger"/>
               <xsd:element name="cdate" type="xsd:dateTime"/>
+              <xsd:element name="reason" type="xsd:string"/>
             </xsd:sequence>
           </xsd:complexType>
         </xsd:element>
