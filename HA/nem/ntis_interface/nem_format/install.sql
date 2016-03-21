@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.0   Feb 11 2016 09:36:12   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.1   21 Mar 2016 11:18:54   Mike.Huitson  $
 --       Module Name      : $Workfile:   install.sql  $
---       Date into PVCS   : $Date:   Feb 11 2016 09:36:12  $
---       Date fetched Out : $Modtime:   Feb 11 2016 09:25:52  $
---       Version          : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   21 Mar 2016 11:18:54  $
+--       Date fetched Out : $Modtime:   03 Mar 2016 18:33:00  $
+--       Version          : $Revision:   1.1  $
 -------------------------------------------------------------------------
 --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
 -------------------------------------------------------------------------
@@ -318,5 +318,225 @@ BEGIN
       --
   END IF;
   --
+END;
+/
+
+/*
+||Product Options.
+*/
+INSERT INTO HIG_OPTION_LIST
+       (HOL_ID
+       ,HOL_PRODUCT
+       ,HOL_NAME
+       ,HOL_REMARKS
+       ,HOL_DOMAIN
+       ,HOL_DATATYPE
+       ,HOL_MIXED_CASE
+       ,HOL_USER_OPTION
+       ,HOL_MAX_LENGTH
+       )
+SELECT 
+        'NTISLVMS'
+       ,'NEM'
+       ,'NEM NTIS Interface LVMS'
+       ,'The Location Viewing Methods to be used when exporting Event Impacted Network locations. This can be a comma separated list of one or more LVM IDs'
+       ,''
+       ,'VARCHAR2'
+       ,'Y'
+       ,'N'
+       ,2000 FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
+                   WHERE HOL_ID = 'NTISLVMS')
+/
+
+INSERT INTO HIG_OPTION_VALUES
+       (HOV_ID
+       ,HOV_VALUE
+       )
+SELECT 
+        'NTISLVMS'
+       ,'2' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
+                   WHERE HOV_ID = 'NTISLVMS')
+/
+
+INSERT INTO HIG_OPTION_LIST
+       (HOL_ID
+       ,HOL_PRODUCT
+       ,HOL_NAME
+       ,HOL_REMARKS
+       ,HOL_DOMAIN
+       ,HOL_DATATYPE
+       ,HOL_MIXED_CASE
+       ,HOL_USER_OPTION
+       ,HOL_MAX_LENGTH
+       )
+SELECT 
+        'NTISWINDOW'
+       ,'NEM'
+       ,'NTIS Export Window'
+       ,'The number of days in the future to to look for Events to include in the NTIS Interface. I.e. Events will be included if they have already started or are planned to start within the specified number of days.'
+       ,''
+       ,'NUMBER'
+       ,'N'
+       ,'N'
+       ,2000 FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
+                   WHERE HOL_ID = 'NTISWINDOW')
+/
+
+INSERT INTO HIG_OPTION_VALUES
+       (HOV_ID
+       ,HOV_VALUE
+       )
+SELECT 
+        'NTISWINDOW'
+       ,'7' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
+                   WHERE HOV_ID = 'NTISWINDOW')
+/
+
+COMMIT
+/
+
+/*
+||Tables.
+*/
+DECLARE
+  --   
+  already_exists EXCEPTION;
+  PRAGMA exception_init(already_exists,-00955); 
+  -- 
+BEGIN
+  --
+  EXECUTE IMMEDIATE 'CREATE TABLE nem_ntis_log'
+                  ||'(nnl_nevt_id          NUMBER(38)'
+                  ||',nnl_date_last_sent   DATE'
+                  ||',nnl_date_cancel_sent DATE)';
+  --   
+EXCEPTION
+  WHEN already_exists 
+   THEN
+      Null;
+  WHEN OTHERS
+   THEN
+      RAISE;
+END;
+/
+
+DECLARE
+  --   
+  already_exists EXCEPTION;
+  PRAGMA exception_init(already_exists,-02260); 
+  -- 
+BEGIN
+  --
+  EXECUTE IMMEDIATE 'ALTER TABLE nem_ntis_log ADD(CONSTRAINT nem_ntis_log_pk PRIMARY KEY(nnl_nevt_id))';
+  --   
+EXCEPTION
+  WHEN already_exists 
+   THEN
+      Null;
+  WHEN OTHERS
+   THEN
+      RAISE;
+END;
+/
+
+DECLARE
+  --   
+  already_exists EXCEPTION;
+  PRAGMA exception_init(already_exists,-02275); 
+  -- 
+BEGIN
+  --
+  EXECUTE IMMEDIATE 'ALTER TABLE nem_ntis_log ADD(CONSTRAINT nnl_fk_nevt FOREIGN KEY(nnl_nevt_id) REFERENCES nem_events(nevt_id))';
+  --   
+EXCEPTION
+  WHEN already_exists 
+   THEN
+      Null;
+  WHEN OTHERS
+   THEN
+      RAISE;
+END;
+/
+
+
+DECLARE
+  --   
+  already_exists EXCEPTION;
+  PRAGMA exception_init(already_exists,-00955); 
+  -- 
+BEGIN
+  --
+  EXECUTE IMMEDIATE 'CREATE TABLE nem_ntis_files'
+                  ||'(nnf_hpf_file_id   NUMBER(38)'
+                  ||',nnf_ftp_success   VARCHAR2(1))';
+  --   
+EXCEPTION
+  WHEN already_exists 
+   THEN
+      Null;
+  WHEN OTHERS
+   THEN
+      RAISE;
+END;
+/
+
+DECLARE
+  --   
+  already_exists EXCEPTION;
+  PRAGMA exception_init(already_exists,-02260); 
+  -- 
+BEGIN
+  --
+  EXECUTE IMMEDIATE 'ALTER TABLE nem_ntis_files ADD(CONSTRAINT nem_ntis_files_pk PRIMARY KEY(nnf_hpf_file_id))';
+  --   
+EXCEPTION
+  WHEN already_exists 
+   THEN
+      Null;
+  WHEN OTHERS
+   THEN
+      RAISE;
+END;
+/
+
+DECLARE
+  --   
+  already_exists EXCEPTION;
+  PRAGMA exception_init(already_exists,-02275); 
+  -- 
+BEGIN
+  --
+  EXECUTE IMMEDIATE 'ALTER TABLE nem_ntis_files ADD(CONSTRAINT nnf_fk_hpf FOREIGN KEY(nnf_hpf_file_id) REFERENCES hig_process_files(hpf_file_id) ON DELETE CASCADE)';
+  --   
+EXCEPTION
+  WHEN already_exists 
+   THEN
+      Null;
+  WHEN OTHERS
+   THEN
+      RAISE;
+END;
+/
+
+DECLARE
+  --   
+  already_exists EXCEPTION;
+  PRAGMA exception_init(already_exists,-02264); 
+  -- 
+BEGIN
+  --
+  EXECUTE IMMEDIATE 'ALTER TABLE nem_ntis_files ADD(CONSTRAINT nnf_ftp_success_yn_chk CHECK(nnf_ftp_success IN (''Y'',''N'')))';
+  --   
+EXCEPTION
+  WHEN already_exists 
+   THEN
+      Null;
+  WHEN OTHERS
+   THEN
+      RAISE;
 END;
 /
