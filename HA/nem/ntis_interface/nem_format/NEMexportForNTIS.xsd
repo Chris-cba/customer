@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema id="NEMexportForNTIS"
+            version="1.2"
+            targetNamespace="http://schemas.bentley.com/NetworkEventManager/NTISInterface"
+            xmlns="http://schemas.bentley.com/NetworkEventManager/NTISInterface"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            attributeFormDefault="qualified"
+            elementFormDefault="qualified">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      Network Event Manager export for NTIS.
+      Copyright (c) 2016 Bentley Systems Incorporated. All rights reserved.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="event_transfer_file">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="event" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="event_id" type="xsd:positiveInteger"/>
+              <xsd:element name="event_number" type="xsd:positiveInteger"/>
+              <xsd:element name="version" type="xsd:positiveInteger"/>
+              <xsd:element name="distribute" type="xsd:string"/>
+              <xsd:element name="planned_sdate" type="xsd:dateTime"/>
+              <xsd:element name="planned_edate" type="xsd:dateTime"/>
+              <xsd:element name="actual_sdate" type="xsd:dateTime" minOccurs="0"/>
+              <xsd:element name="actual_edate" type="xsd:dateTime" minOccurs="0"/>
+              <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+              <xsd:element name="status" type="xsd:string"/>
+              <xsd:element name="delay" type="xsd:string"/>
+              <xsd:element name="type" type="xsd:string"/>
+              <xsd:element name="modified" type="xsd:dateTime"/>
+              <xsd:element name="nature_of_works" type="xsd:string" minOccurs="0"/>
+              <xsd:element name="he_ref" type="xsd:string" minOccurs="0"/>
+              <xsd:element name="works_ref" type="xsd:string" minOccurs="0"/>
+              <xsd:element name="roads" minOccurs="0">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="road" type="xsd:string" maxOccurs="unbounded"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="operational_impact">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="impact_group" maxOccurs="unbounded">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="impact_group_id" type="xsd:positiveInteger"/>
+                          <xsd:element name="name" type="xsd:string"/>
+                          <xsd:element name="speed_limit" type="xsd:string"/>
+                          <xsd:element name="carriageway_closure" type="xsd:string"/>
+                          <xsd:element name="height_restriction" type="xsd:string"/>
+                          <xsd:element name="width_restriction" type="xsd:string"/>
+                          <xsd:element name="weight_restriction" type="xsd:string"/>
+                          <xsd:element name="contraflow" type="xsd:string"/>
+                          <xsd:element name="traffic_management" type="xsd:string"/>
+                          <xsd:element name="changes" minOccurs="0">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="change" maxOccurs="unbounded">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="change_id" type="xsd:positiveInteger"/>
+                                      <xsd:element name="xsp" type="xsd:string"/>
+                                      <xsd:element name="reason" type="xsd:string"/>
+                                    </xsd:sequence>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                          <xsd:element name="roads" minOccurs="0">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="road" type="xsd:string" maxOccurs="unbounded"/>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                          <xsd:element name="locations" minOccurs="0">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="location" maxOccurs="unbounded">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="element_id" type="xsd:positiveInteger"/>
+                                      <xsd:element name="element_name" type="xsd:string"/>
+                                      <xsd:element name="from_offset" type="xsd:decimal"/>
+                                      <xsd:element name="to_offset" type="xsd:decimal"/>
+                                    </xsd:sequence>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                          <xsd:element name="schedules" minOccurs="0">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="schedule" maxOccurs="unbounded">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="schedule_id" type="xsd:positiveInteger"/>
+                                      <xsd:element name="planned_sdate" type="xsd:dateTime"/>
+                                      <xsd:element name="planned_edate" type="xsd:dateTime"/>
+                                      <xsd:element name="actual_sdate" type="xsd:dateTime" minOccurs="0"/>
+                                      <xsd:element name="actual_edate" type="xsd:dateTime" minOccurs="0"/>
+                                      <xsd:element name="speed_limit" type="xsd:string"/>
+                                      <xsd:element name="cancel_date" type="xsd:dateTime" minOccurs="0"/>
+                                    </xsd:sequence>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="cancelled_events">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="event" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="event_id" type="xsd:positiveInteger"/>
+              <xsd:element name="event_number" type="xsd:positiveInteger"/>
+              <xsd:element name="version" type="xsd:positiveInteger"/>
+              <xsd:element name="cdate" type="xsd:dateTime"/>
+              <xsd:element name="reason" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>
