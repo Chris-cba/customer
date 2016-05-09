@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.1   21 Mar 2016 11:18:54   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.2   09 May 2016 18:57:24   Mike.Huitson  $
 --       Module Name      : $Workfile:   install.sql  $
---       Date into PVCS   : $Date:   21 Mar 2016 11:18:54  $
---       Date fetched Out : $Modtime:   03 Mar 2016 18:33:00  $
---       Version          : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   09 May 2016 18:57:24  $
+--       Date fetched Out : $Modtime:   09 May 2016 18:08:42  $
+--       Version          : $Revision:   1.2  $
 -------------------------------------------------------------------------
 --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
 -------------------------------------------------------------------------
@@ -64,6 +64,13 @@ SELECT 'NEM_NTIS_OUT_DIRECTORY'
                     FROM hig_directory_roles
                    WHERE hdr_name = 'NEM_NTIS_OUT_DIRECTORY'
                      AND hdr_role = 'NEM_ADMIN')
+/
+
+BEGIN
+  --
+  hig_directories_api.grant_all_dir_roles(pi_name => 'NEM_NTIS_OUT_DIRECTORY');
+  --
+END;
 /
 
 /*
