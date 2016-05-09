@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.1   21 Mar 2016 11:22:36   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.2   09 May 2016 18:57:56   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   21 Mar 2016 11:22:36  $
-  --       Date fetched Out : $Modtime:   21 Mar 2016 10:08:12  $
-  --       Version          : $Revision:   1.1  $
+  --       Date into PVCS   : $Date:   09 May 2016 18:57:56  $
+  --       Date fetched Out : $Modtime:   09 May 2016 18:53:00  $
+  --       Version          : $Revision:   1.2  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.2  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -28,17 +28,18 @@ AS
   gt_group_types  nm_code_tbl := nm_code_tbl();
   gt_datum_types  nm_code_tbl := nm_code_tbl();
   --
-  TYPE location_rec IS RECORD(asset_id           nm_members_all.nm_ne_id_in%TYPE
-                             ,element_id         nm_members_all.nm_ne_id_of%TYPE
-                             ,element_type       nm_elements_all.ne_nt_type%TYPE
-                             ,element_unique     nm_elements_all.ne_unique%TYPE
-                             ,element_descr      nm_elements_all.ne_descr%TYPE
-                             ,from_offset        nm_members_all.nm_begin_mp%TYPE
-                             ,to_offset          nm_members_all.nm_end_mp%TYPE
-                             ,offset_length      nm_elements_all.ne_length%TYPE
-                             ,element_length     nm_elements_all.ne_length%TYPE
-                             ,element_unit_id    nm_units.un_unit_id%TYPE
-                             ,element_unit_name  nm_units.un_unit_name%TYPE);
+  TYPE location_rec IS RECORD(asset_id            nm_members_all.nm_ne_id_in%TYPE
+                             ,element_id          nm_members_all.nm_ne_id_of%TYPE
+                             ,element_type        nm_elements_all.ne_nt_type%TYPE
+                             ,element_unique      nm_elements_all.ne_unique%TYPE
+                             ,element_descr       nm_elements_all.ne_descr%TYPE
+                             ,from_offset         nm_members_all.nm_begin_mp%TYPE
+                             ,to_offset           nm_members_all.nm_end_mp%TYPE
+                             ,offset_length       nm_elements_all.ne_length%TYPE
+                             ,element_length      nm_elements_all.ne_length%TYPE
+                             ,element_unit_id     nm_units.un_unit_id%TYPE
+                             ,element_unit_name   nm_units.un_unit_name%TYPE
+                             ,element_admin_unit  nm_admin_units_all.nau_name%TYPE);
   TYPE location_tab IS TABLE OF location_rec INDEX BY BINARY_INTEGER;
   --
   -----------------------------------------------------------------------------
@@ -68,7 +69,6 @@ AS
     RETURN VARCHAR2 IS
     --
     lv_retval  nm3type.max_varchar2;
-    lv_indent  nm3type.max_varchar2;
     --
   BEGIN
     /*
@@ -251,7 +251,7 @@ AS
     FOR i IN 1..lt_lvms.COUNT LOOP
       /*
       ||Non-linear types should be excluded as they will not help
-      ||NTIS resolve the locaion.
+      ||NTIS resolve the location.
       */
       IF nm3net.is_nt_linear(p_nt_type => lt_lvms(i).target_nt_type) = 'N'
        THEN
@@ -493,13 +493,13 @@ AS
                        ,lv_run_id);
     FETCH get_prev_date
      INTO lv_full_run_date;
+    CLOSE get_prev_date;
     --
-    IF get_prev_date%NOTFOUND
+    IF lv_full_run_date IS NULL
      THEN
         raise_application_error(-20001,'A full export should be executed ("NEM NTIS Interface Full Export") before updates can be created.');
     END IF;
     --
-    CLOSE get_prev_date;
     /*
     ||Get the last update run date.
     */
@@ -508,15 +508,15 @@ AS
                        ,lv_run_id);
     FETCH get_prev_date
      INTO lv_update_run_date;
+    CLOSE get_prev_date;
     --
-    IF get_prev_date%NOTFOUND
+    IF lv_update_run_date IS NULL
      THEN
         po_prev_run_date := lv_full_run_date;
     ELSE
         po_prev_run_date := GREATEST(lv_full_run_date,lv_update_run_date);
     END IF;
     --
-    CLOSE get_prev_date;
     --
   END get_process_details;
 
@@ -1372,7 +1372,7 @@ AS
    ||CHR(10)||'                 AND naex2.naex_na_id = (SELECT na_id'
    ||CHR(10)||'                                           FROM nem_actions na2'
    ||CHR(10)||'                                          WHERE na2.na_label = ''Publish'')'
-   ||CHR(10)||'                 AND naex2.naex_execution_date < NVL(nnl_date_cancel_send,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')))'
+   ||CHR(10)||'                 AND naex2.naex_execution_date < NVL(nnl_date_cancel_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')))'
    ||CHR(10)||'   AND iit.iit_ne_id = naex_nevt_id'
    ||CHR(10)||'   AND naex_na_id = (SELECT na_id'
    ||CHR(10)||'                       FROM nem_actions'
