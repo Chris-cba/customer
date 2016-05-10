@@ -3,19 +3,21 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkh-arc   1.0   Feb 11 2016 09:36:12   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkh-arc   1.1   10 May 2016 18:05:32   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkh  $
-  --       Date into PVCS   : $Date:   Feb 11 2016 09:36:12  $
-  --       Date fetched Out : $Modtime:   Jan 21 2016 11:33:12  $
-  --       Version          : $Revision:   1.0  $
+  --       Date into PVCS   : $Date:   10 May 2016 18:05:32  $
+  --       Date fetched Out : $Modtime:   10 May 2016 11:24:10  $
+  --       Version          : $Revision:   1.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
   ------------------------------------------------------------------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
   --
-  c_datetimefmt    CONSTANT VARCHAR2(50) := 'YYYY-MM-DD"T"HH24:MI:SS'; 
+  c_datetimefmt    CONSTANT VARCHAR2(50) := 'YYYY-MM-DD"T"HH24:MI:SS';
+  c_full_export    CONSTANT VARCHAR2(100) := 'NEM NTIS Interface Full Export';
+  c_update_export  CONSTANT VARCHAR2(100) := 'NEM NTIS Interface Update Export';
   --
   TYPE ftp_con_rec IS RECORD(conn_id   hig_ftp_connections.hfc_id%TYPE
                             ,username  hig_ftp_connections.hfc_ftp_username%TYPE
@@ -56,6 +58,12 @@ AS
   --
   FUNCTION get_body_version
     RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_event_xml(pi_nevt_id IN nem_events.nevt_id%TYPE)
+    RETURN XMLTYPE;
 
   --
   -----------------------------------------------------------------------------
