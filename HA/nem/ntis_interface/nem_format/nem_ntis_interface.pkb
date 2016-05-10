@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.2   09 May 2016 18:57:56   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.3   10 May 2016 18:07:28   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   09 May 2016 18:57:56  $
-  --       Date fetched Out : $Modtime:   09 May 2016 18:53:00  $
-  --       Version          : $Revision:   1.2  $
+  --       Date into PVCS   : $Date:   10 May 2016 18:07:28  $
+  --       Date fetched Out : $Modtime:   10 May 2016 17:00:32  $
+  --       Version          : $Revision:   1.3  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.2  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.3  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -488,7 +488,7 @@ AS
     /*
     ||Make sure a full export has been executed and get the run date.
     */
-    OPEN  get_prev_date('NEM NTIS Interface Full Export'
+    OPEN  get_prev_date(c_full_export
                        ,lv_process_id
                        ,lv_run_id);
     FETCH get_prev_date
@@ -497,13 +497,13 @@ AS
     --
     IF lv_full_run_date IS NULL
      THEN
-        raise_application_error(-20001,'A full export should be executed ("NEM NTIS Interface Full Export") before updates can be created.');
+        raise_application_error(-20001,'A full export should be executed ("'||c_full_export||'") before updates can be created.');
     END IF;
     --
     /*
     ||Get the last update run date.
     */
-    OPEN  get_prev_date('NEM NTIS Interface Update Export'
+    OPEN  get_prev_date(c_update_export
                        ,lv_process_id
                        ,lv_run_id);
     FETCH get_prev_date
@@ -599,7 +599,7 @@ AS
           ,hig_process_job_runs
           ,hig_processes
           ,hig_process_types
-     WHERE hpt_name IN('NEM NTIS Interface Full Export','NEM NTIS Interface Update Export')
+     WHERE hpt_name IN(c_full_export,c_update_export)
        AND hpt_process_type_id = hp_process_type_id
        AND hp_process_id = hpjr_process_id
        AND (hpjr_process_id,hpjr_job_run_seq) NOT IN (SELECT lv_process_id,lv_run_id FROM dual)
@@ -1697,18 +1697,28 @@ AS
   BEGIN
     --
     hig_process_api.log_it('Starting creation and upload of update files using NTIS Interface '||get_body_version);
+    /*
+    ||Make sure the Full Export is not currently running.
+    */
+    IF hig_process_api.valid_process_of_type_exists(pi_process_type_name => c_full_export)
+     THEN
+        hig_process_api.log_it('A full export ("'||c_full_export||'") is either scheduled or running no update files will be created.');        
+    ELSE
+        --
+        get_process_details(po_file_data     => lv_file_data
+                           ,po_ftp_details   => lr_ftp_det
+                           ,po_run_date      => lv_run_date
+                           ,po_prev_run_date => lv_prev_run_date);
+        --
+        create_update_files(pi_file_data     => lv_file_data
+                           ,pi_ftp_details   => lr_ftp_det
+                           ,pi_run_date      => lv_run_date
+                           ,pi_prev_run_date => lv_prev_run_date);
+        --
+        hig_process_api.log_it('Creation and upload of update files successful.');
+        --
+    END IF;
     --
-    get_process_details(po_file_data     => lv_file_data
-                       ,po_ftp_details   => lr_ftp_det
-                       ,po_run_date      => lv_run_date
-                       ,po_prev_run_date => lv_prev_run_date);
-    --
-    create_update_files(pi_file_data     => lv_file_data
-                       ,pi_ftp_details   => lr_ftp_det
-                       ,pi_run_date      => lv_run_date
-                       ,pi_prev_run_date => lv_prev_run_date);
-    --
-    hig_process_api.log_it('Creation and upload of update files successful.');
     hig_process_api.process_execution_end(pi_success_flag => 'Y');
     --
   EXCEPTION
