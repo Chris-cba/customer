@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.3   10 May 2016 18:07:28   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.4   23 May 2016 13:25:20   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   10 May 2016 18:07:28  $
-  --       Date fetched Out : $Modtime:   10 May 2016 17:00:32  $
-  --       Version          : $Revision:   1.3  $
+  --       Date into PVCS   : $Date:   23 May 2016 13:25:20  $
+  --       Date fetched Out : $Modtime:   23 May 2016 11:51:54  $
+  --       Version          : $Revision:   1.4  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.3  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.4  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -1477,9 +1477,12 @@ AS
     lt_events  nem_event_tab;
     lt_files   hig_process_api.tab_temp_files;
     --
-    lv_file_count  PLS_INTEGER;
-    lv_sql  nm3type.max_varchar2;
+    lv_file_count   PLS_INTEGER;
+    lv_total_files  PLS_INTEGER;
+    lv_sql          nm3type.max_varchar2;
+    lv_cnt_sql      nm3type.max_varchar2;
     --
+    c_count   sys_refcursor;
     c_events  sys_refcursor;
     --
   BEGIN
@@ -1491,14 +1494,22 @@ AS
                ||CHR(10)||'        OR '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'PLANNED_START_DATE')||' <= :pi_run_date + :windowdays)'
     ;
     --
+    lv_cnt_sql := 'SELECT CEIL(COUNT(*)/1000) FROM ('||lv_sql||')';
+    --
     IF gt_group_types.COUNT > 0
      THEN
+        OPEN c_count FOR lv_cnt_sql USING gt_group_types,pi_run_date,g_ntiswindow;
         OPEN c_events FOR lv_sql USING gt_group_types,pi_run_date,g_ntiswindow;
     ELSE
+        OPEN c_count FOR lv_cnt_sql USING pi_run_date,g_ntiswindow;
         OPEN c_events FOR lv_sql USING pi_run_date,g_ntiswindow;
     END IF;
     --
     BEGIN
+      --
+      FETCH c_count
+       INTO lv_total_files;
+      CLOSE c_count;
       --
       LOOP
         --
@@ -1509,7 +1520,7 @@ AS
         --
         lv_file_count := lt_files.COUNT+1;
         lt_files(lv_file_count) := pi_file_data;
-        lt_files(lv_file_count).filename := 'NTISFullExport_'||lv_file_count||'_'||TO_CHAR(pi_run_date,'YYYYMMDD_HH24MISS')||'.xml';
+        lt_files(lv_file_count).filename := 'NTISFullExport_'||lv_file_count||'of'||lv_total_files||'_'||TO_CHAR(pi_run_date,'YYYYMMDD_HH24MISS')||'.xml';
         --
         write_events_to_file(pi_events    => lt_events
                             ,pi_file_data => lt_files(lt_files.COUNT));
