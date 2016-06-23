@@ -2,17 +2,17 @@ CREATE OR REPLACE PACKAGE srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkh-arc   3.0   Apr 22 2015 13:54:34   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkh-arc   3.1   23 Jun 2016 15:57:40   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkh  $
-  --       Date into PVCS   : $Date:   Apr 22 2015 13:54:34  $
-  --       Date fetched Out : $Modtime:   Apr 22 2015 14:58:58  $
-  --       Version          : $Revision:   3.0  $
+  --       Date into PVCS   : $Date:   23 Jun 2016 15:57:40  $
+  --       Date fetched Out : $Modtime:   23 Jun 2016 15:56:58  $
+  --       Version          : $Revision:   3.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2015 Bentley Systems Incorporated. All rights reserved.
   ------------------------------------------------------------------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   3.0  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   3.1  $';
   --
   c_information CONSTANT srw_to_nem_log.stn_message_type%TYPE := 'INFORMATION';
   c_warning     CONSTANT srw_to_nem_log.stn_message_type%TYPE := 'WARNING';
@@ -37,7 +37,8 @@ CREATE OR REPLACE PACKAGE srw_data_load AS
   --
   -----------------------------------------------------------------------------
   --
-  PROCEDURE process_closures(pi_srw_operational_area IN srw_closures.operational_area%TYPE
+  PROCEDURE process_closures(pi_srw_operational_area IN srw_closures.operational_area%TYPE DEFAULT NULL
+                            ,pi_closure              IN srw_closures.closure%TYPE DEFAULT NULL
                             ,pi_validation_only      IN BOOLEAN DEFAULT FALSE);
 --
 -----------------------------------------------------------------------------

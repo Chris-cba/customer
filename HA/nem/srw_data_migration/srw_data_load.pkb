@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.6   23 Jun 2016 11:33:50   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.7   23 Jun 2016 15:57:40   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   23 Jun 2016 11:33:50  $
-  --       Date fetched Out : $Modtime:   23 Jun 2016 11:32:28  $
-  --       Version          : $Revision:   3.6  $
+  --       Date into PVCS   : $Date:   23 Jun 2016 15:57:40  $
+  --       Date fetched Out : $Modtime:   23 Jun 2016 15:57:10  $
+  --       Version          : $Revision:   3.7  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.6  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.7  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -1732,7 +1732,8 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --
   --------------------------------------------------------------------------------
   --
-  PROCEDURE process_closures(pi_srw_operational_area IN srw_closures.operational_area%TYPE
+  PROCEDURE process_closures(pi_srw_operational_area IN srw_closures.operational_area%TYPE DEFAULT NULL
+                            ,pi_closure              IN srw_closures.closure%TYPE DEFAULT NULL
                             ,pi_validation_only      IN BOOLEAN DEFAULT FALSE)
     IS
     --
@@ -1780,6 +1781,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
        AND closure NOT IN(SELECT iit_num_attrib19
                             FROM nm_inv_items_all
                            WHERE iit_inv_type = 'NEVT')
+       AND closure = NVL(pi_closure,closure)
      ORDER
         BY operational_area
           ,closure
