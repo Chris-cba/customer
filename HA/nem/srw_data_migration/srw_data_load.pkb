@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.5   Jan 04 2016 15:37:36   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.6   23 Jun 2016 11:33:50   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   Jan 04 2016 15:37:36  $
-  --       Date fetched Out : $Modtime:   Jan 04 2016 14:52:42  $
-  --       Version          : $Revision:   3.5  $
+  --       Date into PVCS   : $Date:   23 Jun 2016 11:33:50  $
+  --       Date fetched Out : $Modtime:   23 Jun 2016 11:32:28  $
+  --       Version          : $Revision:   3.6  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.5  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.6  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -286,6 +286,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     --
     lv_unit_code   nm_admin_units_all.nau_unit_code%TYPE;
     lv_admin_unit  nm_admin_units_all.nau_admin_unit%TYPE;
+    lv_admin_type  nm_au_types.nat_admin_type%TYPE;
     --
   BEGIN
     --
@@ -302,12 +303,9 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
            THEN
               BEGIN
                 --
-                SELECT nau_admin_unit
-                  INTO lv_admin_unit
-                  FROM nm_admin_units_all
-                 WHERE nau_unit_code = lv_unit_code
-                     ;
-                --
+                lv_admin_unit := nm3get.get_nau(pi_nau_unit_code  => lv_unit_code
+                                               ,pi_nau_admin_type => nem_util.get_event_admin_type
+                                               ).nau_admin_unit;
                 g_au_id_lookup(lv_unit_code) := lv_admin_unit;
                 --
               EXCEPTION
@@ -322,7 +320,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
      THEN
         po_admin_unit := lv_admin_unit;
     ELSE
-        add_to_stack(pi_message => 'Unable to map Operational Area ['||pi_operational_area||'] to an Admin Unit.'
+        add_to_stack(pi_message => 'Unable to map Operational Area ['||pi_operational_area||'] to an Admin Unit in the NEM Admin Type ['||nem_util.get_event_admin_type||'].'
                     ,po_stack   => po_message_stack);
     END IF;
     --
@@ -803,6 +801,65 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   END get_diary;
 
   --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION create_temp_ne_from_locs(pi_locations     IN     location_tab
+                                   ,po_message_stack IN OUT message_stack_tab)
+    RETURN NUMBER IS
+    --
+    lv_location_job_id  NUMBER;
+    lv_combined_job_id  NUMBER;
+    --
+  BEGIN
+    --
+    FOR i IN 1..pi_locations.COUNT LOOP
+      BEGIN
+        /*
+        ||Loop through the locations and add them to the an extent.
+        */
+        nm3extent.create_temp_ne(pi_source_id => pi_locations(i).nm_ne_id_of
+                                ,pi_source    => nm3extent.get_route
+                                ,pi_begin_mp  => pi_locations(i).nm_begin_mp
+                                ,pi_end_mp    => pi_locations(i).nm_end_mp
+                                ,po_job_id    => lv_location_job_id);
+        --
+        IF lv_combined_job_id IS NULL
+         THEN
+            lv_combined_job_id := lv_location_job_id;
+        ELSE
+            nm3extent.combine_temp_nes(pi_job_id_1       => lv_combined_job_id
+                                      ,pi_job_id_2       => lv_location_job_id
+                                      ,pi_check_overlaps => FALSE);
+            /*
+            ||Remove any overlaps.
+            */
+            lv_combined_job_id := nm3extent.remove_overlaps(pi_nte_id => lv_combined_job_id);
+        END IF;
+        --
+      EXCEPTION
+        WHEN others
+         THEN
+            add_to_stack(pi_message      => 'Error Adding Location, Element Id['
+                                            ||pi_locations(i).nm_ne_id_of||'] From Offset['
+                                            ||pi_locations(i).nm_begin_mp||'] To Offset['
+                                            ||pi_locations(i).nm_end_mp||']: '||SQLERRM
+                        ,pi_message_type => c_warning
+                        ,po_stack        => po_message_stack);
+      END;
+    END LOOP;
+    /*
+    ||Remove any overlaps.
+    ||NB. This would appear to be unnecessary as it is performed in
+    ||the loop however not doing it here can lead to errors when the
+    ||extent is used to add to an assets location.
+    */
+    lv_combined_job_id := nm3extent.remove_overlaps(pi_nte_id => lv_combined_job_id);
+    --
+    RETURN lv_combined_job_id;
+    --
+  END create_temp_ne_from_locs;
+
+  --
   --------------------------------------------------------------------------------
   --
   PROCEDURE add_locations(pi_iit_ne_id     IN     nm_inv_items_all.iit_ne_id%TYPE
@@ -811,9 +868,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                          ,po_message_stack IN OUT message_stack_tab)
     IS
     --
-    lv_asset_job_id        NUMBER;
-    lv_location_job_id     NUMBER;
-    lv_no_overlaps_job_id  NUMBER;
+    lv_job_id  NUMBER;
     --
     lv_warning_code  VARCHAR2(1000);
     lv_warning_msg   VARCHAR2(1000);
@@ -823,49 +878,10 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     IF pi_locations.COUNT > 0
      THEN
         /*
-        ||Create an extent for the asset.
+        ||Create an extent for the locations.
         */
-        nm3extent.create_temp_ne(pi_source_id => pi_iit_ne_id
-                                ,pi_source    => nm3extent.get_route
-                                ,pi_begin_mp  => NULL
-                                ,pi_end_mp    => NULL
-                                ,po_job_id    => lv_asset_job_id);
-        /*
-        ||Loop through the locations and add them to the asset extent.
-        */
-        FOR i IN 1..pi_locations.COUNT LOOP
-          --
-          BEGIN
-            --
-            nm3extent.create_temp_ne(pi_source_id => pi_locations(i).nm_ne_id_of
-                                    ,pi_source    => nm3extent.get_route
-                                    ,pi_begin_mp  => pi_locations(i).nm_begin_mp
-                                    ,pi_end_mp    => pi_locations(i).nm_end_mp
-                                    ,po_job_id    => lv_location_job_id);
-            --
-            nm3extent.combine_temp_nes(pi_job_id_1       => lv_asset_job_id
-                                      ,pi_job_id_2       => lv_location_job_id
-                                      ,pi_check_overlaps => FALSE);
-            /*
-            ||Remove any overlaps.
-            */
-            lv_asset_job_id := nm3extent.remove_overlaps(pi_nte_id => lv_asset_job_id);
-            --
-          EXCEPTION
-            WHEN others
-             THEN
-                add_to_stack(pi_message      => 'Error Adding Location, Element Id['
-                                                ||pi_locations(i).nm_ne_id_of||'] From Offset['
-                                                ||pi_locations(i).nm_begin_mp||'] To Offset['
-                                                ||pi_locations(i).nm_end_mp||']: '||SQLERRM
-                            ,pi_message_type => c_warning
-                            ,po_stack        => po_message_stack);
-          END;
-        END LOOP;
-        /*
-        ||Remove any overlaps.
-        */
-        lv_no_overlaps_job_id := nm3extent.remove_overlaps(pi_nte_id => lv_asset_job_id);
+        lv_job_id := create_temp_ne_from_locs(pi_locations     => pi_locations
+                                             ,po_message_stack => po_message_stack);
         /*
         ||Locate the asset.
         ||NB. If the load runs beyond midnight the session's effective date
@@ -873,23 +889,90 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
         ||not be able to be located as they will not show up in the nm_inv_items
         ||view so reset the effective date to be sure.
         */
-        nm3user.set_effective_date(p_date => SYSDATE);
-        nm3homo.homo_update(p_temp_ne_id_in  => lv_no_overlaps_job_id
-                           ,p_iit_ne_id      => pi_iit_ne_id
-                           ,p_effective_date => TRUNC(SYSDATE)
-                           ,p_warning_code   => lv_warning_code
-                           ,p_warning_msg    => lv_warning_msg);
+        IF lv_job_id IS NOT NULL
+         THEN
+            nm3user.set_effective_date(p_date => SYSDATE);
+            nm3homo.homo_update(p_temp_ne_id_in  => lv_job_id
+                               ,p_iit_ne_id      => pi_iit_ne_id
+                               ,p_effective_date => TRUNC(SYSDATE)
+                               ,p_warning_code   => lv_warning_code
+                               ,p_warning_msg    => lv_warning_msg);
+        ELSE
+            add_to_stack(pi_message      => 'No valid Locations to add: Type = ['||pi_nit_inv_type||'] Id = ['||pi_iit_ne_id||']'
+                        ,pi_message_type => c_warning
+                        ,po_stack        => po_message_stack);
+        END IF;
         --
     END IF;
     --
   EXCEPTION
     WHEN others
      THEN
-        add_to_stack(pi_message      => 'Error Adding Locations(lv_no_overlaps_job_id='||lv_no_overlaps_job_id||'): '||SQLERRM
+        add_to_stack(pi_message      => 'Error Adding Locations: '||SQLERRM
                     ,pi_message_type => c_warning
                     ,po_stack        => po_message_stack);
 
   END add_locations;
+
+  --
+  --------------------------------------------------------------------------------
+  --
+  PROCEDURE update_dup_group_names(po_group_tab IN OUT impact_group_tab)
+    IS
+    --
+    TYPE names_tab IS TABLE OF nem_impact_groups.nig_name%TYPE;
+    lt_dups  names_tab :=  names_tab();
+    --
+    lv_inner_ind  PLS_INTEGER := 1;
+    lv_dup_ind    PLS_INTEGER;
+    --
+  BEGIN
+    /*
+    ||Identify any duplicate group names.
+    */
+    FOR i IN 1..po_group_tab.COUNT LOOP
+      --
+      LOOP
+        --
+        EXIT WHEN lv_inner_ind = i;
+        --
+        IF po_group_tab(i).group_rec.nig_name = po_group_tab(lv_inner_ind).group_rec.nig_name
+         THEN
+            IF po_group_tab(i).group_rec.nig_name NOT MEMBER OF lt_dups
+             THEN
+                lt_dups.extend;
+                lt_dups(lt_dups.COUNT) := po_group_tab(i).group_rec.nig_name;
+            END IF;
+        END IF;
+        --
+        lv_inner_ind := lv_inner_ind + 1;
+        --
+      END LOOP;
+      --
+    END LOOP;
+    /*
+    ||Update the duplicate group names.
+    */
+    FOR i IN 1..lt_dups.COUNT LOOP
+      --
+      lv_dup_ind := 1;
+      --
+      FOR j IN 1..po_group_tab.COUNT LOOP
+        --
+        IF lt_dups(i) = po_group_tab(j).group_rec.nig_name
+         THEN
+            --
+            po_group_tab(j).group_rec.nig_name := po_group_tab(j).group_rec.nig_name
+                                                  ||CASE WHEN lv_dup_ind > 1 THEN '('||lv_dup_ind||')' ELSE NULL END;
+            lv_dup_ind := lv_dup_ind + 1;
+            --
+        END IF;
+        --
+      END LOOP;
+      --
+    END LOOP;
+    --
+  END update_dup_group_names;
 
   --
   --------------------------------------------------------------------------------
@@ -1029,6 +1112,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --------------------------------------------------------------------------------
   --
   PROCEDURE process_comp_sections(pi_component_key IN     srw_components.component_key%TYPE
+                                 ,pi_lane_count    IN     PLS_INTEGER
                                  ,pi_admin_unit    IN     nm_admin_units_all.nau_admin_unit%TYPE
                                  ,po_pla           IN OUT nm_placement_array
                                  ,po_locations     IN OUT location_tab
@@ -1038,6 +1122,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     --
     lv_length        NUMBER;
     lv_admin_unit    nm_admin_units_all.nau_admin_unit%TYPE;
+    lv_admin_type    nm_au_types.nat_admin_type%TYPE;
     lv_invalid_refs  BOOLEAN := FALSE;
     --
     lt_sections  sections_tab;
@@ -1056,13 +1141,18 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
         --
         SELECT ne_id
               ,ne_admin_unit
+              ,nt_admin_type
           INTO lr_location.nm_ne_id_of
               ,lv_admin_unit
+              ,lv_admin_type
           FROM nm_elements_all
-         WHERE ne_unique = lt_sections(i).label
+              ,nm_types
+         WHERE nt_type = ne_nt_type
+           AND ne_unique = lt_sections(i).label
              ;
         --
-        IF lv_admin_unit != pi_admin_unit
+        IF lv_admin_type = nem_util.get_event_admin_type
+         AND lv_admin_unit != pi_admin_unit
          THEN
             add_to_stack(pi_message      => 'Validating Section ['||lt_sections(i).label||'], the Sections Admin Unit['
                                             ||nm3get.get_nau(lv_admin_unit).nau_name||'] does not match the Closure Admin Unit['
@@ -1154,12 +1244,17 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
             END IF;
             --
             po_locations(po_locations.COUNT+1) := lr_location;
-            --
-            nm3pla.add_element_to_pl_arr(pio_pl_arr => po_pla
-                                        ,pi_ne_id   => lr_location.nm_ne_id_of
-                                        ,pi_start   => LEAST(lt_sections(i).start_offset,lt_sections(i).end_offset)
-                                        ,pi_end     => GREATEST(lt_sections(i).start_offset,lt_sections(i).end_offset)
-                                        ,pi_measure => lt_sections(i).component_start);
+            /*
+            ||If there are no lanes the placement array is not required so don't build it.
+            */
+            IF pi_lane_count > 0
+             THEN
+                nm3pla.add_element_to_pl_arr(pio_pl_arr => po_pla
+                                            ,pi_ne_id   => lr_location.nm_ne_id_of
+                                            ,pi_start   => LEAST(lt_sections(i).start_offset,lt_sections(i).end_offset)
+                                            ,pi_end     => GREATEST(lt_sections(i).start_offset,lt_sections(i).end_offset)
+                                            ,pi_measure => lt_sections(i).component_start);
+            END IF;
             --
         END IF;
         --
@@ -1407,6 +1502,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     FOR i IN 1..lt_components.COUNT LOOP
       --
       process_comp_sections(pi_component_key => lt_components(i).component_key
+                           ,pi_lane_count    => lt_components(i).lane_count
                            ,pi_admin_unit    => pi_admin_unit
                            ,po_pla           => lv_comp_pla
                            ,po_locations     => lt_comp_locations
@@ -1972,6 +2068,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                           ,po_impacted_network => lt_impacted_network
                           ,po_impact_groups    => lt_impact_groups
                           ,po_message_stack    => lt_message_stack);
+        /*
+        ||Duplicate Component or Layout names can lead to duplicate
+        ||Impact Group names to check and update them as required.
+        */
+        update_dup_group_names(po_group_tab => lt_impact_groups);
         /*
         ||Create the data.
         */
