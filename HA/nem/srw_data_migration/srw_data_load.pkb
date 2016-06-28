@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.7   23 Jun 2016 15:57:40   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.8   28 Jun 2016 14:18:36   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   23 Jun 2016 15:57:40  $
-  --       Date fetched Out : $Modtime:   23 Jun 2016 15:57:10  $
-  --       Version          : $Revision:   3.7  $
+  --       Date into PVCS   : $Date:   28 Jun 2016 14:18:36  $
+  --       Date fetched Out : $Modtime:   28 Jun 2016 11:10:44  $
+  --       Version          : $Revision:   3.8  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.7  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.8  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -2604,7 +2604,7 @@ BEGIN
   ||The index is the SRW Temporary Speed Limit, the assignment is the NEM
   ||Schedule Speed Limit.
   */
-  g_schd_speed_limit_lookup('NA')    := 'N/A';
+  g_schd_speed_limit_lookup('NA')    := 'UNCHANGED';
   g_schd_speed_limit_lookup('10MPH') := '10 MPH';
   g_schd_speed_limit_lookup('20MPH') := '20 MPH';
   g_schd_speed_limit_lookup('30MPH') := '30 MPH';
