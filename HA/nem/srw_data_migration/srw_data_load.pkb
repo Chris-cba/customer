@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.8   28 Jun 2016 14:18:36   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.9   05 Jul 2016 18:50:44   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   28 Jun 2016 14:18:36  $
-  --       Date fetched Out : $Modtime:   28 Jun 2016 11:10:44  $
-  --       Version          : $Revision:   3.8  $
+  --       Date into PVCS   : $Date:   05 Jul 2016 18:50:44  $
+  --       Date fetched Out : $Modtime:   05 Jul 2016 18:41:34  $
+  --       Version          : $Revision:   3.9  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,8 +18,8 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.8  $';
-  g_package_name  CONSTANT VARCHAR2(30)   := 'nem_initial_data_load';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.9  $';
+  g_package_name  CONSTANT VARCHAR2(30)   := 'srw_data_load';
   --
   g_debug    BOOLEAN := FALSE;
   g_closure  srw_closures.closure%TYPE;
@@ -923,7 +923,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     TYPE names_tab IS TABLE OF nem_impact_groups.nig_name%TYPE;
     lt_dups  names_tab :=  names_tab();
     --
-    lv_inner_ind  PLS_INTEGER := 1;
+    lv_inner_ind  PLS_INTEGER;
     lv_dup_ind    PLS_INTEGER;
     --
   BEGIN
@@ -932,10 +932,14 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     */
     FOR i IN 1..po_group_tab.COUNT LOOP
       --
+      lv_inner_ind := 1;
+      --
       LOOP
         --
         EXIT WHEN lv_inner_ind = i;
         --
+        nm_debug.debug('*****po_group_tab('||i||').group_rec.nig_name'||po_group_tab(i).group_rec.nig_name);
+        nm_debug.debug('*****po_group_tab('||lv_inner_ind||').group_rec.nig_name'||po_group_tab(lv_inner_ind).group_rec.nig_name);
         IF po_group_tab(i).group_rec.nig_name = po_group_tab(lv_inner_ind).group_rec.nig_name
          THEN
             IF po_group_tab(i).group_rec.nig_name NOT MEMBER OF lt_dups
@@ -1734,6 +1738,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --
   PROCEDURE process_closures(pi_srw_operational_area IN srw_closures.operational_area%TYPE DEFAULT NULL
                             ,pi_closure              IN srw_closures.closure%TYPE DEFAULT NULL
+                            ,pi_excluded_closures    IN closure_ids_tab DEFAULT closure_ids_tab()
                             ,pi_validation_only      IN BOOLEAN DEFAULT FALSE)
     IS
     --
@@ -1746,6 +1751,8 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     lt_nec               nec_tab;
     lt_impacted_network  location_tab;
     lt_impact_groups     impact_group_tab;
+    --
+    lt_excluded_closures  nm_ne_id_array := nm_ne_id_array();
     --
     --lr_empty_group     nem_impact_groups%ROWTYPE;
     --
@@ -1782,12 +1789,22 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                             FROM nm_inv_items_all
                            WHERE iit_inv_type = 'NEVT')
        AND closure = NVL(pi_closure,closure)
+       AND closure NOT IN(SELECT ne_id FROM TABLE(CAST(lt_excluded_closures AS nm_ne_id_array)))
      ORDER
         BY operational_area
           ,closure
          ;
     --
   BEGIN
+    /*
+    ||Set the closures to exclude.
+    */
+    FOR i IN 1..pi_excluded_closures.COUNT LOOP
+      --
+      lt_excluded_closures.extend;
+      lt_excluded_closures(i) := nm_ne_id_type(pi_excluded_closures(i));
+      --
+    END LOOP;
     /*
     ||Get the closures to convert.
     */
@@ -2579,7 +2596,7 @@ BEGIN
   ||management in which case the Impact Group will show 'N/A' and the Schedules
   ||will be assigned the SRW Speed Limit.
   */
-  g_group_speed_limit_lookup('NA')    := 'N/A';
+  g_group_speed_limit_lookup('NA')    := 'UNCHANGED';
   g_group_speed_limit_lookup('10MPH') := '10 MPH';
   g_group_speed_limit_lookup('20MPH') := '20 MPH';
   g_group_speed_limit_lookup('30MPH') := '30 MPH';

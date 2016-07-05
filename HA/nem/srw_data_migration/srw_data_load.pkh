@@ -2,22 +2,24 @@ CREATE OR REPLACE PACKAGE srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkh-arc   3.1   23 Jun 2016 15:57:40   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkh-arc   3.2   05 Jul 2016 18:50:44   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkh  $
-  --       Date into PVCS   : $Date:   23 Jun 2016 15:57:40  $
-  --       Date fetched Out : $Modtime:   23 Jun 2016 15:56:58  $
-  --       Version          : $Revision:   3.1  $
+  --       Date into PVCS   : $Date:   05 Jul 2016 18:50:44  $
+  --       Date fetched Out : $Modtime:   05 Jul 2016 18:41:26  $
+  --       Version          : $Revision:   3.2  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2015 Bentley Systems Incorporated. All rights reserved.
   ------------------------------------------------------------------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   3.1  $';
+  g_sccsid             CONSTANT VARCHAR2(2000) := '$Revision:   3.2  $';
   --
   c_information CONSTANT srw_to_nem_log.stn_message_type%TYPE := 'INFORMATION';
   c_warning     CONSTANT srw_to_nem_log.stn_message_type%TYPE := 'WARNING';
   c_error       CONSTANT srw_to_nem_log.stn_message_type%TYPE := 'ERROR';
   c_debug       CONSTANT srw_to_nem_log.stn_message_type%TYPE := 'DEBUG';
+  --
+  TYPE closure_ids_tab IS TABLE OF srw_closures.closure%TYPE;
   --
   -----------------------------------------------------------------------------
   -- This function returns the current SCCS version
@@ -39,6 +41,7 @@ CREATE OR REPLACE PACKAGE srw_data_load AS
   --
   PROCEDURE process_closures(pi_srw_operational_area IN srw_closures.operational_area%TYPE DEFAULT NULL
                             ,pi_closure              IN srw_closures.closure%TYPE DEFAULT NULL
+                            ,pi_excluded_closures    IN closure_ids_tab DEFAULT closure_ids_tab()
                             ,pi_validation_only      IN BOOLEAN DEFAULT FALSE);
 --
 -----------------------------------------------------------------------------
