@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.4   23 May 2016 13:25:20   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.5   07 Jul 2016 15:53:00   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   23 May 2016 13:25:20  $
-  --       Date fetched Out : $Modtime:   23 May 2016 11:51:54  $
-  --       Version          : $Revision:   1.4  $
+  --       Date into PVCS   : $Date:   07 Jul 2016 15:53:00  $
+  --       Date fetched Out : $Modtime:   07 Jul 2016 15:15:30  $
+  --       Version          : $Revision:   1.5  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.4  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.5  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -27,6 +27,8 @@ AS
   gt_lvm_ids      nem_lvm_api.lvm_id_tab;
   gt_group_types  nm_code_tbl := nm_code_tbl();
   gt_datum_types  nm_code_tbl := nm_code_tbl();
+  --
+  c_file_datetime_fmt  CONSTANT VARCHAR2(24) := 'YYYYMMDD_HH24MISSTZHTZM';
   --
   TYPE location_rec IS RECORD(asset_id            nm_members_all.nm_ne_id_in%TYPE
                              ,element_id          nm_members_all.nm_ne_id_of%TYPE
@@ -60,6 +62,30 @@ AS
   BEGIN
     RETURN g_body_sccsid;
   END get_body_version;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION convert_date_to_xml(pi_date IN DATE)
+    RETURN VARCHAR2 IS
+    --
+    c_date_in_fmt    CONSTANT VARCHAR2(50) := 'DD-MON-YYYY HH24:MI:SS';
+    c_timezone       CONSTANT VARCHAR2(4)  := 'GB';
+    c_timestamp_fmt  CONSTANT VARCHAR2(50) := 'DD-MON-YYYY HH24:MI:SSTZR';
+    c_output_fmt     CONSTANT VARCHAR2(50) := 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM';
+    --
+    lv_retval  VARCHAR2(50);
+    --
+  BEGIN
+    --
+    IF pi_date IS NOT NULL
+     THEN
+        lv_retval := TO_CHAR(TO_TIMESTAMP_TZ(TO_CHAR(pi_date,c_date_in_fmt)||c_timezone,c_timestamp_fmt),c_output_fmt);
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END convert_date_to_xml;
 
   --
   -----------------------------------------------------------------------------
@@ -360,9 +386,10 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  PROCEDURE get_process_details(po_file_data   IN OUT hig_process_api.rec_temp_files
-                               ,po_ftp_details IN OUT ftp_con_rec
-                               ,po_run_date    IN OUT DATE)
+  PROCEDURE get_process_details(po_file_data     IN OUT hig_process_api.rec_temp_files
+                               ,po_ftp_details   IN OUT ftp_con_rec
+                               ,po_run_timestamp IN OUT hig_process_job_runs.hpjr_start%TYPE
+                               ,po_run_date      IN OUT DATE)
     IS
     --
     --lr_file_data   hig_process_api.rec_temp_files;
@@ -374,6 +401,7 @@ AS
                        ,cp_run_id     hig_process_job_runs.hpjr_job_run_seq%TYPE)
         IS
     SELECT CAST(hpjr_start AS DATE) run_date
+          ,hpjr_start
       FROM hig_process_job_runs
      WHERE hpjr_process_id = cp_process_id
        AND hpjr_job_run_seq = cp_run_id
@@ -399,7 +427,8 @@ AS
     */
     OPEN  get_run_date(lv_process_id,lv_run_id);
     FETCH get_run_date
-     INTO po_run_date;
+     INTO po_run_date
+         ,po_run_timestamp;
     --
     IF get_run_date%NOTFOUND
      THEN
@@ -455,6 +484,7 @@ AS
   --
   PROCEDURE get_process_details(po_file_data     IN OUT hig_process_api.rec_temp_files
                                ,po_ftp_details   IN OUT ftp_con_rec
+                               ,po_run_timestamp IN OUT hig_process_job_runs.hpjr_start%TYPE
                                ,po_run_date      IN OUT DATE
                                ,po_prev_run_date IN OUT DATE)
     IS
@@ -482,9 +512,10 @@ AS
     --
   BEGIN
     --
-    get_process_details(po_file_data   => po_file_data
-                       ,po_ftp_details => po_ftp_details
-                       ,po_run_date    => po_run_date);
+    get_process_details(po_file_data     => po_file_data
+                       ,po_ftp_details   => po_ftp_details
+                       ,po_run_timestamp => po_run_timestamp
+                       ,po_run_date      => po_run_date);
     /*
     ||Make sure a full export has been executed and get the run date.
     */
@@ -839,22 +870,22 @@ AS
               ,pi_tab    => lt_output);
       --
       add_line(pi_text   => gen_tags(pi_element => 'planned_sdate'
-                                    ,pi_data    => TO_CHAR(pi_events(i).planned_start_date,c_datetimefmt))
+                                    ,pi_data    => convert_date_to_xml(pi_date => pi_events(i).planned_start_date))
               ,pi_indent => 4
               ,pi_tab    => lt_output);
       --
       add_line(pi_text   => gen_tags(pi_element => 'planned_edate'
-                                    ,pi_data    => TO_CHAR(pi_events(i).planned_complete_date,c_datetimefmt))
+                                    ,pi_data    => convert_date_to_xml(pi_date => pi_events(i).planned_complete_date))
               ,pi_indent => 4
               ,pi_tab    => lt_output);
       --
       add_line(pi_text   => gen_tags(pi_element => 'actual_sdate'
-                                    ,pi_data    => TO_CHAR(pi_events(i).actual_start_date,c_datetimefmt))
+                                    ,pi_data    => convert_date_to_xml(pi_date => pi_events(i).actual_start_date))
               ,pi_indent => 4
               ,pi_tab    => lt_output);
       --
       add_line(pi_text   => gen_tags(pi_element => 'actual_edate'
-                                    ,pi_data    => TO_CHAR(pi_events(i).actual_complete_date,c_datetimefmt))
+                                    ,pi_data    => convert_date_to_xml(pi_date => pi_events(i).actual_complete_date))
               ,pi_indent => 4
               ,pi_tab    => lt_output);
       --
@@ -879,7 +910,7 @@ AS
               ,pi_tab    => lt_output);
       --
       add_line(pi_text   => gen_tags(pi_element => 'modified'
-                                    ,pi_data    => TO_CHAR(pi_events(i).last_modified,c_datetimefmt))
+                                    ,pi_data    => convert_date_to_xml(pi_date => pi_events(i).last_modified))
               ,pi_indent => 4
               ,pi_tab    => lt_output);
       --
@@ -1148,22 +1179,22 @@ AS
                           ,pi_tab    => lt_output);
                   --
                   add_line(pi_text   => gen_tags(pi_element => 'planned_sdate'
-                                                ,pi_data    => TO_CHAR(lt_nigs(k).nigs_planned_startdate,c_datetimefmt))
+                                                ,pi_data    => convert_date_to_xml(pi_date => lt_nigs(k).nigs_planned_startdate))
                           ,pi_indent => 12
                           ,pi_tab    => lt_output);
                   --
                   add_line(pi_text   => gen_tags(pi_element => 'planned_edate'
-                                                ,pi_data    => TO_CHAR(lt_nigs(k).nigs_planned_enddate,c_datetimefmt))
+                                                ,pi_data    => convert_date_to_xml(pi_date => lt_nigs(k).nigs_planned_enddate))
                           ,pi_indent => 12
                           ,pi_tab    => lt_output);
                   --
                   add_line(pi_text   => gen_tags(pi_element => 'actual_sdate'
-                                                ,pi_data    => TO_CHAR(lt_nigs(k).nigs_actual_startdate,c_datetimefmt))
+                                                ,pi_data    => convert_date_to_xml(pi_date => lt_nigs(k).nigs_actual_startdate))
                           ,pi_indent => 12
                           ,pi_tab    => lt_output);
                   --
                   add_line(pi_text   => gen_tags(pi_element => 'actual_edate'
-                                                ,pi_data    => TO_CHAR(lt_nigs(k).nigs_actual_enddate,c_datetimefmt))
+                                                ,pi_data    => convert_date_to_xml(pi_date => lt_nigs(k).nigs_actual_enddate))
                           ,pi_indent => 12
                           ,pi_tab    => lt_output);
                   --
@@ -1173,7 +1204,7 @@ AS
                           ,pi_tab    => lt_output);
                   --
                   add_line(pi_text   => gen_tags(pi_element => 'cancel_date'
-                                                ,pi_data    => TO_CHAR(lt_nigs(k).nigs_cancel_date,c_datetimefmt))
+                                                ,pi_data    => convert_date_to_xml(pi_date => lt_nigs(k).nigs_cancel_date))
                           ,pi_indent => 12
                           ,pi_tab    => lt_output);
                   --
@@ -1425,7 +1456,7 @@ AS
                 ,pi_tab    => lt_output);
         --
         add_line(pi_text   => gen_tags(pi_element => 'cdate'
-                                      ,pi_data    => TO_CHAR(lt_events(i).cancelled_date,c_datetimefmt))
+                                      ,pi_data    => convert_date_to_xml(pi_date => lt_events(i).cancelled_date))
                 ,pi_indent => 4
                 ,pi_tab    => lt_output);
         --
@@ -1469,9 +1500,10 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  PROCEDURE create_full_files(pi_file_data   IN hig_process_api.rec_temp_files
-                             ,pi_ftp_details IN ftp_con_rec
-                             ,pi_run_date    IN DATE)
+  PROCEDURE create_full_files(pi_file_data     IN hig_process_api.rec_temp_files
+                             ,pi_ftp_details   IN ftp_con_rec
+                             ,pi_run_timestamp IN hig_process_job_runs.hpjr_start%TYPE
+                             ,pi_run_date      IN DATE)
     IS
     --
     lt_events  nem_event_tab;
@@ -1520,7 +1552,7 @@ AS
         --
         lv_file_count := lt_files.COUNT+1;
         lt_files(lv_file_count) := pi_file_data;
-        lt_files(lv_file_count).filename := 'NTISFullExport_'||lv_file_count||'of'||lv_total_files||'_'||TO_CHAR(pi_run_date,'YYYYMMDD_HH24MISS')||'.xml';
+        lt_files(lv_file_count).filename := 'NTISFullExport_'||lv_file_count||'of'||lv_total_files||'_'||TO_CHAR(pi_run_timestamp,c_file_datetime_fmt)||'.xml';
         --
         write_events_to_file(pi_events    => lt_events
                             ,pi_file_data => lt_files(lt_files.COUNT));
@@ -1542,6 +1574,7 @@ AS
       WHEN others
        THEN
           ROLLBACK;
+          RAISE;
     END LOOP;
     --
     CLOSE c_events;
@@ -1556,6 +1589,7 @@ AS
   --
   PROCEDURE create_update_files(pi_file_data     IN hig_process_api.rec_temp_files
                                ,pi_ftp_details   IN ftp_con_rec
+                               ,pi_run_timestamp IN hig_process_job_runs.hpjr_start%TYPE
                                ,pi_run_date      IN DATE
                                ,pi_prev_run_date IN DATE)
     IS
@@ -1573,7 +1607,7 @@ AS
     ||Create the updates file.
     */
     lt_files(1) := pi_file_data;
-    lt_files(1).filename := 'NTISUpdate_'||TO_CHAR(pi_run_date,'YYYYMMDD_HH24MISS')||'.xml';
+    lt_files(1).filename := 'NTISUpdate_'||TO_CHAR(pi_run_timestamp,c_file_datetime_fmt)||'.xml';
     --
     lv_sql := gen_get_events_sql
                ||CHR(10)||'   AND (('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')
@@ -1636,7 +1670,7 @@ AS
     ||Create the cancelations file.
     */
     lt_files(2) := pi_file_data;
-    lt_files(2).filename := 'NTISCancellations_'||TO_CHAR(pi_run_date,'YYYYMMDD_HH24MISS')||'.xml';
+    lt_files(2).filename := 'NTISCancellations_'||TO_CHAR(pi_run_timestamp,c_file_datetime_fmt)||'.xml';
     --
     BEGIN
       --
@@ -1666,21 +1700,24 @@ AS
   PROCEDURE initialise_full_export
     IS
     --
-    lv_run_date   DATE;
-    lv_file_data  hig_process_api.rec_temp_files;
-    lr_ftp_det    ftp_con_rec;
+    lv_run_timestamp  hig_process_job_runs.hpjr_start%TYPE;
+    lv_run_date       DATE;
+    lv_file_data      hig_process_api.rec_temp_files;
+    lr_ftp_det        ftp_con_rec;
     --
   BEGIN
     --
     hig_process_api.log_it('Starting creation and upload of interface files using NTIS Interface '||get_body_version);
     --
-    get_process_details(po_file_data   => lv_file_data
-                       ,po_ftp_details => lr_ftp_det
-                       ,po_run_date    => lv_run_date);
+    get_process_details(po_file_data     => lv_file_data
+                       ,po_ftp_details   => lr_ftp_det
+                       ,po_run_timestamp => lv_run_timestamp
+                       ,po_run_date      => lv_run_date);
     --
-    create_full_files(pi_file_data   => lv_file_data
-                     ,pi_ftp_details => lr_ftp_det
-                     ,pi_run_date    => lv_run_date);
+    create_full_files(pi_file_data     => lv_file_data
+                     ,pi_ftp_details   => lr_ftp_det
+                     ,pi_run_timestamp => lv_run_timestamp
+                     ,pi_run_date      => lv_run_date);
     --
     hig_process_api.log_it('Creation and upload of interface files successful.');
     hig_process_api.process_execution_end(pi_success_flag => 'Y');
@@ -1700,6 +1737,7 @@ AS
   PROCEDURE initialise_update
     IS
     --
+    lv_run_timestamp  hig_process_job_runs.hpjr_start%TYPE;
     lv_run_date       DATE;
     lv_prev_run_date  DATE;
     lv_file_data      hig_process_api.rec_temp_files;
@@ -1718,11 +1756,13 @@ AS
         --
         get_process_details(po_file_data     => lv_file_data
                            ,po_ftp_details   => lr_ftp_det
+                           ,po_run_timestamp => lv_run_timestamp
                            ,po_run_date      => lv_run_date
                            ,po_prev_run_date => lv_prev_run_date);
         --
         create_update_files(pi_file_data     => lv_file_data
                            ,pi_ftp_details   => lr_ftp_det
+                           ,pi_run_timestamp => lv_run_timestamp
                            ,pi_run_date      => lv_run_date
                            ,pi_prev_run_date => lv_prev_run_date);
         --
