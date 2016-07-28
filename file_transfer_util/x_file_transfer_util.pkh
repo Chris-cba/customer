@@ -1,0 +1,53 @@
+CREATE OR REPLACE PACKAGE x_file_transfer_util
+AS
+  -------------------------------------------------------------------------
+  --   PVCS Identifiers :-
+  --
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/file_transfer_util/x_file_transfer_util.pkh-arc   1.0   28 Jul 2016 13:51:50   Mike.Huitson  $
+  --       Module Name      : $Workfile:   x_file_transfer_util.pkh  $
+  --       Date into PVCS   : $Date:   28 Jul 2016 13:51:50  $
+  --       Date fetched Out : $Modtime:   28 Jul 2016 12:11:10  $
+  --       Version          : $Revision:   1.0  $
+  --       Based on SCCS version :
+  ------------------------------------------------------------------
+  --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
+  ------------------------------------------------------------------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  --
+  TYPE ftp_con_rec IS RECORD(conn_id   hig_ftp_connections.hfc_id%TYPE
+                            ,username  hig_ftp_connections.hfc_ftp_username%TYPE
+                            ,password  hig_ftp_connections.hfc_ftp_password%TYPE
+                            ,hostname  hig_ftp_connections.hfc_ftp_host%TYPE
+                            ,port      hig_ftp_connections.hfc_ftp_port%TYPE
+                            ,in_dir    hig_ftp_connections.hfc_ftp_in_dir%TYPE
+                            ,out_dir   hig_ftp_connections.hfc_ftp_out_dir%TYPE);
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  -- This function returns the current SCCS version
+  FUNCTION get_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_body_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE upload_files(pi_delete_source_files IN BOOLEAN DEFAULT TRUE);
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE download_files(pi_delete_source_files IN BOOLEAN DEFAULT TRUE);
+
+--
+-----------------------------------------------------------------------------
+--
+END x_file_transfer_util;
+/
