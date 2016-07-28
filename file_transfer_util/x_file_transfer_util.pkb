@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/file_transfer_util/x_file_transfer_util.pkb-arc   1.0   28 Jul 2016 13:51:50   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/file_transfer_util/x_file_transfer_util.pkb-arc   1.1   28 Jul 2016 18:28:12   Mike.Huitson  $
   --       Module Name      : $Workfile:   x_file_transfer_util.pkb  $
-  --       Date into PVCS   : $Date:   28 Jul 2016 13:51:50  $
-  --       Date fetched Out : $Modtime:   28 Jul 2016 13:47:00  $
-  --       Version          : $Revision:   1.0  $
+  --       Date into PVCS   : $Date:   28 Jul 2016 18:28:12  $
+  --       Date fetched Out : $Modtime:   28 Jul 2016 18:24:04  $
+  --       Version          : $Revision:   1.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'x_file_transfer_util';
   --
   --
@@ -186,7 +186,6 @@ AS
     po_ftp_details := get_ftp_details(pi_hft_id => lv_ftp_type_id);
     --
   END get_process_details;
-  --
 
   --
   -----------------------------------------------------------------------------
@@ -200,7 +199,9 @@ AS
     --
     lt_files  nm3file.file_list;
     --
-    lv_conn  utl_tcp.connection;
+    lv_conn          utl_tcp.connection;
+    lv_success_flag  VARCHAR2(1) := 'Y';
+    lv_file_count    PLS_INTEGER := 0;
     --
   BEGIN
     /*
@@ -226,58 +227,74 @@ AS
             /*
             ||Connect to the ftp server.
             */
-            hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||lr_ftp_con.hostname||' '||lr_ftp_con.password
+            hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||lr_ftp_con.hostname||' as '||lr_ftp_con.username
                                   ,pi_summary_flag => 'Y');
             lv_conn := nm3ftp.login(p_host => lr_ftp_con.hostname
                                    ,p_port => lr_ftp_con.port
                                    ,p_user => lr_ftp_con.username
                                    ,p_pass => lr_ftp_con.password);
-            hig_process_api.log_it(pi_message      => 'FTP Connection established '||lv_conn.remote_host
+            hig_process_api.log_it(pi_message      => 'FTP Connection established. '
                                   ,pi_summary_flag => 'Y');
             --
             FOR i IN 1..lt_files.COUNT LOOP
               --
-              lr_file_data.filename := lt_files(i);
-              --
-              /*
-              ||Upload the file.
-              */
-              hig_process_api.log_it(pi_message      => 'Uploading file to '||lr_ftp_con.out_dir||lr_file_data.filename
-                                    ,pi_summary_flag => 'N');
-              --
-              nm3ftp.binary(p_conn => lv_conn);
-              --
-              nm3ftp.put(p_conn      => lv_conn
-                        ,p_from_dir  => lr_file_data.destination
-                        ,p_from_file => lr_file_data.filename
-                        ,p_to_file   => lr_ftp_con.out_dir||'$'||lr_file_data.filename);
-              --
-              nm3ftp.rename(p_conn => lv_conn
-                           ,p_from => lr_ftp_con.out_dir||'$'||lr_file_data.filename
-                           ,p_to   => lr_ftp_con.out_dir||lr_file_data.filename);
-              --
-              hig_process_api.log_it(pi_message      => 'File Uploaded.'
-                                    ,pi_summary_flag => 'N');
-              /*
-              ||Remove the file from the directory.
-              */
-              IF pi_delete_source_files
-               THEN
-                  --
-                  hig_process_api.log_it(pi_message      => 'Deleting file '||lr_file_data.filename||' from ORACLE DIRECTORY ['||lr_file_data.destination||']'
-                                        ,pi_summary_flag => 'N');
-                  --
-                  utl_file.fremove(location => lr_file_data.destination
-                                  ,filename => lr_file_data.filename);
-                  --
-                  hig_process_api.log_it(pi_message      => 'File deleted.'
-                                        ,pi_summary_flag => 'N');
-                  --
-              END IF;
-              --
+              BEGIN
+                --
+                lr_file_data.filename := lt_files(i);
+                --
+                /*
+                ||Upload the file.
+                */
+                hig_process_api.log_it(pi_message      => 'Uploading file to '||lr_ftp_con.out_dir||lr_file_data.filename
+                                      ,pi_summary_flag => 'N');
+                --
+                nm3ftp.binary(p_conn => lv_conn);
+                --
+                nm3ftp.put(p_conn      => lv_conn
+                          ,p_from_dir  => lr_file_data.destination
+                          ,p_from_file => lr_file_data.filename
+                          ,p_to_file   => lr_ftp_con.out_dir||'$'||lr_file_data.filename);
+                --
+                nm3ftp.rename(p_conn => lv_conn
+                             ,p_from => lr_ftp_con.out_dir||'$'||lr_file_data.filename
+                             ,p_to   => lr_ftp_con.out_dir||lr_file_data.filename);
+                --
+                hig_process_api.log_it(pi_message      => 'File Uploaded.'
+                                      ,pi_summary_flag => 'N');
+                /*
+                ||Remove the file from the directory.
+                */
+                IF pi_delete_source_files
+                 THEN
+                    --
+                    hig_process_api.log_it(pi_message      => 'Deleting file '||lr_file_data.filename||' from ORACLE DIRECTORY ['||lr_file_data.destination||']'
+                                          ,pi_summary_flag => 'N');
+                    --
+                    utl_file.fremove(location => lr_file_data.destination
+                                    ,filename => lr_file_data.filename);
+                    --
+                    hig_process_api.log_it(pi_message      => 'File deleted.'
+                                          ,pi_summary_flag => 'N');
+                    --
+                END IF;
+                --
+                lv_file_count := lv_file_count + 1;
+                --
+              EXCEPTION
+                WHEN others
+                 THEN
+                    hig_process_api.log_it('ERROR PROCESSING FILE '||lt_files(i));
+                    IF SQLCODE = -21560
+                     THEN
+                        hig_process_api.log_it('Invalid file size: '||SQLERRM||CHR(10)||dbms_utility.format_error_backtrace);
+                    ELSE
+                        hig_process_api.log_it(SQLERRM||CHR(10)||dbms_utility.format_error_backtrace);
+                    END IF;
+                    lv_success_flag := 'N';
+              END;
             END LOOP;
             --
-            hig_process_api.log_it(pi_message      => lt_files.COUNT||' files Uploaded.'
+            hig_process_api.log_it(pi_message      => lv_file_count||' files Uploaded.'
                                   ,pi_summary_flag => 'Y');
             /*
             ||Close FTP Connection.
@@ -287,8 +304,8 @@ AS
             --
             hig_process_api.log_it(pi_message      => 'FTP Connection Closed.'
                                   ,pi_summary_flag => 'Y');
-            hig_process_api.log_it('File upload complete.');
-            hig_process_api.process_execution_end(pi_success_flag => 'Y');
+            hig_process_api.log_it('File upload complete with '||TO_CHAR(lt_files.COUNT-lv_file_count)||' failures.');
+            hig_process_api.process_execution_end(pi_success_flag => lv_success_flag);
             --
         ELSE
             /*
@@ -308,7 +325,7 @@ AS
         hig_process_api.log_it('File upload not successful.');
         hig_process_api.process_execution_end(pi_success_flag => 'N');
         utl_tcp.close_all_connections;
-  END;
+  END upload_files;
 
   --
   -----------------------------------------------------------------------------
@@ -319,10 +336,12 @@ AS
     lr_ftp_con    ftp_con_rec;
     lr_file_data  hig_process_api.rec_temp_files;
     --
-    lt_files  nm3ftp.t_string_table;
+    lt_files  nm3ftp.t_string_table := nm3ftp.t_string_table();
     --
     lv_conn           utl_tcp.connection;
     lv_forward_slash  VARCHAR2(1) := CHR(47);
+    lv_success_flag   VARCHAR2(1) := 'Y';
+    lv_file_count     PLS_INTEGER := 0;
     --
   BEGIN
     /*
@@ -336,13 +355,13 @@ AS
         /*
         ||Connect to the ftp server.
         */
-        hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||lr_ftp_con.hostname||' '||lr_ftp_con.password
+        hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||lr_ftp_con.hostname||' as '||lr_ftp_con.username
                               ,pi_summary_flag => 'Y');
         lv_conn := nm3ftp.login(p_host => lr_ftp_con.hostname
                                ,p_port => lr_ftp_con.port
                                ,p_user => lr_ftp_con.username
                                ,p_pass => lr_ftp_con.password);
-        hig_process_api.log_it(pi_message      => 'FTP Connection established '||lv_conn.remote_host
+        hig_process_api.log_it(pi_message      => 'FTP Connection established.'
                               ,pi_summary_flag => 'Y');
         /*
         ||List the files.
@@ -361,48 +380,60 @@ AS
             ||Get the target directory details.
             */
             FOR i IN 1..lt_files.COUNT LOOP
-              /*
-              ||Set the target filename.
-              ||NB. The SUNSTR removes the path from the list result.
-              */
-              lr_file_data.filename := SUBSTR(lt_files(i)
-                                             ,INSTR(lt_files(i),lv_forward_slash,-1)+1
-                                             ,LENGTH(lt_files(i))-INSTR(lt_files(i),lv_forward_slash,-1));
-              /*
-              ||Download the file.
-              */
-              hig_process_api.log_it(pi_message      => 'Downloading file '||lt_files(i)||' to Oracle Directory ['||lr_file_data.destination||']'
-                                    ,pi_summary_flag => 'N');
               --
-              nm3ftp.binary(p_conn => lv_conn);
-              --
-              nm3ftp.get(p_conn        => lv_conn
-                        ,p_from_file   => lt_files(i)
-                        ,p_to_dir      => lr_file_data.destination
-                        ,p_to_file     => lr_file_data.filename);
-              --
-              hig_process_api.log_it(pi_message      => 'File downloaded.'
-                                    ,pi_summary_flag => 'N');
-              /*
-              ||Remove the file from the FTP site.
-              */
-              IF pi_delete_source_files
-               THEN
-                  --
-                  hig_process_api.log_it(pi_message      => 'Deleting file '||lr_ftp_con.in_dir||lr_file_data.filename
-                                        ,pi_summary_flag => 'N');
-                  --
-                  nm3ftp.delete(p_conn => lv_conn
-                               ,p_file => lt_files(i));
-                  --
-                  hig_process_api.log_it(pi_message      => 'File deleted.'
-                                        ,pi_summary_flag => 'N');
-                  --
-              END IF;
+              BEGIN
+                /*
+                ||Set the target filename.
+                ||NB. The SUNSTR removes the path from the list result.
+                */
+                lr_file_data.filename := SUBSTR(lt_files(i)
+                                               ,INSTR(lt_files(i),lv_forward_slash,-1)+1
+                                               ,LENGTH(lt_files(i))-INSTR(lt_files(i),lv_forward_slash,-1));
+                /*
+                ||Download the file.
+                */
+                hig_process_api.log_it(pi_message      => 'Downloading file '||lt_files(i)||' to Oracle Directory ['||lr_file_data.destination||']'
+                                      ,pi_summary_flag => 'N');
+                --
+                nm3ftp.binary(p_conn => lv_conn);
+                --
+                nm3ftp.get(p_conn        => lv_conn
+                          ,p_from_file   => lt_files(i)
+                          ,p_to_dir      => lr_file_data.destination
+                          ,p_to_file     => lr_file_data.filename);
+                --
+                hig_process_api.log_it(pi_message      => 'File downloaded.'
+                                      ,pi_summary_flag => 'N');
+                /*
+                ||Remove the file from the FTP site.
+                */
+                IF pi_delete_source_files
+                 THEN
+                    --
+                    hig_process_api.log_it(pi_message      => 'Deleting file '||lr_ftp_con.in_dir||lr_file_data.filename
+                                          ,pi_summary_flag => 'N');
+                    --
+                    nm3ftp.delete(p_conn => lv_conn
+                                 ,p_file => lt_files(i));
+                    --
+                    hig_process_api.log_it(pi_message      => 'File deleted.'
+                                          ,pi_summary_flag => 'N');
+                    --
+                END IF;
+                --
+                lv_file_count := lv_file_count + 1;
+                --
+              EXCEPTION
+                WHEN others
+                 THEN
+                    hig_process_api.log_it('ERROR PROCESSING FILE '||lt_files(i));
+                    hig_process_api.log_it(SQLERRM||CHR(10)||dbms_utility.format_error_backtrace);
+                    lv_success_flag := 'N';
+              END;
               --
             END LOOP;
             --
-            hig_process_api.log_it(pi_message      => lt_files.COUNT||' files downloaded.'
+            hig_process_api.log_it(pi_message      => lv_file_count||' files downloaded.'
                                   ,pi_summary_flag => 'Y');
             --
         END IF;
@@ -414,8 +445,8 @@ AS
         --
         hig_process_api.log_it(pi_message      => 'FTP Connection Closed.'
                               ,pi_summary_flag => 'Y');
-        hig_process_api.log_it('File download complete.');
-        hig_process_api.process_execution_end(pi_success_flag => 'Y');
+        hig_process_api.log_it('File download complete with '||TO_CHAR(lt_files.COUNT-lv_file_count)||' failures.');
+        hig_process_api.process_execution_end(pi_success_flag => lv_success_flag);
         --
         IF lt_files.COUNT = 0
          THEN
@@ -436,7 +467,7 @@ AS
         hig_process_api.log_it('File download not successful.');
         hig_process_api.process_execution_end(pi_success_flag => 'N');
         utl_tcp.close_all_connections;
-  END;
+  END download_files;
 
 --
 -----------------------------------------------------------------------------
