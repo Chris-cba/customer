@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.5   07 Jul 2016 15:53:00   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.6   29 Jul 2016 15:27:36   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   07 Jul 2016 15:53:00  $
-  --       Date fetched Out : $Modtime:   07 Jul 2016 15:15:30  $
-  --       Version          : $Revision:   1.5  $
+  --       Date into PVCS   : $Date:   29 Jul 2016 15:27:36  $
+  --       Date fetched Out : $Modtime:   29 Jul 2016 15:25:26  $
+  --       Version          : $Revision:   1.6  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.5  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.6  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -675,7 +675,7 @@ AS
             /*
             ||Connect to the ftp server.
             */
-            hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||pi_ftp_details.hostname||' '||pi_ftp_details.password
+            hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||pi_ftp_details.hostname||' as '||pi_ftp_details.username
                                   ,pi_summary_flag => 'Y');
             lv_conn := nm3ftp.login(p_host => pi_ftp_details.hostname
                                    ,p_port => pi_ftp_details.port
