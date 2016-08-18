@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_interface.pkb-arc   1.0   Aug 18 2016 12:08:12   Peter.Bibby  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_interface.pkb-arc   1.1   Aug 18 2016 14:22:32   Peter.Bibby  $
   --       Module Name      : $Workfile:   nem_dcm_interface.pkb  $
-  --       Date into PVCS   : $Date:   Aug 18 2016 12:08:12  $
-  --       Date fetched Out : $Modtime:   Aug 18 2016 11:49:10  $
-  --       Version          : $Revision:   1.0  $
+  --       Date into PVCS   : $Date:   Aug 18 2016 14:22:32  $
+  --       Date fetched Out : $Modtime:   Aug 18 2016 14:03:10  $
+  --       Version          : $Revision:   1.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_dcm_interface';
   --
   c_impact_group_level  CONSTANT PLS_INTEGER := 2;
@@ -125,33 +125,34 @@ AS
                               ,cars              NUMBER);
   TYPE tr3_asset_tab IS TABLE OF tr3_asset_rec INDEX BY BINARY_INTEGER;
   --
-  TYPE trt_asset_rec IS RECORD(asset_id      NUMBER
-                              ,from_offset       nm_members_all.nm_begin_mp%TYPE
-                              ,to_offset         nm_members_all.nm_end_mp%TYPE 
-                              ,flow_0_1          NUMBER
-                              ,flow_1_2          NUMBER
-                              ,flow_2_3          NUMBER
-                              ,flow_3_4          NUMBER
-                              ,flow_4_5          NUMBER
-                              ,flow_5_6          NUMBER
-                              ,flow_6_7          NUMBER
-                              ,flow_7_8          NUMBER
-                              ,flow_8_9          NUMBER
-                              ,flow_9_10         NUMBER
-                              ,flow_10_11        NUMBER
-                              ,flow_11_12        NUMBER
-                              ,flow_12_13        NUMBER
-                              ,flow_13_14        NUMBER
-                              ,flow_14_15        NUMBER
-                              ,flow_15_16        NUMBER
-                              ,flow_16_17        NUMBER
-                              ,flow_17_18        NUMBER
-                              ,flow_18_19        NUMBER
-                              ,flow_19_20        NUMBER
-                              ,flow_20_21        NUMBER
-                              ,flow_21_22        NUMBER
-                              ,flow_22_23        NUMBER
-                              ,flow_23_24        NUMBER);
+  TYPE trt_asset_rec IS RECORD(asset_id        NUMBER
+                              ,from_offset     nm_members_all.nm_begin_mp%TYPE
+                              ,to_offset       nm_members_all.nm_end_mp%TYPE 
+                              ,day_type        NUMBER
+                              ,tf_00_01        NUMBER
+                              ,tf_01_02        NUMBER
+                              ,tf_02_03        NUMBER
+                              ,tf_03_04        NUMBER
+                              ,tf_04_05        NUMBER
+                              ,tf_05_06        NUMBER
+                              ,tf_06_07        NUMBER
+                              ,tf_07_08        NUMBER
+                              ,tf_08_09        NUMBER
+                              ,tf_09_10        NUMBER
+                              ,tf_10_11        NUMBER
+                              ,tf_11_12        NUMBER
+                              ,tf_12_13        NUMBER
+                              ,tf_13_14        NUMBER
+                              ,tf_14_15        NUMBER
+                              ,tf_15_16        NUMBER
+                              ,tf_16_17        NUMBER
+                              ,tf_17_18        NUMBER
+                              ,tf_18_19        NUMBER
+                              ,tf_19_20        NUMBER
+                              ,tf_20_21        NUMBER
+                              ,tf_21_22        NUMBER
+                              ,tf_22_23        NUMBER
+                              ,tf_23_24        NUMBER);
   TYPE trt_asset_tab IS TABLE OF trt_asset_rec INDEX BY BINARY_INTEGER;
   --
   TYPE nigs_diary_rec IS RECORD (nig_name nem_impact_groups.nig_name%TYPE
@@ -713,6 +714,7 @@ AS
         SELECT lt_asset(i).asset_id
               ,lt_asset(i).from_offset
               ,lt_asset(i).to_offset
+              ,iit_num_attrib16 day_type
               ,iit_num_attrib100 tf_00_01
               ,iit_num_attrib101 tf_01_02
               ,iit_num_attrib102 tf_02_03
@@ -2062,7 +2064,139 @@ AS
           add_line(pi_text   => lv_traffic_cnt_line
                   ,pi_tab    => lt_sections_output); 
           --                  
-        END LOOP;         
+        END LOOP; 
+        --
+        FOR i in 1..lt_trt.COUNT LOOP             
+          --
+          append_value(pi_text   => lt_trt(i).day_type
+                      ,pi_type   => 'I'
+                      ,pi_length => 3
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_00_01
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_01_02
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_02_03
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_03_04
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_04_05
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_05_06
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_06_07
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_07_08
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_08_09
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_09_10
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --          
+          append_value(pi_text   => lt_trt(i).tf_10_11
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_11_12
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_12_13
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_13_14
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_14_15
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_15_16
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_16_17
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_17_18
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_18_19
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_19_20
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_20_21
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --          
+          append_value(pi_text   => lt_trt(i).tf_21_22
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_22_23
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line);
+          --
+          append_value(pi_text   => lt_trt(i).tf_23_24
+                      ,pi_type   => 'F'
+                      ,pi_length => 8.2
+                      ,pi_output => lv_traffic_cnt_line); 
+          --               
+          add_line(pi_text   => lv_traffic_cnt_line
+                  ,pi_tab    => lt_sections_output); 
+          --                  
+        END LOOP;        
         /*
         ||Component Output:
         ||This is split from Impact Groups into individual Sections
