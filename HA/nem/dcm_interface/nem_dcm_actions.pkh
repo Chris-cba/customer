@@ -1,0 +1,50 @@
+CREATE OR REPLACE PACKAGE nem_dcm_actions
+AS
+  -------------------------------------------------------------------------
+  --   PVCS Identifiers :-
+  --
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_actions.pkh-arc   1.0   Aug 18 2016 12:08:12   Peter.Bibby  $
+  --       Module Name      : $Workfile:   nem_dcm_actions.pkh  $
+  --       Date into PVCS   : $Date:   Aug 18 2016 12:08:12  $
+  --       Date fetched Out : $Modtime:   Aug 17 2016 13:29:32  $
+  --       Version          : $Revision:   1.0  $
+  --       Based on SCCS version :
+  ------------------------------------------------------------------
+  --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
+  ------------------------------------------------------------------
+  --
+  -----------
+  -- constants
+  -----------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  
+  --
+  -----------------------------------------------------------------------------
+  --
+  -- This function returns the current SCCS version
+  FUNCTION get_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  -- This function returns the current SCCS version of the package body
+  FUNCTION get_body_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION can_execute_action(pi_ids IN nm3type.tab_number)
+    RETURN BOOLEAN;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE execute_script_manual;
+  --
+  -----------------------------------------------------------------------------
+  --  
+END nem_dcm_actions;
+/
