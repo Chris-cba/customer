@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.2   09 May 2016 18:57:24   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.3   21 Sep 2016 11:48:22   Mike.Huitson  $
 --       Module Name      : $Workfile:   install.sql  $
---       Date into PVCS   : $Date:   09 May 2016 18:57:24  $
---       Date fetched Out : $Modtime:   09 May 2016 18:08:42  $
---       Version          : $Revision:   1.2  $
+--       Date into PVCS   : $Date:   21 Sep 2016 11:48:22  $
+--       Date fetched Out : $Modtime:   20 Sep 2016 17:18:06  $
+--       Version          : $Revision:   1.3  $
 -------------------------------------------------------------------------
 --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
 -------------------------------------------------------------------------
@@ -387,7 +387,7 @@ SELECT
        ,'NUMBER'
        ,'N'
        ,'N'
-       ,2000 FROM DUAL
+       ,10 FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
                    WHERE HOL_ID = 'NTISWINDOW')
 /
@@ -401,6 +401,42 @@ SELECT
        ,'7' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
                    WHERE HOV_ID = 'NTISWINDOW')
+/
+
+INSERT INTO HIG_OPTION_LIST
+       (HOL_ID
+       ,HOL_PRODUCT
+       ,HOL_NAME
+       ,HOL_REMARKS
+       ,HOL_DOMAIN
+       ,HOL_DATATYPE
+       ,HOL_MIXED_CASE
+       ,HOL_USER_OPTION
+       ,HOL_MAX_LENGTH
+       )
+SELECT 
+        'NTISMAINT'
+       ,'NEM'
+       ,'NTIS File Maintanence'
+       ,'The number of hours to retain exported files in the Oracle Directory and FTP site (if configured).'
+       ,''
+       ,'NUMBER'
+       ,'N'
+       ,'N'
+       ,10 FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
+                   WHERE HOL_ID = 'NTISMAINT')
+/
+
+INSERT INTO HIG_OPTION_VALUES
+       (HOV_ID
+       ,HOV_VALUE
+       )
+SELECT 
+        'NTISMAINT'
+       ,'72' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
+                   WHERE HOV_ID = 'NTISMAINT')
 /
 
 COMMIT
