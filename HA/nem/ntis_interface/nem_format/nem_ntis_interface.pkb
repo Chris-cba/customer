@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.6   29 Jul 2016 15:27:36   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.7   21 Sep 2016 11:41:42   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   29 Jul 2016 15:27:36  $
-  --       Date fetched Out : $Modtime:   29 Jul 2016 15:25:26  $
-  --       Version          : $Revision:   1.6  $
+  --       Date into PVCS   : $Date:   21 Sep 2016 11:41:42  $
+  --       Date fetched Out : $Modtime:   20 Sep 2016 17:14:08  $
+  --       Version          : $Revision:   1.7  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,16 +19,23 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.6  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.7  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
+  g_ntismaint   NUMBER;
   --
   gt_lvm_ids      nem_lvm_api.lvm_id_tab;
   gt_group_types  nm_code_tbl := nm_code_tbl();
   gt_datum_types  nm_code_tbl := nm_code_tbl();
   --
   c_file_datetime_fmt  CONSTANT VARCHAR2(24) := 'YYYYMMDD_HH24MISSTZHTZM';
+  --
+  TYPE upload_files_rec IS RECORD(process_id   hig_processes.hp_process_id%TYPE
+                                 ,run_id       hig_process_job_runs.hpjr_job_run_seq%TYPE
+                                 ,filename     hig_process_files.hpf_filename%TYPE
+                                 ,destination  hig_process_files.hpf_destination%TYPE);
+  TYPE upload_files_tab IS TABLE OF upload_files_rec INDEX BY BINARY_INTEGER;
   --
   TYPE location_rec IS RECORD(asset_id            nm_members_all.nm_ne_id_in%TYPE
                              ,element_id          nm_members_all.nm_ne_id_of%TYPE
@@ -139,9 +146,11 @@ AS
     ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'WORKS_REF')
     ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'MOBILE_LANE_CLOSURE')
     ||CHR(10)||'      ,iit_date_modified'
-    ||CHR(10)||'  FROM nm_inv_items_all'
+    ||CHR(10)||'  FROM nem_ntis_log'
+    ||CHR(10)||'      ,nm_inv_items_all'
     ||CHR(10)||'      ,nem_events'
     ||CHR(10)||' WHERE nevt_id = iit_ne_id'
+    ||CHR(10)||'   AND iit_ne_id = nnl_nevt_id(+)'
     ;
     --
     RETURN lv_sql;
@@ -202,6 +211,21 @@ AS
      THEN
         raise_application_error(-20001,'Error occured reading the NTISWINDOW Product Option.'||SQLERRM);
   END;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE set_ntismaint
+    IS
+  BEGIN
+    --
+    g_ntismaint := TO_NUMBER(hig.get_sysopt('NTISMAINT'));
+    --
+  EXCEPTION
+    WHEN others
+     THEN
+        raise_application_error(-20001,'Error occured reading the NTISMAINT Product Option.'||SQLERRM);
+  END set_ntismaint;
 
   --
   -----------------------------------------------------------------------------
@@ -392,7 +416,6 @@ AS
                                ,po_run_date      IN OUT DATE)
     IS
     --
-    --lr_file_data   hig_process_api.rec_temp_files;
     lv_process_id  hig_processes.hp_process_id%TYPE := hig_process_api.get_current_process_id;
     lv_run_id      hig_process_job_runs.hpjr_job_run_seq%TYPE := hig_process_api.get_current_job_run_seq;
     lv_ftp_type_id hig_process_types.hpt_polling_ftp_type_id%TYPE;
@@ -554,6 +577,243 @@ AS
   --
   -----------------------------------------------------------------------------
   --
+  PROCEDURE cleanup_files(pi_run_date IN DATE)
+    IS
+    --
+    lv_ftp_configured  VARCHAR2(1) := 'N';
+    lv_conn            utl_tcp.connection;
+    --
+    TYPE dir_rec IS RECORD(dir_name hig_directories.hdir_name%TYPE
+                          ,dir_path hig_directories.hdir_path%TYPE);
+    TYPE dir_tab IS TABLE OF dir_rec;
+    lt_dir  dir_tab;
+    --
+    TYPE ftp_tab IS TABLE OF hig_process_types.hpt_polling_ftp_type_id%TYPE;
+    lt_ftp_ids  ftp_tab;
+    --
+    lr_ftp_details  ftp_con_rec;
+    --
+    lt_ftp_files  nm3ftp.t_string_table := nm3ftp.t_string_table();
+    lt_dir_files  nm3file.file_list;
+    lt_files      nm_max_varchar_tbl := nm_max_varchar_tbl();
+    --
+    CURSOR get_ftp(cp_full_export   IN VARCHAR2
+                  ,cp_update_export IN VARCHAR2)
+        IS
+    SELECT DISTINCT hpt_polling_ftp_type_id
+      FROM hig_process_types
+     WHERE hpt_name IN(cp_full_export,cp_update_export)
+         ;
+    --
+    CURSOR get_dir(cp_full_export   IN VARCHAR2
+                  ,cp_update_export IN VARCHAR2)
+        IS
+    SELECT DISTINCT hdir_name
+          ,hdir_path
+      FROM hig_directories
+          ,hig_process_type_files
+          ,hig_process_types
+     WHERE hpt_name IN(cp_full_export,cp_update_export)
+       AND hpt_process_type_id = hptf_process_type_id
+       AND hptf_output_destination_type = 'ORACLE_DIRECTORY'
+       AND hptf_output_destination = hdir_name
+         ;
+    --
+    CURSOR get_files(cp_full_export    IN VARCHAR2
+                    ,cp_update_export  IN VARCHAR2
+                    ,cp_run_date       IN DATE
+                    ,cp_maint          IN NUMBER
+                    ,cp_files          IN nm_max_varchar_tbl
+                    ,cp_ftp_configured IN VARCHAR2
+                    ,cp_file_prefix    IN VARCHAR2)
+        IS
+    SELECT cp_file_prefix||hpf_filename hpf_filename
+          ,hpf_destination
+      FROM nem_ntis_files
+          ,hig_process_files
+          ,hig_process_job_runs
+          ,hig_processes
+          ,hig_process_types
+     WHERE hpt_name IN(cp_full_export,cp_update_export)
+       AND hpt_process_type_id = hp_process_type_id
+       AND hp_process_id = hpjr_process_id
+       AND hpjr_end < cp_run_date - (cp_maint/24)
+       AND hpjr_process_id = hpf_process_id
+       AND hpjr_job_run_seq = hpf_job_run_seq
+       AND cp_file_prefix||hpf_filename IN(SELECT * FROM TABLE(CAST(cp_files AS nm_max_varchar_tbl)))
+       AND hpf_file_id = nnf_hpf_file_id
+       AND (cp_ftp_configured = 'N'
+            OR nnf_ftp_success = 'Y')
+         ;
+    --
+    TYPE rm_file_tab IS TABLE OF get_files%ROWTYPE;
+    lt_rm_files  rm_file_tab;
+    --
+  BEGIN
+    --
+    hig_process_api.log_it(pi_message      => 'Starting File cleanup.'
+                          ,pi_summary_flag => 'Y');
+    /*
+    ||Get FTP Connections to clean up.
+    */
+    OPEN  get_ftp(c_full_export
+                 ,c_update_export);
+    FETCH get_ftp
+     BULK COLLECT
+     INTO lt_ftp_ids;
+    CLOSE get_ftp;
+    --
+    FOR i IN 1..lt_ftp_ids.COUNT LOOP
+      --
+      BEGIN
+        lv_ftp_configured := 'Y';
+        --
+        lr_ftp_details := get_ftp_details(pi_hft_id => lt_ftp_ids(i));
+        /*
+        ||Connect to the ftp server.
+        */
+        hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||lr_ftp_details.hostname||' as '||lr_ftp_details.username
+                              ,pi_summary_flag => 'N');
+        lv_conn := nm3ftp.login(p_host => lr_ftp_details.hostname
+                               ,p_port => lr_ftp_details.port
+                               ,p_user => lr_ftp_details.username
+                               ,p_pass => lr_ftp_details.password);
+        hig_process_api.log_it(pi_message      => 'FTP Connection established.'
+                              ,pi_summary_flag => 'N');
+        /*
+        ||List the files.
+        */
+        nm3ftp.list(p_conn    => lv_conn
+                   ,p_dir     => lr_ftp_details.out_dir
+                   ,p_list    => lt_ftp_files
+                   ,p_command => 'NLST');
+        --
+        FOR j IN 1..lt_ftp_files.COUNT LOOP
+          --
+          lt_files.EXTEND;
+          lt_files(j) := lt_ftp_files(j);
+          --
+        END LOOP;
+        /*
+        ||Get the list of files to remove.
+        */
+        OPEN  get_files(cp_full_export    => c_full_export
+                       ,cp_update_export  => c_update_export
+                       ,cp_run_date       => pi_run_date
+                       ,cp_maint          => g_ntismaint
+                       ,cp_files          => lt_files
+                       ,cp_ftp_configured => lv_ftp_configured
+                       ,cp_file_prefix    => lr_ftp_details.out_dir);
+        FETCH get_files
+         BULK COLLECT
+         INTO lt_rm_files;
+        CLOSE get_files;
+        /*
+        ||Remove the files.
+        */
+        FOR j IN 1..lt_rm_files.COUNT LOOP
+          --
+          hig_process_api.log_it(pi_message      => 'Removing file: '||lt_rm_files(j).hpf_filename
+                                ,pi_summary_flag => 'N');
+          --
+          nm3ftp.delete(p_conn => lv_conn
+                       ,p_file => lt_rm_files(j).hpf_filename);
+          --
+        END LOOP;
+        /*
+        ||Close FTP Connection.
+        */
+        nm3ftp.logout(p_conn => lv_conn);
+        utl_tcp.close_all_connections;
+        --
+        hig_process_api.log_it(pi_message      => 'FTP Connection Closed.'
+                              ,pi_summary_flag => 'N');
+        --
+      EXCEPTION
+        WHEN others
+         THEN
+            hig_process_api.log_it(pi_message      => 'Error Occured during FTP cleanup: '||SQLERRM
+                                  ,pi_summary_flag => 'N');
+            utl_tcp.close_all_connections;
+      END;
+      --
+    END LOOP;
+    /*
+    ||Reset the file list.
+    */
+    lt_files.DELETE;
+    /*
+    ||Get the Oracle Directories to clean.
+    */
+    OPEN  get_dir(c_full_export
+                 ,c_update_export);
+    FETCH get_dir
+     BULK COLLECT
+     INTO lt_dir;
+    CLOSE get_dir;
+    --
+    FOR i IN 1..lt_dir.COUNT LOOP
+      --
+      BEGIN
+        --
+        hig_process_api.log_it(pi_message      => 'Processing Oracle Directory '||lt_dir(i).dir_name
+                              ,pi_summary_flag => 'N');
+        /*
+        ||List the files in the directory.
+        */
+        lt_dir_files := nm3file.get_files_in_directory(pi_dir       => lt_dir(i).dir_path
+                                                      ,pi_extension => NULL);
+        --
+        FOR j IN 1..lt_dir_files.COUNT LOOP
+          --
+          lt_files.EXTEND;
+          lt_files(j) := lt_dir_files(j);
+          --
+        END LOOP;
+        /*
+        ||Get the list of files to remove.
+        */
+        OPEN  get_files(cp_full_export    => c_full_export
+                       ,cp_update_export  => c_update_export
+                       ,cp_run_date       => pi_run_date
+                       ,cp_maint          => g_ntismaint
+                       ,cp_files          => lt_files
+                       ,cp_ftp_configured => lv_ftp_configured
+                       ,cp_file_prefix    => NULL);
+        FETCH get_files
+         BULK COLLECT
+         INTO lt_rm_files;
+        CLOSE get_files;
+        /*
+        ||Remove the files.
+        */
+        FOR j IN 1..lt_rm_files.COUNT LOOP
+          --
+          hig_process_api.log_it(pi_message      => 'Removing file: '||lt_rm_files(j).hpf_filename
+                                ,pi_summary_flag => 'N');
+          --
+          utl_file.fremove(location => lt_rm_files(j).hpf_destination
+                          ,filename => lt_rm_files(j).hpf_filename);
+          --
+        END LOOP;
+        --
+      EXCEPTION
+        WHEN others
+         THEN
+            hig_process_api.log_it(pi_message      => 'Error Occured during Directory cleanup: '||SQLERRM
+                                  ,pi_summary_flag => 'N');
+      END;
+      --      
+    END LOOP;
+    --
+    hig_process_api.log_it(pi_message      => 'File cleanup complete.'
+                          ,pi_summary_flag => 'Y');
+    --
+  END cleanup_files;
+
+  --
+  -----------------------------------------------------------------------------
+  --
   PROCEDURE associate_file(pi_file IN hig_process_api.rec_temp_files)
     IS
     --
@@ -585,7 +845,7 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  PROCEDURE set_file_ftp_success(pi_filename IN VARCHAR2)
+  PROCEDURE set_file_ftp_success(pi_file_rec IN upload_files_rec)
     IS
     --
     lv_process_id  hig_processes.hp_process_id%TYPE := hig_process_api.get_current_process_id;
@@ -597,9 +857,9 @@ AS
        SET nnf_ftp_success = 'Y'
      WHERE nnf_hpf_file_id = (SELECT hpf_file_id
                                 FROM hig_process_files
-                               WHERE hpf_process_id = lv_process_id
-                                 AND hpf_job_run_seq = lv_run_id
-                                 AND hpf_filename = pi_filename)
+                               WHERE hpf_process_id = pi_file_rec.process_id
+                                 AND hpf_job_run_seq = pi_file_rec.run_id
+                                 AND hpf_filename = pi_file_rec.filename)
          ;
     --
   END set_file_ftp_success;
@@ -607,25 +867,23 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  PROCEDURE get_files_to_retry(po_files IN OUT hig_process_api.tab_temp_files)
+  PROCEDURE get_files_to_retry(po_files IN OUT upload_files_tab)
     IS
     --
-    TYPE files_rec IS RECORD(filename     hig_process_files.hpf_filename%TYPE
-                            ,destination  hig_directories.hdir_path%TYPE);
-    TYPE files_tab IS TABLE OF files_rec;
-    lt_files  files_tab;
+    lt_files  upload_files_tab;
     --
     lv_process_id  hig_processes.hp_process_id%TYPE := hig_process_api.get_current_process_id;
     lv_run_id      hig_process_job_runs.hpjr_job_run_seq%TYPE := hig_process_api.get_current_job_run_seq;
     --
   BEGIN
     --
-    SELECT hpf_filename
-          ,hdir_path
+    SELECT hp_process_id
+          ,hpjr_job_run_seq
+          ,hpf_filename
+          ,hpf_destination
       BULK COLLECT
       INTO lt_files
-      FROM hig_directories
-          ,nem_ntis_files
+      FROM nem_ntis_files
           ,hig_process_files
           ,hig_process_job_runs
           ,hig_processes
@@ -638,13 +896,11 @@ AS
        AND hpjr_job_run_seq = hpf_job_run_seq
        AND hpf_file_id = nnf_hpf_file_id
        AND nnf_ftp_success = 'N'
-       AND hpf_destination = hdir_name
          ;
     --
     FOR i IN 1..lt_files.COUNT LOOP
       --
-      po_files(po_files.COUNT+1).filename := lt_files(i).filename;
-      po_files(po_files.COUNT).destination := lt_files(i).destination;
+      po_files(po_files.COUNT+1) := lt_files(i);
       --
     END LOOP;
     --
@@ -657,16 +913,30 @@ AS
                         ,pi_files       IN hig_process_api.tab_temp_files)
     IS
     --
-    lt_files  hig_process_api.tab_temp_files := pi_files;
+    lt_files  upload_files_tab;
     --
     lr_conn_details  ftp_con_rec;
     --
-    lv_conn  utl_tcp.connection;
+    lv_conn        utl_tcp.connection;
+    lv_process_id  hig_processes.hp_process_id%TYPE := hig_process_api.get_current_process_id;
+    lv_run_id      hig_process_job_runs.hpjr_job_run_seq%TYPE := hig_process_api.get_current_job_run_seq;
     --
   BEGIN
     --
     IF pi_ftp_details.conn_id IS NOT NULL
      THEN
+        --
+        hig_process_api.log_it(pi_message      => 'Uploading files to FTP Server.'
+                              ,pi_summary_flag => 'Y');
+        --
+        FOR i IN 1..pi_files.COUNT LOOP
+          --
+          lt_files(lt_files.COUNT+1).process_id := lv_process_id;
+          lt_files(lt_files.COUNT).run_id := lv_run_id;
+          lt_files(lt_files.COUNT).filename := pi_files(i).filename;
+          lt_files(lt_files.COUNT).destination := pi_files(i).destination;
+          --
+        END LOOP;
         --
         get_files_to_retry(po_files => lt_files);
         --
@@ -676,13 +946,13 @@ AS
             ||Connect to the ftp server.
             */
             hig_process_api.log_it(pi_message      => 'Logging into FTP Server '||pi_ftp_details.hostname||' as '||pi_ftp_details.username
-                                  ,pi_summary_flag => 'Y');
+                                  ,pi_summary_flag => 'N');
             lv_conn := nm3ftp.login(p_host => pi_ftp_details.hostname
                                    ,p_port => pi_ftp_details.port
                                    ,p_user => pi_ftp_details.username
                                    ,p_pass => pi_ftp_details.password);
             hig_process_api.log_it(pi_message      => 'FTP Connection established '||lv_conn.remote_host
-                                  ,pi_summary_flag => 'Y');
+                                  ,pi_summary_flag => 'N');
             /*
             ||Upload the files.
             */
@@ -691,7 +961,7 @@ AS
               ||Upload the file.
               */
               hig_process_api.log_it(pi_message      => 'Uploading file to '||pi_ftp_details.out_dir||lt_files(i).filename
-                                    ,pi_summary_flag => 'Y');
+                                    ,pi_summary_flag => 'N');
               --
               nm3ftp.ascii(p_conn => lv_conn);
               --
@@ -705,11 +975,11 @@ AS
                            ,p_to   => pi_ftp_details.out_dir||lt_files(i).filename);
               --
               hig_process_api.log_it(pi_message      => 'File Uploaded.'
-                                    ,pi_summary_flag => 'Y');
+                                    ,pi_summary_flag => 'N');
               /*
               ||Update the file upload status.
               */
-              set_file_ftp_success(pi_filename => lt_files(i).filename);
+              set_file_ftp_success(pi_file_rec => lt_files(i));
               --
             END LOOP;
             /*
@@ -718,9 +988,12 @@ AS
             nm3ftp.logout(p_conn => lv_conn);
             --
             hig_process_api.log_it(pi_message      => 'FTP Connection Closed.'
-                                  ,pi_summary_flag => 'Y');
+                                  ,pi_summary_flag => 'N');
             --
         END IF;
+        --
+        hig_process_api.log_it(pi_message      => 'File upload complete.'
+                              ,pi_summary_flag => 'Y');
         --
     END IF;
     --
@@ -1285,7 +1558,7 @@ AS
                                 ,pi_file_data IN hig_process_api.rec_temp_files)
     IS
     --
-    lt_output            nm3type.tab_varchar32767;
+    lt_output  nm3type.tab_varchar32767;
     --
   BEGIN
     --
@@ -1294,9 +1567,9 @@ AS
     hig_process_api.log_it(pi_message      => 'Writing Event file '||pi_file_data.filename
                           ,pi_summary_flag => 'Y');
     --
-    nm3file.write_file(location     => pi_file_data.destination
-                      ,filename     => pi_file_data.filename
-                      ,all_lines    => lt_output);
+    nm3file.write_file(location  => pi_file_data.destination
+                      ,filename  => pi_file_data.filename
+                      ,all_lines => lt_output);
     --
     associate_file(pi_file => pi_file_data);
     --
@@ -1312,7 +1585,7 @@ AS
     --
     TYPE cancelled_event_rec IS RECORD(nevt_id         nm_inv_items_all.iit_ne_id%TYPE
                                       ,event_number    NUMBER
-                                      ,version         NUMBER
+                                      ,version_number  NUMBER
                                       ,cancelled_date  DATE
                                       ,reason          VARCHAR2(100));
     TYPE cancelled_event_tab IS TABLE OF cancelled_event_rec;
@@ -1403,7 +1676,7 @@ AS
    ||CHR(10)||'                 AND naex2.naex_na_id = (SELECT na_id'
    ||CHR(10)||'                                           FROM nem_actions na2'
    ||CHR(10)||'                                          WHERE na2.na_label = ''Publish'')'
-   ||CHR(10)||'                 AND naex2.naex_execution_date < NVL(nnl_date_cancel_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')))'
+   ||CHR(10)||'                 AND naex2.naex_execution_date > NVL(nnl_date_cancel_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')))'
    ||CHR(10)||'   AND iit.iit_ne_id = naex_nevt_id'
    ||CHR(10)||'   AND naex_na_id = (SELECT na_id'
    ||CHR(10)||'                       FROM nem_actions'
@@ -1433,6 +1706,12 @@ AS
       LIMIT 1000;
       --
       FOR i IN 1..lt_events.COUNT LOOP
+        --
+        hig_process_api.log_it(pi_message      => 'Processing Event '
+                                                  ||nem_util.get_formatted_event_number(pi_event_number   => lt_events(i).event_number
+                                                                                       ,pi_version_number => lt_events(i).version_number)
+                              ,pi_summary_flag => 'N');
+
         /*
         ||Open the clos tag.
         */
@@ -1451,7 +1730,7 @@ AS
                 ,pi_tab    => lt_output);
         --
         add_line(pi_text   => gen_tags(pi_element => 'version'
-                                      ,pi_data    => lt_events(i).version)
+                                      ,pi_data    => lt_events(i).version_number)
                 ,pi_indent => 4
                 ,pi_tab    => lt_output);
         --
@@ -1614,7 +1893,7 @@ AS
                                      ||' = ''PUBLISHED'''
                ||CHR(10)||'         AND ('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'ACTUAL_START_DATE')||' IS NOT NULL'
                ||CHR(10)||'              OR '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'PLANNED_START_DATE')||' <= :run_date + :windowdays)'
-               ||CHR(10)||'         AND iit_date_modified BETWEEN :last_run_date AND :run_date'
+               ||CHR(10)||'         AND iit_date_modified > NVL(nnl_date_last_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY''))'
                ||CHR(10)||'         AND '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')||' IS NULL)'
                ||CHR(10)||'       OR ('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')
                                        ||' = ''COMPLETED'''
@@ -1628,9 +1907,9 @@ AS
     --
     IF gt_group_types.COUNT > 0
      THEN
-        OPEN c_events FOR lv_sql USING gt_group_types,pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date,pi_prev_run_date,pi_run_date;
+        OPEN c_events FOR lv_sql USING gt_group_types,pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date;
     ELSE
-        OPEN c_events FOR lv_sql USING pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date,pi_prev_run_date,pi_run_date;
+        OPEN c_events FOR lv_sql USING pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date;
     END IF;
     --
     BEGIN
@@ -1691,6 +1970,10 @@ AS
     */
     upload_files(pi_ftp_details => pi_ftp_details
                 ,pi_files       => lt_files);
+    /*
+    ||Clean up any old files.
+    */
+    cleanup_files(pi_run_date => pi_run_date);
     --
   END create_update_files;
 
@@ -1788,6 +2071,8 @@ BEGIN
   set_ntiswindow;
   --
   set_lvms;
+  --
+  set_ntismaint;
   --
 END nem_ntis_interface;
 /
