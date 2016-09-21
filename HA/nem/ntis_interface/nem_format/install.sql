@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.3   21 Sep 2016 11:48:22   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.4   21 Sep 2016 16:58:54   Mike.Huitson  $
 --       Module Name      : $Workfile:   install.sql  $
---       Date into PVCS   : $Date:   21 Sep 2016 11:48:22  $
---       Date fetched Out : $Modtime:   20 Sep 2016 17:18:06  $
---       Version          : $Revision:   1.3  $
+--       Date into PVCS   : $Date:   21 Sep 2016 16:58:54  $
+--       Date fetched Out : $Modtime:   21 Sep 2016 16:58:04  $
+--       Version          : $Revision:   1.4  $
 -------------------------------------------------------------------------
 --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
 -------------------------------------------------------------------------
@@ -382,7 +382,7 @@ SELECT
         'NTISWINDOW'
        ,'NEM'
        ,'NTIS Export Window'
-       ,'The number of days in the future to to look for Events to include in the NTIS Interface. I.e. Events will be included if they have already started or are planned to start within the specified number of days.'
+       ,'The number of days in the future to look for Events to include in the NTIS Interface i.e. Events will be included if they have already started or are planned to start within the specified number of days.'
        ,''
        ,'NUMBER'
        ,'N'
