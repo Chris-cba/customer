@@ -1,3 +1,12 @@
+--   PVCS Identifiers :-
+--
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nm_inv_items_all_dcm.trg-arc   1.1   Sep 22 2016 13:39:08   Peter.Bibby  $
+--       Module Name      : $Workfile:   nm_inv_items_all_dcm.trg  $
+--       Date into PVCS   : $Date:   Sep 22 2016 13:39:08  $
+--       Date fetched Out : $Modtime:   Sep 22 2016 13:38:00  $
+--       PVCS Version     : $Revision:   1.1  $
+--       Based on SCCS version :  
+
 /*
 ||Triggers for Published/Completed Event
 */
@@ -15,25 +24,9 @@ DECLARE
     lv_error_flag    VARCHAR2(1) := 'N';
     lv_error_text    nm3type.max_varchar2;   
     lv_naex_id       nem_action_executions.naex_id%TYPE;
------------------------------------------------------------------------------
---
---   PVCS Identifiers :-
---
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nm_inv_items_all_dcm.trg-arc   1.0   Sep 22 2016 13:34:36   Peter.Bibby  $
---       Module Name      : $Workfile:   nm_inv_items_all_dcm.trg  $
---       Date into PVCS   : $Date:   Sep 22 2016 13:34:36  $
---       Date fetched Out : $Modtime:   Sep 22 2016 13:33:14  $
---       Version          : $Revision:   1.0  $
---
---   Inserts a def_movements record when defect status or priority
---   changes.
---
------------------------------------------------------------------------------
---    Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
------------------------------------------------------------------------------
-  --
-  lt_ids       nem_actions_api.object_ids_tab;  
-  --
+    --
+    lt_ids       nem_actions_api.object_ids_tab;  
+    --
 BEGIN
   IF :new.iit_inv_type = 'NEVT' THEN
     IF :new.iit_chr_attrib28 != :old.iit_chr_attrib28 
