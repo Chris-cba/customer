@@ -1,11 +1,16 @@
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nm_inv_items_all_dcm.trg-arc   1.1   Sep 22 2016 13:39:08   Peter.Bibby  $
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nm_inv_items_all_dcm.trg-arc   1.2   Sep 22 2016 13:44:24   Peter.Bibby  $
 --       Module Name      : $Workfile:   nm_inv_items_all_dcm.trg  $
---       Date into PVCS   : $Date:   Sep 22 2016 13:39:08  $
---       Date fetched Out : $Modtime:   Sep 22 2016 13:38:00  $
---       PVCS Version     : $Revision:   1.1  $
+--       Date into PVCS   : $Date:   Sep 22 2016 13:44:24  $
+--       Date fetched Out : $Modtime:   Sep 22 2016 13:43:04  $
+--       PVCS Version     : $Revision:   1.2  $
 --       Based on SCCS version :  
+-------------------------------------------------------------------------
+--   Copyright (c) 2016 Bentley Systems Incorporated. All rights reserved.
+-------------------------------------------------------------------------
+-- 
+
 
 /*
 ||Triggers for Published/Completed Event

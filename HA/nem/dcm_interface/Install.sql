@@ -1,10 +1,15 @@
 ﻿--   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/Install.sql-arc   1.3   Sep 22 2016 13:39:08   Peter.Bibby  $
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/Install.sql-arc   1.4   Sep 22 2016 13:44:24   Peter.Bibby  $
 --       Module Name      : $Workfile:   Install.sql  $
---       Date into PVCS   : $Date:   Sep 22 2016 13:39:08  $
---       Date fetched Out : $Modtime:   Sep 22 2016 13:38:56  $
---       PVCS Version     : $Revision:   1.3  $ 
+--       Date into PVCS   : $Date:   Sep 22 2016 13:44:24  $
+--       Date fetched Out : $Modtime:   Sep 22 2016 13:42:50  $
+--       PVCS Version     : $Revision:   1.4  $ 
+-------------------------------------------------------------------------
+--   Copyright (c) 2016 Bentley Systems Incorporated. All rights reserved.
+-------------------------------------------------------------------------
+-- 
+
 /*
 ||Install script for all table and metadata for DCM Interface
 */
