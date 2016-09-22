@@ -1,6 +1,5 @@
 /*
-||PB TODO do i include packages for actions or not?
-||FTP CONNECTIONS and TYPES INFORMATION
+||Install script for all table and metadata for DCM Interface
 */
 /*
 ||Directories
@@ -77,9 +76,12 @@ CREATE TABLE nem_dcm_queue
 ,dcmq_priority NUMBER(3) DEFAULT 100
 ,dcmq_nevt_id NUMBER(12)
 ,dcmq_naex_id NUMBER(12)
+,dcmq_nig_id NUMBER(12)
+,dcmq_file_count NUMBER(12)
+,dcmq_filename VARCHAR2(255)
 ,dcmq_file_success VARCHAR(1) DEFAULT 'N'
 ,dcmq_ftp_success VARCHAR(1) DEFAULT 'N'
-,dcmq_complete VARCHAR(1) DEFAULT 'N'
+,dcmq_results_imported  VARCHAR(1) DEFAULT 'N'
 ,dcmq_notes VARCHAR2(2000)
 )
 /
@@ -92,6 +94,12 @@ ALTER TABLE nem_dcm_queue
  ADD (CONSTRAINT dcmq_fk_nevt FOREIGN KEY 
   (dcmq_nevt_id) REFERENCES nem_events
   (nevt_id))
+/
+--
+ALTER TABLE nem_dcm_queue 
+ ADD (CONSTRAINT dcmq_fk_nig FOREIGN KEY 
+  (dcmq_nig_id) REFERENCES nem_impact_groups
+  (nig_id))
 /
 --
 ALTER TABLE nem_dcm_queue 
@@ -114,7 +122,35 @@ ALTER TABLE nem_dcm_speed_limit_map
 ALTER TABLE nem_dcm_speed_limit_map
  ADD (CONSTRAINT dcm_imp_grp_speed_limit_uk UNIQUE (dcm_rank))
 /
+CREATE TABLE nem_dcm_sect_fun_map
+(nem_code      VARCHAR2(30) NOT NULL
+,dcm_meaning  VARCHAR2(80) NOT NULL)
+/
 
+ALTER TABLE nem_dcm_sect_fun_map
+ ADD (CONSTRAINT dcm_imp_grp_sect_fun_pk PRIMARY KEY 
+  (nem_code))
+/
+CREATE TABLE nem_dcm_single_dual_map
+(nem_code      VARCHAR2(30) NOT NULL
+,dcm_meaning  VARCHAR2(80) NOT NULL)
+/
+
+ALTER TABLE nem_dcm_single_dual_map
+ ADD (CONSTRAINT dcm_imp_grp_single_dual_pk PRIMARY KEY 
+  (nem_code))
+/
+
+
+CREATE TABLE nem_dcm_environment_map
+(nem_code      VARCHAR2(30) NOT NULL
+,dcm_meaning  VARCHAR2(80) NOT NULL)
+/
+
+ALTER TABLE nem_dcm_environment_map
+ ADD (CONSTRAINT dcm_imp_grp_environment_pk PRIMARY KEY 
+  (nem_code))
+/
 CREATE TABLE nem_dcm_lane_status_map
 (nem_code      VARCHAR2(30) NOT NULL
 ,dcm_meaning  VARCHAR2(80))
@@ -125,7 +161,8 @@ ALTER TABLE nem_dcm_lane_status_map
   (nem_code))
 /
 CREATE TABLE nem_dcm_diversion_quality_map
-(dcm_meaning  VARCHAR2(80) NOT NULL
+(nem_code VARCHAR2(30) NOT NULL
+,dcm_meaning  VARCHAR2(80) NOT NULL
 ,dcm_rank     NUMBER(3)    NOT NULL)
 /
 
@@ -184,25 +221,66 @@ INSERT INTO nem_dcm_lane_status_map (nem_code,dcm_meaning) SELECT 'TEMPORARY','5
 INSERT INTO nem_dcm_lane_status_map (nem_code,dcm_meaning) SELECT 'NARROW','2' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_lane_status_map WHERE nem_code = 'NARROW')
 /
 /*
-||
+||Diversion Quality
 */
-INSERT INTO nem_dcm_diversion_quality_map (dcm_meaning,dcm_rank) SELECT 'N/S',1 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE dcm_meaning = 'N/S')
+INSERT INTO nem_dcm_diversion_quality_map (nem_code, dcm_meaning,dcm_rank) SELECT 'N/S','N/S',1 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE nem_code = 'N/S')
 /
 
-INSERT INTO nem_dcm_diversion_quality_map (dcm_meaning,dcm_rank) SELECT 'POOR',2 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE dcm_meaning = 'POOR')
+INSERT INTO nem_dcm_diversion_quality_map (nem_code, dcm_meaning,dcm_rank) SELECT 'POOR','POOR',2 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE nem_code = 'POOR')
 /
 
-INSERT INTO nem_dcm_diversion_quality_map (dcm_meaning,dcm_rank) SELECT 'AVER',3 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE dcm_meaning = 'AVER')
+INSERT INTO nem_dcm_diversion_quality_map (nem_code, dcm_meaning,dcm_rank) SELECT 'AVER','AVER',3 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE nem_code = 'AVER')
 /
 
-INSERT INTO nem_dcm_diversion_quality_map (dcm_meaning,dcm_rank) SELECT 'GOOD',4 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE dcm_meaning = 'GOOD')
+INSERT INTO nem_dcm_diversion_quality_map (nem_code, dcm_meaning,dcm_rank) SELECT 'GOOD','GOOD',4 FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_diversion_quality_map WHERE nem_code = 'GOOD')
 /
+/*
+||Section Function
+*/
+INSERT INTO nem_dcm_sect_fun_map (nem_code, dcm_meaning) SELECT 'MAIN','MAIN' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_sect_fun_map WHERE dcm_meaning = 'MAIN')
+/
+
+INSERT INTO nem_dcm_sect_fun_map (nem_code, dcm_meaning) SELECT 'SLIP','SLIP' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_sect_fun_map WHERE dcm_meaning = 'SLIP')
+/
+
+INSERT INTO nem_dcm_sect_fun_map (nem_code, dcm_meaning) SELECT 'RBT','RBT' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_sect_fun_map WHERE dcm_meaning = 'RBT')
+/
+
+INSERT INTO nem_dcm_sect_fun_map (nem_code, dcm_meaning) SELECT 'OB','OXB' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_sect_fun_map WHERE dcm_meaning = 'OXB')
+/
+/*
+||Single or Dual
+*/
+INSERT INTO nem_dcm_single_dual_map (nem_code, dcm_meaning) SELECT 'DUAL','DUAL' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_single_dual_map WHERE dcm_meaning = 'DUAL')
+/
+
+INSERT INTO nem_dcm_single_dual_map (nem_code, dcm_meaning) SELECT 'S2W','S2W' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_single_dual_map WHERE dcm_meaning = 'S2W')
+/
+
+INSERT INTO nem_dcm_single_dual_map (nem_code, dcm_meaning) SELECT 'S1W','S1W' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_single_dual_map WHERE dcm_meaning = 'S1W')
+/
+
+INSERT INTO nem_dcm_single_dual_map (nem_code, dcm_meaning) SELECT 'GOOD','GOOD' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_single_dual_map WHERE dcm_meaning = 'GOOD')
+/
+/*
+||Environment
+*/
+INSERT INTO nem_dcm_environment_map (nem_code, dcm_meaning) SELECT 'R','R' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_environment_map WHERE dcm_meaning = 'R')
+/
+
+INSERT INTO nem_dcm_environment_map (nem_code, dcm_meaning) SELECT 'U','U' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_environment_map WHERE dcm_meaning = 'U')
+/
+
+INSERT INTO nem_dcm_environment_map (nem_code, dcm_meaning) SELECT 'S','S' FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM nem_dcm_environment_map WHERE dcm_meaning = 'S')
+/
+
 /*
 ||Tables for Import of DCMOUTPUT File.
 */
 CREATE TABLE nem_dcm_header
 (dcmh_id                NUMBER NOT NULL
 ,dcmh_nevt_id           NUMBER
+,dcmh_nig_id            NUMBER
 ,dcmh_naex_id           NUMBER
 ,dcmh_calc_or_estimate  VARCHAR(1)
 ,dcmh_number_of_errors  NUMBER(2) 
@@ -218,6 +296,12 @@ ALTER TABLE nem_dcm_header
  ADD (CONSTRAINT DCMH_FK_NEVT FOREIGN KEY 
   (dcmh_nevt_id) REFERENCES nem_events
   (nevt_id))
+/
+--
+ALTER TABLE nem_dcm_header 
+ ADD (CONSTRAINT DCMH_FK_NIG FOREIGN KEY 
+  (dcmh_nig_id) REFERENCES nem_impact_groups
+  (nig_id))
 /
 --
 ALTER TABLE nem_dcm_header 
@@ -332,6 +416,55 @@ CREATE SEQUENCE DCMD_ID_SEQ
  NOCACHE
 /
 /*
+||FTP Connections
+*/
+DECLARE
+  lv_hft_id NUMBER;
+BEGIN
+  --
+  BEGIN
+    SELECT hft_id
+      INTO lv_hft_id 
+      FROM hig_ftp_types 
+     WHERE hft_type = 'NEM_DCM_RESULTS_FILE';
+  EXCEPTION
+   WHEN no_data_found THEN
+     lv_hft_id := HFT_ID_SEQ.NEXTVAL;
+     --
+     INSERT
+      INTO hig_ftp_types(hft_id
+                        ,hft_type
+                        ,hft_descr
+                        )
+      SELECT lv_hft_id
+             ,'NEM_DCM_RESULTS_FILE'
+             ,'NEM DCM Results Location'
+      FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM hig_ftp_types WHERE hft_id = lv_hft_id)
+     ;
+  END;
+  --
+  BEGIN
+    SELECT hft_id
+      INTO lv_hft_id 
+      FROM hig_ftp_types 
+     WHERE hft_type = 'NEM_DCM_EXPORT_FILE';
+  EXCEPTION
+   WHEN no_data_found THEN
+     lv_hft_id := HFT_ID_SEQ.NEXTVAL;
+     INSERT
+      INTO hig_ftp_types(hft_id
+                        ,hft_type
+                        ,hft_descr
+                        )
+      SELECT lv_hft_id
+             ,'NEM_DCM_EXPORT_FILE'
+             ,'NEM DCM Export File Location'
+      FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM hig_ftp_types WHERE hft_id = lv_hft_id)
+     ;
+  END;
+END;
+/   
+/*
 ||Process Framework for Export
 */
 DECLARE
@@ -353,16 +486,15 @@ BEGIN
                             hpt_what_to_call,
                             hpt_restartable,
                             hpt_see_in_hig2510,
-                            hpt_polling_enabled, 
-                            hpt_polling_ftp_type_id) 
+                            hpt_polling_enabled
+                            ) 
      SELECT lv_process_id,
             'NEM DCM Export',
             'Exports events from queue into DCM Format',
             'nem_dcm_interface.export_dcm_queue;',
-            'N',
             'Y',
             'Y',
-            1
+            'N'
      FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM hig_process_types WHERE hpt_process_type_id = lv_process_id)
     ;
     INSERT 
@@ -401,7 +533,7 @@ BEGIN
             null,
             null,
             null,
-            'NEM DCM RESULTS FILE',
+            'NEM_DCM_EXPORT',
             'ORACLE_DIRECTORY'
      FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM hig_process_type_files WHERE hptf_file_type_id = lv_process_id)
     ;
@@ -423,7 +555,7 @@ BEGIN
     ;  
   END;
 END;
-/                                    
+/                                 
 /*
 ||Process Framework for import
 */
@@ -454,8 +586,8 @@ BEGIN
             'nem_dcm_interface.import_dcm_results;',
             'N',
             'Y',
-            'N',
-            1
+            'Y',
+            (select hft_id from hig_ftp_types where hft_type = 'NEM_DCM_RESULTS_FILE')
      FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM hig_process_types WHERE hpt_process_type_id = lv_process_id)
     ;
     INSERT 
@@ -649,61 +781,9 @@ EXCEPTION
       RAISE;
 END;
 /
-
-/*
-||
-*/
-DECLARE
-  lv_hft_id NUMBER;
-BEGIN
-  --
-  BEGIN
-    SELECT hft_id
-      INTO lv_hft_id 
-      FROM hig_ftp_types 
-     WHERE hft_type = 'NEM_DCM_RESULTS_FILE';
-  EXCEPTION
-   WHEN no_data_found THEN
-     lv_hft_id := HFT_ID_SEQ.NEXTVAL;
-     --
-     INSERT
-      INTO hig_ftp_types(hft_id
-                        ,hft_type
-                        ,hft_descr
-                        )
-      SELECT lv_hft_id
-             ,'NEM_DCM_RESULTS_FILE'
-             ,'NEM DCM Results Location'
-      FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM hig_ftp_types WHERE hft_id = lv_hft_id)
-     ;
-  END;
-  --
-  BEGIN
-    SELECT hft_id
-      INTO lv_hft_id 
-      FROM hig_ftp_types 
-     WHERE hft_type = 'NEM_DCM_EXPORT_FILE';
-  EXCEPTION
-   WHEN no_data_found THEN
-     lv_hft_id := HFT_ID_SEQ.NEXTVAL;
-     INSERT
-      INTO hig_ftp_types(hft_id
-                        ,hft_type
-                        ,hft_descr
-                        )
-      SELECT lv_hft_id
-             ,'NEM_DCM_EXPORT_FILE'
-             ,'NEM DCM Export File Location'
-      FROM DUAL WHERE NOT EXISTS(SELECT 'x' FROM hig_ftp_types WHERE hft_id = lv_hft_id)
-     ;
-  END;
-END;
-/
 /*
 ||Triggers for Published/Completed Event
 */
-
-DROP TRIGGER HIGHWAYS.nm_inv_items_all_dcm;
 
 CREATE OR REPLACE TRIGGER HIGHWAYS.nm_inv_items_all_dcm
 AFTER UPDATE
@@ -722,11 +802,11 @@ DECLARE
 --
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/Install.sql-arc   1.0   Aug 18 2016 12:08:10   Peter.Bibby  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/Install.sql-arc   1.1   Sep 22 2016 13:18:04   Peter.Bibby  $
 --       Module Name      : $Workfile:   Install.sql  $
---       Date into PVCS   : $Date:   Aug 18 2016 12:08:10  $
---       Date fetched Out : $Modtime:   Aug 18 2016 09:48:06  $
---       Version          : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Sep 22 2016 13:18:04  $
+--       Date fetched Out : $Modtime:   Sep 22 2016 11:32:48  $
+--       Version          : $Revision:   1.1  $
 --
 --   Inserts a def_movements record when defect status or priority
 --   changes.

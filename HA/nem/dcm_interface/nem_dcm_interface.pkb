@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_interface.pkb-arc   1.1   Aug 18 2016 14:22:32   Peter.Bibby  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_interface.pkb-arc   1.2   Sep 22 2016 13:18:04   Peter.Bibby  $
   --       Module Name      : $Workfile:   nem_dcm_interface.pkb  $
-  --       Date into PVCS   : $Date:   Aug 18 2016 14:22:32  $
-  --       Date fetched Out : $Modtime:   Aug 18 2016 14:03:10  $
-  --       Version          : $Revision:   1.1  $
+  --       Date into PVCS   : $Date:   Sep 22 2016 13:18:04  $
+  --       Date fetched Out : $Modtime:   Sep 22 2016 12:03:14  $
+  --       Version          : $Revision:   1.2  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.2  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_dcm_interface';
   --
   c_impact_group_level  CONSTANT PLS_INTEGER := 2;
@@ -33,6 +33,15 @@ AS
   --
   TYPE diversion_quality_map_tab IS TABLE OF nem_dcm_diversion_quality_map%ROWTYPE INDEX BY BINARY_INTEGER;
   g_diversion_quality_map  diversion_quality_map_tab;
+  --
+  TYPE sect_fun_map_tab IS TABLE OF nem_dcm_sect_fun_map%ROWTYPE INDEX BY BINARY_INTEGER;
+  g_sect_fun_map  sect_fun_map_tab;
+  --
+  TYPE single_or_dual_map_tab IS TABLE OF nem_dcm_single_dual_map%ROWTYPE INDEX BY BINARY_INTEGER;
+  g_single_or_dual_map  single_or_dual_map_tab;
+  --
+  TYPE environment_map_tab IS TABLE OF nem_dcm_environment_map%ROWTYPE INDEX BY BINARY_INTEGER;
+  g_environment_map  environment_map_tab;  
   --  
   TYPE asset_types IS TABLE OF nm_inv_types_all.nit_inv_type%TYPE INDEX BY BINARY_INTEGER;
   g_asset_types_tab  asset_types;
@@ -161,6 +170,11 @@ AS
                            ,nigs_planned_enddate nem_impact_group_schedules.nigs_planned_enddate%TYPE
                            ,nigs_actual_enddate nem_impact_group_schedules.nigs_actual_enddate%TYPE);
   TYPE nigs_diary_tab IS TABLE OF nigs_diary_rec INDEX BY BINARY_INTEGER;
+  --
+  TYPE diaries_rec IS RECORD(startdate nem_impact_group_schedules.nigs_planned_startdate%TYPE
+                            ,enddate nem_impact_group_schedules.nigs_planned_startdate%TYPE
+                            ,nigname nem_impact_groups.nig_name%TYPE);
+  TYPE diaries_tab IS TABLE OF diaries_rec INDEX BY BINARY_INTEGER; 
   --
   -----------------------------------------------------------------------------
   --
@@ -457,7 +471,25 @@ AS
       BULK COLLECT
       INTO g_diversion_quality_map
       FROM nem_dcm_diversion_quality_map
-         ;   
+         ;
+    --
+    SELECT *
+      BULK COLLECT
+      INTO g_sect_fun_map
+      FROM nem_dcm_sect_fun_map
+         ;
+    --
+    SELECT *
+      BULK COLLECT
+      INTO g_single_or_dual_map
+      FROM nem_dcm_single_dual_map
+         ;
+    --
+    SELECT *
+      BULK COLLECT
+      INTO g_environment_map
+      FROM nem_dcm_environment_map
+         ;                 
     --         
     g_asset_types_tab(1) := 'DIQU';
     g_asset_types_tab(2) := 'SPEE';
@@ -850,12 +882,14 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  PROCEDURE update_queue_file_success(pi_dcmq_id    IN NUMBER)
+  PROCEDURE update_queue_file_success(pi_dcmq_id    IN NUMBER
+                                     ,pi_dcmq_filename nem_dcm_queue.dcmq_filename%TYPE)
     IS
   BEGIN  
     --
     UPDATE nem_dcm_queue
        SET dcmq_file_success = 'Y'
+          ,dcmq_filename = pi_dcmq_filename
      WHERE dcmq_id = pi_dcmq_id;
     --
   END update_queue_file_success; 
@@ -870,7 +904,7 @@ AS
        SET dcmq_ftp_success = 'Y'
      WHERE dcmq_id = pi_dcmq_id;
     --
-  END update_queue_ftp_success;  
+  END update_queue_ftp_success;    
   --
   -----------------------------------------------------------------------------
   --
@@ -884,12 +918,12 @@ AS
     SELECT dcm_rank
       INTO lv_current_rank
       FROM nem_dcm_diversion_quality_map
-     WHERE dcm_meaning = pi_diversion_current;
+     WHERE nem_code = pi_diversion_current;
     --
     SELECT dcm_rank
       INTO lv_new_rank
       FROM nem_dcm_diversion_quality_map
-     WHERE dcm_meaning = pi_diversion_new;    
+     WHERE nem_code = pi_diversion_new;    
     --
     IF lv_new_rank < lv_current_rank THEN
       pi_diversion_current := pi_diversion_new;
@@ -905,29 +939,35 @@ AS
       lv_execution_id   nem_action_executions.naex_id%TYPE;
       lv_error_flag nm3type.max_varchar2;
       lv_error_text       nm3type.max_varchar2;
+      lv_cnt              NUMBER;
       --
   BEGIN  
     --
-   
-    SELECT naex_summary_result
-      INTO lv_summary_result
-      FROM nem_action_executions
-     WHERE naex_id = pi_dcmq.dcmq_naex_id; 
-    --     
-    lv_execution_id := nem_execution_api.start_execution(pi_parent_execution_id => pi_dcmq.dcmq_naex_id);
-    --      
-    nem_execution_api.update_action_executions(pi_naex_id                => pi_dcmq.dcmq_naex_id
-                                              ,pi_old_success            => 'Yes'
-                                              ,pi_new_success            => 'Yes'
-                                              ,pi_old_summary_result     => lv_summary_result
-                                              ,pi_new_summary_result     => 'Submitted to DCM, awaiting results'
-                                              ,pi_commit                 => 'Y'
-                                              ,po_error_flag             => lv_error_flag
-                                              ,po_error_text             => lv_error_text);       
+    SELECT count(dcmq_nig_id)
+      INTO lv_cnt
+      FROM nem_dcm_queue
+     WHERE dcmq_naex_id = pi_dcmq.dcmq_naex_id
+       AND (dcmq_file_success = 'Y' OR dcmq_ftp_success = 'Y'); 
     --
-    DELETE FROM  nem_dcm_queue
-     WHERE dcmq_id = pi_dcmq.dcmq_id; 
-    --
+    IF lv_cnt = pi_dcmq.dcmq_file_count THEN
+      SELECT naex_summary_result
+        INTO lv_summary_result
+        FROM nem_action_executions
+       WHERE naex_id = pi_dcmq.dcmq_naex_id; 
+      --     
+      lv_execution_id := nem_execution_api.start_execution(pi_parent_execution_id => pi_dcmq.dcmq_naex_id);
+      --      
+      nem_execution_api.update_action_executions(pi_naex_id                => pi_dcmq.dcmq_naex_id
+                                                ,pi_old_success            => 'Yes'
+                                                ,pi_new_success            => 'Yes'
+                                                ,pi_old_summary_result     => lv_summary_result
+                                                ,pi_new_summary_result     => 'Submitted to DCM, awaiting results'
+                                                ,pi_commit                 => 'Y'
+                                                ,po_error_flag             => lv_error_flag
+                                                ,po_error_text             => lv_error_text);       
+      --
+    END IF;       
+      --
   EXCEPTION
     WHEN others THEN
       raise_application_error(-20001,'Unable to match DCM Results with an Action:'||pi_dcmq.dcmq_naex_id);
@@ -1037,6 +1077,118 @@ AS
   --
   -----------------------------------------------------------------------------
   --
+  FUNCTION get_section_function(pi_nem_code IN nem_dcm_sect_fun_map.nem_code%TYPE)
+    RETURN nem_dcm_sect_fun_map.dcm_meaning%TYPE IS
+    --
+    lv_retval  nem_dcm_sect_fun_map.dcm_meaning%TYPE;
+    --
+  BEGIN
+    --
+    FOR i IN 1..g_sect_fun_map.COUNT LOOP
+      --
+      IF g_sect_fun_map(i).nem_code = pi_nem_code
+       THEN
+          lv_retval := g_sect_fun_map(i).dcm_meaning;
+          EXIT;
+      END IF;
+      --
+    END LOOP;
+    --
+    IF lv_retval IS NULL
+     THEN
+        raise_application_error(-20001,'Unable to translate NEM Section Function ['||pi_nem_code||'] to an DCM value, please add a valid translation to the table NEM_DCM_SECT_FUN_MAP.');
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END get_section_function;  
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_single_dual(pi_nem_code IN nem_dcm_single_dual_map.nem_code%TYPE)
+    RETURN nem_dcm_single_dual_map.dcm_meaning%TYPE IS
+    --
+    lv_retval  nem_dcm_single_dual_map.dcm_meaning%TYPE;
+    --
+  BEGIN
+    --
+    FOR i IN 1..g_single_or_dual_map.COUNT LOOP
+      --
+      IF g_single_or_dual_map(i).nem_code = pi_nem_code
+       THEN
+          lv_retval := g_single_or_dual_map(i).dcm_meaning;
+          EXIT;
+      END IF;
+      --
+    END LOOP;
+    --
+    IF lv_retval IS NULL
+     THEN
+        raise_application_error(-20001,'Unable to translate NEM Single or Dual Code ['||pi_nem_code||'] to an DCM value, please add a valid translation to the table NEM_DCM_SINGLE_DUAL_MAP.');
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END get_single_dual;    
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_environment(pi_nem_code IN nem_dcm_environment_map.nem_code%TYPE)
+    RETURN nem_dcm_environment_map.dcm_meaning%TYPE IS
+    --
+    lv_retval  nem_dcm_environment_map.dcm_meaning%TYPE;
+    --
+  BEGIN
+    --
+    FOR i IN 1..g_environment_map.COUNT LOOP
+      --
+      IF g_environment_map(i).nem_code = pi_nem_code
+       THEN
+          lv_retval := g_environment_map(i).dcm_meaning;
+          EXIT;
+      END IF;
+      --
+    END LOOP;
+    --
+    IF lv_retval IS NULL
+     THEN
+        raise_application_error(-20001,'Unable to translate NEM Environment Code ['||pi_nem_code||'] to an DCM value, please add a valid translation to the table NEM_DCM_ENVIRONMENT_MAP.');
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END get_environment;    
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_diversion_quality(pi_nem_code IN NEM_DCM_DIVERSION_QUALITY_MAP.nem_code%TYPE)
+    RETURN NEM_DCM_DIVERSION_QUALITY_MAP.dcm_meaning%TYPE IS
+    --
+    lv_retval  NEM_DCM_DIVERSION_QUALITY_MAP.dcm_meaning%TYPE;
+    --
+  BEGIN
+    --
+    FOR i IN 1..g_diversion_quality_map.COUNT LOOP
+      --
+      IF g_diversion_quality_map(i).nem_code = pi_nem_code
+       THEN
+          lv_retval := g_diversion_quality_map(i).dcm_meaning;
+          EXIT;
+      END IF;
+      --
+    END LOOP;
+    --
+    IF lv_retval IS NULL
+     THEN
+        raise_application_error(-20001,'Unable to translate NEM Diversion Quality Code ['||pi_nem_code||'] to an DCM value, please add a valid translation to the table NEM_DCM_DIVERSION_QUALITY_MAP.');
+    END IF;
+    --
+    RETURN lv_retval;
+    --
+  END get_diversion_quality;      
+  --
+  -----------------------------------------------------------------------------
+  --
   FUNCTION get_lane_status(pi_nem_code IN nem_dcm_lane_status_map.nem_code%TYPE)
     RETURN nem_dcm_lane_status_map.dcm_meaning%TYPE IS
     --
@@ -1065,14 +1217,15 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  FUNCTION get_event_in_dcm_format(pi_events   IN nem_event_tab) 
+  FUNCTION get_event_in_dcm_format(pi_events   IN nem_event_tab
+                                  ,pi_nig_id   IN nem_impact_groups.nig_id%TYPE) 
    RETURN nm3type.tab_varchar32767 IS
     lt_output              nm3type.tab_varchar32767;
     lt_sections_output     nm3type.tab_varchar32767;
     lt_component_output    nm3type.tab_varchar32767;
     lt_layout_output       nm3type.tab_varchar32767;
     lt_lanes_output        nm3type.tab_varchar32767;
-    lt_diaries             nigs_diary_tab;
+    lt_diaries             diaries_tab;
     lt_diary_output        nm3type.tab_varchar32767;
     --
     lt_impacted_network    location_tab;
@@ -1089,6 +1242,7 @@ AS
     --
     lv_lvm_id                 nem_lvms.nlvm_id%TYPE := get_lvm;
     lv_edate                  DATE;
+    lv_sdate                  DATE;
     lv_extra_notes            VARCHAR2(500);
     lv_dummy                  VARCHAR2(500);
     lv_lane_action            CHAR(1);
@@ -1101,11 +1255,12 @@ AS
     lv_diary_line             VARCHAR2(4000);    
     lv_layout_line            VARCHAR2(4000);   
     lv_speedlimit_line        VARCHAR2(4000);      
-    lv_traffic_cnt_line       VARCHAR2(4000);
-    lv_day_traffic_cnt_line   VARCHAR2(4000);           
+    lv_traffic_cnt_line       VARCHAR2(4000);       
     lv_diversion_quality      VARCHAR2(50);
     lv_width_restriction      VARCHAR2(1);
     lv_schedule_cnt           INT := 0;
+    lv_nig_sdate              DATE;
+    lv_nig_edate              DATE;
     --                   
     lr_lowest_limit          speed_limit_rec;
     lr_traffic_man           traffic_man_rec;
@@ -1122,7 +1277,7 @@ AS
           ,iit_chr_attrib27 single_or_dual
           ,iit_chr_attrib41 environment
           ,NVL(iit_chr_attrib69,'N/S') diversion_quality
-          ,'N' psa_rout /* PB TODO As far as I know we don't do PSA Routes */
+          ,'N' psa_rout /* PB TODO As far as I know we don't do PSA Routes awaiting confirmation from JHB/HE*/
       FROM nm_inv_items
           ,nm_nw_ad_link
           ,nm_elements
@@ -1163,34 +1318,29 @@ AS
     SELECT *
       FROM nem_impact_groups
      WHERE nig_nevt_id = cp_nevt_id
-       --AND nig_name != nem_util.get_no_impact_group_name
-         ;
+       AND (nig_id = pi_nig_id 
+        OR nig_id in (SELECT nig_id 
+                         FROM nem_impact_groups,nem_impact_group_schedules
+                        WHERE nig_nevt_id = cp_nevt_id
+                          AND nig_id = nigs_nig_id
+                          AND nig_name = nem_util.get_no_impact_group_name
+                          AND nvl(nigs_actual_startdate, nigs_planned_startdate) > (SELECT MIN(NVL(nigs_actual_startdate,nigs_planned_startdate)) FROM nem_impact_group_schedules WHERE nigs_nig_id = pi_nig_id)
+                          AND nvl(nigs_actual_enddate, nigs_planned_enddate)     < (SELECT MAX(NVL(nigs_actual_enddate,nigs_planned_enddate)) FROM nem_impact_group_schedules WHERE nigs_nig_id = pi_nig_id)
+                          AND nigs_cancel_date IS NULL
+                      )
+           );                        
     --
     TYPE nig_tab IS TABLE OF nem_impact_groups%ROWTYPE;
     lt_nig  nig_tab;
     --
-    CURSOR get_schedules(cp_nig_id nem_impact_groups.nig_id%TYPE)
+    CURSOR get_schedules
         IS
     SELECT *
       FROM nem_impact_group_schedules
-     WHERE nigs_nig_id = cp_nig_id
+     WHERE nigs_nig_id = pi_nig_id
        AND nigs_cancel_date IS NULL
-         ;
-    --
-    CURSOR get_all_schedules(cp_nevt_id nem_events.nevt_id%TYPE)
-        IS
-    SELECT nig_name
-          ,nigs_planned_startdate
-          ,nigs_actual_startdate
-          ,nigs_planned_enddate
-          ,nigs_actual_enddate
-      FROM nem_impact_groups
-          ,nem_impact_group_schedules
-     WHERE nig_nevt_id = cp_nevt_id
-       AND nig_id = nigs_nig_id
-       AND nigs_cancel_date IS NULL
-      ORDER BY nvl(nigs_actual_startdate,nigs_planned_startdate),nvl(nigs_actual_enddate,nigs_planned_enddate)
-         ;       
+  ORDER BY nvl(nigs_actual_startdate,nigs_planned_startdate),nvl(nigs_actual_enddate,nigs_planned_enddate)
+         ;   
     --
     TYPE nigs_tab IS TABLE OF nem_impact_group_schedules%ROWTYPE;
     lt_nigs  nigs_tab;
@@ -1204,6 +1354,95 @@ AS
     --
     TYPE nigx_tab IS TABLE OF nem_impact_group_xsps%ROWTYPE;
     lt_nigx  nigx_tab;
+    
+  PROCEDURE recalculate_no_impact(pi_nig_planned_start_date    IN DATE
+                                 ,pi_nig_planned_complete_date IN DATE
+                                 ,po_all_schedules             OUT diaries_tab)
+    IS
+    --
+    lt_diaries diaries_tab;    
+    lt_alldiaries diaries_tab;     
+    --
+    lv_current_enddate         DATE;  
+    --
+    PROCEDURE add_no_impact_schedule(pi_nig_name          IN  nem_impact_groups.nig_name%TYPE
+                                    ,pi_startdate         IN  nem_impact_group_schedules.nigs_planned_startdate%TYPE
+                                    ,pi_enddate           IN  nem_impact_group_schedules.nigs_planned_enddate%TYPE)
+      IS
+      --
+      lv_id      NUMBER;
+      --
+    BEGIN
+      --
+      lv_id := lt_alldiaries.COUNT+1;
+      --
+      lt_alldiaries(lv_id).startdate := pi_startdate;
+      lt_alldiaries(lv_id).enddate   := pi_enddate;
+      lt_alldiaries(lv_id).nigname  := pi_nig_name;            
+      --
+    END add_no_impact_schedule;
+    --
+  BEGIN
+    --
+    SELECT nvl(nigs_actual_startdate,nigs_planned_startdate)startdate
+          ,nvl(nigs_actual_enddate,nigs_planned_enddate)enddate
+          ,nig_name nigname
+      BULK COLLECT
+      INTO lt_diaries
+      FROM nem_impact_groups,
+           nem_impact_group_schedules
+     WHERE nig_id = nigs_nig_id
+       AND nig_id = pi_nig_id
+       AND nigs_cancel_date is NULL
+     ORDER
+        BY nvl(nigs_actual_startdate,nigs_planned_startdate) asc
+         ;
+    -- re-jig the 'No Impact' details
+    FOR i IN 1 .. lt_diaries.count LOOP
+      IF i = 1
+       THEN
+          IF pi_nig_planned_start_date < lt_diaries(i).startdate
+           THEN
+              -- Create 'No Impact' Schedule
+              add_no_impact_schedule(pi_nig_name          => nem_util.get_no_impact_group_name
+                                    ,pi_startdate         => pi_nig_planned_start_date
+                                    ,pi_enddate           => lt_diaries(i).startdate);
+                  --
+          END IF;
+      ELSE
+          IF lv_current_enddate < lt_diaries(i).startdate
+           THEN
+              -- Create 'No Impact' Schedule
+              add_no_impact_schedule(pi_nig_name          => nem_util.get_no_impact_group_name
+                                    ,pi_startdate         => lv_current_enddate
+                                    ,pi_enddate           => lt_diaries(i).startdate);
+              --
+          END IF;
+      END IF;
+      --
+      IF lt_diaries(i).enddate > lv_current_enddate OR
+         lv_current_enddate IS NULL
+       THEN
+         lv_current_enddate := lt_diaries(i).enddate;
+      END IF;
+      --
+      add_no_impact_schedule(pi_nig_name          => lt_diaries(i).nigname
+                            ,pi_startdate         => lt_diaries(i).startdate
+                            ,pi_enddate           => lt_diaries(i).enddate);      
+    END LOOP;
+    --
+    IF lv_current_enddate < pi_nig_planned_complete_date
+     THEN
+        -- Create 'No Impact' Schedule
+        add_no_impact_schedule(pi_nig_name          => nem_util.get_no_impact_group_name
+                              ,pi_startdate         => lv_current_enddate
+                              ,pi_enddate           => pi_nig_planned_complete_date);
+        --
+    END IF;
+    --
+    po_all_schedules := lt_alldiaries;
+    --
+  END recalculate_no_impact;    
     --   
   BEGIN
     --
@@ -1213,6 +1452,7 @@ AS
       ||Init variables.
       */
       lv_edate := NULL;
+      lv_sdate := null;
       lr_lowest_limit := NULL;
       lr_traffic_man := NULL;
       lv_extra_notes := NULL;
@@ -1221,10 +1461,11 @@ AS
       lt_component_output.DELETE;
       lt_layout_output.DELETE;
       lt_lanes_output.DELETE;
+      lt_diaries.DELETE;
       /*
-      ||Get the components (Impacted Network).
+      ||Get the components (Impacted Network). Only for the one impact group.
       */
-      lt_impacted_network := get_locations(pi_asset_id => pi_events(i).nevt_id
+      lt_impacted_network := get_locations(pi_asset_id => pi_nig_id
                                           ,pi_lvm_id   => lv_lvm_id);
       --
       remove_duplicate_sects(po_locations => lt_impacted_network);
@@ -1270,23 +1511,23 @@ AS
                     ,pi_length => 2
                     ,pi_output => lv_section_line);        
         --
-        append_value(pi_text   => lr_section_rec.section_function
+        append_value(pi_text   => get_section_function(lr_section_rec.section_function)
                     ,pi_type   => 'A'
                     ,pi_length => 4
                     ,pi_output => lv_section_line);        
         --
-        append_value(pi_text   => lr_section_rec.single_or_dual
+        append_value(pi_text   => get_single_dual(lr_section_rec.single_or_dual)
                     ,pi_type   => 'A'
                     ,pi_length => 4
                     ,pi_output => lv_section_line);        
         --
-        append_value(pi_text => lr_section_rec.environment
+        append_value(pi_text => get_environment(lr_section_rec.environment)
                     ,pi_type   => 'A'
                     ,pi_length => 1
                     ,pi_output => lv_section_line);        
         --
         /*
-        ||PB to do check Ranking order
+        ||PB to do check Ranking order - awaiting confirmation from MK, JHB, LJ
         ||Make lowest ranked value in nem_dcm_diversion_quality_map table.
         */
         lv_diversion_quality := null;
@@ -1303,9 +1544,9 @@ AS
         END LOOP;
         --
         /*
-        ||pb todo should this be N/S nvl not the section value?
+        ||pb todo should this be N/S nvl not the section value? awaiting confirmation from MK, JHB, LJ
         */
-        append_value(pi_text   => nvl(lv_diversion_quality,lr_section_rec.diversion_quality)
+        append_value(pi_text   => get_diversion_quality(nvl(lv_diversion_quality,lr_section_rec.diversion_quality))
                     ,pi_type   => 'A'
                     ,pi_length => 4
                     ,pi_output => lv_section_line);        
@@ -2064,7 +2305,7 @@ AS
           add_line(pi_text   => lv_traffic_cnt_line
                   ,pi_tab    => lt_sections_output); 
           --                  
-        END LOOP; 
+        END LOOP;         
         --
         FOR i in 1..lt_trt.COUNT LOOP             
           --
@@ -2196,7 +2437,7 @@ AS
           add_line(pi_text   => lv_traffic_cnt_line
                   ,pi_tab    => lt_sections_output); 
           --                  
-        END LOOP;        
+        END LOOP;
         /*
         ||Component Output:
         ||This is split from Impact Groups into individual Sections
@@ -2252,7 +2493,13 @@ AS
       /*
       ||Get the Impact Group Contents.
       */
-      OPEN  get_impact_groups(pi_events(i).nevt_id);
+      SELECT MIN(NVL(nigs_actual_startdate,nigs_planned_startdate))s_date
+            ,MAX(NVL(nigs_actual_enddate,nigs_planned_enddate))e_date 
+        INTO lv_nig_sdate, lv_nig_edate
+        FROM nem_impact_group_schedules 
+       WHERE nigs_nig_id = pi_nig_id;
+     --    
+      OPEN  get_impact_groups(cp_nevt_id => pi_events(i).nevt_id);
       FETCH get_impact_groups
        BULK COLLECT
        INTO lt_nig;
@@ -2374,13 +2621,13 @@ AS
         /*
         ||Get the schedules/diary entries
         */
-        OPEN  get_schedules(lt_nig(j).nig_id);
+        OPEN  get_schedules;
         FETCH get_schedules
          BULK COLLECT
          INTO lt_nigs;
         CLOSE get_schedules;
         --
-        lv_schedule_cnt := nvl(lv_schedule_cnt,0) + lt_nigs.COUNT;       
+        lv_schedule_cnt := nvl(lv_schedule_cnt,0) + lt_nigs.COUNT;          
         --
         FOR k IN 1..lt_nigs.COUNT LOOP
           /*
@@ -2395,30 +2642,16 @@ AS
           --
           lv_dummy := NULL;
           --
+          IF lv_sdate IS NULL THEN
+            lv_sdate := NVL(lt_nigs(k).nigs_actual_startdate,lt_nigs(k).nigs_planned_startdate);
+          END IF;
+          --
           set_edate(pi_actual_complete_date  => lt_nigs(k).nigs_actual_enddate
                    ,pi_actual_start_date     => lt_nigs(k).nigs_actual_startdate
                    ,pi_planned_complete_date => lt_nigs(k).nigs_planned_enddate
                    ,pi_planned_start_date    => lt_nigs(k).nigs_planned_startdate
-                   ,po_end_date              => lv_edate);
-          --
-          /*append_value(pi_text   => TO_CHAR(NVL(lt_nigs(k).nigs_actual_startdate,lt_nigs(k).nigs_planned_startdate),c_datetimefmt)
-                      ,pi_type   => 'A'
-                      ,pi_length =>  20
-                      ,pi_output => lv_diary_line);    
-          --
-          append_value(pi_text   => TO_CHAR(lv_edate,c_datetimefmt)
-                      ,pi_type   => 'A'
-                      ,pi_length =>  20
-                      ,pi_output => lv_diary_line); 
-          --           
-          append_value(pi_text   => lt_nig(j).nig_name
-                      ,pi_type   => 'A'
-                      ,pi_length =>  50
-                      ,pi_output => lv_diary_line);               
-          --
-          add_line(pi_text   => lv_diary_line
-                   ,pi_tab   => lt_diary_output);   */       
-          --
+                   ,po_end_date              => lv_edate);  
+          --     
         END LOOP; --schedules
         --
         /*
@@ -2475,7 +2708,7 @@ AS
                               ,pi_speed_limit         => lr_lowest_limit.dcm_meaning
                               ,pi_mobile_lane_closure => pi_events(i).mobile_lane_closure
                               ,po_traffic_management  => lr_traffic_man);
-        --
+        --    
       END LOOP; -- Impact Groups.
       /*
       ||"Header" Data
@@ -2485,16 +2718,10 @@ AS
                   ,pi_length =>  1
                   ,pi_output => lv_header_line);             
       --
-      append_value(pi_text   => TO_CHAR(NVL(pi_events(i).actual_start_date,pi_events(i).planned_start_date),c_datetimefmt)
+      append_value(pi_text   => TO_CHAR(lv_sdate,c_datetimefmt)
                   ,pi_type   => 'A'
                   ,pi_length =>  20
                   ,pi_output => lv_header_line);
-      --
-      set_edate(pi_actual_complete_date  => pi_events(i).actual_complete_date
-               ,pi_actual_start_date     => pi_events(i).actual_start_date
-               ,pi_planned_complete_date => pi_events(i).planned_complete_date
-               ,pi_planned_start_date    => pi_events(i).planned_start_date
-               ,po_end_date              => lv_edate);      
       --             
       append_value(pi_text   => TO_CHAR(lv_edate,c_datetimefmt)
                   ,pi_type   => 'A'
@@ -2551,54 +2778,48 @@ AS
                   ,pi_length =>  5
                   ,pi_output => lv_header_line);    
       --
-      append_value(pi_text   => lv_schedule_cnt
+      --             
+       /*
+       ||4. DCM requires a consistent set of dates/times be they planned (for an event yet to happen) or actual (for an event that has started).  
+       ||E.g. If an event has started, the “Event start date/ time” on record B1.1 should be the actual start date/time, 
+       ||as should the “Start date / time” on the first Diary record (B5.1).
+       */    
+       -- 
+       recalculate_no_impact(pi_nig_planned_start_date    => lv_sdate
+                            ,pi_nig_planned_complete_date => lv_edate
+                            ,po_all_schedules             => lt_diaries);    
+      --                            
+      append_value(pi_text   => lt_diaries.COUNT
                   ,pi_type   => 'I'
                   ,pi_length =>  5
                   ,pi_output => lv_header_line);   
       add_line(pi_text   =>  lv_header_line 
               ,pi_tab    => lt_output);   
-    --             
-     /*
-     ||4. DCM requires a consistent set of dates/times be they planned (for an event yet to happen) or actual (for an event that has started).  
-     ||E.g. If an event has started, the “Event start date/ time” on record B1.1 should be the actual start date/time, 
-     ||as should the “Start date / time” on the first Diary record (B5.1).
-     */    
-     --     
-     OPEN get_all_schedules(pi_events(i).nevt_id);
-    FETCH get_all_schedules
-     BULK COLLECT
-     INTO lt_diaries;
-    CLOSE get_all_schedules;
+
     --
     FOR k IN 1..lt_diaries.COUNT LOOP
-    
-      append_value(pi_text   => TO_CHAR(NVL(lt_diaries(k).nigs_actual_startdate,lt_diaries(k).nigs_planned_startdate),c_datetimefmt)
+      --    
+      append_value(pi_text   => TO_CHAR(lt_diaries(k).startdate,c_datetimefmt)
                   ,pi_type   => 'A'
                   ,pi_length =>  20
                   ,pi_output => lv_diary_line);    
-      --
-      set_edate(pi_actual_complete_date  => lt_diaries(k).nigs_actual_enddate
-               ,pi_actual_start_date     => lt_diaries(k).nigs_actual_startdate
-               ,pi_planned_complete_date => lt_diaries(k).nigs_planned_enddate
-               ,pi_planned_start_date    => lt_diaries(k).nigs_planned_startdate
-               ,po_end_date              => lv_edate);
       --                   
-      append_value(pi_text   => TO_CHAR(lv_edate,c_datetimefmt)
+      append_value(pi_text   => TO_CHAR(lt_diaries(k).enddate,c_datetimefmt)
                   ,pi_type   => 'A'
                   ,pi_length =>  20
                   ,pi_output => lv_diary_line); 
       --           
-      append_value(pi_text   => lt_diaries(k).nig_name
+      append_value(pi_text   => lt_diaries(k).nigname
                   ,pi_type   => 'A'
                   ,pi_length =>  50
                   ,pi_output => lv_diary_line);               
       --
       add_line(pi_text   => lv_diary_line
-               ,pi_tab   => lt_diary_output);   
+               ,pi_tab   => lt_diary_output);                 
       --      
     END LOOP;
     --
-    END LOOP; -- Events.    
+  END LOOP; -- Events.    
     /*
     ||Add the Sections.
     */ 
@@ -2635,9 +2856,7 @@ AS
 --
 -----------------------------------------------------------------------------
 --
-  PROCEDURE log_loaded_results (pi_dcmh_id     nem_dcm_result.dcmr_id%TYPE
-                               ,pi_naex        nem_action_executions%ROWTYPE
-                               ,pi_error_count nem_dcm_header.dcmh_number_of_errors%TYPE)
+  PROCEDURE log_loaded_results (pi_naex        nem_action_executions%ROWTYPE)
     IS
     --
     lv_error_flag       nm3type.max_varchar2;
@@ -2647,20 +2866,38 @@ AS
     TYPE nem_dcm_error_tab IS TABLE OF nem_dcm_error%ROWTYPE INDEX BY BINARY_INTEGER;    
     lt_dcme             nem_dcm_error_tab;
     --    
-    lr_dcmr nem_dcm_result%ROWTYPE;    
+    
+    TYPE results_rec IS RECORD(naex_id            nem_action_executions.naex_id%TYPE
+                              ,nevt_id            nem_events.nevt_id%TYPE
+                              ,sum_total_delay_time   NUMBER(12,2)
+                              ,sum_total_delay_cost   NUMBER(12,2)
+                              ,sum_total_vehicles     NUMBER(12,2)
+                              ,sum_error_count        NUMBER(12,2));
+  
+    lr_dcmr results_rec;    
     --
     CURSOR get_dcmr 
-        IS
-    SELECT *
-      FROM nem_dcm_result
-     WHERE dcmr_dcmh_id = pi_dcmh_id    
-     ; 
+        IS     
+    SELECT dcmh_naex_id
+          ,dcmh_nevt_id
+          ,sum(nvl(dcmr_total_delay_time,0))
+          ,sum(nvl(dcmr_total_delay_cost,0))
+          ,sum(nvl(dcmr_total_vehicles,0))
+          ,sum(nvl(dcmh_number_of_errors,0)) 
+     FROM nem_dcm_header,nem_dcm_result 
+    WHERE dcmh_id = dcmr_dcmh_id(+)
+      AND dcmh_naex_id = pi_naex.naex_id
+    GROUP BY dcmh_naex_id, dcmh_nevt_id
+    ;
      --
     CURSOR get_dcme 
         IS
-    SELECT *
-      FROM nem_dcm_error
-     WHERE dcme_dcmh_id = pi_dcmh_id    
+    SELECT dcme_id
+          ,dcme_error
+          ,dcme_dcmh_id
+      FROM nem_dcm_header,nem_dcm_error
+     WHERE dcmh_id = dcme_dcmh_id
+       AND dcmh_naex_id =pi_naex.naex_id
      ;     
      --
   BEGIN
@@ -2671,37 +2908,38 @@ AS
    FETCH get_dcmr
     INTO lr_dcmr;
    CLOSE get_dcmr;  
-    /*
+   /*
     ||Start an execution for logging.
     */
     lv_execution_id := nem_execution_api.start_execution(pi_parent_execution_id => pi_naex.naex_id);
     --      
-    IF nvl(pi_error_count,0) > 0 THEN
+    IF lr_dcmr.sum_error_count > 0 THEN
       --     
        OPEN get_dcme;
       FETCH get_dcme
        BULK COLLECT
        INTO lt_dcme;
-      CLOSE get_dcme;     
+      CLOSE get_dcme;      
       --
-        nem_execution_api.update_action_executions(pi_naex_id                => pi_naex.naex_id
-                                                  ,pi_old_success            => 'Yes'
-                                                  ,pi_new_success            => 'Yes'
-                                                  ,pi_old_summary_result     => pi_naex.naex_summary_result
-                                                  ,pi_new_summary_result     => 'DCM results returned with errors'
-                                                  ,pi_commit                 => 'Y'
-                                                  ,po_error_flag             => lv_error_flag
-                                                  ,po_error_text             => lv_error_text);
-        --
-        FOR i in 1..lt_dcme.COUNT LOOP
-          nem_execution_api.add_action_exe_result(pi_naex_id          => pi_naex.naex_id
-                                                 ,pi_message_category => 'INFORMATION'
-                                                 ,pi_message          => lt_dcme(i).dcme_error
-                                                 ,po_error_flag       => lv_error_flag
-                                                 ,po_error_text       => lv_error_text);    
-        END LOOP;
-        --
+      nem_execution_api.update_action_executions(pi_naex_id                => pi_naex.naex_id
+                                                ,pi_old_success            => 'Yes'
+                                                ,pi_new_success            => 'Yes'
+                                                ,pi_old_summary_result     => pi_naex.naex_summary_result
+                                                ,pi_new_summary_result     => 'DCM results returned with errors'
+                                                ,pi_commit                 => 'Y'
+                                                ,po_error_flag             => lv_error_flag
+                                                ,po_error_text             => lv_error_text);
+      --
+      FOR i in 1..lt_dcme.COUNT LOOP
+        nem_execution_api.add_action_exe_result(pi_naex_id          => pi_naex.naex_id
+                                               ,pi_message_category => 'INFORMATION'
+                                               ,pi_message          => lt_dcme(i).dcme_error
+                                               ,po_error_flag       => lv_error_flag
+                                               ,po_error_text       => lv_error_text);    
+      END LOOP;
+      --
     ELSE
+      --
       nem_execution_api.update_action_executions(pi_naex_id                => pi_naex.naex_id
                                                 ,pi_old_success            => 'Yes'
                                                 ,pi_new_success            => 'Yes'
@@ -2713,23 +2951,23 @@ AS
       --     
       nem_execution_api.add_action_exe_result(pi_naex_id          => pi_naex.naex_id
                                              ,pi_message_category => 'INFORMATION'
-                                             ,pi_message          => 'Total Delay Time: '||lr_dcmr.dcmr_total_delay_time
+                                             ,pi_message          => 'Total Delay Time: '||lr_dcmr.sum_total_delay_time
                                              ,po_error_flag       => lv_error_flag
                                              ,po_error_text       => lv_error_text);
       --
       nem_execution_api.add_action_exe_result(pi_naex_id          => pi_naex.naex_id
                                              ,pi_message_category => 'INFORMATION'
-                                             ,pi_message          => 'Total Delay Cost: '||lr_dcmr.dcmr_total_delay_cost
+                                             ,pi_message          => 'Total Delay Cost: '||lr_dcmr.sum_total_delay_cost
                                              ,po_error_flag       => lv_error_flag
                                              ,po_error_text       => lv_error_text);
       --
       nem_execution_api.add_action_exe_result(pi_naex_id          => pi_naex.naex_id
                                              ,pi_message_category => 'INFORMATION'
-                                             ,pi_message          => 'Total Vehicles: '||lr_dcmr.dcmr_total_vehicles
+                                             ,pi_message          => 'Total Vehicles: '||lr_dcmr.sum_total_vehicles
                                              ,po_error_flag       => lv_error_flag
                                              ,po_error_text       => lv_error_text);
       --
-      nem_execution_api.add_action_exe_result(pi_naex_id          => pi_naex.naex_id
+ /*     nem_execution_api.add_action_exe_result(pi_naex_id          => pi_naex.naex_id
                                              ,pi_message_category => 'INFORMATION'
                                              ,pi_message          => 'PSA Delay Time: '||lr_dcmr.dcmr_psa_delay_time
                                              ,po_error_flag       => lv_error_flag
@@ -2745,9 +2983,12 @@ AS
                                              ,pi_message_category => 'INFORMATION'
                                              ,pi_message          => 'PSA Vehicles: '||lr_dcmr.dcmr_psa_vehicles
                                              ,po_error_flag       => lv_error_flag
-                                             ,po_error_text       => lv_error_text); 
+                                             ,po_error_text       => lv_error_text); */
       --
     END IF;
+    /*
+    || All associated impact groups for the Event have been processed so remove from queue
+    */
     --
     IF lv_error_flag = 'N'
      THEN
@@ -2767,15 +3008,16 @@ AS
   PROCEDURE export_event_for_dcm(pi_dcmq IN nem_dcm_queue%ROWTYPE)
     IS
     --
-    lt_events  nem_event_tab;
-    lt_output  nm3type.tab_varchar32767;
+    lt_events   nem_event_tab;
+    lt_output   nm3type.tab_varchar32767;
+    lv_filename nem_dcm_queue.dcmq_filename%TYPE;
     --
-    lv_sql nm3type.max_varchar2;
-    lv_error VARCHAR2(1) DEFAULT 'N';
+    lv_sql      nm3type.max_varchar2;
+    lv_error    VARCHAR2(1) DEFAULT 'N';
     --
-    lr_ftp ftp_con_rec;
+    lr_ftp      ftp_con_rec;
     --
-    c_event  sys_refcursor;
+    c_event     sys_refcursor;
     --
   BEGIN
     --
@@ -2789,28 +3031,32 @@ AS
     --    
     IF pi_dcmq.dcmq_file_success = 'N' THEN
       OPEN  c_event FOR lv_sql USING pi_dcmq.dcmq_nevt_id;
-      FETCH c_event
-       BULK COLLECT
-       INTO lt_events
+     FETCH c_event
+      BULK COLLECT
+      INTO lt_events
           ;
       CLOSE c_event;
       --     
       process_log_entry(pi_message => 'Converting event into DCM File Format');  
       --      
-      lt_output := get_event_in_dcm_format(pi_events => lt_events);
+      lt_output := get_event_in_dcm_format(pi_events => lt_events
+                                          ,pi_nig_id => pi_dcmq.dcmq_nig_id);
       IF lt_output.COUNT = 0 THEN       
         lv_error := 'Y';
         process_log_entry(pi_message      => 'There was a problem converting the event'
                          ,pi_message_type => 'E');      
       END IF;
       /*
-      || write_file to directory.
-      */                
-      nm3file.write_file(location     => c_dcm_export_dir
-                        ,filename     => pi_dcmq.dcmq_nevt_id||'_'||pi_dcmq.dcmq_naex_id||'.dcminput'
-                        ,all_lines    => lt_output);          
+      || write_file to directory. Impact Group _ Action Execution ID.
+      */             
+      lv_filename := pi_dcmq.dcmq_nig_id||'_'||pi_dcmq.dcmq_naex_id||'.dcminput';
       --
-      update_queue_file_success(pi_dcmq_id => pi_dcmq.dcmq_id);
+      nm3file.write_file(location     => c_dcm_export_dir
+                        ,filename     => lv_filename
+                        ,all_lines    => lt_output);                           
+      --
+      update_queue_file_success(pi_dcmq_id       => pi_dcmq.dcmq_id
+                               ,pi_dcmq_filename => lv_filename);
       --
       process_log_entry(pi_message => 'DCM Export File Created');    
       --      
@@ -2837,7 +3083,6 @@ AS
            /*
            ||If no FTP connection then this is not an error as they may not want to use FTP
            */
-           
             hig_process_api.log_it(pi_message => 'No FTP connection details found for Process Type.');
         WHEN too_many_rows
          THEN
@@ -2853,11 +3098,18 @@ AS
       --   
       IF lv_error <> 'Y' THEN                  
         upload_files(pi_ftp_details => lr_ftp
-                    ,pi_file        => pi_dcmq.dcmq_nevt_id||'_'||pi_dcmq.dcmq_naex_id||'.dcminput');
+                    ,pi_file        => lv_filename);
         --   
         process_log_entry(pi_message => 'Upload of File Complete');    
         --
         update_queue_ftp_success(pi_dcmq_id =>pi_dcmq.dcmq_id);      
+        --
+        /*
+        ||remove copy from oracle directory once FTP complete.
+        */
+        /*nm3file.delete_file(pi_dir => c_dcm_export_dir
+                           ,pi_file=> lv_filename);    */
+        
       END IF;
     END IF;
     --
@@ -2875,16 +3127,42 @@ AS
   PROCEDURE queue_dcm(pi_nevt_id IN nem_events.nevt_id%TYPE
                      ,pi_naex_id IN nem_action_executions.naex_id%TYPE)
     IS
-
-  BEGIN
     --
-    INSERT INTO nem_dcm_queue(dcmq_id
-                             ,dcmq_nevt_id
-                             ,dcmq_naex_id)
-         VALUES (dcmq_id_seq.nextval
-                ,pi_nevt_id
-                ,pi_naex_id);
-
+    TYPE nig_tab IS TABLE OF nem_impact_groups%ROWTYPE;
+    lt_nig  nig_tab;
+    --
+    CURSOR get_impact_groups
+        IS
+    SELECT *
+      FROM nem_impact_groups
+     WHERE nig_nevt_id = pi_nevt_id
+       AND nig_name != nem_util.get_no_impact_group_name
+     ORDER BY nig_id; 
+  --     
+     lv_count NUMBER;
+  BEGIN
+     --
+     OPEN get_impact_groups;
+    FETCH get_impact_groups
+     BULK COLLECT
+     INTO lt_nig;
+    CLOSE get_impact_groups;
+    --
+    lv_count := lt_nig.COUNT;
+    --
+    FOR i in 1..lv_count LOOP
+     --
+      INSERT INTO nem_dcm_queue(dcmq_id
+                               ,dcmq_nevt_id
+                               ,dcmq_naex_id
+                               ,dcmq_nig_id
+                               ,dcmq_file_count)
+           VALUES (dcmq_id_seq.nextval
+                 ,pi_nevt_id
+                 ,pi_naex_id
+                 ,lt_nig(i).nig_id
+                 ,lv_count);
+    END LOOP;
     --
   END queue_dcm;  
   --
@@ -2893,6 +3171,8 @@ AS
   PROCEDURE load_dcm_results_file 
   IS 
     lv_nevt                     NUMBER;
+    lv_nig                      NUMBER;
+    lv_remaining_count          NUMBER;
     --
     lv_dcmh_id                  PLS_INTEGER;
     lv_dcmr_id                  PLS_INTEGER;  
@@ -2945,8 +3225,6 @@ AS
     --
     lt_daily                    daily_record_tab;
     lt_errors                   error_tab;
-    --
-    lt_object_ids               nem_actions_api.object_ids_tab; 
     --    
   BEGIN
     --
@@ -2972,11 +3250,16 @@ AS
       BEGIN     
         --
         SELECT nevt_id
-        INTO lv_nevt
-        FROM NEM_EVENTS 
-        WHERE nevt_id =  substr(lt_files(i).hpf_filename,1,instr(lt_files(i).hpf_filename,'_')-1);
+              ,nig_id
+          INTO lv_nevt
+              ,lv_nig
+          FROM nem_events, nem_impact_groups
+         WHERE nevt_id = nig_nevt_id
+           AND nig_id =  substr(lt_files(i).hpf_filename,1,instr(lt_files(i).hpf_filename,'_')-1);
         --
         process_log_entry(pi_message => 'Event ID: '||lv_nevt);        
+        process_log_entry(pi_message => 'Impact Group ID: '||lv_nig); 
+        --        
       EXCEPTION
         WHEN no_data_found THEN
           process_log_entry(pi_message      => 'Error: Event does not exist.'
@@ -2999,7 +3282,7 @@ AS
           process_log_entry(pi_message      => 'Error: Action does not exist.'
                            ,pi_message_type => 'E');       
           lv_error := 'Y';
-              
+          --    
       END;
       --
       IF lr_naex.naex_summary_result <> 'Submitted to DCM, awaiting results' THEN
@@ -3100,12 +3383,14 @@ AS
         INSERT INTO nem_dcm_header(dcmh_id
                                   ,dcmh_nevt_id
                                   ,dcmh_naex_id
+                                  ,dcmh_nig_id
                                   ,dcmh_calc_or_estimate
                                   ,dcmh_number_of_errors
                                   ,dcmh_calculation_time)
         VALUES                    (lv_dcmh_id
                                   ,lv_nevt
                                   ,lr_naex.naex_id
+                                  ,lv_nig
                                   ,lr_header.calc_or_estimate
                                   ,lr_header.number_of_errors
                                   ,lr_header.calc_time
@@ -3169,15 +3454,31 @@ AS
     END LOOP;
     --
     process_log_entry(pi_message => '--------------------------------------------------------');    
-    /*
-    ||Log action event against Event.
-    */
-    --lt_object_ids(1) := lv_nevt;
     --
-    log_loaded_results (pi_dcmh_id     => lv_dcmh_id
-                       ,pi_naex        => lr_naex
-                       ,pi_error_count => nvl(lr_header.number_of_errors,0))
-    ;
+    UPDATE nem_dcm_queue
+       SET dcmq_results_imported = 'Y'
+     WHERE dcmq_nig_id  = lv_nig
+       AND dcmq_nevt_id = lv_nevt
+       AND dcmq_naex_id = lr_naex.naex_id;
+    --   
+    SELECT COUNT(dcmq_id)
+      INTO lv_remaining_count
+      FROM nem_dcm_queue
+     WHERE dcmq_nevt_id = lv_nevt
+       AND dcmq_naex_id = lr_naex.naex_id
+       AND dcmq_results_imported <> 'Y';
+    --   
+    /*
+    ||Log action event against Event if all Impact Groups have been processed..
+    */
+    IF lv_remaining_count = 0 THEN
+      log_loaded_results (pi_naex        => lr_naex);      
+      --
+      DELETE FROM nem_dcm_queue
+       WHERE dcmq_nevt_id = lv_nevt
+         AND dcmq_naex_id = lr_naex.naex_id;
+      --
+    END IF;
     --                    
   END load_dcm_results_file;
   --
@@ -3219,7 +3520,7 @@ AS
         IS 
     SELECT *
       FROM nem_dcm_queue
-     WHERE dcmq_ftp_success = 'N' OR dcmq_file_success = 'N'
+     WHERE dcmq_file_success = 'N' OR dcmq_ftp_success = 'N'
      ORDER BY dcmq_priority, dcmq_id
      ;       
   BEGIN

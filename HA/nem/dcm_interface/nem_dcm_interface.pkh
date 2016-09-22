@@ -3,17 +3,17 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_interface.pkh-arc   1.0   Aug 18 2016 12:08:12   Peter.Bibby  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_interface.pkh-arc   1.1   Sep 22 2016 13:18:04   Peter.Bibby  $
   --       Module Name      : $Workfile:   nem_dcm_interface.pkh  $
-  --       Date into PVCS   : $Date:   Aug 18 2016 12:08:12  $
+  --       Date into PVCS   : $Date:   Sep 22 2016 13:18:04  $
   --       Date fetched Out : $Modtime:   Aug 12 2016 14:38:28  $
-  --       Version          : $Revision:   1.0  $
+  --       Version          : $Revision:   1.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
   ------------------------------------------------------------------
   --g_sccsid is the SCCS ID for the package
-  g_sccsid                CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  g_sccsid                CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
   --
   c_datetimefmt           CONSTANT VARCHAR2(50) := 'dd-Mon-yyyy hh24:mi:ss'; 
   c_datefmt               CONSTANT VARCHAR2(50) := 'dd-Mon-yyyy';   

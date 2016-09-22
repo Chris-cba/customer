@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_actions.pkb-arc   1.0   Aug 18 2016 12:08:10   Peter.Bibby  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/dcm_interface/nem_dcm_actions.pkb-arc   1.1   Sep 22 2016 13:18:04   Peter.Bibby  $
   --       Module Name      : $Workfile:   nem_dcm_actions.pkb  $
-  --       Date into PVCS   : $Date:   Aug 18 2016 12:08:10  $
+  --       Date into PVCS   : $Date:   Sep 22 2016 13:18:04  $
   --       Date fetched Out : $Modtime:   Aug 17 2016 13:30:18  $
-  --       Version          : $Revision:   1.0  $
+  --       Version          : $Revision:   1.1  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.1  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_create_dcminput_file';
 
   --
