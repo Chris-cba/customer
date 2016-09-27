@@ -1,10 +1,10 @@
 --   PVCS Identifiers :-
 --
---       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/nem/validation_rules/install.sql-arc   1.0   22 Aug 2016 01:04:40   Mike.Huitson  $
+--       pvcsid                 : $Header:   //new_vm_latest/archives/customer/HA/nem/validation_rules/install.sql-arc   1.1   27 Sep 2016 14:33:56   Mike.Huitson  $
 --       Module Name      : $Workfile:   install.sql  $
---       Date into PVCS   : $Date:   22 Aug 2016 01:04:40  $
---       Date fetched Out : $Modtime:   20 Aug 2016 15:24:48  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   27 Sep 2016 14:33:56  $
+--       Date fetched Out : $Modtime:   27 Sep 2016 14:33:16  $
+--       PVCS Version     : $Revision:   1.1  $
 
 INSERT
   INTO nem_validation_rules
@@ -25,7 +25,7 @@ SELECT nvr_id_seq.NEXTVAL
   FROM dual
  WHERE NOT EXISTS(SELECT 1
                     FROM nem_validation_rules
-                   WHERE nvr_proc_name = 'nem_custom_validation_rules.all_available_lanes_closed');
+                   WHERE nvr_proc_name = 'nem_custom_validation_rules.all_available_lanes_closed')
 /
 
 COMMIT
