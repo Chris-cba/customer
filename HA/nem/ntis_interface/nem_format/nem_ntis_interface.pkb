@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.7   21 Sep 2016 11:41:42   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.8   11 Oct 2016 16:09:58   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   21 Sep 2016 11:41:42  $
-  --       Date fetched Out : $Modtime:   20 Sep 2016 17:14:08  $
-  --       Version          : $Revision:   1.7  $
+  --       Date into PVCS   : $Date:   11 Oct 2016 16:09:58  $
+  --       Date fetched Out : $Modtime:   11 Oct 2016 15:39:30  $
+  --       Version          : $Revision:   1.8  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.7  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.8  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -848,9 +848,6 @@ AS
   PROCEDURE set_file_ftp_success(pi_file_rec IN upload_files_rec)
     IS
     --
-    lv_process_id  hig_processes.hp_process_id%TYPE := hig_process_api.get_current_process_id;
-    lv_run_id      hig_process_job_runs.hpjr_job_run_seq%TYPE := hig_process_api.get_current_job_run_seq;
-    --
   BEGIN
     --
     UPDATE nem_ntis_files
@@ -1635,17 +1632,19 @@ AS
    ||CHR(10)||'      ,nem_ntis_log'
    ||CHR(10)||' WHERE nnl_nevt_id = iit_ne_id'
    ||CHR(10)||'   AND iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''SUPERSEDED'''
-   ||CHR(10)||'   AND iit.iit_date_modified BETWEEN :last_run_date AND :run_date'
-   ||CHR(10)||'   AND EXISTS(SELECT 1'
+   ||CHR(10)||'   AND EXISTS(SELECT /*+ INDEX (naex2 naex_fk_nevt_ind) */ 1'
    ||CHR(10)||'                FROM nem_action_executions naex2'
    ||CHR(10)||'                    ,nm_inv_items_all iit2'
-   ||CHR(10)||'               WHERE iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
+   ||CHR(10)||'                    ,nem_events'
+   ||CHR(10)||'               WHERE nevt_id = iit2.iit_ne_id'
+   ||CHR(10)||'                 AND iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
    ||CHR(10)||'                 AND iit2.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
                                 ||' != iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
    ||CHR(10)||'                 AND iit2.iit_ne_id = naex2.naex_nevt_id'
    ||CHR(10)||'                 AND naex2.naex_na_id = (SELECT na_id'
    ||CHR(10)||'                                           FROM nem_actions na2'
-   ||CHR(10)||'                                          WHERE na2.na_label = ''Publish''))'
+   ||CHR(10)||'                                          WHERE na2.na_label = ''Publish'')'
+   ||CHR(10)||'                 AND naex2.naex_execution_date > NVL(nnl_date_cancel_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')))'
    ||CHR(10)||'   AND iit.iit_ne_id = naex_nevt_id'
    ||CHR(10)||'   AND naex_na_id = (SELECT na_id'
    ||CHR(10)||'                       FROM nem_actions'
@@ -1665,11 +1664,12 @@ AS
    ||CHR(10)||'      ,nem_ntis_log'
    ||CHR(10)||' WHERE nnl_nevt_id = iit.iit_ne_id'
    ||CHR(10)||'   AND iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''SUPERSEDED'''
-   ||CHR(10)||'   AND iit.iit_date_modified BETWEEN :last_run_date AND :run_date'
-   ||CHR(10)||'   AND EXISTS(SELECT 1'
+   ||CHR(10)||'   AND EXISTS(SELECT /*+ INDEX (naex2 naex_fk_nevt_ind) */ 1'
    ||CHR(10)||'                FROM nem_action_executions naex2'
    ||CHR(10)||'                    ,nm_inv_items_all iit2'
-   ||CHR(10)||'               WHERE iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
+   ||CHR(10)||'                    ,nem_events'
+   ||CHR(10)||'               WHERE nevt_id = iit2.iit_ne_id'
+   ||CHR(10)||'                 AND iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
    ||CHR(10)||'                 AND (iit2.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'ACTUAL_START_DATE')||' IS NULL'
                                      ||' AND iit2.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'PLANNED_START_DATE')||' > :run_date + :windowdays)'
    ||CHR(10)||'                 AND iit2.iit_ne_id = naex2.naex_nevt_id'
@@ -1689,10 +1689,6 @@ AS
     --
     OPEN c_events FOR lv_sql
       USING pi_prev_run_date
-           ,pi_run_date
-           ,pi_prev_run_date
-           ,pi_run_date
-           ,pi_prev_run_date
            ,pi_run_date
            ,pi_run_date
            ,g_ntiswindow
