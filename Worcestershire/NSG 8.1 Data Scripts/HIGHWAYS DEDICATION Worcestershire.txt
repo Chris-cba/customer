@@ -1,0 +1,213 @@
+1.To insert cyclepaths
+
+INSERT INTO NSG_ESU_HIGHWAY_DEDICATION (NEHD_NE_ID,
+                                        NEHD_ESUID,
+                                        NEHD_SEQUENCE_NO,
+                                        NEHD_HIGHWAY_DEDICATION,
+                                        NEHD_RECORD_ENTRY_DATE,
+                                        NEHD_LAST_UPDATE_DATE,
+                                        NEHD_HD_START_DATE,
+                                        NEHD_HD_PROW,
+                                        NEHD_HD_NCR,
+                                        NEHD_HD_QUIET_ROUTE,
+                                        NEHD_HD_OBSTRUCTION,
+                                        NEHD_HD_PLANNING_ORDER,
+                                        NEHD_HD_WORKS_PROHIBITED)
+   SELECT ne_esu.ne_id,
+          ne_esu.ne_descr,
+          '1',
+          '6',
+          TRUNC (SYSDATE),
+          TRUNC (SYSDATE),
+          ne_esu.ne_start_date,
+          '0',
+          '0',
+          '0',
+          '0',
+          '0',
+          '0'
+     FROM nm_elements ne_offn,
+          nm_members memb,
+          nm_elements ne_esu
+    WHERE     ne_esu.ne_id = memb.nm_ne_id_of
+          AND memb.nm_ne_id_in = ne_offn.ne_id
+          AND ne_offn.ne_gty_group_type = 'OFFN'
+          AND ne_offn.ne_descr LIKE '%CYCLE%'
+          AND ne_offn.ne_owner IN (1805,1820,1825,1835,1840,1845,1850)           AND ne_offn.ne_id IN (SELECT nad_ne_id
+                                  FROM nm_nw_ad_link_all
+                                 WHERE nad_iit_ne_id IN (SELECT iit_ne_id
+                                                           FROM nm_inv_items
+                                                          WHERE     iit_inv_type =
+                                                                       'TP22'
+                                                                AND iit_chr_attrib27 IN (6,
+                                                                                         7,
+                                                                                         8)))
+          AND NOT EXISTS
+                 (SELECT 'x'
+                    FROM NSG_ESU_HIGHWAY_DEDICATION
+                   WHERE NEHD_NE_ID = ne_esu.ne_id AND nehd_sequence_no = 1);
+
+Commit Update
+
+2. To insert footpaths
+
+INSERT INTO NSG_ESU_HIGHWAY_DEDICATION (NEHD_NE_ID,
+                                        NEHD_ESUID,
+                                        NEHD_SEQUENCE_NO,
+                                        NEHD_HIGHWAY_DEDICATION,
+                                        NEHD_RECORD_ENTRY_DATE,
+                                        NEHD_LAST_UPDATE_DATE,
+                                        NEHD_HD_START_DATE,
+                                        NEHD_HD_PROW,
+                                        NEHD_HD_NCR,
+                                        NEHD_HD_QUIET_ROUTE,
+                                        NEHD_HD_OBSTRUCTION,
+                                        NEHD_HD_PLANNING_ORDER,
+                                        NEHD_HD_WORKS_PROHIBITED)
+   SELECT DISTINCT ne_esu.ne_id,
+                   ne_esu.ne_number,
+                   '1',
+                   '4',
+                   TRUNC (SYSDATE),
+                   TRUNC (SYSDATE),
+                   ne_esu.ne_start_date,
+                   '0',
+                   '0',
+                   '0',
+                   '0',
+                   '0',
+                   '0'
+     FROM nm_elements ne_offn,
+          nm_members memb,
+          nm_elements ne_esu
+    WHERE     ne_esu.ne_id = memb.nm_ne_id_of
+          AND memb.nm_ne_id_in = ne_offn.ne_id
+          AND ne_offn.ne_gty_group_type = 'OFFN'
+          AND ne_offn.ne_owner IN (1805,
+                                   1820,
+                                   1825,
+                                   1835,
+                                   1840,
+                                   1845,
+                                   1850)
+          AND ne_offn.ne_id IN (SELECT nad2.nad_ne_id
+                                  FROM nm_nw_ad_link_all nad2
+                                 WHERE     nad2.nad_iit_ne_id IN (SELECT iit_ne_id
+                                                                    FROM nm_inv_items
+                                                                   WHERE     iit_inv_type =
+                                                                                'TP22'
+                                                                         AND iit_chr_attrib27 IN (6,
+                                                                                                  7,
+                                                                                                  8))
+                                       AND nad2.nad_ne_id NOT IN (SELECT ne_cycle.ne_id
+                                                                    FROM nm_elements_all ne_cycle
+                                                                   WHERE     ne_cycle.ne_gty_group_type =
+                                                                                'OFFN'
+                                                                         AND ne_cycle.ne_descr LIKE
+                                                                                '%CYCLE%'
+                                                                         AND ne_cycle.ne_id IN (SELECT nad1.nad_ne_id
+                                                                                                  FROM nm_nw_ad_link_all nad1
+                                                                                                 WHERE nad1.nad_iit_ne_id IN (SELECT iit_ne_id
+                                                                                                                                FROM nm_inv_items
+                                                                                                                               WHERE     iit_inv_type =
+                                                                                                                                            'TP22'
+                                                                                                                                     AND iit_chr_attrib27 IN (6,
+                                                                                                                                                              7,
+                                                                                                                                                              8)))))
+          AND NOT EXISTS
+                 (SELECT 'x'
+                    FROM NSG_ESU_HIGHWAY_DEDICATION
+                   WHERE NEHD_NE_ID = ne_esu.ne_id AND nehd_sequence_no = 1);
+
+Commit Update
+
+
+3.To insert Motorways
+
+INSERT INTO NSG_ESU_HIGHWAY_DEDICATION (NEHD_NE_ID,
+                                        NEHD_ESUID,
+                                        NEHD_SEQUENCE_NO,
+                                        NEHD_HIGHWAY_DEDICATION,
+                                        NEHD_RECORD_ENTRY_DATE,
+                                        NEHD_LAST_UPDATE_DATE,
+                                        NEHD_HD_START_DATE,
+                                        NEHD_HD_PROW,
+                                        NEHD_HD_NCR,
+                                        NEHD_HD_QUIET_ROUTE,
+                                        NEHD_HD_OBSTRUCTION,
+                                        NEHD_HD_PLANNING_ORDER,
+                                        NEHD_HD_WORKS_PROHIBITED)
+   SELECT DISTINCT ne_esu.ne_id,
+                   ne_esu.ne_descr,
+                   '1',
+                   '11',
+                   TRUNC (SYSDATE),
+                   TRUNC (SYSDATE),
+                   ne_esu.ne_start_date,
+                   '0',
+                   '0',
+                   '0',
+                   '0',
+                   '0',
+                   '0'
+     FROM nm_elements ne_offn,
+          nm_members memb,
+          nm_elements ne_esu
+    WHERE     ne_esu.ne_nt_type = 'ESU'
+          AND ne_esu.ne_id = memb.nm_ne_id_of
+          AND memb.nm_ne_id_in = ne_offn.ne_id
+          AND ne_offn.ne_gty_group_type = 'OFFN'
+          AND ne_offn.ne_owner IN (1805,
+                                   1820,
+                                   1825,
+                                   1835,
+                                   1840,
+                                   1845,
+                                   1850)
+          AND (   ne_offn.ne_descr like 'M4%'
+               OR ne_offn.ne_descr = 'M5%')
+          AND NOT EXISTS
+                 (SELECT 'x'
+                    FROM NSG_ESU_HIGHWAY_DEDICATION
+                   WHERE NEHD_NE_ID = ne_esu.ne_id AND nehd_sequence_no = 1);
+
+Commit Update
+
+4. To Set All vechicles (everthing else)
+
+INSERT INTO NSG_ESU_HIGHWAY_DEDICATION (NEHD_NE_ID,
+                                        NEHD_ESUID,
+                                        NEHD_SEQUENCE_NO,
+                                        NEHD_HIGHWAY_DEDICATION,
+                                        NEHD_RECORD_ENTRY_DATE,
+                                        NEHD_LAST_UPDATE_DATE,
+                                        NEHD_HD_START_DATE,
+                                        NEHD_HD_PROW,
+                                        NEHD_HD_NCR,
+                                        NEHD_HD_QUIET_ROUTE,
+                                        NEHD_HD_OBSTRUCTION,
+                                        NEHD_HD_PLANNING_ORDER,
+                                        NEHD_HD_WORKS_PROHIBITED)
+   SELECT DISTINCT ne_esu.ne_id,
+                   ne_esu.ne_descr,
+                   '1',
+                   '8',
+                   TRUNC (SYSDATE),
+                   TRUNC (SYSDATE),
+                   ne_esu.ne_start_date,
+                   '0',
+                   '0',
+                   '0',
+                   '0',
+                   '0',
+                   '0'
+     FROM nm_elements ne_esu, nm_elements ne_offn, nm_members c
+    WHERE     ne_esu.ne_nt_type = 'ESU'
+          AND ne_offn.ne_nt_type = 'NSGN'
+          AND c.nm_obj_type = 'OFFN'
+          AND c.nm_ne_id_of = ne_esu.ne_id
+          AND ne_offn.ne_id = c.nm_ne_id_in
+          AND ne_esu.ne_id NOT IN (select nehd_ne_id from NSG_ESU_HIGHWAY_DEDICATION)
+
+
+Commit Update
