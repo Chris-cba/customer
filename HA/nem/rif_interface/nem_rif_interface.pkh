@@ -1,0 +1,90 @@
+CREATE OR REPLACE PACKAGE nem_rif_interface
+AS
+  -------------------------------------------------------------------------
+  --   PVCS Identifiers :-
+  --
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/rif_interface/nem_rif_interface.pkh-arc   1.0   22 Nov 2016 15:47:12   Mike.Huitson  $
+  --       Module Name      : $Workfile:   nem_rif_interface.pkh  $
+  --       Date into PVCS   : $Date:   22 Nov 2016 15:47:12  $
+  --       Date fetched Out : $Modtime:   21 Nov 2016 17:53:22  $
+  --       Version          : $Revision:   1.0  $
+  --       Based on SCCS version :
+  ------------------------------------------------------------------
+  --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
+  ------------------------------------------------------------------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.0  $';
+  --
+  c_full_export    CONSTANT VARCHAR2(100) := 'NEM RIF Interface Full Export';
+  c_update_export  CONSTANT VARCHAR2(100) := 'NEM RIF Interface Update Export';
+  --
+  TYPE ftp_con_rec IS RECORD(conn_id   hig_ftp_connections.hfc_id%TYPE
+                            ,username  hig_ftp_connections.hfc_ftp_username%TYPE
+                            ,password  hig_ftp_connections.hfc_ftp_password%TYPE
+                            ,hostname  hig_ftp_connections.hfc_ftp_host%TYPE
+                            ,port      hig_ftp_connections.hfc_ftp_port%TYPE
+                            ,out_dir   hig_ftp_connections.hfc_ftp_out_dir%TYPE);
+  --
+  TYPE nem_event_rec IS RECORD(nevt_id                nm_inv_items_all.iit_ne_id%TYPE
+                              ,event_number           NUMBER
+                              ,version_number         NUMBER
+                              ,description            VARCHAR2(500)
+                              ,event_type             VARCHAR2(500)
+                              ,event_status           VARCHAR2(500)
+                              ,data_source            VARCHAR2(500)
+                              ,planned_start_date     DATE
+                              ,planned_complete_date  DATE
+                              ,actual_start_date      DATE
+                              ,actual_complete_date   DATE
+                              ,planned_duration       NUMBER
+                              ,planned_duration_units VARCHAR2(500)
+                              ,distribute             VARCHAR2(500)
+                              ,nature_of_works        VARCHAR2(500)
+                              ,delay                  VARCHAR2(500)
+                              ,he_ref                 VARCHAR2(500)
+                              ,works_ref              VARCHAR2(500)
+                              ,tma_works_ref          VARCHAR2(500)
+                              ,mobile_lane_closure    VARCHAR2(500)
+                              ,alternate_route_used   VARCHAR2(500)
+                              ,superseded_by_id       NUMBER
+                              ,last_modified          DATE);
+  TYPE nem_event_tab IS TABLE OF nem_event_rec INDEX BY BINARY_INTEGER;
+  --
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_body_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_event_xml(pi_nevt_id IN nem_events.nevt_id%TYPE)
+    RETURN XMLTYPE;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE initialise_full_export;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE initialise_update;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE initialise_domain;
+
+--
+-----------------------------------------------------------------------------
+--
+END nem_rif_interface;
+/
