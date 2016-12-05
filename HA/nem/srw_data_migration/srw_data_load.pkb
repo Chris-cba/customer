@@ -2,11 +2,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.9   05 Jul 2016 18:50:44   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/srw_data_migration/srw_data_load.pkb-arc   3.10   05 Dec 2016 12:55:28   Mike.Huitson  $
   --       Module Name      : $Workfile:   srw_data_load.pkb  $
-  --       Date into PVCS   : $Date:   05 Jul 2016 18:50:44  $
-  --       Date fetched Out : $Modtime:   05 Jul 2016 18:41:34  $
-  --       Version          : $Revision:   3.9  $
+  --       Date into PVCS   : $Date:   05 Dec 2016 12:55:28  $
+  --       Date fetched Out : $Modtime:   29 Nov 2016 10:57:44  $
+  --       Version          : $Revision:   3.10  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.9  $';
+  g_body_sccsid   CONSTANT VARCHAR2(2000) := '$Revision:   3.10  $';
   g_package_name  CONSTANT VARCHAR2(30)   := 'srw_data_load';
   --
   g_debug    BOOLEAN := FALSE;
@@ -190,7 +190,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                     ,pi_message_type => c_debug
                     ,po_stack        => po_message_stack);
         --
-        FOR i IN 1..pi_pla.placement_count LOOP
+        FOR i IN 1..pi_pla.npa_placement_array.COUNT LOOP
           add_to_stack(pi_message      => 'Pos('||i||')'
                                         ||'-'||pi_pla.npa_placement_array(i).pl_ne_id
                                         ||'('||Nm3net.get_ne_unique(pi_pla.npa_placement_array(i).pl_ne_id)||')'
@@ -830,10 +830,6 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
             nm3extent.combine_temp_nes(pi_job_id_1       => lv_combined_job_id
                                       ,pi_job_id_2       => lv_location_job_id
                                       ,pi_check_overlaps => FALSE);
-            /*
-            ||Remove any overlaps.
-            */
-            lv_combined_job_id := nm3extent.remove_overlaps(pi_nte_id => lv_combined_job_id);
         END IF;
         --
       EXCEPTION
@@ -853,7 +849,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     ||the loop however not doing it here can lead to errors when the
     ||extent is used to add to an assets location.
     */
-    lv_combined_job_id := nm3extent.remove_overlaps(pi_nte_id => lv_combined_job_id);
+    lv_combined_job_id := nm3extent.remove_overlaps(pi_nte_id => nm3extent.remove_overlaps(pi_nte_id => lv_combined_job_id));
     --
     RETURN lv_combined_job_id;
     --
@@ -1388,9 +1384,9 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
             /*
             ||Populate location.
             */
-            IF NOT lv_lane_pla.is_empty
+            IF lv_lane_pla.npa_placement_array.COUNT > 0
              THEN
-                FOR i IN 1..lv_lane_pla.placement_count LOOP
+                FOR i IN 1..lv_lane_pla.npa_placement_array.COUNT LOOP
                   --
                   po_loc_tab(po_loc_tab.COUNT+1).nm_ne_id_of := lv_lane_pla.npa_placement_array(i).pl_ne_id;
                   po_loc_tab(po_loc_tab.COUNT).nm_begin_mp := lv_lane_pla.npa_placement_array(i).pl_start;
@@ -1739,6 +1735,7 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
   PROCEDURE process_closures(pi_srw_operational_area IN srw_closures.operational_area%TYPE DEFAULT NULL
                             ,pi_closure              IN srw_closures.closure%TYPE DEFAULT NULL
                             ,pi_excluded_closures    IN closure_ids_tab DEFAULT closure_ids_tab()
+                            ,pi_refresh_roads        IN BOOLEAN DEFAULT FALSE
                             ,pi_validation_only      IN BOOLEAN DEFAULT FALSE)
     IS
     --
@@ -2268,7 +2265,11 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
                                   ,pi_message_type => c_debug
                                   ,po_stack        => lt_message_stack);
                   END IF;
-                  --
+                  /*
+                  ||Commit and Reset the save point.
+                  */
+                  COMMIT;
+                  SAVEPOINT closure_to_event_sp;
                   nem_api.recalculate_no_impact(pi_nevt_id    => lv_event_id
                                                ,po_error_flag => lv_error_flag
                                                ,po_error_text => lv_error_text);
@@ -2491,7 +2492,10 @@ CREATE OR REPLACE PACKAGE BODY srw_data_load AS
     /*
     ||Populate NEM_ROADS.
     */
-    refresh_nem_roads;
+    IF pi_refresh_roads
+     THEN
+        refresh_nem_roads;
+    END IF;
     --
   EXCEPTION
     WHEN others
