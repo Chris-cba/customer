@@ -7,9 +7,9 @@ AS
 --
 --       pvcsid                 : $
 --       Module Name      : $Workfile:   ha_insp.pkb  $
---       Date into PVCS   : $Date:   Feb 29 2016 10:00:42  $
---       Date fetched Out : $Modtime:   Feb 26 2016 10:41:38  $
---       PVCS Version     : $Revision:   1.4  $
+--       Date into PVCS   : $Date:   Jan 16 2017 08:58:58  $
+--       Date fetched Out : $Modtime:   Jan 16 2017 08:56:34  $
+--       PVCS Version     : $Revision:   1.5  $
 --       Based on SCCS version :
 --
 ----   -- 26 Oct 2013 - Modified to use FTP functionality in csv_update_processing
@@ -19,7 +19,7 @@ AS
 --   %YourObjectName% body
 --
 -----------------------------------------------------------------------------
---    Copyright (c) Bentley Systems ltd, 2012
+--    Copyright (c) Bentley Systems ltd, 2017
 -----------------------------------------------------------------------------
 --
 --all global package variables here
@@ -59,7 +59,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.4  $"';
+   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.5  $"';
 
    g_package_name CONSTANT varchar2(30) := 'HA_INSP';
 --
@@ -285,6 +285,13 @@ function create_inspection (p_admin_unit      IN     nm_inv_items_all.iit_admin_
    AND insp_date_due = p_date;
 
    l_duplicate NUMBER DEFAULT 0;
+   l_route_loc_dets nm3route_ref.tab_rec_route_loc_dets;
+
+   l_view nm_inv_types_all.nit_view_name%type;
+   l_theme nm_themes_all.nth_theme_id%type;
+   l_sp sdo_geometry;
+   l_x number;
+   l_y number;
 
 BEGIN
 
@@ -305,6 +312,13 @@ BEGIN
 
       BEGIN
 
+         select nit_view_name into l_view from nm_inv_types_all where nit_inv_type = pf_asset_type; 
+         select nth_theme_id into l_theme from nm_themes_all where nth_table_name = l_view and rownum = 1;
+   
+         l_sp := nm3sdo.get_start_point(l_theme,pf_insp_parent_id);
+         l_x  := round(nm3sdo.get_x_from_pt_geometry(l_sp),3);
+         l_y  := round(nm3sdo.get_y_from_pt_geometry(l_sp),3);
+
          -- Create new Inspection asset
          l_asset_id:= nm3api_inv_insp.ins (p_admin_unit      => p_admin_unit
                                           ,pf_insp_type      => pf_insp_type
@@ -312,10 +326,12 @@ BEGIN
                                           ,pf_asset_type     => pf_asset_type
                                           ,pf_insp_date_due  => pf_insp_date_due
                                           ,pf_insp_parent_id => pf_insp_parent_id
+                                          ,pf_start_x        => l_x
+                                          ,pf_start_y        => l_y
                                           );
 
          commit;
-
+           
          UPDATE nm_inv_items_all
          SET iit_peo_invent_by_id = 1
          WHERE iit_ne_id = l_asset_id;
@@ -330,20 +346,14 @@ BEGIN
       END;
 
       -- get parents location details
-      OPEN get_mem_parent_loc_det(pf_insp_parent_id);
-      FETCH get_mem_parent_loc_det INTO parent_mem_loc_det;
-      CLOSE get_mem_parent_loc_det;
-
-      OPEN get_ele_parent_loc_det(pf_insp_parent_id);
-      FETCH get_ele_parent_loc_det INTO parent_ele_loc_det;
-      CLOSE get_ele_parent_loc_det;
+      nm3asset.get_inv_route_location_details(pf_insp_parent_id,pf_asset_type,l_route_loc_dets);
 
       BEGIN
 
          nm3api_inv.locate_item(p_iit_ne_id                => l_asset_id
-                               ,p_element_ne_unique        => parent_ele_loc_det.ne_unique
-                               ,p_element_ne_nt_type       => parent_ele_loc_det.ne_nt_type
-                               ,p_element_begin_mp         => parent_mem_loc_det.nm_begin_mp
+                               ,p_element_ne_unique        => l_route_loc_dets(1).route_ne_unique
+                               ,p_element_ne_nt_type       => l_route_loc_dets(1).route_ne_nt_type
+                               ,p_element_begin_mp         => l_route_loc_dets(1).nm_slk
                               );
 
          commit;
@@ -971,7 +981,7 @@ PROCEDURE mai3710 (p_gri_id NUMBER) IS
    AND ngqi_job_id = p_gaz_query_id);
 
 BEGIN
-nm_debug.debug_on;
+   nm_debug.debug_on;
 -- Get Gri Params and set the globals
 
    set_params(p_gri_id);
