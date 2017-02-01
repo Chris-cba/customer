@@ -1,10 +1,10 @@
 --   PVCS Identifiers :-
 --
---       sccsid           : $Header:   //new_vm_latest/archives/customer/HA/insp_scheduling/fixes/mai_4700_customer_HE_fix2.sql-arc   1.0   Jan 31 2017 09:22:18   James.Wadsworth  $
+--       sccsid           : $Header:   //new_vm_latest/archives/customer/HA/insp_scheduling/fixes/mai_4700_customer_HE_fix2.sql-arc   1.1   Feb 01 2017 09:24:38   James.Wadsworth  $
 --       Module Name      : $Workfile:   mai_4700_customer_HE_fix2.sql  $ 
---       Date into PVCS   : $Date:   Jan 31 2017 09:22:18  $
---       Date fetched Out : $Modtime:   Jan 31 2017 09:20:12  $
---       PVCS Version     : $Revision:   1.0  $
+--       Date into PVCS   : $Date:   Feb 01 2017 09:24:38  $
+--       Date fetched Out : $Modtime:   Feb 01 2017 09:24:10  $
+--       PVCS Version     : $Revision:   1.1  $
 --
 ----------------------------------------------------------------------------
 --   Copyright (c) 2017 Bentley Systems Incorporated.  All rights reserved.
@@ -138,7 +138,7 @@ SELECT
    ,USER
    ,'Y'
    ,10
-   ,'N'
+   ,'Y'
    ,'UPPER'
 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 
