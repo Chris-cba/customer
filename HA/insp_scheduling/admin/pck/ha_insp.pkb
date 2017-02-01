@@ -7,9 +7,9 @@ AS
 --
 --       pvcsid                 : $
 --       Module Name      : $Workfile:   ha_insp.pkb  $
---       Date into PVCS   : $Date:   Jan 16 2017 08:58:58  $
---       Date fetched Out : $Modtime:   Jan 16 2017 08:56:34  $
---       PVCS Version     : $Revision:   1.5  $
+--       Date into PVCS   : $Date:   Feb 01 2017 09:35:44  $
+--       Date fetched Out : $Modtime:   Feb 01 2017 09:33:54  $
+--       PVCS Version     : $Revision:   1.6  $
 --       Based on SCCS version :
 --
 ----   -- 26 Oct 2013 - Modified to use FTP functionality in csv_update_processing
@@ -35,6 +35,7 @@ AS
    g_asset_processed  NUMBER DEFAULT 0;
    g_schedule_errors  BOOLEAN DEFAULT FALSE;
    g_asset_error      BOOLEAN DEFAULT FALSE;
+   g_xy_error         BOOLEAN DEFAULT FALSE;
    g_asset_loc_error  BOOLEAN DEFAULT FALSE;
    g_csv_errors       BOOLEAN DEFAULT FALSE;
    g_batch_exists     BOOLEAN DEFAULT FALSE;
@@ -59,7 +60,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.5  $"';
+   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.6  $"';
 
    g_package_name CONSTANT varchar2(30) := 'HA_INSP';
 --
@@ -283,6 +284,15 @@ function create_inspection (p_admin_unit      IN     nm_inv_items_all.iit_admin_
    AND insp_type = p_insp_type
    AND insp_source = p_source
    AND insp_date_due = p_date;
+   
+   CURSOR get_parent_type_info(p_asset_type NM_INV_TYPES_ALL.NIT_INV_TYPE%TYPE) IS
+   SELECT * from nm_inv_types
+   where nit_inv_type = p_asset_type;
+   
+   CURSOR get_parent_xy(p_asset_id nm_inv_items_all.iit_ne_id%TYPE) IS
+   SELECT * FROM nm_inv_items
+   WHERE iit_ne_id = p_asset_id;
+   
 
    l_duplicate NUMBER DEFAULT 0;
    l_route_loc_dets nm3route_ref.tab_rec_route_loc_dets;
@@ -292,7 +302,13 @@ function create_inspection (p_admin_unit      IN     nm_inv_items_all.iit_admin_
    l_sp sdo_geometry;
    l_x number;
    l_y number;
-
+   l_pnt_or_cont NM_INV_TYPES_ALL.NIT_PNT_OR_CONT%type;
+  
+   CURSOR get_point_XY (p_asset_id nm_inv_items_all.iit_ne_id%TYPE) IS
+   select iit_x, iit_y from nm_inv_items
+   where iit_ne_id = p_asset_id;
+ 
+  
 BEGIN
 
    -- Reset error flags
@@ -310,7 +326,22 @@ BEGIN
 
    ELSE
 
-      BEGIN
+      -- get the xy values for the parent
+      l_pnt_or_cont := NM3INV.GET_NIT_PNT_OR_CONT(pf_asset_type);
+                                          
+      IF l_pnt_or_cont = 'P' THEN   -- If parent a point get the xy from the parent asset type
+      
+         FOR i IN get_point_XY(pf_insp_parent_id) LOOP
+         
+            l_x := i.iit_x;
+            l_y := i.iit_y;
+           
+         END LOOP; 
+         
+         
+   
+      ELSE  -- We need to calulate the XY
+     
 
          select nit_view_name into l_view from nm_inv_types_all where nit_inv_type = pf_asset_type; 
          select nth_theme_id into l_theme from nm_themes_all where nth_table_name = l_view and rownum = 1;
@@ -318,8 +349,17 @@ BEGIN
          l_sp := nm3sdo.get_start_point(l_theme,pf_insp_parent_id);
          l_x  := round(nm3sdo.get_x_from_pt_geometry(l_sp),3);
          l_y  := round(nm3sdo.get_y_from_pt_geometry(l_sp),3);
-
-         -- Create new Inspection asset
+     
+     END IF;
+     
+     IF l_x is null or l_y is null THEN  -- we cant create an INSP as we have no spatila geometry
+                  
+        g_xy_error := TRUE;
+    
+     ELSE    
+      
+     BEGIN  
+        -- Create new Inspection asset
          l_asset_id:= nm3api_inv_insp.ins (p_admin_unit      => p_admin_unit
                                           ,pf_insp_type      => pf_insp_type
                                           ,pf_insp_source    => pf_insp_source
@@ -344,7 +384,8 @@ BEGIN
          g_asset_error     := TRUE;
 
       END;
-
+      
+     END IF;
       -- get parents location details
       nm3asset.get_inv_route_location_details(pf_insp_parent_id,pf_asset_type,l_route_loc_dets);
 
@@ -365,10 +406,17 @@ BEGIN
 
       END;
 
-      IF g_asset_error = TRUE THEN
-
-         hig_process_api.log_it(pi_message =>'Inspection Due On '||pf_insp_date_due||'. Inspection Asset Failed to Create. Contact Your Adminstrator'
-                               ,pi_message_type => 'E');
+      IF g_xy_error = TRUE THEN
+            
+            hig_process_api.log_it(pi_message =>'An Inspection cannot be created for '||pf_asset_type||' - '||pf_insp_parent_id||' because that asset has no spatial location'
+                                    ,pi_message_type => 'E');
+      
+      ELSIF g_asset_error = TRUE THEN
+      
+               hig_process_api.log_it(pi_message =>'Inspection Due On '||pf_insp_date_due||'. Inspection Asset Failed to Create. Contact Your Adminstrator'
+                                  ,pi_message_type => 'E');
+         
+         
 
       ELSE
 
@@ -1358,6 +1406,8 @@ BEGIN
                                ,pf_asset_type             => static_insp_rec_data.asset_type
                                ,pf_insp_date_due          => static_insp_rec_data.insp_date_due
                                ,pf_insp_batch_id          => static_insp_rec_data.insp_batch_id
+                               ,pf_start_x                => static_insp_rec_data.start_x
+                               ,pf_start_y                => static_insp_rec_data.start_y                               
                               );
     END IF;
 
@@ -1581,6 +1631,8 @@ BEGIN
                                ,pf_asset_type             => insp_rec_data.asset_type
                                ,pf_insp_date_due          => insp_rec_data.insp_date_due
                                ,pf_insp_batch_id          => insp_rec_data.insp_batch_id
+                               ,pf_start_x                => insp_rec_data.start_x
+                               ,pf_start_y                => insp_rec_data.start_y      
                                );
     ELSE
       nm3api_inv_insp.upd_attr (pf_insp_inspected_flag    => 'Y'
@@ -1593,6 +1645,8 @@ BEGIN
                                ,pf_asset_type             => insp_rec_data.asset_type
                                ,pf_insp_date_due          => insp_rec_data.insp_date_due
                                ,pf_insp_batch_id          => insp_rec_data.insp_batch_id
+                               ,pf_start_x                => insp_rec_data.start_x
+                               ,pf_start_y                => insp_rec_data.start_y 
                                );
       -- Now lets update the Parents inspected date
       -- IF inspected flag is Y then update the parent
@@ -1771,6 +1825,8 @@ BEGIN
                             ,pf_insp_not_insp_reason   => static_insp_rec_data.insp_not_insp_reason
                             ,pf_insp_condition_comment => static_insp_rec_data.insp_condition_comment
                             ,pf_insp_date_inspected    => static_insp_rec_data.insp_date_inspected
+                            ,pf_start_x                => static_insp_rec_data.start_x
+                               ,pf_start_y                => static_insp_rec_data.start_y
                            );
 
    commit;
