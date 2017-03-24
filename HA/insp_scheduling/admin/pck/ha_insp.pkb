@@ -7,9 +7,9 @@ AS
 --
 --       pvcsid                 : $
 --       Module Name      : $Workfile:   ha_insp.pkb  $
---       Date into PVCS   : $Date:   Feb 01 2017 09:35:44  $
---       Date fetched Out : $Modtime:   Feb 01 2017 09:33:54  $
---       PVCS Version     : $Revision:   1.6  $
+--       Date into PVCS   : $Date:   Mar 24 2017 16:01:18  $
+--       Date fetched Out : $Modtime:   Mar 24 2017 15:57:20  $
+--       PVCS Version     : $Revision:   1.7  $
 --       Based on SCCS version :
 --
 ----   -- 26 Oct 2013 - Modified to use FTP functionality in csv_update_processing
@@ -60,7 +60,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.6  $"';
+   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.7  $"';
 
    g_package_name CONSTANT varchar2(30) := 'HA_INSP';
 --
@@ -77,7 +77,7 @@ FUNCTION get_body_version RETURN varchar2 IS
 BEGIN
    RETURN g_body_sccsid;
 END get_body_version;
---
+-- 
 -----------------------------------------------------------------------------
 --
 Procedure set_params (p_gri_param NUMBER) IS
@@ -292,133 +292,159 @@ function create_inspection (p_admin_unit      IN     nm_inv_items_all.iit_admin_
    CURSOR get_parent_xy(p_asset_id nm_inv_items_all.iit_ne_id%TYPE) IS
    SELECT * FROM nm_inv_items
    WHERE iit_ne_id = p_asset_id;
-   
 
    l_duplicate NUMBER DEFAULT 0;
    l_route_loc_dets nm3route_ref.tab_rec_route_loc_dets;
 
    l_view nm_inv_types_all.nit_view_name%type;
-   l_theme nm_themes_all.nth_theme_id%type;
+   l_theme nm_themes_all.nth_theme_id%type; 
+   l_theme_net nm_themes_all.nth_theme_id%type;
+   
    l_sp sdo_geometry;
    l_x number;
    l_y number;
    l_pnt_or_cont NM_INV_TYPES_ALL.NIT_PNT_OR_CONT%type;
   
+   l_ne_unique nm_elements.ne_unique%type;
+   l_ne_type nm_elements.ne_type%type;
+   l_ne_id nm_elements.ne_id%type;
+   l_nm_slk nm_members_all.nm_slk%type;
+   l_feat_tab nm_themes_all.nth_feature_table%type;
+
    CURSOR get_point_XY (p_asset_id nm_inv_items_all.iit_ne_id%TYPE) IS
    select iit_x, iit_y from nm_inv_items
    where iit_ne_id = p_asset_id;
- 
+   
+   g_schedule_errors  BOOLEAN DEFAULT FALSE;
+   g_asset_error      BOOLEAN DEFAULT FALSE;
+   g_xy_error         BOOLEAN DEFAULT FALSE;
+   g_asset_loc_error  BOOLEAN DEFAULT FALSE;
+   g_csv_errors       BOOLEAN DEFAULT FALSE;
+   g_batch_exists     BOOLEAN DEFAULT FALSE;
   
 BEGIN
 
+   nm3ctx.set_context('SNAP_ON', 'FALSE' );
+   nm3ctx.set_core_context('PREFERRED_LRM','SECT');
+   
    -- Reset error flags
-   g_asset_error     := FAlSE;
+   g_asset_error := FAlSE;
    g_asset_loc_error := FALSE;
+   g_xy_error := FALSE;
 
    OPEN chk_for_duplicates(pf_insp_parent_id,pf_insp_type,pf_insp_source,pf_insp_date_due);
    FETCH chk_for_duplicates INTO l_duplicate;
    CLOSE chk_for_duplicates;
 
    IF l_duplicate = 1 THEN
-
        --Inspection alraedy exists do not create another identica one
        hig_process_api.log_it(pi_message =>'An Inspection Already Exists For '||pf_insp_type||' On Asset '||pf_insp_parent_id||' On Date '||pf_insp_date_due);
-
    ELSE
-
       -- get the xy values for the parent
       l_pnt_or_cont := NM3INV.GET_NIT_PNT_OR_CONT(pf_asset_type);
+      nm3asset.get_inv_route_location_details(pf_insp_parent_id, pf_asset_type, l_route_loc_dets);
                                           
-      IF l_pnt_or_cont = 'P' THEN   -- If parent a point get the xy from the parent asset type
-      
-         FOR i IN get_point_XY(pf_insp_parent_id) LOOP
-         
-            l_x := i.iit_x;
-            l_y := i.iit_y;
-           
-         END LOOP; 
-         
-         
-   
-      ELSE  -- We need to calulate the XY
-     
-
-         select nit_view_name into l_view from nm_inv_types_all where nit_inv_type = pf_asset_type; 
-         select nth_theme_id into l_theme from nm_themes_all where nth_table_name = l_view and rownum = 1;
-   
-         l_sp := nm3sdo.get_start_point(l_theme,pf_insp_parent_id);
-         l_x  := round(nm3sdo.get_x_from_pt_geometry(l_sp),3);
-         l_y  := round(nm3sdo.get_y_from_pt_geometry(l_sp),3);
-     
-     END IF;
-     
-     IF l_x is null or l_y is null THEN  -- we cant create an INSP as we have no spatila geometry
-                  
-        g_xy_error := TRUE;
-    
-     ELSE    
-      
-     BEGIN  
-        -- Create new Inspection asset
-         l_asset_id:= nm3api_inv_insp.ins (p_admin_unit      => p_admin_unit
-                                          ,pf_insp_type      => pf_insp_type
-                                          ,pf_insp_source    => pf_insp_source
-                                          ,pf_asset_type     => pf_asset_type
-                                          ,pf_insp_date_due  => pf_insp_date_due
-                                          ,pf_insp_parent_id => pf_insp_parent_id
-                                          ,pf_start_x        => l_x
-                                          ,pf_start_y        => l_y
-                                          );
-
-         commit;
-           
-         UPDATE nm_inv_items_all
-         SET iit_peo_invent_by_id = 1
-         WHERE iit_ne_id = l_asset_id;
-
-         commit;
-
-      EXCEPTION WHEN OTHERS THEN
-
-         g_schedule_errors := TRUE;
-         g_asset_error     := TRUE;
-
-      END;
-      
-     END IF;
-      -- get parents location details
-      nm3asset.get_inv_route_location_details(pf_insp_parent_id,pf_asset_type,l_route_loc_dets);
+      SELECT nit_view_name INTO l_view FROM nm_inv_types_all WHERE nit_inv_type = pf_asset_type; 
+      SELECT nth_theme_id, nth_feature_table INTO l_theme, l_feat_tab FROM nm_themes_all WHERE nth_table_name = l_view AND ROWNUM = 1;
 
       BEGIN
 
-         nm3api_inv.locate_item(p_iit_ne_id                => l_asset_id
-                               ,p_element_ne_unique        => l_route_loc_dets(1).route_ne_unique
-                               ,p_element_ne_nt_type       => l_route_loc_dets(1).route_ne_nt_type
-                               ,p_element_begin_mp         => l_route_loc_dets(1).nm_slk
-                              );
+        -- Check if the feature table is a synseg asset
 
-         commit;
-
-      EXCEPTION WHEN OTHERS THEN
-
-         g_schedule_errors := TRUE;      --Not likely to fail since to even get into create inspection the parent must be located
-         g_asset_loc_error    := TRUE;   -- but might as well cater for all eventualities
-
+        IF INSTR(l_feat_tab,'_NIT_') > 1  THEN
+           SELECT nth_theme_id INTO l_theme_net FROM nm_themes_all WHERE nth_table_name = 'NM_NLT_D_SECT_SDO' AND ROWNUM = 1;
+           l_ne_unique := l_route_loc_dets(1).route_ne_unique;
+           l_ne_id := l_route_loc_dets(1).route_ne_id;
+           l_ne_type := l_route_loc_dets(1).route_ne_nt_type;
+           l_nm_slk := l_route_loc_dets(1).nm_slk;
+           l_sp := nm3sdo.get_xy_from_measure(l_theme_net,l_ne_id,l_nm_slk);
+           l_x  := ROUND(nm3sdo.get_x_from_pt_geometry(l_sp),3);
+           l_y  := ROUND(nm3sdo.get_y_from_pt_geometry(l_sp),3);
+        ELSE
+           -- Other asset types 
+           IF l_pnt_or_cont = 'P' THEN   -- If parent a point get the xy from the parent asset type
+              FOR i IN get_point_XY(pf_insp_parent_id) LOOP
+                  l_x := i.iit_x;
+                  l_y := i.iit_y;
+              END LOOP;
+         
+              IF l_x is null or l_y is null THEN  -- we cant create an INSP as we have no spatila geometry        
+                 g_xy_error := TRUE;   
+              END IF;
+      
+           ELSE -- We need to calculate the XY
+              l_sp := nm3sdo.get_start_point(l_theme,pf_insp_parent_id);
+              l_x  := ROUND(nm3sdo.get_x_from_pt_geometry(l_sp),3);
+              l_y  := ROUND(nm3sdo.get_y_from_pt_geometry(l_sp),3);
+           END IF;
+           
+        END IF;
+       
       END;
+      
+      BEGIN
+         IF l_x is null or l_y is null THEN  -- we cant create an INSP as we have no spatila geometry
+            g_xy_error := TRUE;
+         ELSE
+            -- Create new Inspection asset
+ 
+            l_asset_id:= nm3api_inv_insp.ins (p_admin_unit      => p_admin_unit
+                                             ,pf_insp_type      => pf_insp_type
+                                             ,pf_insp_source    => pf_insp_source
+                                             ,pf_asset_type     => pf_asset_type
+                                             ,pf_insp_date_due  => pf_insp_date_due
+                                             ,pf_insp_parent_id => pf_insp_parent_id
+                                             ,pf_start_x        => l_x
+                                             ,pf_start_y        => l_y
+                                             );
 
-      IF g_xy_error = TRUE THEN
+
+            COMMIT;
             
-            hig_process_api.log_it(pi_message =>'An Inspection cannot be created for '||pf_asset_type||' - '||pf_insp_parent_id||' because that asset has no spatial location'
-                                    ,pi_message_type => 'E');
-      
-      ELSIF g_asset_error = TRUE THEN
-      
-               hig_process_api.log_it(pi_message =>'Inspection Due On '||pf_insp_date_due||'. Inspection Asset Failed to Create. Contact Your Adminstrator'
-                                  ,pi_message_type => 'E');
-         
-         
+            UPDATE nm_inv_items_all
+            SET iit_peo_invent_by_id = 1
+            WHERE iit_ne_id = l_asset_id;
 
-      ELSE
+            COMMIT;
+            
+         END IF;
+
+      EXCEPTION
+         WHEN OTHERS THEN
+           g_schedule_errors := TRUE;
+           g_asset_error     := TRUE;
+      END;
+      
+   END IF;
+
+   BEGIN
+
+     nm3api_inv.locate_item(p_iit_ne_id                => l_asset_id
+                           ,p_element_ne_unique        => l_route_loc_dets(1).route_ne_unique
+                           ,p_element_ne_nt_type       => l_route_loc_dets(1).route_ne_nt_type
+                           ,p_element_begin_mp         => l_route_loc_dets(1).nm_slk
+                           );
+
+     COMMIT;
+
+   EXCEPTION WHEN OTHERS THEN
+
+     g_schedule_errors := TRUE;   --Not likely to fail since to even get into create inspection the parent must be located
+     g_asset_loc_error := TRUE;   -- but might as well cater for all eventualities
+
+   END;
+
+   IF g_xy_error = TRUE THEN
+            
+      hig_process_api.log_it(pi_message =>'An Inspection cannot be created for '||pf_asset_type||' - '||pf_insp_parent_id||' because that asset has no spatial location'
+                            ,pi_message_type => 'E');
+      
+   ELSIF g_asset_error = TRUE THEN
+      
+         hig_process_api.log_it(pi_message =>'Inspection Due On '||pf_insp_date_due||'. Inspection Asset Failed to Create. Contact Your Adminstrator'
+                               ,pi_message_type => 'E');
+         
+   ELSE
 
          IF pf_module = 'MAI3700' THEN
 
@@ -436,8 +462,6 @@ BEGIN
                                   ,pi_message_type => 'E');
 
          END IF;
-
-      END IF;
 
    END IF;
 
