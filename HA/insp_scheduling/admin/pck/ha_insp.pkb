@@ -7,9 +7,9 @@ AS
 --
 --       pvcsid                 : $
 --       Module Name      : $Workfile:   ha_insp.pkb  $
---       Date into PVCS   : $Date:   Mar 24 2017 16:01:18  $
---       Date fetched Out : $Modtime:   Mar 24 2017 15:57:20  $
---       PVCS Version     : $Revision:   1.7  $
+--       Date into PVCS   : $Date:   Mar 27 2017 13:32:16  $
+--       Date fetched Out : $Modtime:   Mar 27 2017 13:30:16  $
+--       PVCS Version     : $Revision:   1.8  $
 --       Based on SCCS version :
 --
 ----   -- 26 Oct 2013 - Modified to use FTP functionality in csv_update_processing
@@ -60,7 +60,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.7  $"';
+   g_body_sccsid  CONSTANT varchar2(2000) :='"$Revision:   1.8  $"';
 
    g_package_name CONSTANT varchar2(30) := 'HA_INSP';
 --
@@ -352,7 +352,7 @@ BEGIN
         -- Check if the feature table is a synseg asset
 
         IF INSTR(l_feat_tab,'_NIT_') > 1  THEN
-           SELECT nth_theme_id INTO l_theme_net FROM nm_themes_all WHERE nth_table_name = 'NM_NLT_D_SECT_SDO' AND ROWNUM = 1;
+           SELECT nth_theme_id INTO l_theme_net FROM nm_themes_all WHERE nth_table_name = 'V_NM_NLT_D_SECT_SDO_DT' AND ROWNUM = 1;
            l_ne_unique := l_route_loc_dets(1).route_ne_unique;
            l_ne_id := l_route_loc_dets(1).route_ne_id;
            l_ne_type := l_route_loc_dets(1).route_ne_nt_type;
