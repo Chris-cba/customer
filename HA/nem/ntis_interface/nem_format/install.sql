@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.4   21 Sep 2016 16:58:54   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.5   30 Jun 2017 18:46:46   Mike.Huitson  $
 --       Module Name      : $Workfile:   install.sql  $
---       Date into PVCS   : $Date:   21 Sep 2016 16:58:54  $
---       Date fetched Out : $Modtime:   21 Sep 2016 16:58:04  $
---       Version          : $Revision:   1.4  $
+--       Date into PVCS   : $Date:   30 Jun 2017 18:46:46  $
+--       Date fetched Out : $Modtime:   29 Jun 2017 12:13:26  $
+--       Version          : $Revision:   1.5  $
 -------------------------------------------------------------------------
 --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
 -------------------------------------------------------------------------
@@ -105,7 +105,54 @@ DECLARE
         RAISE;
   END hpt_exists;
   --
+  FUNCTION get_3min_int
+    RETURN hig_scheduling_frequencies.hsfr_frequency_id%TYPE IS
+    --
+    lv_retval  hig_scheduling_frequencies.hsfr_frequency_id%TYPE;
+    --
+  BEGIN
+    --
+    SELECT hsfr_frequency_id
+      FROM hig_scheduling_frequencies
+      INTO lv_retval
+     WHERE hsfr_frequency = 'freq=minutely; interval=3;'
+         ;
+    --
+  EXCEPTION
+    WHEN no_data_found
+     THEN
+        RETURN NULL;
+    WHEN others
+     THEN
+        RAISE;
+  END get_3min_int;
+  --
 BEGIN
+  --
+  lv_3min_int := get_3min_int;
+  --
+  IF lv_3min_int IS NULL
+   THEN
+      --
+      lv_3min_int := hsfr_frequency_id_seq.NEXTVAL;
+      --
+      INSERT
+        INTO hig_scheduling_frequencies
+            (hsfr_frequency_id
+            ,hsfr_meaning
+            ,hsfr_frequency
+            ,hsfr_interval_in_mins)
+      SELECT lv_3min_int
+            ,'3 Minutes'
+            ,'freq=minutely; interval=3;'
+            ,3
+        FROM dual
+       WHERE NOT EXISTS(SELECT 1
+                          FROM hig_scheduling_frequencies
+                         WHERE hsfr_meaning = '3 Minutes'
+                           AND hsfr_frequency = 'freq=minutely; interval=3;')
+      ;
+  END IF;
   --
   IF NOT hpt_exists(pi_name => 'NEM NTIS Interface Full Export')
    THEN
@@ -288,6 +335,16 @@ BEGIN
            ;
       --
       INSERT
+        INTO hig_process_type_frequencies
+            (hpfr_process_type_id
+            ,hpfr_frequency_id
+            ,hpfr_seq)
+      VALUES(lv_process_type_id
+            ,lv_3min_int
+            ,1)
+           ;
+      --
+      INSERT
         INTO hig_process_type_files
             (hptf_file_type_id
             ,hptf_name
@@ -437,6 +494,42 @@ SELECT
        ,'72' FROM DUAL
  WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
                    WHERE HOV_ID = 'NTISMAINT')
+/
+
+INSERT INTO HIG_OPTION_LIST
+       (HOL_ID
+       ,HOL_PRODUCT
+       ,HOL_NAME
+       ,HOL_REMARKS
+       ,HOL_DOMAIN
+       ,HOL_DATATYPE
+       ,HOL_MIXED_CASE
+       ,HOL_USER_OPTION
+       ,HOL_MAX_LENGTH
+       )
+SELECT 
+        'NTISCLNUPD'
+       ,'NEM'
+       ,'NTIS Cleanup Files on Update'
+       ,'If the value of this option is ''Y'' files will be cleaned up as part of the Update File creation process, otherwise a separate process to clean up files will be required.'
+       ,'Y_OR_N'
+       ,'VARCHAR2'
+       ,'N'
+       ,'N'
+       ,1 FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_LIST
+                   WHERE HOL_ID = 'NTISCLNUPD')
+/
+
+INSERT INTO HIG_OPTION_VALUES
+       (HOV_ID
+       ,HOV_VALUE
+       )
+SELECT 
+        'NTISCLNUPD'
+       ,'N' FROM DUAL
+ WHERE NOT EXISTS (SELECT 1 FROM HIG_OPTION_VALUES
+                   WHERE HOV_ID = 'NTISCLNUPD')
 /
 
 COMMIT
