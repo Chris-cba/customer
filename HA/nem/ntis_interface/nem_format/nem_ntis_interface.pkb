@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.8   11 Oct 2016 16:09:58   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.9   30 Jun 2017 18:43:44   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   11 Oct 2016 16:09:58  $
-  --       Date fetched Out : $Modtime:   11 Oct 2016 15:39:30  $
-  --       Version          : $Revision:   1.8  $
+  --       Date into PVCS   : $Date:   30 Jun 2017 18:43:44  $
+  --       Date fetched Out : $Modtime:   30 Jun 2017 18:06:36  $
+  --       Version          : $Revision:   1.9  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.8  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.9  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -650,9 +650,6 @@ AS
     lt_rm_files  rm_file_tab;
     --
   BEGIN
-    --
-    hig_process_api.log_it(pi_message      => 'Starting File cleanup.'
-                          ,pi_summary_flag => 'Y');
     /*
     ||Get FTP Connections to clean up.
     */
@@ -694,6 +691,9 @@ AS
           lt_files(j) := lt_ftp_files(j);
           --
         END LOOP;
+        --
+        hig_process_api.log_it(pi_message      => lt_files.COUNT||' files found on the FTP Server.'
+                              ,pi_summary_flag => 'N');
         /*
         ||Get the list of files to remove.
         */
@@ -711,6 +711,9 @@ AS
         /*
         ||Remove the files.
         */
+        hig_process_api.log_it(pi_message      => lt_rm_files.COUNT||' files identified for removal.'
+                              ,pi_summary_flag => 'N');
+        --
         FOR j IN 1..lt_rm_files.COUNT LOOP
           --
           hig_process_api.log_it(pi_message      => 'Removing file: '||lt_rm_files(j).hpf_filename
@@ -770,6 +773,9 @@ AS
           lt_files(j) := lt_dir_files(j);
           --
         END LOOP;
+        --
+        hig_process_api.log_it(pi_message      => lt_files.COUNT||' files found in the Directory.'
+                              ,pi_summary_flag => 'N');
         /*
         ||Get the list of files to remove.
         */
@@ -787,6 +793,9 @@ AS
         /*
         ||Remove the files.
         */
+        hig_process_api.log_it(pi_message      => lt_rm_files.COUNT||' files identified for removal.'
+                              ,pi_summary_flag => 'N');
+        --
         FOR j IN 1..lt_rm_files.COUNT LOOP
           --
           hig_process_api.log_it(pi_message      => 'Removing file: '||lt_rm_files(j).hpf_filename
@@ -811,6 +820,28 @@ AS
     --
   END cleanup_files;
 
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE cleanup_files
+    IS
+  BEGIN
+    --
+    hig_process_api.log_it('Starting File cleanup using NTIS Interface '||get_body_version);
+    --
+    cleanup_files(pi_run_date => SYSDATE);
+    --
+    hig_process_api.process_execution_end(pi_success_flag => 'Y');
+    --
+  EXCEPTION
+    WHEN others
+     THEN
+        hig_process_api.log_it('ERRORS OCCURRED DURING THE PROCESS.');
+        hig_process_api.log_it(SQLERRM||CHR(10)||dbms_utility.format_error_backtrace);
+        hig_process_api.log_it('File cleanup not successful.');
+        hig_process_api.process_execution_end(pi_success_flag => 'N');
+  END cleanup_files;
+  
   --
   -----------------------------------------------------------------------------
   --
@@ -1051,7 +1082,9 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  FUNCTION get_event_xml(pi_events IN nem_event_tab)
+  FUNCTION get_event_xml(pi_events     IN nem_event_tab
+                        ,pi_open_file  IN BOOLEAN DEFAULT TRUE
+                        ,pi_close_file IN BOOLEAN DEFAULT TRUE)
     RETURN nm3type.tab_varchar32767 IS
     --
     lt_output            nm3type.tab_varchar32767;
@@ -1103,8 +1136,11 @@ AS
     --
   BEGIN
     --
-    add_line(pi_text => '<event_transfer_file xmlns="http://schemas.bentley.com/NetworkEventManager/NTISInterface">'
-            ,pi_tab  => lt_output);
+    IF pi_open_file
+     THEN
+        add_line(pi_text => '<event_transfer_file xmlns="http://schemas.bentley.com/NetworkEventManager/NTISInterface">'
+                ,pi_tab  => lt_output);
+    END IF;
     --
     FOR i IN 1..pi_events.COUNT LOOP
       --
@@ -1510,8 +1546,11 @@ AS
       --
     END LOOP; -- Events.
     --
-    add_line(pi_text => '</event_transfer_file>'
-            ,pi_tab  => lt_output);
+    IF pi_close_file
+     THEN
+        add_line(pi_text => '</event_transfer_file>'
+                ,pi_tab  => lt_output);
+    END IF;
     --
     RETURN lt_output;
     --
@@ -1592,12 +1631,19 @@ AS
     --
     lv_sql  nm3type.max_varchar2;
     --
-    lv_superseded_status  CONSTANT VARCHAR2(30) := 'SUPERSEDED';
-    lv_published_status   CONSTANT VARCHAR2(30) := 'PUBLISHED';
+    lv_cancel_na_id     nem_actions.na_id%TYPE;
+    lv_publish_na_id    nem_actions.na_id%TYPE;
+    lv_combine_na_id    nem_actions.na_id%TYPE;
+    lv_supersede_na_id  nem_actions.na_id%TYPE;
     --
     c_events  sys_refcursor;
     --
   BEGIN
+    --
+    lv_cancel_na_id := nem_actions_api.get_na(pi_label => 'Cancel',pi_context => 'NEM_EVENTS').na_id;
+    lv_publish_na_id := nem_actions_api.get_na(pi_label => 'Publish',pi_context => 'NEM_EVENTS').na_id;
+    lv_publish_na_id := nem_actions_api.get_na(pi_label => 'Combine',pi_context => 'NEM_EVENTS').na_id;
+    lv_supersede_na_id := nem_actions_api.get_na(pi_label => 'Supersede',pi_context => 'NEM_EVENTS').na_id;
     --
     add_line(pi_text => '<cancelled_events xmlns="http://schemas.bentley.com/NetworkEventManager/NTISInterface">'
             ,pi_tab  => lt_output);
@@ -1614,9 +1660,7 @@ AS
    ||CHR(10)||'   AND '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''CANCELLED'''
    ||CHR(10)||'   AND iit_date_modified BETWEEN :last_run_date AND :run_date'
    ||CHR(10)||'   AND iit_ne_id = naex_nevt_id'
-   ||CHR(10)||'   AND naex_na_id = (SELECT na_id'
-   ||CHR(10)||'                       FROM nem_actions'
-   ||CHR(10)||'                      WHERE na_label = ''Cancel'')'
+   ||CHR(10)||'   AND naex_na_id = :cancel_na_id'
    ||CHR(10)||' GROUP'
    ||CHR(10)||'    BY nnl_nevt_id'
    ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
@@ -1632,23 +1676,17 @@ AS
    ||CHR(10)||'      ,nem_ntis_log'
    ||CHR(10)||' WHERE nnl_nevt_id = iit_ne_id'
    ||CHR(10)||'   AND iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''SUPERSEDED'''
-   ||CHR(10)||'   AND EXISTS(SELECT /*+ INDEX (naex2 naex_fk_nevt_ind) */ 1'
+   ||CHR(10)||'   AND EXISTS(SELECT 1'
    ||CHR(10)||'                FROM nem_action_executions naex2'
    ||CHR(10)||'                    ,nm_inv_items_all iit2'
-   ||CHR(10)||'                    ,nem_events'
-   ||CHR(10)||'               WHERE nevt_id = iit2.iit_ne_id'
-   ||CHR(10)||'                 AND iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
+   ||CHR(10)||'               WHERE iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
    ||CHR(10)||'                 AND iit2.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
                                 ||' != iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
    ||CHR(10)||'                 AND iit2.iit_ne_id = naex2.naex_nevt_id'
-   ||CHR(10)||'                 AND naex2.naex_na_id = (SELECT na_id'
-   ||CHR(10)||'                                           FROM nem_actions na2'
-   ||CHR(10)||'                                          WHERE na2.na_label = ''Publish'')'
+   ||CHR(10)||'                 AND naex2.naex_na_id = :publish_na_id'
    ||CHR(10)||'                 AND naex2.naex_execution_date > NVL(nnl_date_cancel_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')))'
    ||CHR(10)||'   AND iit.iit_ne_id = naex_nevt_id'
-   ||CHR(10)||'   AND naex_na_id = (SELECT na_id'
-   ||CHR(10)||'                       FROM nem_actions'
-   ||CHR(10)||'                      WHERE na_label = ''Combine'')'
+   ||CHR(10)||'   AND naex_na_id = :combine_na_id'
    ||CHR(10)||' GROUP'
    ||CHR(10)||'    BY nnl_nevt_id'
    ||CHR(10)||'      ,iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
@@ -1664,23 +1702,17 @@ AS
    ||CHR(10)||'      ,nem_ntis_log'
    ||CHR(10)||' WHERE nnl_nevt_id = iit.iit_ne_id'
    ||CHR(10)||'   AND iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''SUPERSEDED'''
-   ||CHR(10)||'   AND EXISTS(SELECT /*+ INDEX (naex2 naex_fk_nevt_ind) */ 1'
+   ||CHR(10)||'   AND EXISTS(SELECT 1'
    ||CHR(10)||'                FROM nem_action_executions naex2'
    ||CHR(10)||'                    ,nm_inv_items_all iit2'
-   ||CHR(10)||'                    ,nem_events'
-   ||CHR(10)||'               WHERE nevt_id = iit2.iit_ne_id'
-   ||CHR(10)||'                 AND iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
+   ||CHR(10)||'               WHERE iit2.iit_ne_id = iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
    ||CHR(10)||'                 AND (iit2.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'ACTUAL_START_DATE')||' IS NULL'
                                      ||' AND iit2.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'PLANNED_START_DATE')||' > :run_date + :windowdays)'
    ||CHR(10)||'                 AND iit2.iit_ne_id = naex2.naex_nevt_id'
-   ||CHR(10)||'                 AND naex2.naex_na_id = (SELECT na_id'
-   ||CHR(10)||'                                           FROM nem_actions na2'
-   ||CHR(10)||'                                          WHERE na2.na_label = ''Publish'')'
+   ||CHR(10)||'                 AND naex2.naex_na_id = :publish_na_id'
    ||CHR(10)||'                 AND naex2.naex_execution_date > NVL(nnl_date_cancel_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')))'
    ||CHR(10)||'   AND iit.iit_ne_id = naex_nevt_id'
-   ||CHR(10)||'   AND naex_na_id = (SELECT na_id'
-   ||CHR(10)||'                       FROM nem_actions'
-   ||CHR(10)||'                      WHERE na_label = ''Supersede'')'
+   ||CHR(10)||'   AND naex_na_id = :supersede_na_id'
    ||CHR(10)||' GROUP'
    ||CHR(10)||'    BY nnl_nevt_id'
    ||CHR(10)||'      ,iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
@@ -1690,9 +1722,17 @@ AS
     OPEN c_events FOR lv_sql
       USING pi_prev_run_date
            ,pi_run_date
+           ,lv_cancel_na_id
+           ,lv_publish_na_id
+           ,lv_combine_na_id
            ,pi_run_date
            ,g_ntiswindow
+           ,lv_publish_na_id
+           ,lv_supersede_na_id
     ;
+    --
+    hig_process_api.log_it(pi_message      => 'Writing Cancelations file '||pi_file_data.filename
+                          ,pi_summary_flag => 'Y');
     --
     LOOP
       --
@@ -1760,9 +1800,6 @@ AS
     --
     add_line(pi_text => '</cancelled_events>'
             ,pi_tab  => lt_output);
-    --
-    hig_process_api.log_it(pi_message      => 'Writing Cancelations file '||pi_file_data.filename
-                          ,pi_summary_flag => 'Y');
     --
     nm3file.write_file(location     => pi_file_data.destination
                       ,filename     => pi_file_data.filename
@@ -1871,9 +1908,11 @@ AS
     --
     lt_events  nem_event_tab;
     lt_files   hig_process_api.tab_temp_files;
+    lt_output  nm3type.tab_varchar32767;
     --
-    lv_file_count  PLS_INTEGER;
-    lv_sql  nm3type.max_varchar2;
+    lv_loop_count  PLS_INTEGER := 0;
+    lv_sql         nm3type.max_varchar2;
+    lv_cleanup     hig_option_values.hov_value%TYPE := NVL(hig.get_sysopt('NTISCLNUPD'),'N');
     --
     c_events  sys_refcursor;
     --
@@ -1910,6 +1949,9 @@ AS
     --
     BEGIN
       --
+      hig_process_api.log_it(pi_message      => 'Writing Event file '||lt_files(lt_files.COUNT).filename
+                            ,pi_summary_flag => 'Y');
+      --
       LOOP
         --
         FETCH c_events
@@ -1917,8 +1959,15 @@ AS
          INTO lt_events
         LIMIT 1000;
         --
-        write_events_to_file(pi_events    => lt_events
-                            ,pi_file_data => lt_files(lt_files.COUNT));
+        lv_loop_count := lv_loop_count + 1;
+        --
+        lt_output := get_event_xml(pi_events     => lt_events
+                                  ,pi_open_file  => (lv_loop_count = 1)
+                                  ,pi_close_file => (lt_events.COUNT < 1000));
+        --
+        nm3file.append_file(location  => lt_files(lt_files.COUNT).destination
+                           ,filename  => lt_files(lt_files.COUNT).filename
+                           ,all_lines => lt_output);
         --
         FOR i IN 1..lt_events.COUNT LOOP
           --
@@ -1930,6 +1979,8 @@ AS
         EXIT WHEN c_events%NOTFOUND;
         --
       END LOOP;
+      --
+      associate_file(pi_file => lt_files(lt_files.COUNT));
       --
       COMMIT;
       --
@@ -1969,7 +2020,15 @@ AS
     /*
     ||Clean up any old files.
     */
-    cleanup_files(pi_run_date => pi_run_date);
+    IF lv_cleanup = 'Y'
+     THEN
+        --
+        hig_process_api.log_it(pi_message      => 'Starting file cleanup.'
+                              ,pi_summary_flag => 'Y');
+        --
+        cleanup_files(pi_run_date => pi_run_date);
+        --
+    END IF;
     --
   END create_update_files;
 
