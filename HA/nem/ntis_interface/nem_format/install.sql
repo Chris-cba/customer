@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------
 --   PVCS Identifiers :-
 --
---       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.5   30 Jun 2017 18:46:46   Mike.Huitson  $
+--       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/install.sql-arc   1.6   07 Jul 2017 16:48:44   Mike.Huitson  $
 --       Module Name      : $Workfile:   install.sql  $
---       Date into PVCS   : $Date:   30 Jun 2017 18:46:46  $
---       Date fetched Out : $Modtime:   29 Jun 2017 12:13:26  $
---       Version          : $Revision:   1.5  $
+--       Date into PVCS   : $Date:   07 Jul 2017 16:48:44  $
+--       Date fetched Out : $Modtime:   07 Jul 2017 16:48:22  $
+--       Version          : $Revision:   1.6  $
 -------------------------------------------------------------------------
 --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
 -------------------------------------------------------------------------
@@ -80,6 +80,7 @@ DECLARE
   --
   lv_process_type_id  hig_process_types.hpt_process_type_id%TYPE;
   lv_file_type_id     hig_process_type_files.hptf_file_type_id%TYPE;
+  lv_3min_int         hig_scheduling_frequencies.hsfr_frequency_id%TYPE;
   --
   FUNCTION hpt_exists(pi_name IN hig_process_types.hpt_name%TYPE)
     RETURN BOOLEAN IS
@@ -113,10 +114,12 @@ DECLARE
   BEGIN
     --
     SELECT hsfr_frequency_id
-      FROM hig_scheduling_frequencies
       INTO lv_retval
+      FROM hig_scheduling_frequencies
      WHERE hsfr_frequency = 'freq=minutely; interval=3;'
          ;
+    --
+    RETURN lv_retval;
     --
   EXCEPTION
     WHEN no_data_found
