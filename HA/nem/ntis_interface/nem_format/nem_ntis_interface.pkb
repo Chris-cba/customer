@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.9   30 Jun 2017 18:43:44   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.10   19 Jul 2017 16:35:42   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   30 Jun 2017 18:43:44  $
-  --       Date fetched Out : $Modtime:   30 Jun 2017 18:06:36  $
-  --       Version          : $Revision:   1.9  $
+  --       Date into PVCS   : $Date:   19 Jul 2017 16:35:42  $
+  --       Date fetched Out : $Modtime:   19 Jul 2017 15:59:12  $
+  --       Version          : $Revision:   1.10  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.9  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.10  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -1642,7 +1642,7 @@ AS
     --
     lv_cancel_na_id := nem_actions_api.get_na(pi_label => 'Cancel',pi_context => 'NEM_EVENTS').na_id;
     lv_publish_na_id := nem_actions_api.get_na(pi_label => 'Publish',pi_context => 'NEM_EVENTS').na_id;
-    lv_publish_na_id := nem_actions_api.get_na(pi_label => 'Combine',pi_context => 'NEM_EVENTS').na_id;
+    lv_combine_na_id := nem_actions_api.get_na(pi_label => 'Combine',pi_context => 'NEM_EVENTS').na_id;
     lv_supersede_na_id := nem_actions_api.get_na(pi_label => 'Supersede',pi_context => 'NEM_EVENTS').na_id;
     --
     add_line(pi_text => '<cancelled_events xmlns="http://schemas.bentley.com/NetworkEventManager/NTISInterface">'
