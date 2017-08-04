@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.10   19 Jul 2017 16:35:42   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.11   04 Aug 2017 10:59:52   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   19 Jul 2017 16:35:42  $
-  --       Date fetched Out : $Modtime:   19 Jul 2017 15:59:12  $
-  --       Version          : $Revision:   1.10  $
+  --       Date into PVCS   : $Date:   04 Aug 2017 10:59:52  $
+  --       Date fetched Out : $Modtime:   04 Aug 2017 10:59:02  $
+  --       Version          : $Revision:   1.11  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.10  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.11  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -120,14 +120,61 @@ AS
   --
   -----------------------------------------------------------------------------
   --
-  FUNCTION gen_base_get_events_sql
+  FUNCTION gen_get_events_sql(pi_event_restriction  IN BOOLEAN DEFAULT FALSE
+                             ,pi_status_restriction IN VARCHAR2 DEFAULT NULL
+                             ,pi_type_restriction   IN BOOLEAN DEFAULT TRUE
+                             ,pi_group_restriction  IN BOOLEAN DEFAULT TRUE)
     RETURN nm3type.max_varchar2 IS
     --
     lv_sql nm3type.max_varchar2;
     --
   BEGIN
     --
-    lv_sql :=  'SELECT nevt_id'
+    lv_sql :=  'WITH events AS(SELECT inv.*'
+    ||CHR(10)||'                     ,NVL(nnl_date_last_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY'')) date_last_sent'
+    ||CHR(10)||'                 FROM nem_ntis_log'
+    ||CHR(10)||'                     ,nm_inv_items_all inv'
+    ||CHR(10)||'                WHERE inv.iit_inv_type = :event_inv_type'
+    ;
+    IF pi_event_restriction
+     THEN
+        lv_sql := lv_sql
+        ||CHR(10)||'                  AND iit_ne_id = :nevt_id'
+        ;
+    END IF;
+    --
+    IF pi_status_restriction IS NOT NULL
+     THEN
+        lv_sql := lv_sql
+        ||CHR(10)||'                  AND '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')
+                                           ||' IN ('||pi_status_restriction||')'
+        ;
+    END IF;
+    --
+    IF pi_type_restriction
+     THEN
+        lv_sql := lv_sql
+        ||CHR(10)||'                  AND '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_TYPE')
+                                           ||' NOT IN(''ABNORMAL LOAD MOVEMENTS'',''DIVERSION/ALTERNATE ROUTE'',''EMBARGO'',''SHORT STOP ACTIVITIES'',''TRAFFIC INCIDENTS'')'
+        ;
+    END IF;
+    --
+    IF gt_group_types.COUNT > 0
+     AND pi_group_restriction
+     THEN
+        lv_sql := lv_sql
+        ||CHR(10)||'                  AND EXISTS(SELECT 1'
+        ||CHR(10)||'                               FROM nm_members rm'
+        ||CHR(10)||'                                   ,nm_members im'
+        ||CHR(10)||'                              WHERE im.nm_ne_id_in = inv.iit_ne_id'
+        ||CHR(10)||'                                AND im.nm_ne_id_of = rm.nm_ne_id_of'
+        ||CHR(10)||'                                AND rm.nm_obj_type IN(SELECT * FROM TABLE(CAST(:gt_group_types AS nm_code_tbl))))'
+        ;
+    END IF;
+    --
+    lv_sql := lv_sql
+    ||CHR(10)||'                  AND iit_ne_id = nnl_nevt_id(+))'
+    ||CHR(10)||'SELECT iit_ne_id'
     ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'DESCRIPTION')
     ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
     ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_TYPE')
@@ -146,52 +193,8 @@ AS
     ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'WORKS_REF')
     ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'MOBILE_LANE_CLOSURE')
     ||CHR(10)||'      ,iit_date_modified'
-    ||CHR(10)||'  FROM nem_ntis_log'
-    ||CHR(10)||'      ,nm_inv_items_all'
-    ||CHR(10)||'      ,nem_events'
-    ||CHR(10)||' WHERE nevt_id = iit_ne_id'
-    ||CHR(10)||'   AND iit_ne_id = nnl_nevt_id(+)'
+    ||CHR(10)||'  FROM events'
     ;
-    --
-    RETURN lv_sql;
-    --
-  END gen_base_get_events_sql;
-
-    
-  --
-  -----------------------------------------------------------------------------
-  --
-  FUNCTION gen_get_events_sql
-    RETURN nm3type.max_varchar2 IS
-    --
-    lv_sql nm3type.max_varchar2;
-    --
-  BEGIN
-    /*
-    ||The interface will always exclued Event of the following Types:
-    ||* ABNORMAL LOAD MOVEMENTS
-    ||* DIVERSION/ALTERNATE ROUTE
-    ||* EMBARGO
-    ||* SHORT STOP ACTIVITIES
-    ||* TRAFFIC INCIDENTS
-    ||Only those Events that have locations translatable to the nominated
-    ||Group Types will be sent to NTIS.
-    */
-    lv_sql := gen_base_get_events_sql
-    ||CHR(10)||'   AND '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_TYPE')
-                        ||' NOT IN(''ABNORMAL LOAD MOVEMENTS'',''DIVERSION/ALTERNATE ROUTE'',''EMBARGO'',''SHORT STOP ACTIVITIES'',''TRAFFIC INCIDENTS'')'
-    ;
-    IF gt_group_types.COUNT > 0
-     THEN
-        lv_sql := lv_sql
-        ||CHR(10)||'   AND EXISTS(SELECT 1'
-        ||CHR(10)||'                FROM nm_members rm'
-        ||CHR(10)||'                    ,nm_members im'
-        ||CHR(10)||'               WHERE im.nm_ne_id_in = iit_ne_id'
-        ||CHR(10)||'                 AND im.nm_ne_id_of = rm.nm_ne_id_of'
-        ||CHR(10)||'                 AND rm.nm_obj_type IN(SELECT * FROM TABLE(CAST(:gt_group_types AS nm_code_tbl))))'
-        ;
-    END IF;
     --
     RETURN lv_sql;
     --
@@ -812,7 +815,7 @@ AS
             hig_process_api.log_it(pi_message      => 'Error Occured during Directory cleanup: '||SQLERRM
                                   ,pi_summary_flag => 'N');
       END;
-      --      
+      --
     END LOOP;
     --
     hig_process_api.log_it(pi_message      => 'File cleanup complete.'
@@ -841,7 +844,7 @@ AS
         hig_process_api.log_it('File cleanup not successful.');
         hig_process_api.process_execution_end(pi_success_flag => 'N');
   END cleanup_files;
-  
+
   --
   -----------------------------------------------------------------------------
   --
@@ -1571,10 +1574,11 @@ AS
     --
   BEGIN
     --
-    lv_sql := gen_base_get_events_sql
-    ||CHR(10)||'   AND iit_ne_id = :nevt_id';
+    lv_sql := gen_get_events_sql(pi_event_restriction => TRUE
+                                ,pi_type_restriction  => FALSE
+                                ,pi_group_restriction => FALSE);
     --
-    OPEN  c_event FOR lv_sql USING pi_nevt_id;
+    OPEN  c_event FOR lv_sql USING nem_util.get_event_inv_type,pi_nevt_id;
     FETCH c_event
      BULK COLLECT
      INTO lt_events
@@ -1831,10 +1835,8 @@ AS
     --
   BEGIN
     --
-    lv_sql := gen_get_events_sql
-               ||CHR(10)||'   AND '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')
-                                   ||' = ''PUBLISHED'''
-               ||CHR(10)||'   AND ('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'ACTUAL_START_DATE')||' IS NOT NULL'
+    lv_sql := gen_get_events_sql(pi_status_restriction => '''PUBLISHED''')
+               ||CHR(10)||' WHERE ('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'ACTUAL_START_DATE')||' IS NOT NULL'
                ||CHR(10)||'        OR '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'PLANNED_START_DATE')||' <= :pi_run_date + :windowdays)'
     ;
     --
@@ -1842,11 +1844,11 @@ AS
     --
     IF gt_group_types.COUNT > 0
      THEN
-        OPEN c_count FOR lv_cnt_sql USING gt_group_types,pi_run_date,g_ntiswindow;
-        OPEN c_events FOR lv_sql USING gt_group_types,pi_run_date,g_ntiswindow;
+        OPEN c_count FOR lv_cnt_sql USING nem_util.get_event_inv_type,gt_group_types,pi_run_date,g_ntiswindow;
+        OPEN c_events FOR lv_sql USING nem_util.get_event_inv_type,gt_group_types,pi_run_date,g_ntiswindow;
     ELSE
-        OPEN c_count FOR lv_cnt_sql USING pi_run_date,g_ntiswindow;
-        OPEN c_events FOR lv_sql USING pi_run_date,g_ntiswindow;
+        OPEN c_count FOR lv_cnt_sql USING nem_util.get_event_inv_type,pi_run_date,g_ntiswindow;
+        OPEN c_events FOR lv_sql USING nem_util.get_event_inv_type,pi_run_date,g_ntiswindow;
     END IF;
     --
     BEGIN
@@ -1923,12 +1925,12 @@ AS
     lt_files(1) := pi_file_data;
     lt_files(1).filename := 'NTISUpdate_'||TO_CHAR(pi_run_timestamp,c_file_datetime_fmt)||'.xml';
     --
-    lv_sql := gen_get_events_sql
-               ||CHR(10)||'   AND (('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')
+    lv_sql := gen_get_events_sql(pi_status_restriction => '''PUBLISHED'',''COMPLETED''')
+               ||CHR(10)||' WHERE (('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')
                                      ||' = ''PUBLISHED'''
                ||CHR(10)||'         AND ('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'ACTUAL_START_DATE')||' IS NOT NULL'
                ||CHR(10)||'              OR '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'PLANNED_START_DATE')||' <= :run_date + :windowdays)'
-               ||CHR(10)||'         AND iit_date_modified > NVL(nnl_date_last_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY''))'
+               ||CHR(10)||'         AND iit_date_modified > NVL(date_last_sent,TO_DATE(''01-JAN-1900'',''DD-MON-YYYY''))'
                ||CHR(10)||'         AND '||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')||' IS NULL)'
                ||CHR(10)||'       OR ('||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')
                                        ||' = ''COMPLETED'''
@@ -1942,9 +1944,9 @@ AS
     --
     IF gt_group_types.COUNT > 0
      THEN
-        OPEN c_events FOR lv_sql USING gt_group_types,pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date;
+        OPEN c_events FOR lv_sql USING nem_util.get_event_inv_type,gt_group_types,pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date;
     ELSE
-        OPEN c_events FOR lv_sql USING pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date;
+        OPEN c_events FOR lv_sql USING nem_util.get_event_inv_type,pi_run_date,g_ntiswindow,pi_prev_run_date,pi_run_date;
     END IF;
     --
     BEGIN
@@ -2089,7 +2091,7 @@ AS
     */
     IF hig_process_api.valid_process_of_type_exists(pi_process_type_name => c_full_export)
      THEN
-        hig_process_api.log_it('A full export ("'||c_full_export||'") is either scheduled or running no update files will be created.');        
+        hig_process_api.log_it('A full export ("'||c_full_export||'") is either scheduled or running no update files will be created.');
     ELSE
         --
         get_process_details(po_file_data     => lv_file_data
