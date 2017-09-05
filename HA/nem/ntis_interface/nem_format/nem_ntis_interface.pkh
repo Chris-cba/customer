@@ -1,0 +1,91 @@
+CREATE OR REPLACE PACKAGE nem_ntis_interface
+AS
+  -------------------------------------------------------------------------
+  --   PVCS Identifiers :-
+  --
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkh-arc   1.4   05 Sep 2017 17:14:34   Mike.Huitson  $
+  --       Module Name      : $Workfile:   nem_ntis_interface.pkh  $
+  --       Date into PVCS   : $Date:   05 Sep 2017 17:14:34  $
+  --       Date fetched Out : $Modtime:   05 Sep 2017 16:08:46  $
+  --       Version          : $Revision:   1.4  $
+  --       Based on SCCS version :
+  ------------------------------------------------------------------
+  --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
+  ------------------------------------------------------------------
+  --g_sccsid is the SCCS ID for the package
+  g_sccsid   CONSTANT VARCHAR2 (2000) := '$Revision:   1.4  $';
+  --
+  c_full_export    CONSTANT VARCHAR2(100) := 'NEM NTIS Interface Full Export';
+  c_update_export  CONSTANT VARCHAR2(100) := 'NEM NTIS Interface Update Export';
+  --
+  TYPE ftp_con_rec IS RECORD(conn_id           hig_ftp_connections.hfc_id%TYPE
+                            ,username          hig_ftp_connections.hfc_ftp_username%TYPE
+                            ,password          hig_ftp_connections.hfc_ftp_password%TYPE
+                            ,hostname          hig_ftp_connections.hfc_ftp_host%TYPE
+                            ,port              hig_ftp_connections.hfc_ftp_port%TYPE
+                            ,out_dir           hig_ftp_connections.hfc_ftp_out_dir%TYPE
+                            ,archive_username  hig_ftp_connections.hfc_ftp_username%TYPE
+                            ,archive_password  hig_ftp_connections.hfc_ftp_password%TYPE
+                            ,archive_hostname  hig_ftp_connections.hfc_ftp_host%TYPE
+                            ,archive_port      hig_ftp_connections.hfc_ftp_port%TYPE
+                            ,archive_out_dir   hig_ftp_connections.hfc_ftp_out_dir%TYPE);
+  --
+  TYPE nem_event_rec IS RECORD(nevt_id                nm_inv_items_all.iit_ne_id%TYPE
+                              ,description            VARCHAR2(500)
+                              ,event_number           NUMBER
+                              ,event_type             VARCHAR2(500)
+                              ,event_status           VARCHAR2(500)
+                              ,planned_start_date     DATE
+                              ,planned_complete_date  DATE
+                              ,actual_start_date      DATE
+                              ,actual_complete_date   DATE
+                              ,version_number         NUMBER
+                              ,nature_of_works        VARCHAR2(500)
+                              ,distribute             VARCHAR2(500)
+                              ,delay                  VARCHAR2(500)
+                              ,notes                  VARCHAR2(500)
+                              ,user_responsible       VARCHAR2(500)
+                              ,he_ref                 VARCHAR2(500)
+                              ,works_ref              VARCHAR2(500)
+                              ,mobile_lane_closure    VARCHAR2(500)
+                              ,last_modified          DATE);
+  TYPE nem_event_tab IS TABLE OF nem_event_rec INDEX BY BINARY_INTEGER;
+  --
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_body_version
+    RETURN VARCHAR2;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE cleanup_files;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  FUNCTION get_event_xml(pi_nevt_id IN nem_events.nevt_id%TYPE)
+    RETURN XMLTYPE;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE initialise_full_export;
+
+  --
+  -----------------------------------------------------------------------------
+  --
+  PROCEDURE initialise_update;
+
+--
+-----------------------------------------------------------------------------
+--
+END nem_ntis_interface;
+/
