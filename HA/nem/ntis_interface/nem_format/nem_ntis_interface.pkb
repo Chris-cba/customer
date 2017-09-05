@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.11   04 Aug 2017 10:59:52   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.12   05 Sep 2017 17:15:54   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   04 Aug 2017 10:59:52  $
-  --       Date fetched Out : $Modtime:   04 Aug 2017 10:59:02  $
-  --       Version          : $Revision:   1.11  $
+  --       Date into PVCS   : $Date:   05 Sep 2017 17:15:54  $
+  --       Date fetched Out : $Modtime:   05 Sep 2017 17:13:48  $
+  --       Version          : $Revision:   1.12  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.11  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.12  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -375,6 +375,11 @@ AS
           ,hfc_ftp_host
           ,hfc_ftp_port
           ,hfc_ftp_out_dir
+          ,hfc_ftp_arc_username
+          ,hfc_ftp_arc_password
+          ,hfc_ftp_arc_host
+          ,hfc_ftp_arc_port
+          ,hfc_ftp_arc_out_dir
       INTO lr_retval
       FROM hig_ftp_types
           ,hig_ftp_connections
@@ -585,6 +590,7 @@ AS
     --
     lv_ftp_configured  VARCHAR2(1) := 'N';
     lv_conn            utl_tcp.connection;
+    lv_archive         BOOLEAN := FALSE;
     --
     TYPE dir_rec IS RECORD(dir_name hig_directories.hdir_name%TYPE
                           ,dir_path hig_directories.hdir_path%TYPE);
@@ -630,7 +636,7 @@ AS
                     ,cp_ftp_configured IN VARCHAR2
                     ,cp_file_prefix    IN VARCHAR2)
         IS
-    SELECT cp_file_prefix||hpf_filename hpf_filename
+    SELECT hpf_filename hpf_filename
           ,hpf_destination
       FROM nem_ntis_files
           ,hig_process_files
@@ -669,6 +675,24 @@ AS
         lv_ftp_configured := 'Y';
         --
         lr_ftp_details := get_ftp_details(pi_hft_id => lt_ftp_ids(i));
+        /*
+        ||Establish whether to delete or archive the files.
+        */
+        IF lr_ftp_details.archive_out_dir IS NOT NULL
+         THEN
+            /*
+            ||Make sure we're dealing with the same FTP server.
+            */
+            IF lr_ftp_details.hostname != NVL(lr_ftp_details.archive_hostname,lr_ftp_details.hostname)
+             OR lr_ftp_details.port != NVL(lr_ftp_details.archive_port,lr_ftp_details.port)
+             OR lr_ftp_details.username != NVL(lr_ftp_details.archive_username,lr_ftp_details.username)
+             THEN
+                raise_application_error(-20001,'File cleanup only supports archive to a folder on the same FTP site.');
+            END IF;
+            --
+            lv_archive := TRUE;
+            --
+        END IF;
         /*
         ||Connect to the ftp server.
         */
@@ -712,20 +736,44 @@ AS
          INTO lt_rm_files;
         CLOSE get_files;
         /*
-        ||Remove the files.
+        ||Deal with the files.
         */
-        hig_process_api.log_it(pi_message      => lt_rm_files.COUNT||' files identified for removal.'
-                              ,pi_summary_flag => 'N');
-        --
-        FOR j IN 1..lt_rm_files.COUNT LOOP
-          --
-          hig_process_api.log_it(pi_message      => 'Removing file: '||lt_rm_files(j).hpf_filename
-                                ,pi_summary_flag => 'N');
-          --
-          nm3ftp.delete(p_conn => lv_conn
-                       ,p_file => lt_rm_files(j).hpf_filename);
-          --
-        END LOOP;
+        IF lv_archive
+         THEN
+            /*
+            ||Archive the files.
+            */
+            hig_process_api.log_it(pi_message      => lt_rm_files.COUNT||' files identified for archive.'
+                                  ,pi_summary_flag => 'N');
+            --
+            FOR j IN 1..lt_rm_files.COUNT LOOP
+              --
+              hig_process_api.log_it(pi_message      => 'Archiving file: '||lt_rm_files(j).hpf_filename
+                                    ,pi_summary_flag => 'N');
+              --
+              nm3ftp.rename(p_conn              => lv_conn
+                           ,p_from              => lr_ftp_details.out_dir||lt_rm_files(j).hpf_filename
+                           ,p_to                => lr_ftp_details.archive_out_dir||lt_rm_files(j).hpf_filename
+                           ,p_archive_overwrite => TRUE);
+              --
+            END LOOP;
+        ELSE
+            /*
+            ||Remove the files.
+            */
+            hig_process_api.log_it(pi_message      => lt_rm_files.COUNT||' files identified for removal.'
+                                  ,pi_summary_flag => 'N');
+            --
+            FOR j IN 1..lt_rm_files.COUNT LOOP
+              --
+              hig_process_api.log_it(pi_message      => 'Removing file: '||lt_rm_files(j).hpf_filename
+                                    ,pi_summary_flag => 'N');
+              --
+              nm3ftp.delete(p_conn => lv_conn
+                           ,p_file => lr_ftp_details.out_dir||lt_rm_files(j).hpf_filename);
+              --
+            END LOOP;
+        END IF;
         /*
         ||Close FTP Connection.
         */
