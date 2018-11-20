@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.12   05 Sep 2017 17:15:54   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.13   Nov 20 2018 10:14:28   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   05 Sep 2017 17:15:54  $
-  --       Date fetched Out : $Modtime:   05 Sep 2017 17:13:48  $
-  --       Version          : $Revision:   1.12  $
+  --       Date into PVCS   : $Date:   Nov 20 2018 10:14:28  $
+  --       Date fetched Out : $Modtime:   Nov 19 2018 16:04:54  $
+  --       Version          : $Revision:   1.13  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.12  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.13  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -1717,6 +1717,36 @@ AS
    ||CHR(10)||'    BY nnl_nevt_id'
    ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
    ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')
+   /*
+   ||Next Select Added for Defect 916612 - A fringe case where a published event that has been sent
+   ||to NTIS is superseded and the superseding event is canceled before being Published which means
+   ||that is not picked up by the query above.
+   */
+   ||CHR(10)||'UNION ALL'
+   ||CHR(10)||'SELECT iit_p.iit_ne_id'
+   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
+   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')
+   ||CHR(10)||'      ,MAX(naex_execution_date)'
+   ||CHR(10)||'      ,''Event Cancelled'''
+   ||CHR(10)||'  FROM nem_action_executions'
+   ||CHR(10)||'      ,nm_inv_items_all iit_c'
+   ||CHR(10)||'      ,nm_inv_items_all iit_p'
+   ||CHR(10)||'      ,nem_ntis_log'
+   ||CHR(10)||' WHERE iit_c.iit_inv_type = ''NEVT'''
+   ||CHR(10)||'   AND iit_c.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''CANCELLED'''
+   ||CHR(10)||'   AND iit_c.iit_date_modified BETWEEN :last_run_date AND :run_date'
+   ||CHR(10)||'   AND iit_c.iit_ne_id = naex_nevt_id'
+   ||CHR(10)||'   AND naex_na_id = :cancel_na_id'
+   ||CHR(10)||'   AND NOT EXISTS(SELECT ''x'''
+   ||CHR(10)||'                    FROM nem_ntis_log'
+   ||CHR(10)||'                   WHERE nnl_nevt_id = iit_c.iit_ne_id)'
+   ||CHR(10)||'   AND iit_c.iit_ne_id = iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
+   ||CHR(10)||'   AND iit_p.iit_inv_type = ''NEVT'''
+   ||CHR(10)||'   AND iit_p.iit_ne_id = nnl_nevt_id'
+   ||CHR(10)||' GROUP'
+   ||CHR(10)||'    BY iit_p.iit_ne_id'
+   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
+   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')
    ||CHR(10)||'UNION ALL'
    ||CHR(10)||'SELECT nnl_nevt_id'
    ||CHR(10)||'      ,iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
@@ -1773,6 +1803,9 @@ AS
     --
     OPEN c_events FOR lv_sql
       USING pi_prev_run_date
+           ,pi_run_date
+           ,lv_cancel_na_id
+           ,pi_prev_run_date
            ,pi_run_date
            ,lv_cancel_na_id
            ,lv_publish_na_id
