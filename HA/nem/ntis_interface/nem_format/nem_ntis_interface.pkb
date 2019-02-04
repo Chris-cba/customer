@@ -3,11 +3,11 @@ AS
   -------------------------------------------------------------------------
   --   PVCS Identifiers :-
   --
-  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.13   Nov 20 2018 10:14:28   Mike.Huitson  $
+  --       PVCS id          : $Header:   //new_vm_latest/archives/customer/HA/nem/ntis_interface/nem_format/nem_ntis_interface.pkb-arc   1.14   Feb 04 2019 18:19:54   Mike.Huitson  $
   --       Module Name      : $Workfile:   nem_ntis_interface.pkb  $
-  --       Date into PVCS   : $Date:   Nov 20 2018 10:14:28  $
-  --       Date fetched Out : $Modtime:   Nov 19 2018 16:04:54  $
-  --       Version          : $Revision:   1.13  $
+  --       Date into PVCS   : $Date:   Feb 04 2019 18:19:54  $
+  --       Date fetched Out : $Modtime:   Jan 30 2019 14:50:02  $
+  --       Version          : $Revision:   1.14  $
   --       Based on SCCS version :
   ------------------------------------------------------------------
   --   Copyright (c) 2013 Bentley Systems Incorporated. All rights reserved.
@@ -19,7 +19,7 @@ AS
   --constants
   -----------
   --g_body_sccsid is the SCCS ID for the package body
-  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.13  $';
+  g_body_sccsid    CONSTANT VARCHAR2 (2000) := '$Revision:   1.14  $';
   g_package_name   CONSTANT VARCHAR2 (30) := 'nem_ntis_interface';
   --
   g_ntiswindow  NUMBER;
@@ -1676,8 +1676,20 @@ AS
                                       ,version_number  NUMBER
                                       ,cancelled_date  DATE
                                       ,reason          VARCHAR2(100));
-    TYPE cancelled_event_tab IS TABLE OF cancelled_event_rec;
-    lt_events  cancelled_event_tab;
+    TYPE cancelled_event_tab IS TABLE OF cancelled_event_rec INDEX BY BINARY_INTEGER;
+    lt_events       cancelled_event_tab;
+    lt_file_events  cancelled_event_tab;
+    --
+    TYPE unsent_event_rec IS RECORD(nevt_id         nm_inv_items_all.iit_ne_id%TYPE
+                                   ,cancelled_date  DATE);
+    TYPE unsent_event_tab IS TABLE OF unsent_event_rec;
+    lt_unsent_events  unsent_event_tab;
+    --
+    TYPE sent_events_rec IS RECORD (event_id        nm_inv_items_all.iit_ne_id%TYPE
+                                   ,event_number    NUMBER
+                                   ,version_number  NUMBER);
+    TYPE sent_events_tab IS TABLE OF sent_events_rec;
+    lt_sent_events  sent_events_tab;
     --
     lt_output  nm3type.tab_varchar32767;
     --
@@ -1688,7 +1700,65 @@ AS
     lv_combine_na_id    nem_actions.na_id%TYPE;
     lv_supersede_na_id  nem_actions.na_id%TYPE;
     --
-    c_events  sys_refcursor;
+    c_events    sys_refcursor;
+    c_versions  sys_refcursor;
+    --
+    PROCEDURE write_to_file(pi_events   IN     cancelled_event_tab
+                           ,pi_run_date IN     DATE
+                           ,po_output   IN OUT NOCOPY nm3type.tab_varchar32767)
+      IS
+    BEGIN
+      --
+      FOR i IN 1..pi_events.COUNT LOOP
+        --
+        hig_process_api.log_it(pi_message      => 'Processing Event '
+                                                  ||nem_util.get_formatted_event_number(pi_event_number   => pi_events(i).event_number
+                                                                                       ,pi_version_number => pi_events(i).version_number)
+                              ,pi_summary_flag => 'N');
+        /*
+        ||Open the event tag.
+        */
+        add_line(pi_text   => '<event>'
+                ,pi_indent => 2
+                ,pi_tab    => po_output);
+        --
+        add_line(pi_text   => gen_tags(pi_element => 'event_id'
+                                      ,pi_data    => pi_events(i).nevt_id)
+                ,pi_indent => 4
+                ,pi_tab    => po_output);
+        --
+        add_line(pi_text   => gen_tags(pi_element => 'event_number'
+                                      ,pi_data    => pi_events(i).event_number)
+                ,pi_indent => 4
+                ,pi_tab    => po_output);
+        --
+        add_line(pi_text   => gen_tags(pi_element => 'version'
+                                      ,pi_data    => pi_events(i).version_number)
+                ,pi_indent => 4
+                ,pi_tab    => po_output);
+        --
+        add_line(pi_text   => gen_tags(pi_element => 'cdate'
+                                      ,pi_data    => convert_date_to_xml(pi_date => pi_events(i).cancelled_date))
+                ,pi_indent => 4
+                ,pi_tab    => po_output);
+        --
+        add_line(pi_text   => gen_tags(pi_element => 'reason'
+                                      ,pi_data    => pi_events(i).reason)
+                ,pi_indent => 4
+                ,pi_tab    => po_output);
+        /*
+        ||Close the event tag.
+        */
+        add_line(pi_text   => '</event>'
+                ,pi_indent => 2
+                ,pi_tab    => po_output);
+        --
+        update_log(pi_nevt_id   => pi_events(i).nevt_id
+                  ,pi_run_date  => pi_run_date
+                  ,pi_cancelled => TRUE);
+      END LOOP; -- Events.
+      --
+    END;
     --
   BEGIN
     --
@@ -1717,36 +1787,6 @@ AS
    ||CHR(10)||'    BY nnl_nevt_id'
    ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
    ||CHR(10)||'      ,'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')
-   /*
-   ||Next Select Added for Defect 916612 - A fringe case where a published event that has been sent
-   ||to NTIS is superseded and the superseding event is canceled before being Published which means
-   ||that is not picked up by the query above.
-   */
-   ||CHR(10)||'UNION ALL'
-   ||CHR(10)||'SELECT iit_p.iit_ne_id'
-   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
-   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')
-   ||CHR(10)||'      ,MAX(naex_execution_date)'
-   ||CHR(10)||'      ,''Event Cancelled'''
-   ||CHR(10)||'  FROM nem_action_executions'
-   ||CHR(10)||'      ,nm_inv_items_all iit_c'
-   ||CHR(10)||'      ,nm_inv_items_all iit_p'
-   ||CHR(10)||'      ,nem_ntis_log'
-   ||CHR(10)||' WHERE iit_c.iit_inv_type = ''NEVT'''
-   ||CHR(10)||'   AND iit_c.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''CANCELLED'''
-   ||CHR(10)||'   AND iit_c.iit_date_modified BETWEEN :last_run_date AND :run_date'
-   ||CHR(10)||'   AND iit_c.iit_ne_id = naex_nevt_id'
-   ||CHR(10)||'   AND naex_na_id = :cancel_na_id'
-   ||CHR(10)||'   AND NOT EXISTS(SELECT ''x'''
-   ||CHR(10)||'                    FROM nem_ntis_log'
-   ||CHR(10)||'                   WHERE nnl_nevt_id = iit_c.iit_ne_id)'
-   ||CHR(10)||'   AND iit_c.iit_ne_id = iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')
-   ||CHR(10)||'   AND iit_p.iit_inv_type = ''NEVT'''
-   ||CHR(10)||'   AND iit_p.iit_ne_id = nnl_nevt_id'
-   ||CHR(10)||' GROUP'
-   ||CHR(10)||'    BY iit_p.iit_ne_id'
-   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
-   ||CHR(10)||'      ,iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')
    ||CHR(10)||'UNION ALL'
    ||CHR(10)||'SELECT nnl_nevt_id'
    ||CHR(10)||'      ,iit.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')
@@ -1805,9 +1845,6 @@ AS
       USING pi_prev_run_date
            ,pi_run_date
            ,lv_cancel_na_id
-           ,pi_prev_run_date
-           ,pi_run_date
-           ,lv_cancel_na_id
            ,lv_publish_na_id
            ,lv_combine_na_id
            ,pi_run_date
@@ -1823,66 +1860,113 @@ AS
       --
       FETCH c_events
        BULK COLLECT
-       INTO lt_events
+       INTO lt_file_events
       LIMIT 1000;
       --
-      FOR i IN 1..lt_events.COUNT LOOP
-        --
-        hig_process_api.log_it(pi_message      => 'Processing Event '
-                                                  ||nem_util.get_formatted_event_number(pi_event_number   => lt_events(i).event_number
-                                                                                       ,pi_version_number => lt_events(i).version_number)
-                              ,pi_summary_flag => 'N');
-
-        /*
-        ||Open the clos tag.
-        */
-        add_line(pi_text   => '<event>'
-                ,pi_indent => 2
-                ,pi_tab    => lt_output);
-        --
-        add_line(pi_text   => gen_tags(pi_element => 'event_id'
-                                      ,pi_data    => lt_events(i).nevt_id)
-                ,pi_indent => 4
-                ,pi_tab    => lt_output);
-        --
-        add_line(pi_text   => gen_tags(pi_element => 'event_number'
-                                      ,pi_data    => lt_events(i).event_number)
-                ,pi_indent => 4
-                ,pi_tab    => lt_output);
-        --
-        add_line(pi_text   => gen_tags(pi_element => 'version'
-                                      ,pi_data    => lt_events(i).version_number)
-                ,pi_indent => 4
-                ,pi_tab    => lt_output);
-        --
-        add_line(pi_text   => gen_tags(pi_element => 'cdate'
-                                      ,pi_data    => convert_date_to_xml(pi_date => lt_events(i).cancelled_date))
-                ,pi_indent => 4
-                ,pi_tab    => lt_output);
-        --
-        add_line(pi_text   => gen_tags(pi_element => 'reason'
-                                      ,pi_data    => lt_events(i).reason)
-                ,pi_indent => 4
-                ,pi_tab    => lt_output);
-        /*
-        ||Close the clos tag.
-        */
-        add_line(pi_text   => '</event>'
-                ,pi_indent => 2
-                ,pi_tab    => lt_output);
-        --
-        update_log(pi_nevt_id   => lt_events(i).nevt_id
-                  ,pi_run_date  => pi_run_date
-                  ,pi_cancelled => TRUE);
-        --
-      END LOOP; -- Events.
+      write_to_file(pi_events   => lt_file_events
+                   ,pi_run_date => pi_run_date
+                   ,po_output   => lt_output);
       --
       EXIT WHEN c_events%NOTFOUND;
       --
     END LOOP;
     --
     CLOSE c_events;
+    /*
+    ||Next Select Added for Defect 916612 - A fringe case where a published event that has been sent
+    ||to NTIS is superseded and the superseding event is canceled before being Published which means
+    ||that is not picked up by the main query above.
+    */
+    lt_file_events.DELETE;
     --
+    lv_sql :=  'SELECT iit_c.iit_ne_id event_id'
+    ||CHR(10)||'      ,MAX(naex_execution_date) ex_date'
+    ||CHR(10)||'  FROM nem_action_executions'
+    ||CHR(10)||'      ,nm_inv_items_all iit_c'
+    ||CHR(10)||' WHERE iit_c.iit_inv_type = ''NEVT'''
+    ||CHR(10)||'   AND iit_c.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_STATUS')||' = ''CANCELLED'''
+    ||CHR(10)||'   AND iit_c.iit_date_modified BETWEEN :last_run_date AND :run_date'
+    ||CHR(10)||'   AND iit_c.iit_ne_id = naex_nevt_id'
+    ||CHR(10)||'   AND naex_na_id = :cancel_na_id'
+    ||CHR(10)||'   AND NOT EXISTS(SELECT ''x'''
+    ||CHR(10)||'                    FROM nem_ntis_log'
+    ||CHR(10)||'                   WHERE nnl_nevt_id = iit_c.iit_ne_id)'
+    ||CHR(10)||' GROUP'
+    ||CHR(10)||'    BY iit_c.iit_ne_id'
+    ;
+    --
+    OPEN c_events FOR lv_sql
+      USING pi_prev_run_date
+           ,pi_run_date
+           ,lv_cancel_na_id
+    ;
+    --
+    LOOP
+      --
+      FETCH c_events
+       BULK COLLECT
+       INTO lt_unsent_events
+      LIMIT 1000;
+      --
+      FOR i IN 1..lt_unsent_events.COUNT LOOP
+        --
+        OPEN c_versions FOR 'SELECT event_id'
+                 ||CHR(10)||'      ,event_no'
+                 ||CHR(10)||'      ,event_version'
+                 ||CHR(10)||'  FROM (SELECT v.event_id'
+                 ||CHR(10)||'              ,v.event_no'
+                 ||CHR(10)||'              ,v.event_version'
+                 ||CHR(10)||'              ,MAX(v.event_version) OVER (PARTITION BY v.event_no) max_version'
+                 ||CHR(10)||'          FROM (SELECT iit_v.iit_ne_id event_id'
+                 ||CHR(10)||'                      ,iit_v.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')||' event_no'
+                 ||CHR(10)||'                      ,iit_v.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')||' event_version'
+                 ||CHR(10)||'                  FROM nm_inv_items_all iit_v'
+                 ||CHR(10)||'               CONNECT BY PRIOR iit_v.iit_ne_id = iit_v.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'SUPERSEDED_BY_ID')||' AND iit_v.iit_inv_type = ''NEVT'''
+                 ||CHR(10)||'                 START WITH iit_v.iit_ne_id = :event_id) v'
+                 ||CHR(10)||'              ,nem_ntis_log l'
+                 ||CHR(10)||'         WHERE v.event_id = l.nnl_nevt_id'
+                 ||CHR(10)||'           AND l.nnl_date_cancel_sent IS NULL'
+                 ||CHR(10)||'           AND NOT EXISTS(SELECT 1'
+                 ||CHR(10)||'                            FROM nm_inv_items_all iit_p'
+                 ||CHR(10)||'                                ,nem_ntis_log l2'
+                 ||CHR(10)||'                           WHERE iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'EVENT_NUMBER')||' = v.event_no'
+                 ||CHR(10)||'                             AND iit_p.'||nem_util.get_attrib_name_from_view_col(pi_view_col_name => 'VERSION_NUMBER')||' > v.event_version'
+                 ||CHR(10)||'                             AND iit_p.iit_ne_id = l2.nnl_nevt_id'
+                 ||CHR(10)||'                             AND l2.nnl_date_cancel_sent IS NOT NULL))'
+                 ||CHR(10)||' WHERE event_version = max_version'
+          USING lt_unsent_events(i).nevt_id
+        ;
+        --
+        FETCH c_versions
+         BULK COLLECT
+         INTO lt_sent_events;
+        --
+        CLOSE c_versions;
+        --
+        FOR j IN 1..lt_sent_events.COUNT LOOP
+          --
+          lt_file_events(lt_file_events.COUNT+1).nevt_id := lt_sent_events(j).event_id;
+          lt_file_events(lt_file_events.COUNT).event_number := lt_sent_events(j).event_number;
+          lt_file_events(lt_file_events.COUNT).version_number := lt_sent_events(j).version_number;
+          lt_file_events(lt_file_events.COUNT).cancelled_date := lt_unsent_events(i).cancelled_date;
+          lt_file_events(lt_file_events.COUNT).reason := 'Event Cancelled';
+          --
+        END LOOP;
+        --
+      END LOOP;
+      --
+      write_to_file(pi_events   => lt_file_events
+                   ,pi_run_date => pi_run_date
+                   ,po_output   => lt_output);
+      --
+      EXIT WHEN c_events%NOTFOUND;
+      --
+    END LOOP;
+    --
+    CLOSE c_events;
+    /*
+    ||Close the file XML.
+    */
     add_line(pi_text => '</cancelled_events>'
             ,pi_tab  => lt_output);
     --
