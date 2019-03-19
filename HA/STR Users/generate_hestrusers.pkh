@@ -1,0 +1,105 @@
+CREATE OR REPLACE PACKAGE generate_hestrusers
+AS
+   --
+   --<PACKAGE>
+   -----------------------------------------------------------------------------
+   --
+   --   PVCS Identifiers :-
+   --
+   --       pvcsid           : $Header:   //new_vm_latest/archives/customer/HA/STR Users/generate_hestrusers.pkh-arc   1.0   Mar 19 2019 17:01:30   Sarah.Williams  $
+   --       Module Name      : $Workfile:   generate_hestrusers.pkh  $
+   --       Date into PVCS   : $Date:   Mar 19 2019 17:01:30  $
+   --       Date fetched Out : $Modtime:   Jan 04 2019 17:04:42  $
+   --       PVCS Version     : $Revision:   1.0  $
+   --
+   ------------------------------------------------------------------
+   --   Copyright (c) 2019 Bentley Systems Incorporated. All rights reserved.
+   ------------------------------------------------------------------
+   --
+   g_sccsid        CONSTANT VARCHAR2 (2000) := '"$Revision:   1.0  $"';
+   g_application_owner      VARCHAR2 (30);
+   --
+   /*---------------------------------
+   || Globals
+   -----------------------------------*/
+   --
+   g_num_users              PLS_INTEGER;
+   g_error                  VARCHAR2(1000);
+
+   --
+
+   --
+   --  Table to define User Roles, % split and number of user to generate
+   TYPE roles_rec IS RECORD
+   (
+      role         hig_roles.hro_role%TYPE,
+      percent      PLS_INTEGER,
+      admin_user   BOOLEAN,
+      power_user   BOOLEAN
+   );
+
+   TYPE roles_tab IS TABLE OF roles_rec
+      INDEX BY BINARY_INTEGER;
+
+   g_roles_tab              roles_tab;
+
+   --
+   --  Table to define Admin Units to use for non-Power User
+   TYPE admin_unit_tab IS TABLE OF nm_admin_units.nau_admin_unit%TYPE
+      INDEX BY BINARY_INTEGER;
+
+   g_admin_unit_tab         admin_unit_tab;
+
+   --
+   --
+   -- Table to list roles to assign to user, on creation
+   TYPE user_roles_tab IS TABLE OF hig_roles.hro_role%TYPE
+      INDEX BY BINARY_INTEGER;
+--
+TYPE user_options_tab is table of hig_user_options%rowtype index by binary_integer;
+g_user_options_tab user_options_tab;
+   --
+   -----------------------------------------------------------------------------
+   -- This function returns the current SCCS version
+   FUNCTION get_version
+      RETURN VARCHAR2;
+
+   --
+   -----------------------------------------------------------------------------
+   -- This function returns the current SCCS version of the package body
+   FUNCTION get_body_version
+      RETURN VARCHAR2;
+
+   --
+   -----------------------------------------------------------------------------
+   --
+   PROCEDURE add_role (pi_role          hig_roles.hro_role%TYPE,
+                       pi_percent       PLS_INTEGER,
+                       pi_admin_user    BOOLEAN DEFAULT FALSE);
+
+   --
+   -----------------------------------------------------------------------------
+   --
+   PROCEDURE add_admin_unit (
+      pi_admin_unit    nm_admin_units.nau_admin_unit%TYPE);
+
+   --
+   -----------------------------------------------------------------------------
+   --
+   PROCEDURE initialise;
+
+   --
+   -----------------------------------------------------------------------------
+   --
+   PROCEDURE create_users;
+
+   --
+   -----------------------------------------------------------------------------
+   --
+   PROCEDURE drop_user (pi_username hig_users.hus_username%TYPE);
+
+   --
+   -----------------------------------------------------------------------------
+   --
+END generate_hestrusers;
+/
