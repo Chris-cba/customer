@@ -3,11 +3,11 @@ AS
    -------------------------------------------------------------------------
    --   PVCS Identifiers :-
    --
-   --       pvcsid           : $Header:   //new_vm_latest/archives/customer/HA/STR Users/generate_hestrusers.pkb-arc   1.1   Aug 28 2019 10:58:54   Sarah.Williams  $
+   --       pvcsid           : $Header:   //new_vm_latest/archives/customer/HA/STR Users/generate_hestrusers.pkb-arc   1.2   Aug 28 2019 15:49:36   Sarah.Williams  $
    --       Module Name      : $Workfile:   generate_hestrusers.pkb  $
-   --       Date into PVCS   : $Date:   Aug 28 2019 10:58:54  $
-   --       Date fetched Out : $Modtime:   Aug 28 2019 10:58:58  $
-   --       PVCS Version     : $Revision:   1.1  $
+   --       Date into PVCS   : $Date:   Aug 28 2019 15:49:36  $
+   --       Date fetched Out : $Modtime:   Aug 28 2019 15:49:30  $
+   --       PVCS Version     : $Revision:   1.2  $
    ------------------------------------------------------------------
    --   Copyright (c) 2019 Bentley Systems Incorporated. All rights reserved.
    ------------------------------------------------------------------
@@ -18,7 +18,7 @@ AS
    --constants
    -----------
    --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid    CONSTANT VARCHAR2 (2000) := '"$Revision:   1.1  $"';
+   g_body_sccsid    CONSTANT VARCHAR2 (2000) := '"$Revision:   1.2  $"';
    g_package_name   CONSTANT VARCHAR2 (30) := 'generate_hestrusers';
 
    --
@@ -564,8 +564,7 @@ AS
             lr_user_rec := pi_user_rec;
             nm3ddl.create_user (
                p_rec_hus              => lr_user_rec,
-               p_password             =>    LOWER (lr_user_rec.hus_initials)
-                                         || TO_CHAR (lr_user_rec.hus_user_id),
+               p_password             => 'welcome'||LOWER (lr_user_rec.hus_initials),
                p_default_tablespace   => lv_default_tablespace,
                p_temp_tablespace      => lv_temp_tablespace,
                p_default_quota        => '10M',
