@@ -1,14 +1,13 @@
-/* Formatted on 3/19/2019 10:05:35 AM (QP5 v5.256.13226.35538) */
 CREATE OR REPLACE PACKAGE BODY generate_hestrusers
 AS
    -------------------------------------------------------------------------
    --   PVCS Identifiers :-
    --
-   --       pvcsid           : $Header:   //new_vm_latest/archives/customer/HA/STR Users/generate_hestrusers.pkb-arc   1.0   Mar 19 2019 17:01:30   Sarah.Williams  $
+   --       pvcsid           : $Header:   //new_vm_latest/archives/customer/HA/STR Users/generate_hestrusers.pkb-arc   1.1   Aug 28 2019 10:58:54   Sarah.Williams  $
    --       Module Name      : $Workfile:   generate_hestrusers.pkb  $
-   --       Date into PVCS   : $Date:   Mar 19 2019 17:01:30  $
-   --       Date fetched Out : $Modtime:   Mar 19 2019 16:17:50  $
-   --       PVCS Version     : $Revision:   1.0  $
+   --       Date into PVCS   : $Date:   Aug 28 2019 10:58:54  $
+   --       Date fetched Out : $Modtime:   Aug 28 2019 10:58:58  $
+   --       PVCS Version     : $Revision:   1.1  $
    ------------------------------------------------------------------
    --   Copyright (c) 2019 Bentley Systems Incorporated. All rights reserved.
    ------------------------------------------------------------------
@@ -19,7 +18,7 @@ AS
    --constants
    -----------
    --g_body_sccsid is the SCCS ID for the package body
-   g_body_sccsid    CONSTANT VARCHAR2 (2000) := '"$Revision:   1.0  $"';
+   g_body_sccsid    CONSTANT VARCHAR2 (2000) := '"$Revision:   1.1  $"';
    g_package_name   CONSTANT VARCHAR2 (30) := 'generate_hestrusers';
 
    --
@@ -670,6 +669,7 @@ AS
                          buc_au4,
                          buc_train_date
                     FROM bulk_user_creation
+                   WHERE buc_actual_username IS NULL
                 ORDER BY buc_username)
       LOOP
          BEGIN
